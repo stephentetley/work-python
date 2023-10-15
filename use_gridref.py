@@ -1,5 +1,5 @@
 
-import doodle.gridref as gridref
+import sptworkcode.gridref as gridref
 
 print(gridref.find_major(441234, 471234))
 
