@@ -15,23 +15,18 @@ limitations under the License.
 
 """
 
-def toOSGB36(easting, northing): 
+def to_osgb36(easting, northing): 
     try:
-        print("A1")
-        majorChar = findMajor(easting, northing)
-        print("A2: "  + majorChar)
-        minorChar = findMinor(easting % 500000, northing % 500000)
-        print("A3: " + minorChar)
-        smallE = easting % 100000
-        print("A4: " + str(smallE))
-        smallN = northing % 100000
-        print("A5: " + str(smallN))
-        return print(f'{majorChar}{minorChar}{smallE:05}{smallN:05}')
+        major_char = find_major(easting, northing)
+        minor_char = find_minor(easting % 500000, northing % 500000)
+        small_e = easting % 100000
+        small_n = northing % 100000
+        return print(f'{major_char}{minor_char}{small_e:05}{small_n:05}')
     except (TypeError, ValueError) as exn: 
         print(exn)
         return None
 
-def findMajor(e, n):
+def find_major(e, n):
     if   e >= 0       and e < 500_000   and n >= 0         and n < 500_000:
         return 'S'
     elif e >= 500_000 and e < 1_000_000 and n >= 0         and n < 500_000:
@@ -47,7 +42,7 @@ def findMajor(e, n):
     else:
         None 
 
-def findMinor(e, n):
+def find_minor(e, n):
     if   e >= 0       and e < 100_000     and n >= 0       and n < 100_000: 
         return 'V'
     elif e >= 100_000 and e < 200_000     and n >= 0       and n < 100_000:
@@ -101,19 +96,19 @@ def findMinor(e, n):
     else:
         None
 
-def toEastNorth(gridref):
+def to_east_north(gridref):
     try: 
-        major = decodeMajor(gridref[0])
-        minor = decodeMinor(gridref[1])
-        majorE, majorN = major
-        minorE, minorN = minor
+        major = decode_major(gridref[0])
+        minor = decode_minor(gridref[1])
+        major_e, major_n = major
+        minor_e, minor_n = minor
         east1 = int(gridref[2:7])
         north1 = int(gridref[7:12])
-        return {"easting": majorE + minorE + east1, "northing": majorN + minorN + north1}
+        return {"easting": major_e + minor_e + east1, "northing": major_n + minor_n + north1}
     except (TypeError, ValueError) as exn: 
         return None
     
-def decodeMajor(c):
+def decode_major(c):
     cu = c.upper()
     if cu == 'S':
         return (0,       0)
@@ -128,7 +123,7 @@ def decodeMajor(c):
     else:
         None
 
-def decodeMinor(c):
+def decode_minor(c):
     cu = c.upper()
     if cu == 'A':
         return (0,       400_000)
