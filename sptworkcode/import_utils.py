@@ -20,11 +20,12 @@ import pandas as pd
 
 
 def import_sheet(*, xlsx_path, sheet_name, table_name, con):
+    '''Note drops the table `table_name`'''
     xlsx = pd.ExcelFile(xlsx_path)
     df_raw = pd.read_excel(xlsx, sheet_name)
     df_clean = normalize_df_column_names(df_raw)
     con.execute(f'DROP TABLE IF EXISTS {table_name};')
-    df_clean.to_sql(table_name, con)#
+    df_clean.to_sql(table_name, con)
     con.commit()
 
 def normalize_df_column_names(df):
