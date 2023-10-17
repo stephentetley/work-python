@@ -15,8 +15,8 @@ limitations under the License.
 
 """
 
-duckdb_ddl = """
--- duckdb create tables
+point_blue_ddl = """
+-- create tables point blue specific tables
 
 CREATE OR REPLACE TABLE telemetry_facts(
     outstation_name TEXT NOT NULL, 

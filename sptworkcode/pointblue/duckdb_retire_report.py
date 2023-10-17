@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 
-def retire_report(csv_output_path):
+def write_retire_report(csv_output_path):
     return f"""
 COPY (
 SELECT 
