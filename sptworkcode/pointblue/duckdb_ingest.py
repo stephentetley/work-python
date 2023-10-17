@@ -15,8 +15,8 @@ limitations under the License.
 
 """
 
-# TODO get rid of hardcoded paths....
-duckdb_inserts = """
+def insert_from_sqlite(sqlite_path):
+    return f"""
 -- import sqlite data
 
 INSERT INTO telemetry_facts
@@ -27,7 +27,7 @@ SELECT
     tf.os_comment AS outstation_comment,
     tf.cleansed_os_addr AS outstation_id,
     tf.ai2_pl_ref AS outstation_pli_num
-FROM sqlite_scan('g:/work/2023/point_blue/point_blue_imports1.sqlite3', 'telemetry_facts') tf;
+FROM sqlite_scan('{sqlite_path}', 'telemetry_facts') tf;
 
 INSERT INTO worklist
 SELECT 
@@ -35,7 +35,7 @@ SELECT
     w.date AS submit_timestamp, 
     w.assetname AS asset_name,
     w.status AS status
-FROM sqlite_scan('g:/work/2023/point_blue/point_blue_imports1.sqlite3', 'worklist') w;
+FROM sqlite_scan('{sqlite_path}', 'worklist') w;
 
 INSERT INTO s4_equipment_master
 SELECT 
@@ -52,7 +52,7 @@ SELECT
     spb.manufactserialnumber AS serial_number,
     spb.start_up_date AS startup_date,
     spb.equipment_category AS equi_category
-FROM sqlite_scan('g:/work/2023/point_blue/point_blue_imports1.sqlite3', 's4_point_blue') spb;
+FROM sqlite_scan('{sqlite_path}', 's4_point_blue') spb;
 
 INSERT INTO aib_equipment_master
 SELECT 
@@ -64,7 +64,7 @@ SELECT
     apb.specific_model_frame AS specific_model,
     apb.serial_no AS serial_number,
     apb.assetstatus AS asset_status
-FROM sqlite_scan('g:/work/2023/point_blue/point_blue_imports1.sqlite3', 'aib_point_blue') apb;
+FROM sqlite_scan('{sqlite_path}', 'aib_point_blue') apb;
 
 INSERT INTO aib_equipment_master
 SELECT 
@@ -76,5 +76,6 @@ SELECT
     apb.specific_model_frame AS specific_model,
     apb.serial_no AS serial_number,
     apb.assetstatus AS asset_status
-FROM sqlite_scan('g:/work/2023/point_blue/point_blue_imports1.sqlite3', 'aib_point_blue_4g') apb;
+FROM sqlite_scan('{sqlite_path}', 'aib_point_blue_4g') apb;
 """
+    
