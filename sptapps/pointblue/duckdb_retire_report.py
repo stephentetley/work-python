@@ -16,14 +16,16 @@ limitations under the License.
 """
 
 
-def write_retire_report(csv_output_path):
+def output_retire_report(csv_output_path):
     return f"""
 COPY (
 SELECT 
-    w.asset_id AS 'AI2 Plinun',
+    w.asset_id AS 'AI2_uid',
     w.asset_name AS 'Common Name',
-    vs.item_id AS 'S4 Equipment Id',
-    sem.func_loc AS 'S4 Floc'
+    vs.item_id AS 'SAP S4 uid',
+    sem.func_loc AS 'S4 Floc', 
+    sem.equi_name AS 'S4 Equi Name',
+    strftime(sem.startup_date, '%d.%m.%Y') AS 'S4 Startup Date'
 FROM worklist w 
 JOIN values_string vs ON w.asset_id = vs.value 
 JOIN s4_equipment_master sem ON vs.item_id = CAST(sem.equi_id as TEXT)
