@@ -17,12 +17,13 @@ limitations under the License.
 
 import re
 import pandas as pd
+import sptlibs.xlsx_source as xlsx_source
+from sptlibs.xlsx_source import XlsxSource
 
-
-def import_sheet(*, xlsx_path, sheet_name, table_name, con):
+def import_sheet(source: XlsxSource, *, table_name: str, con):
     '''Note drops the table `table_name`'''
-    xlsx = pd.ExcelFile(xlsx_path)
-    df_raw = pd.read_excel(xlsx, sheet_name)
+    xlsx = pd.ExcelFile(source.path)
+    df_raw = pd.read_excel(xlsx, source.sheet)
     df_clean = normalize_df_column_names(df_raw)
     con.execute(f'DROP TABLE IF EXISTS {table_name};')
     df_clean.to_sql(table_name, con)
