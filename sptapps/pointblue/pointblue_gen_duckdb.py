@@ -26,3 +26,6 @@ class PointblueGenDuckdb(GenDuckdb):
     def add_telemetry_facts_insert(self, *, sqlite_table: str) -> None:
         self.insert_from_stmts.append(pointblue_duckdb_setup.telemetry_facts_insert(sqlite_path=self.sqlite_src, sqlite_table=sqlite_table))
 
+    def add_ai2_aib_reference_insert(self, *, sqlite_table: str) -> None:
+        self.insert_from_stmts.append(pointblue_duckdb_setup.ai2_aib_reference_insert(sqlite_path=self.sqlite_src, sqlite_table=sqlite_table))
+

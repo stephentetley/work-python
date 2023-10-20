@@ -41,13 +41,13 @@ def telemetry_facts_insert(*, sqlite_path: str, sqlite_table: str) -> str:
     """
 
 
-def insert_values_from_sqlite(sqlite_path):
+def ai2_aib_reference_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-INSERT INTO values_string
-SELECT 
-    DISTINCT(spb.equipment) AS item_id,
-    'ai2_aib_reference',
-    spb.ai2_aib_reference AS value
-FROM sqlite_scan('{sqlite_path}', 's4_point_blue') spb;
+    INSERT INTO values_string
+    SELECT 
+        DISTINCT(spb.equipment) AS item_id,
+        'ai2_aib_reference',
+        spb.ai2_aib_reference AS value
+    FROM sqlite_scan('{sqlite_path}', '{sqlite_table}') spb;
 
-"""
+    """
