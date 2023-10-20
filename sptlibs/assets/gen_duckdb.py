@@ -24,17 +24,24 @@ class GenDuckdb:
         self.db_name = 'assets.duckdb'
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_setup.aib_master_data_ddl, duckdb_setup.s4_master_data_ddl, duckdb_setup.asset_values_ddl]
+        self.ddl_stmts = [duckdb_setup.aib_equipment_master_ddl, duckdb_setup.s4_equipment_master_ddl, duckdb_setup.asset_values_ddl]
         self.insert_from_stmts = []
 
     def add_ddl_statement(self, ddl: str) -> None:
         self.ddl_stmts.append(ddl)
 
-    def add_s4_master_data_insert(self, sqlite_table: str) -> None:
+    def add_aib_worklist_ddl(self) -> None:
+        self.ddl_stmts.append(duckdb_setup.aib_worklist_ddl)
+
+
+    def add_s4_master_data_insert(self, *, sqlite_table: str) -> None:
         self.insert_from_stmts.append(duckdb_setup.s4_master_data_insert(sqlite_path=self.sqlite_src, sqlite_table=sqlite_table))
 
-    def add_aib_master_data_insert(self, sqlite_table: str) -> None:
+    def add_aib_master_data_insert(self, *, sqlite_table: str) -> None:
         self.insert_from_stmts.append(duckdb_setup.aib_master_data_insert(sqlite_path=self.sqlite_src, sqlite_table=sqlite_table))
+
+    def add_aib_worklist_insert(self, *, sqlite_table: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.aib_worklist_insert(sqlite_path=self.sqlite_src, sqlite_table=sqlite_table))
 
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.join(self.output_dir, self.db_name)

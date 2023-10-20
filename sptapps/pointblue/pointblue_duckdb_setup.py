@@ -15,6 +15,31 @@ limitations under the License.
 
 """
 
+telemetry_facts_ddl = """
+    CREATE OR REPLACE TABLE telemetry_facts(
+        outstation_name TEXT NOT NULL, 
+        site_sai_num TEXT,
+        site_name TEXT,
+        outstation_comment TEXT,
+        outstation_id TEXT,
+        outstation_pli_num TEXT,
+        PRIMARY KEY(outstation_name)
+    );
+    """
+
+def telemetry_facts_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
+    return f"""
+    INSERT INTO telemetry_facts
+    SELECT 
+        tf.os_name AS outstation_name, 
+        tf.od_name AS site_sai_num,
+        tf.od_comment AS site_name,
+        tf.os_comment AS outstation_comment,
+        tf.cleansed_os_addr AS outstation_id,
+        tf.ai2_pl_ref AS outstation_pli_num
+    FROM sqlite_scan('{sqlite_path}', '{sqlite_table}') tf;
+    """
+
 
 def insert_values_from_sqlite(sqlite_path):
     return f"""

@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 
-s4_master_data_ddl = """
+s4_equipment_master_ddl = """
     CREATE OR REPLACE TABLE s4_equipment_master(
         equi_id TEXT NOT NULL,
         equi_name TEXT NOT NULL,
@@ -34,7 +34,7 @@ s4_master_data_ddl = """
         PRIMARY KEY(equi_id)
     );
 """
-aib_master_data_ddl = """
+aib_equipment_master_ddl = """
     CREATE OR REPLACE TABLE aib_equipment_master(
         pli_num TEXT NOT NULL,
         common_name TEXT NOT NULL,
@@ -46,7 +46,58 @@ aib_master_data_ddl = """
         asset_status TEXT,
         PRIMARY KEY(pli_num)
     );
-"""
+    """
+
+asset_values_ddl = """
+    -- No primary keys, (`item_id` * `field_name`) might not be unique
+
+    CREATE OR REPLACE TABLE values_string(
+        item_id TEXT NOT NULL,
+        field_name TEXT NOT NULL, 
+        value TEXT
+    );
+
+    CREATE OR REPLACE TABLE values_date(
+        item_id TEXT NOT NULL,
+        field_name TEXT NOT NULL, 
+        value DATE
+    );
+
+    CREATE OR REPLACE TABLE values_time(
+        item_id TEXT NOT NULL,
+        field_name TEXT NOT NULL, 
+        value TIME
+    );
+
+    CREATE OR REPLACE TABLE values_integer(
+        item_id TEXT NOT NULL,
+        field_name TEXT NOT NULL, 
+        value INTEGER
+    );
+
+
+    CREATE OR REPLACE TABLE values_decimal(
+        item_id TEXT NOT NULL,
+        field_name TEXT NOT NULL, 
+        value DECIMAL(18, 3)
+    );
+
+    CREATE OR REPLACE TABLE values_wide_decimal(
+        item_id TEXT NOT NULL,
+        field_name TEXT NOT NULL, 
+        value DECIMAL(30, 8)
+    );
+    """
+
+aib_worklist_ddl = """
+    -- No primary key, `asset_id` might not be unique
+    CREATE OR REPLACE TABLE aib_worklist(
+        asset_id TEXT NOT NULL,
+        submit_timestamp TIMESTAMP NOT NULL, 
+        asset_name TEXT NOT NULL,
+        status TEXT
+    );
+    """
 
 def s4_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
@@ -83,45 +134,13 @@ def aib_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str:
     FROM sqlite_scan('{sqlite_path}', '{sqlite_table}') apb;
     """
 
-
-asset_values_ddl = """
--- No primary keys, (`item_id` * `field_name`) might not be unique
-
-CREATE OR REPLACE TABLE values_string(
-    item_id TEXT NOT NULL,
-    field_name TEXT NOT NULL, 
-    value TEXT
-);
-
-CREATE OR REPLACE TABLE values_date(
-    item_id TEXT NOT NULL,
-    field_name TEXT NOT NULL, 
-    value DATE
-);
-
-CREATE OR REPLACE TABLE values_time(
-    item_id TEXT NOT NULL,
-    field_name TEXT NOT NULL, 
-    value TIME
-);
-
-CREATE OR REPLACE TABLE values_integer(
-    item_id TEXT NOT NULL,
-    field_name TEXT NOT NULL, 
-    value INTEGER
-);
-
-
-CREATE OR REPLACE TABLE values_decimal(
-    item_id TEXT NOT NULL,
-    field_name TEXT NOT NULL, 
-    value DECIMAL(18, 3)
-);
-
-CREATE OR REPLACE TABLE values_wide_decimal(
-    item_id TEXT NOT NULL,
-    field_name TEXT NOT NULL, 
-    value DECIMAL(30, 8)
-);
-
-"""
+def aib_worklist_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
+    return f"""
+    INSERT INTO aib_worklist
+    SELECT 
+        w.asset_ref AS asset_id,
+        w.date AS submit_timestamp, 
+        w.assetname AS asset_name,
+        w.status AS status
+    FROM sqlite_scan('{sqlite_path}', '{sqlite_table}') w;
+    """

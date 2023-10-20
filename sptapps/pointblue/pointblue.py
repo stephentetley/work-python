@@ -19,6 +19,7 @@ import argparse
 import json
 import sys
 
+## Maybe it is too annoying to read from Json and we should just edit `run_point_blue.py`...
 
 def parse_cmdline():
     parser = argparse.ArgumentParser(
