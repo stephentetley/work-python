@@ -22,6 +22,7 @@ class PointblueGenDuckdb(GenDuckdb):
     def __init__(self, *, sqlite_path: str, output_directory: str) -> None:
         GenDuckdb.__init__(self, sqlite_path=sqlite_path, output_directory=output_directory)
         self.ddl_stmts.append(pointblue_duckdb_setup.telemetry_facts_ddl)
+        self.ddl_stmts.append(pointblue_duckdb_setup.id_mapping_views_ddl)
 
     def add_telemetry_facts_insert(self, *, sqlite_table: str) -> None:
         self.insert_from_stmts.append(pointblue_duckdb_setup.telemetry_facts_insert(sqlite_path=self.sqlite_src, sqlite_table=sqlite_table))
