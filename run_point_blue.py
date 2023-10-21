@@ -25,6 +25,7 @@ genduckdb.add_s4_master_data_insert(sqlite_table='s4_point_blue')
 genduckdb.add_aib_worklist_insert(sqlite_table='aib_worklist')
 genduckdb.add_telemetry_facts_insert(sqlite_table='telemetry_facts')
 genduckdb.add_ai2_aib_reference_insert(sqlite_table='s4_point_blue')
+genduckdb.add_easting_northing_insert(sqlite_table='s4_point_blue')
 duckdb_path = genduckdb.gen_duckdb()
 
 retire_csv_outpath='g:/work/2023/point_blue/pointblue_retire_report.csv'
