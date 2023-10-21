@@ -30,7 +30,7 @@ retire_report_body = """
         sem.equi_name AS 'S4 Equi Name',
         strftime(sem.startup_date, '%d.%m.%Y') AS 'S4 Startup Date'
     FROM aib_worklist w 
-    JOIN values_string vs ON w.asset_id = vs.value 
+    JOIN values_string vs ON w.asset_id = vs.field_value 
     JOIN s4_equipment_master sem ON vs.item_id = CAST(sem.equi_id as TEXT)
     ORDER BY sem.func_loc 
     """

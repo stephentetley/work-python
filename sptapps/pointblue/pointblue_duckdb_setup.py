@@ -26,27 +26,28 @@ telemetry_facts_ddl = """
         PRIMARY KEY(outstation_name)
     );
     """
+
 id_mapping_views_ddl = """
     CREATE OR REPLACE VIEW vw_pli_to_equi_id AS
     SELECT 
-        vs.value AS aib_ai2_reference,    
+        vs.field_value AS aib_ai2_reference,    
         sem.equi_id AS s4_equi_id
     FROM s4_equipment_master AS sem JOIN values_string vs 
         ON CAST(sem.equi_id AS TEXT) = vs.item_id
     WHERE
         vs.field_name = 'ai2_aib_reference'
-    AND vs.value LIKE 'PLI%';
+    AND vs.field_value LIKE 'PLI%';
 
 
     CREATE OR REPLACE VIEW vw_equi_id_to_sai AS
     SELECT     
         sem.equi_id AS s4_equi_id, 
-        vs.value AS aib_ai2_reference
+        vs.field_value AS aib_ai2_reference
     FROM s4_equipment_master AS sem JOIN values_string vs 
         ON CAST(sem.equi_id AS TEXT) = vs.item_id
     WHERE
         vs.field_name = 'ai2_aib_reference'
-    AND vs.value LIKE 'SAI%';
+    AND vs.field_value LIKE 'SAI%';
     """
 
 def telemetry_facts_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
@@ -68,8 +69,8 @@ def ai2_aib_reference_insert(*, sqlite_path: str, sqlite_table: str) -> str:
     INSERT INTO values_string
     SELECT 
         DISTINCT(spb.equipment) AS item_id,
-        'ai2_aib_reference',
-        spb.ai2_aib_reference AS value
+        'ai2_aib_reference' AS field_name,
+        spb.ai2_aib_reference AS field_value
     FROM sqlite_scan('{sqlite_path}', '{sqlite_table}') spb;
 
     """

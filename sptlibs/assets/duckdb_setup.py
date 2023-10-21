@@ -54,38 +54,38 @@ asset_values_ddl = """
     CREATE OR REPLACE TABLE values_string(
         item_id TEXT NOT NULL,
         field_name TEXT NOT NULL, 
-        value TEXT
+        field_value TEXT
     );
 
     CREATE OR REPLACE TABLE values_date(
         item_id TEXT NOT NULL,
         field_name TEXT NOT NULL, 
-        value DATE
+        field_value DATE
     );
 
     CREATE OR REPLACE TABLE values_time(
         item_id TEXT NOT NULL,
         field_name TEXT NOT NULL, 
-        value TIME
+        field_value TIME
     );
 
     CREATE OR REPLACE TABLE values_integer(
         item_id TEXT NOT NULL,
         field_name TEXT NOT NULL, 
-        value INTEGER
+        field_value INTEGER
     );
 
 
     CREATE OR REPLACE TABLE values_decimal(
         item_id TEXT NOT NULL,
         field_name TEXT NOT NULL, 
-        value DECIMAL(18, 3)
+        field_value DECIMAL(18, 3)
     );
 
     CREATE OR REPLACE TABLE values_wide_decimal(
         item_id TEXT NOT NULL,
         field_name TEXT NOT NULL, 
-        value DECIMAL(30, 8)
+        field_value DECIMAL(30, 8)
     );
     """
 

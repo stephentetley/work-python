@@ -54,10 +54,5 @@ class GenDuckdb:
         print(f'{duckdb_outpath} created')
         return duckdb_outpath
     
-    
-# def import_master_data(sqlite_path: str, aib_table: str, s4_table: str, con):
-#     aib_inserts = duckdb_master_data.aib_master_data_insert(sqlite_path, aib_table)
-#     s4_inserts = duckdb_master_data.aib_master_data_insert(sqlite_path, s4_table)
-#     con.sql(aib_inserts)
-#     con.sql(s4_inserts)
+
 
