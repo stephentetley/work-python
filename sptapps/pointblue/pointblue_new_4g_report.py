@@ -24,16 +24,14 @@ def output_new_4g_report(*, duckdb_path: str, csv_outpath: str) -> str:
 new_4g_report_body = """
     SELECT 
         DISTINCT(aw.asset_id) AS 'AI2 Ref',
-        vpli.s4_equi_id AS 'Old S4 Equi_id',
-        sem.equi_name AS 'Old S4 Equi_name',
-        tf.outstation_id || ' Point Blue 4G Outstation',
+        '' AS '[instructions_create_equipment]',
+        tf.outstation_id || ' Point Blue 4G Outstation' AS 'Description',
         'I' AS 'Category',
-        '' AS 'instructions_list_view',
         sem.func_loc AS 'Functional Location',
         '0010' AS 'Position', 
         'NETW' AS 'Object Type',
-        '' AS 'instructions_click_pencil',
-        '' AS 'instructions_click_data_origin',
+        '' AS '[instructions_click_pencil]',
+        '' AS '[instructions_click_data_origin]',
         '[Automatic or today''s date]' AS 'Valid From',
         'OPER' AS 'User Status',
         'OPER' AS 'Status with St. No (status number)',
@@ -61,7 +59,10 @@ new_4g_report_body = """
         veasting.field_value AS 'Easting',
         vnorthing.field_value AS 'Northing',
         'NETWTL' AS '[Add class ''NETWTL'']',
-        5 AS 'Manufacturers Asset Life (yr)'
+        5 AS 'Manufacturers Asset Life (yr)',
+        '' AS '[instruction_fields_for_checking]',
+        vpli.s4_equi_id AS 'Old S4 Equi_id',
+        sem.equi_name AS 'Old S4 Equi_name'
     FROM aib_worklist as aw 
     LEFT OUTER JOIN aib_equipment_master aem ON aw.asset_id = aem.pli_num 
     LEFT OUTER JOIN telemetry_facts tf ON aw.asset_id = tf.outstation_pli_num 
