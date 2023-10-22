@@ -17,16 +17,23 @@ limitations under the License.
 
 import re
 import pandas as pd
+import sqlite3
+from typing import Callable
 import sptlibs.xlsx_source as xlsx_source
 from sptlibs.xlsx_source import XlsxSource
 
-def import_sheet(source: XlsxSource, *, table_name: str, con):
-    '''Note drops the table `table_name`'''
+
+def import_sheet(source: XlsxSource, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+    '''Note drops the table `table_name` before filling it'''
     xlsx = pd.ExcelFile(source.path)
     df_raw = pd.read_excel(xlsx, source.sheet)
-    df_clean = normalize_df_column_names(df_raw)
+    if df_trafo is not None:
+        df_clean = df_trafo(df_raw)
+    else:
+        df_clean = df_raw
+    df_renamed = normalize_df_column_names(df_clean)
     con.execute(f'DROP TABLE IF EXISTS {table_name};')
-    df_clean.to_sql(table_name, con)
+    df_renamed.to_sql(table_name, con)
     con.commit()
 
 def normalize_df_column_names(df):
