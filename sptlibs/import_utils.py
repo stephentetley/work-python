@@ -19,7 +19,6 @@ import re
 import pandas as pd
 import sqlite3
 from typing import Callable
-import sptlibs.xlsx_source as xlsx_source
 from sptlibs.xlsx_source import XlsxSource
 
 

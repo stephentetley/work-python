@@ -16,9 +16,10 @@ limitations under the License.
 """
 
 import re
-import os
 import sqlite3 as sqlite3
 import pandas as pd
+from typing import Callable
+import sptlibs.import_utils as import_utils
 
     
 class FileDownloadParser:
@@ -72,12 +73,20 @@ class FileDownloadParser:
         if last != '\n':
             row.append(last)
 
-    # def gen_sqlite(self) -> str:
-    #     sqlite_outpath = os.path.join(self.output_dir, self.db_name)
-    #     con = sqlite3.connect(sqlite_outpath)
-    #     for (src, table_name, df_trafo) in self.xlsx_imports:
-    #         import_utils.import_sheet(src, table_name=table_name, con=con, df_trafo=df_trafo)
-    #     con.close()
-    #     print(f'{sqlite_outpath} created')
-    #     return sqlite_outpath
+    def gen_sqlite(self, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+        '''Note drops the table `table_name` before filling it'''
+        df_raw = self.dataframe
+        print('A1')
+        if df_trafo is not None:
+            df_clean = df_trafo(df_raw)
+        else:
+            df_clean = df_raw
+        print('A2')
+        df_renamed = import_utils.normalize_df_column_names(df_clean)
+        print('A3')
+        con.execute(f'DROP TABLE IF EXISTS {table_name};')
+        print('A4')
+        df_renamed.to_sql(table_name, con)
+        print('A5')
+        con.commit()
 
