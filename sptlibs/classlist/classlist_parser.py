@@ -47,7 +47,7 @@ def _try_get_int(s: str) -> int:
         return None
 
 
-def _get_class_props(s: str) -> dict:
+def _get_floc_class_props(s: str) -> dict:
     try: 
         dict = {}
         dict['type'] = s[11:14].rstrip()
@@ -57,7 +57,18 @@ def _get_class_props(s: str) -> dict:
     except: 
         return None
 
-def _get_char_props(s: str) -> dict:
+def _get_equi_class_props(s: str) -> dict:
+    try: 
+        dict = {}
+        dict['type'] = s[11:14].rstrip()
+        dict['name'] = s[15:47].rstrip()
+        dict['description'] = s[50:90].rstrip()
+        return dict
+    except: 
+        return None
+
+
+def _get_floc_char_props(s: str) -> dict:
     try: 
         dict = {}
         dict['name'] = s[15:47].rstrip()
@@ -68,17 +79,39 @@ def _get_char_props(s: str) -> dict:
         return dict
     except: 
         return None
-    
-def _get_value_props(s: str) -> dict:
+
+def _get_equi_char_props(s: str) -> dict:
     try: 
         dict = {}
-        dict['value'] = s[19:47].rstrip()
+        dict['name'] = s[15:50].rstrip()
+        dict['description'] = s[50:101].rstrip()
+        dict['type'] = s[101:111].rstrip()
+        dict['length'] = _try_get_int(s[111:121].rstrip())
+        dict['precision'] = _try_get_int(s[121:131].rstrip())
+        return dict
+    except: 
+        return None
+        
+
+def _get_floc_value_props(s: str) -> dict:
+    try: 
+        dict = {}
+        dict['value'] = s[19:48].rstrip()
         dict['description'] = s[48:].rstrip()
         return dict
     except: 
         return None
 
-def parse_classsfile(path: str) -> dict:
+def _get_equi_value_props(s: str) -> dict:
+    try: 
+        dict = {}
+        dict['value'] = s[19:50].rstrip()
+        dict['description'] = s[50:].rstrip()
+        return dict
+    except: 
+        return None
+    
+def parse_floc_classfile(path: str) -> dict:
     classes = []
     class1 = None
     char1 = None
@@ -87,15 +120,15 @@ def parse_classsfile(path: str) -> dict:
             for line in infile.readlines():
                 line = line.rstrip()
                 if _is_class_line(line):
-                    class1 = _get_class_props(line)
+                    class1 = _get_floc_class_props(line)
                     class1['characteristics'] = []
                     classes.append(class1)
                 elif _is_char_line(line):
-                    char1 = _get_char_props(line)
+                    char1 = _get_floc_char_props(line)
                     char1['values'] = []
                     class1['characteristics'].append(char1)
                 elif _is_value_line(line):
-                    value1 = _get_value_props(line)
+                    value1 = _get_floc_value_props(line)
                     char1['values'].append(value1)
                 else:
                     continue
@@ -104,6 +137,31 @@ def parse_classsfile(path: str) -> dict:
     dict['enum_values'] = _make_enum_values_dataframe(classes)
     return dict
 
+def parse_equi_classfile(path: str) -> dict:
+    classes = []
+    class1 = None
+    char1 = None
+    if os.path.exists(path): 
+        with open(path, 'r') as infile:
+            for line in infile.readlines():
+                line = line.rstrip()
+                if _is_class_line(line):
+                    class1 = _get_equi_class_props(line)
+                    class1['characteristics'] = []
+                    classes.append(class1)
+                elif _is_char_line(line):
+                    char1 = _get_equi_char_props(line)
+                    char1['values'] = []
+                    class1['characteristics'].append(char1)
+                elif _is_value_line(line):
+                    value1 = _get_equi_value_props(line)
+                    char1['values'].append(value1)
+                else:
+                    continue
+    dict = {}
+    dict['characteristics'] = _make_charcteristics_dataframe(classes)
+    dict['enum_values'] = _make_enum_values_dataframe(classes)
+    return dict
 
 def _make_charcteristics_dataframe(classes: list[dict]) -> pd.DataFrame:
     values_rows = []
