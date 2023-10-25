@@ -19,6 +19,7 @@ import os
 import sqlite3 as sqlite3
 import pandas as pd
 from typing import Callable
+import sptlibs.import_utils as import_utils
 import sptlibs.file_download.file_download_parser as file_download_parser
 
     
@@ -42,11 +43,27 @@ class GenSqlite:
                 if dfp is None:
                     print(f'Parsing failed for {path}')
                 else: 
-                    file_download_parser.gen_sqlite(dfp, table_name=table_name, con=con, df_trafo=df_trafo)
+                    self.__gen_sqlite1(dfp, table_name=table_name, con=con, df_trafo=df_trafo)
             except Exception as exn:
                 print(exn)
                 continue
         con.close()
         print(f'{sqlite_outpath} created')
         return sqlite_outpath
+
+
+    def __gen_sqlite1(self, dict, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+        '''Note drops the table `table_name` before filling it'''
+        if dict is not None:
+            df_raw = dict['dataframe']
+            if df_trafo is not None:
+                df_clean = df_trafo(df_raw)
+            else:
+                df_clean = df_raw
+            df_renamed = import_utils.normalize_df_column_names(df_clean)
+            con.execute(f'DROP TABLE IF EXISTS {table_name};')
+            df_renamed.to_sql(table_name, con)
+            con.commit()
+        else:
+            print('__gen_sqlite1 - dict is None')
 

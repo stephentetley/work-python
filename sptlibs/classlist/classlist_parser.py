@@ -16,6 +16,7 @@ limitations under the License.
 """
 
 import os
+import pandas as pd
 
 def _is_empty_line(s: str) -> bool: 
     return s in ['', '  |', '  |   |', '      |', '  |   |   |', '  |       |']
@@ -77,7 +78,7 @@ def _get_value_props(s: str) -> dict:
     except: 
         return None
 
-def parse_classsfile(path: str) -> list[dict]:
+def parse_classsfile(path: str) -> dict:
     classes = []
     class1 = None
     char1 = None
@@ -92,11 +93,37 @@ def parse_classsfile(path: str) -> list[dict]:
                 elif _is_char_line(line):
                     char1 = _get_char_props(line)
                     char1['values'] = []
-                    class1['characteristics'] += char1
+                    class1['characteristics'].append(char1)
                 elif _is_value_line(line):
                     value1 = _get_value_props(line)
-                    char1['values'] += value1
+                    char1['values'].append(value1)
                 else:
                     continue
-    return classes
+    dict = {}
+    dict['characteristics'] = _make_charcteristics_dataframe(classes)
+    dict['enum_values'] = _make_enum_values_dataframe(classes)
+    return dict
+
+
+def _make_charcteristics_dataframe(classes: list[dict]) -> pd.DataFrame:
+    values_rows = []
+    for class1 in classes:
+        class_type = class1['type']
+        class_name = class1['name']
+        class_desc = class1['description']
+        for char1 in class1['characteristics']:
+            row = [class_type, class_name, class_desc, char1['name'], char1['description'], char1['type'], char1['length'], char1['precision']]
+            values_rows.append(row)
+    return pd.DataFrame(values_rows, columns = ['class_type', 'class_name', 'class_description', 'char_name', 'char_description', 'char_type', 'char_length', 'char_precision'])
+
+def _make_enum_values_dataframe(classes: list[dict]) -> pd.DataFrame:
+    values_rows = []
+    for class1 in classes:
+        class_name = class1['name']
+        for char1 in class1['characteristics']:
+            char_name = char1['name']
+            for value1 in char1['values']:
+                row = [class_name, char_name, value1['value'], value1['description']]
+                values_rows.append(row)
+    return pd.DataFrame(values_rows, columns = ['class_name', 'char_name', 'enum_value', 'enum_description'])
 

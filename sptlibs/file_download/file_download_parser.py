@@ -18,19 +18,7 @@ limitations under the License.
 import re
 import sqlite3 as sqlite3
 import pandas as pd
-from typing import Callable
-import sptlibs.import_utils as import_utils
 
-    
-
-# def __init__(self, path: str) -> None:
-#     ans = self.__read_file_download(path)
-#     if ans is not None:
-#         self.entity_type = ans['entity_type']
-#         self.dataframe = pd.DataFrame(ans['rows'], columns=ans['columns'])
-#     else:
-#         self.entity_type = "Invalid"
-#         self.dataframe = None
 
     
 def _tidy_headers(headers: list[str]):
@@ -75,18 +63,4 @@ def parse_file_download(path: str) -> dict:
     except Exception:
         return None
 
-def gen_sqlite(dict, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
-    '''Note drops the table `table_name` before filling it'''
-    if dict is not None:
-        df_raw = dict['dataframe']
-        if df_trafo is not None:
-            df_clean = df_trafo(df_raw)
-        else:
-            df_clean = df_raw
-        df_renamed = import_utils.normalize_df_column_names(df_clean)
-        con.execute(f'DROP TABLE IF EXISTS {table_name};')
-        df_renamed.to_sql(table_name, con)
-        con.commit()
-    else:
-        print('gen_sqlite - dict is None')
         
