@@ -33,8 +33,6 @@ class GenSqlite:
     def add_classlist(self, path: str) -> None:
         self.imports.append(path)
 
-
-
     def gen_sqlite(self) -> str:
         sqlite_outpath = os.path.join(self.output_dir, self.db_name)
         chars_list = []

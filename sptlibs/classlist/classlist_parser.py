@@ -119,11 +119,12 @@ def _make_charcteristics_dataframe(classes: list[dict]) -> pd.DataFrame:
 def _make_enum_values_dataframe(classes: list[dict]) -> pd.DataFrame:
     values_rows = []
     for class1 in classes:
+        class_type = class1['type']
         class_name = class1['name']
         for char1 in class1['characteristics']:
             char_name = char1['name']
             for value1 in char1['values']:
-                row = [class_name, char_name, value1['value'], value1['description']]
+                row = [class_type, class_name, char_name, value1['value'], value1['description']]
                 values_rows.append(row)
-    return pd.DataFrame(values_rows, columns = ['class_name', 'char_name', 'enum_value', 'enum_description'])
+    return pd.DataFrame(values_rows, columns = ['class_type', 'class_name', 'char_name', 'enum_value', 'enum_description'])
 
