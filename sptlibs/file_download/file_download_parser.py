@@ -32,7 +32,7 @@ class FileDownloadParser:
             self.entity_type = "Invalid"
             self.dataframe = None
     
-    def __read_file_download(self, path: str):
+    def __read_file_download(self, path: str) -> dict:
         try: 
             re_entity_type = re.compile(r"\* Entity Type: (?P<entity_type>\w+)")
             re_columns = re.compile(r"\*\w+")
@@ -76,17 +76,12 @@ class FileDownloadParser:
     def gen_sqlite(self, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
         '''Note drops the table `table_name` before filling it'''
         df_raw = self.dataframe
-        print('A1')
         if df_trafo is not None:
             df_clean = df_trafo(df_raw)
         else:
             df_clean = df_raw
-        print('A2')
         df_renamed = import_utils.normalize_df_column_names(df_clean)
-        print('A3')
         con.execute(f'DROP TABLE IF EXISTS {table_name};')
-        print('A4')
         df_renamed.to_sql(table_name, con)
-        print('A5')
         con.commit()
 
