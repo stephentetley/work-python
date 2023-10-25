@@ -19,7 +19,7 @@ import os
 import sqlite3 as sqlite3
 import pandas as pd
 from typing import Callable
-from sptlibs.file_download.file_download_parser import FileDownloadParser
+import sptlibs.file_download.file_download_parser as file_download_parser
 
     
 class GenSqlite:
@@ -36,14 +36,13 @@ class GenSqlite:
     def gen_sqlite(self) -> str:
         sqlite_outpath = os.path.join(self.output_dir, self.db_name)
         con = sqlite3.connect(sqlite_outpath)
-        print('X1')
         for (path, table_name, df_trafo) in self.imports:
             try:
-                print('X2')
-                print(path)
-                dfp = FileDownloadParser(path)
-                print('X3')
-                dfp.gen_sqlite(table_name=table_name, con=con, df_trafo=df_trafo)
+                dfp = file_download_parser.parse_file_download(path)
+                if dfp is None:
+                    print(f'Parsing failed for {path}')
+                else: 
+                    file_download_parser.gen_sqlite(dfp, table_name=table_name, con=con, df_trafo=df_trafo)
             except Exception as exn:
                 print(exn)
                 continue

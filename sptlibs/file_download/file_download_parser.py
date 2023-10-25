@@ -22,60 +22,63 @@ from typing import Callable
 import sptlibs.import_utils as import_utils
 
     
-class FileDownloadParser:
-    def __init__(self, path: str) -> None:
-        ans = self.__read_file_download(path)
-        if ans is not None:
-            self.entity_type = ans['entity_type']
-            self.dataframe = pd.DataFrame(ans['rows'], columns=ans['columns'])
-        else:
-            self.entity_type = "Invalid"
-            self.dataframe = None
+
+# def __init__(self, path: str) -> None:
+#     ans = self.__read_file_download(path)
+#     if ans is not None:
+#         self.entity_type = ans['entity_type']
+#         self.dataframe = pd.DataFrame(ans['rows'], columns=ans['columns'])
+#     else:
+#         self.entity_type = "Invalid"
+#         self.dataframe = None
+
     
-    def __read_file_download(self, path: str) -> dict:
-        try: 
-            re_entity_type = re.compile(r"\* Entity Type: (?P<entity_type>\w+)")
-            re_columns = re.compile(r"\*\w+")
-            re_tab = re.compile(r"\t{1}")
-            ans = {}
-            payload = False
-            rows = []
-            with open(path, 'r') as infile:
-                for line in infile.readlines():
-                    if payload == False:
-                        entity_type = re_entity_type.search(line)
-                        column_prefix = re_columns.search(line)
-                        if entity_type:
-                            ans['entity_type'] = entity_type.group('entity_type')
-                        if column_prefix:
-                            payload = True
-                            columns = re_tab.split(line)
-                            self.__tidy_headers(columns)
-                            ans['columns'] = columns
-                    else:
-                        row = re_tab.split(line)
-                        if len(row) > 0: 
-                            self.__tidy_row(row)
-                            rows.append(row)
-            ans['rows'] = rows
-            return ans
-        except Exception:
-            return None
-        
-    def __tidy_headers(self, headers: list[str]):
-        first = headers[0]
-        last = headers.pop()
-        headers[0] = first[1:]
-        headers.append(last.rstrip())
+def _tidy_headers(headers: list[str]):
+    first = headers[0]
+    last = headers.pop()
+    headers[0] = first[1:]
+    headers.append(last.rstrip())
 
-    def __tidy_row(self, row: list[str]):
-        last = row.pop()
-        if last != '\n':
-            row.append(last)
+def _tidy_row(row: list[str]):
+    last = row.pop()
+    if last != '\n':
+        row.append(last)
 
-    def gen_sqlite(self, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
-        '''Note drops the table `table_name` before filling it'''
-        df_raw = self.dataframe
+
+def parse_file_download(path: str) -> dict:
+    try: 
+        re_entity_type = re.compile(r"\* Entity Type: (?P<entity_type>\w+)")
+        re_columns = re.compile(r"\*\w+")
+        re_tab = re.compile(r"\t{1}")
+        payload = False
+        rows = []
+        with open(path, 'r') as infile:
+            for line in infile.readlines():
+                if payload == False:
+                    find_entity_type = re_entity_type.search(line)
+                    column_prefix = re_columns.search(line)
+                    if find_entity_type:
+                        entity_type = find_entity_type.group('entity_type')
+                    if column_prefix:
+                        payload = True
+                        columns = re_tab.split(line)
+                        _tidy_headers(columns)
+                else:
+                    row = re_tab.split(line)
+                    if len(row) > 0: 
+                        _tidy_row(row)
+                        rows.append(row)
+        ans = {}
+        ans['entity_type'] = entity_type
+        ans['dataframe'] = pd.DataFrame(rows, columns = columns)
+        return ans
+    except Exception:
+        return None
+
+def gen_sqlite(dict, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+    '''Note drops the table `table_name` before filling it'''
+    if dict is not None:
+        df_raw = dict['dataframe']
         if df_trafo is not None:
             df_clean = df_trafo(df_raw)
         else:
@@ -84,4 +87,6 @@ class FileDownloadParser:
         con.execute(f'DROP TABLE IF EXISTS {table_name};')
         df_renamed.to_sql(table_name, con)
         con.commit()
-
+    else:
+        print('gen_sqlite - dict is None')
+        
