@@ -58,10 +58,10 @@ class GenSqlite:
             chars_list.append(dict1['characteristics'])
             enums_list.append(dict1['enum_values'])
         con = sqlite3.connect(sqlite_outpath)
-        if len(chars_list) > 0:
+        if not chars_list:
             chars_df = pd.concat(chars_list, ignore_index=True)
             self.__gen_sqlite1(chars_df, table_name=self.characteristics_table_name, con=con)
-        if len(enums_list) > 0:
+        if not enums_list:
             enums_df = pd.concat(enums_list, ignore_index=True)
             self.__gen_sqlite1(enums_df, table_name=self.enums_table_name, con=con)
         con.close()
