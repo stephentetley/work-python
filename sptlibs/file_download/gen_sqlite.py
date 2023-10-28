@@ -35,7 +35,7 @@ class GenSqlite:
 
 
     def gen_sqlite(self) -> str:
-        sqlite_outpath = os.path.join(self.output_dir, self.db_name)
+        sqlite_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
         con = sqlite3.connect(sqlite_outpath)
         for (path, table_name, df_trafo) in self.imports:
             try:

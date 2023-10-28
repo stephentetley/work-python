@@ -3,6 +3,7 @@
 import os
 import sptlibs.classlist.classlist_parser as classlist_parser
 from sptlibs.classlist.gen_sqlite import GenSqlite
+from sptlibs.classlist.gen_duckdb import GenDuckdb
 
 equisource = 'g:/work/2023/classlist/002-equi-classlist.txt'
 flocsource = 'g:/work/2023/classlist/003-floc-classlist.txt'
@@ -20,6 +21,9 @@ if os.path.exists(flocsource):
     gensqlite = GenSqlite(output_directory=output_directory)
     gensqlite.add_floc_classlist(flocsource)
     gensqlite.add_equi_classlist(equisource)
-    gensqlite.gen_sqlite()
+    sqlite_path = gensqlite.gen_sqlite()
+
+    genduckdb = GenDuckdb(sqlite_path=sqlite_path, output_directory=output_directory)
+    genduckdb.gen_duckdb()
 
 

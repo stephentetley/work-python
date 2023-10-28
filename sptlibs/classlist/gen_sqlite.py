@@ -26,8 +26,8 @@ class GenSqlite:
     def __init__(self, *, output_directory: str) -> None:
         self.db_name = 'classlists.sqlite3'
         self.output_dir = output_directory
-        self.enums_table_name = 'classlists_enum_values'
-        self.characteristics_table_name = 'classlists_characteristics'
+        self.enums_table_name = 'classlist_enum_values'
+        self.characteristics_table_name = 'classlist_characteristics'
         self.classlist_dicts = []
 
     def add_floc_classlist(self, path: str) -> None:
@@ -51,17 +51,17 @@ class GenSqlite:
             print(exn)
 
     def gen_sqlite(self) -> str:
-        sqlite_outpath = os.path.join(self.output_dir, self.db_name)
+        sqlite_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
         chars_list = []
         enums_list = []
         for dict1 in self.classlist_dicts:
             chars_list.append(dict1['characteristics'])
             enums_list.append(dict1['enum_values'])
         con = sqlite3.connect(sqlite_outpath)
-        if not chars_list:
+        if chars_list:
             chars_df = pd.concat(chars_list, ignore_index=True)
             self.__gen_sqlite1(chars_df, table_name=self.characteristics_table_name, con=con)
-        if not enums_list:
+        if enums_list:
             enums_df = pd.concat(enums_list, ignore_index=True)
             self.__gen_sqlite1(enums_df, table_name=self.enums_table_name, con=con)
         con.close()

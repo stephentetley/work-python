@@ -1,4 +1,4 @@
-# temp_valuaequi.py
+# run_parse_file_download.py
 
 import os
 import sptlibs.file_download.file_download_parser as file_download_parser
