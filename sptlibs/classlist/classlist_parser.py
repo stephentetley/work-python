@@ -15,6 +15,7 @@ limitations under the License.
 
 """
 
+
 import os
 import pandas as pd
 
@@ -116,7 +117,8 @@ def parse_floc_classfile(path: str) -> dict:
     class1 = None
     char1 = None
     if os.path.exists(path): 
-        with open(path, 'r') as infile:
+        # must open file with encoding
+        with open(path, 'r', encoding='utf-8-sig') as infile:
             for line in infile.readlines():
                 line = line.rstrip()
                 if _is_class_line(line):
@@ -142,7 +144,8 @@ def parse_equi_classfile(path: str) -> dict:
     class1 = None
     char1 = None
     if os.path.exists(path): 
-        with open(path, 'r') as infile:
+        # must open file with encoding
+        with open(path, 'r', encoding='utf-8-sig') as infile:
             for line in infile.readlines():
                 line = line.rstrip()
                 if _is_class_line(line):
