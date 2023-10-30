@@ -28,6 +28,12 @@ class GenDuckdb:
         self.insert_from_stmts = [duckdb_setup.s4_fd_equi_insert(sqlite_path=self.sqlite_src),
                                      duckdb_setup.s4_fd_classes_insert(sqlite_path=self.sqlite_src),
                                      duckdb_setup.s4_fd_char_values_insert(sqlite_path=self.sqlite_src)]
+        self.copy_tables_stmts = []
+
+
+    def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
+        self.copy_tables_stmts.append(duckdb_setup.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
+
 
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
@@ -35,6 +41,8 @@ class GenDuckdb:
         for stmt in self.ddl_stmts:
             con.sql(stmt)
         for stmt in self.insert_from_stmts:
+            con.sql(stmt)
+        for stmt in self.copy_tables_stmts:
             con.sql(stmt)
         con.close()
         print(f'{duckdb_outpath} created')

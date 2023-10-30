@@ -9,6 +9,7 @@ equi1 = 'g:/work/2023/file_download/equi-class-chars-sample/equi_download.txt'
 classequi1 = 'g:/work/2023/file_download/equi-class-chars-sample/classequi_download.txt'
 valuaequi1 = 'g:/work/2023/file_download/equi-class-chars-sample/valuaequi_download.txt'
 output_directory = 'g:/work/2023/file_download/equi-class-chars-sample'
+classlists_db = 'g:/work/2023/classlist/classlists.duckdb'
 
 if os.path.exists(output_directory): 
     print(f'Found: {output_directory}')
@@ -22,6 +23,7 @@ if os.path.exists(output_directory):
     sqlite_path = gensqlite.gen_sqlite()
 
     genduckdb = GenDuckdb(sqlite_path=sqlite_path, output_directory=output_directory)
+    genduckdb.add_classlist_tables(classlists_duckdb_path=classlists_db)
     genduckdb.gen_duckdb()
 
 # Note - file downloads best used for checking so we need most of the information in equi downloads.

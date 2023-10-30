@@ -77,6 +77,7 @@ s4_fd_char_values_ddl = """
         value_to DECIMAL(26,6),
     );
 """
+
 def s4_fd_equi_insert(*, sqlite_path: str) -> str: 
     return f"""
     INSERT INTO s4_fd_equi BY NAME
@@ -140,4 +141,12 @@ def s4_fd_char_values_insert(*, sqlite_path: str) -> str:
         v.atflv AS value_from,
         v.atflb AS value_to
     FROM sqlite_scan('{sqlite_path}', 'valuaequi') v;
+    """
+
+def s4_classlists_table_copy(*, classlists_duckdb_path: str) -> str: 
+    return f"""
+        ATTACH '{classlists_duckdb_path}' AS classlists_db;
+        CREATE OR REPLACE TABLE s4_classlist_characteristic_defs AS SELECT * FROM classlists_db.s4_characteristic_defs;
+        CREATE OR REPLACE TABLE s4_classlist_enum_defs AS SELECT * FROM classlists_db.s4_enum_defs;
+        DETACH classlists_db;
     """
