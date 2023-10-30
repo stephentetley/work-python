@@ -40,7 +40,7 @@ def parse_file_download(path: str) -> dict:
         re_tab = re.compile(r"\t{1}")
         payload = False
         rows = []
-        with open(path, 'r') as infile:
+        with open(path, 'r', encoding='utf-8-sig') as infile:
             for line in infile.readlines():
                 if payload == False:
                     find_entity_type = re_entity_type.search(line)

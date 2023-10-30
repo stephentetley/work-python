@@ -44,7 +44,7 @@ s4_enum_defs_ddl = """
 
 def s4_characteristic_defs_insert(*, sqlite_path: str) -> str: 
     return f"""
-    INSERT INTO s4_characteristic_defs
+    INSERT INTO s4_characteristic_defs BY NAME
     SELECT 
         cc.class_type AS class_type,
         cc.class_name AS class_name,
@@ -59,7 +59,7 @@ def s4_characteristic_defs_insert(*, sqlite_path: str) -> str:
 
 def s4_enum_defs_insert(*, sqlite_path: str) -> str: 
     return f"""
-    INSERT INTO s4_enum_defs
+    INSERT INTO s4_enum_defs BY NAME
     SELECT 
         cev.class_type AS class_type,
         cev.class_name AS class_name,

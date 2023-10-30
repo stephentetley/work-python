@@ -101,7 +101,7 @@ aib_worklist_ddl = """
 
 def s4_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO s4_equipment_master
+    INSERT INTO s4_equipment_master BY NAME
     SELECT 
         DISTINCT(spb.equipment) AS equi_id,
         spb.description_of_technical_object AS equi_name,
@@ -121,7 +121,7 @@ def s4_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str:
 
 def aib_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO aib_equipment_master
+    INSERT INTO aib_equipment_master BY NAME
     SELECT 
         DISTINCT(apb.reference) AS pli_num,
         apb.common_name AS common_name,
@@ -136,7 +136,7 @@ def aib_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str:
 
 def aib_worklist_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO aib_worklist
+    INSERT INTO aib_worklist BY NAME
     SELECT 
         w.asset_ref AS asset_id,
         w.date AS submit_timestamp, 

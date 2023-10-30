@@ -52,7 +52,7 @@ id_mapping_views_ddl = """
 
 def telemetry_facts_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO telemetry_facts
+    INSERT INTO telemetry_facts BY NAME
     SELECT 
         tf.os_name AS outstation_name, 
         tf.od_name AS site_sai_num,
@@ -66,7 +66,7 @@ def telemetry_facts_insert(*, sqlite_path: str, sqlite_table: str) -> str:
 
 def ai2_aib_reference_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO values_string
+    INSERT INTO values_string BY NAME
     SELECT 
         DISTINCT(spb.equipment) AS item_id,
         'AI2_AIB_REFERENCE' AS field_name,
@@ -76,7 +76,7 @@ def ai2_aib_reference_insert(*, sqlite_path: str, sqlite_table: str) -> str:
 
 def easting_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO values_integer
+    INSERT INTO values_integer BY NAME
     SELECT 
         DISTINCT(CAST(spb.equipment AS TEXT)) AS equi_id,
         'EASTING' AS field_name,
@@ -87,7 +87,7 @@ def easting_insert(*, sqlite_path: str, sqlite_table: str) -> str:
 
 def northing_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
-    INSERT INTO values_integer
+    INSERT INTO values_integer BY NAME
     SELECT 
         DISTINCT(CAST(spb.equipment AS TEXT)) AS item_id,
         'NORTHING' AS field_name,
