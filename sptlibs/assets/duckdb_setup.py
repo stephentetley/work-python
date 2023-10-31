@@ -49,43 +49,43 @@ aib_equipment_master_ddl = """
     """
 
 asset_values_ddl = """
-    -- No primary keys, (`item_id` * `field_name`) might not be unique
+    -- No primary keys, (`entity_id` * `attribute_name`) might not be unique
 
-    CREATE OR REPLACE TABLE values_string(
-        item_id TEXT NOT NULL,
-        field_name TEXT NOT NULL, 
-        field_value TEXT
+    CREATE OR REPLACE TABLE values_text(
+        entity_id TEXT NOT NULL,
+        attribute_name TEXT NOT NULL, 
+        text_value TEXT
     );
 
     CREATE OR REPLACE TABLE values_date(
-        item_id TEXT NOT NULL,
-        field_name TEXT NOT NULL, 
-        field_value DATE
+        entity_id TEXT NOT NULL,
+        attribute_name TEXT NOT NULL, 
+        date_value DATE
     );
 
     CREATE OR REPLACE TABLE values_time(
-        item_id TEXT NOT NULL,
-        field_name TEXT NOT NULL, 
-        field_value TIME
+        entity_id TEXT NOT NULL,
+        attribute_name TEXT NOT NULL, 
+        time_value TIME
     );
 
     CREATE OR REPLACE TABLE values_integer(
-        item_id TEXT NOT NULL,
-        field_name TEXT NOT NULL, 
-        field_value INTEGER
+        entity_id TEXT NOT NULL,
+        attribute_name TEXT NOT NULL, 
+        integer_value INTEGER
     );
 
 
     CREATE OR REPLACE TABLE values_decimal(
-        item_id TEXT NOT NULL,
-        field_name TEXT NOT NULL, 
-        field_value DECIMAL(18, 3)
+        entity_id TEXT NOT NULL,
+        attribute_name TEXT NOT NULL, 
+        decimal_value DECIMAL(18, 3)
     );
 
     CREATE OR REPLACE TABLE values_wide_decimal(
-        item_id TEXT NOT NULL,
-        field_name TEXT NOT NULL, 
-        field_value DECIMAL(30, 8)
+        entity_id TEXT NOT NULL,
+        attribute_name TEXT NOT NULL, 
+        wide_decimal_value DECIMAL(30, 8)
     );
     """
 

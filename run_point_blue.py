@@ -19,7 +19,7 @@ gensqlite.db_name = 'assets_temp.sqlite3'
 gensqlite.add_xlsx_source(XlsxSource('g:/work/2023/point_blue/aib_point_blue_4g_export_20231011.xlsx', 'Sheet1'), table_name='aib_point_blue_4g', df_trafo=None)
 gensqlite.add_xlsx_source(XlsxSource('g:/work/2023/point_blue/aib_point_blue_export_20231011.xlsx', 'Sheet1'), table_name='aib_point_blue', df_trafo=None)
 gensqlite.add_xlsx_source(XlsxSource('g:/work/2023/point_blue/s4_point_blue_export_with_east_north-20231019.XLSX', 'Sheet1'), table_name='s4_point_blue', df_trafo=None)
-gensqlite.add_xlsx_source(XlsxSource('g:/work/2023/point_blue/SR-updates-combined.xlsx', 'Sheet1'), table_name='aib_worklist', df_trafo=remove_requested_by)
+gensqlite.add_xlsx_source(XlsxSource('g:/work/2023/point_blue/SS-updates-combined.xlsx', 'Sheet1'), table_name='aib_worklist', df_trafo=remove_requested_by)
 gensqlite.add_xlsx_source(XlsxSource('g:/work/2023/point_blue/telemetry_fact_table.xlsx', 'Sheet1'), table_name='telemetry_facts', df_trafo=None)
 sqlite_path = gensqlite.gen_sqlite()
 
@@ -39,6 +39,6 @@ retire_csv_outpath='g:/work/2023/point_blue/pointblue_retire_report.csv'
 pointblue_retire_report.output_retire_report(duckdb_path=duckdb_path, csv_outpath=retire_csv_outpath)
 print(f'Wrote {retire_csv_outpath}')
 
-new4g_csv_outpath='g:/work/2023/point_blue/pointblue_new4g_report.csv'
+new4g_csv_outpath='g:/work/2023/point_blue/pointblue_new4g_report_ss__.csv'
 pointblue_new_4g_report.output_new_4g_report(duckdb_path=duckdb_path, csv_outpath=new4g_csv_outpath)
 print(f'Wrote {new4g_csv_outpath}')

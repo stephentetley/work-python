@@ -20,9 +20,14 @@ import duckdb
 
 def output_csv_report(*, duckdb_path: str, select_stmt: str, csv_outpath: str) -> str:
     '''`select_stmt` should not be terminated with a semicolon'''
-    con = duckdb.connect(duckdb_path)
-    con.sql(gen_report_stmt(select_stmt=select_stmt, csv_outpath=csv_outpath))
-    con.close()
+    stmt = gen_report_stmt(select_stmt=select_stmt, csv_outpath=csv_outpath)
+    try: 
+        con = duckdb.connect(duckdb_path)
+        con.sql(stmt)
+        con.close()
+    except Exception as exn:
+        print(exn)
+        print(stmt)
     
 
 

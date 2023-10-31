@@ -47,9 +47,19 @@ class GenDuckdb:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
         con = duckdb.connect(duckdb_outpath)
         for stmt in self.ddl_stmts:
-            con.sql(stmt)
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
         for stmt in self.insert_from_stmts:
-            con.sql(stmt)
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath

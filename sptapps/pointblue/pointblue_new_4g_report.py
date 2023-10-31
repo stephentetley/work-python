@@ -56,8 +56,8 @@ new_4g_report_body = """
         CAST(extract('year' FROM aem.installed_from) AS TEXT) AS 'Survey Date',  
         '3 - SATISFACTORY' AS 'Loading Factor',  
         'EAST_NORTH' AS '[Add class ''EAST_NORTH'']',
-        veasting.field_value AS 'Easting',
-        vnorthing.field_value AS 'Northing',
+        veasting.integer_value AS 'Easting',
+        vnorthing.integer_value AS 'Northing',
         'NETWTL' AS '[Add class ''NETWTL'']',
         5 AS 'Manufacturers Asset Life (yr)',
         '' AS '[instruction_fields_for_checking]',
@@ -69,7 +69,7 @@ new_4g_report_body = """
     LEFT OUTER JOIN vw_pli_to_equi_id vpli ON aw.asset_id = vpli.aib_ai2_reference
     LEFT OUTER JOIN s4_equipment_master sem ON vpli.s4_equi_id = sem.equi_id
     LEFT OUTER JOIN vw_equi_id_to_sai vsai ON sem.equi_id = vsai.s4_equi_id
-    LEFT OUTER JOIN values_integer veasting ON sem.equi_id = veasting.item_id AND veasting.field_name = 'EASTING'
-    LEFT OUTER JOIN values_integer vnorthing ON sem.equi_id = vnorthing.item_id AND vnorthing.field_name = 'NORTHING'
+    LEFT OUTER JOIN values_integer veasting ON sem.equi_id = veasting.entity_id AND veasting.attribute_name = 'EASTING'
+    LEFT OUTER JOIN values_integer vnorthing ON sem.equi_id = vnorthing.entity_id AND vnorthing.attribute_name = 'NORTHING'
 WHERE vpli.s4_equi_id IS NOT NULL
     """
