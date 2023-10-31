@@ -15,6 +15,40 @@ limitations under the License.
 
 """
 
+s4_fd_funcloc_ddl = """
+    CREATE OR REPLACE TABLE s4_fd_funcloc(
+        functional_location TEXT NOT NULL,
+        company_code INTEGER,
+        construction_month INTEGER,
+        construction_year INTEGER,
+        controlling_area INTEGER,
+        cost_center INTEGER,
+        description TEXT,
+        user_status TEXT,
+        category TEXT,
+        installation_allowed BOOLEAN,
+        location TEXT,
+        main_work_center TEXT,
+        maintenance_plant INTEGER, 
+        masked_functional_location TEXT,
+        object_type TEXT,
+        object_number TEXT,
+        planning_plant INTEGER,
+        plant_section TEXT,
+        plant_for_work_center INTEGER,
+        display_position INTEGER,
+        startup_date DATE,
+        status TEXT,
+        status_profile TEXT,
+        status_of_an_object TEXT,
+        structure_indicator TEXT,
+        superior_fl_for_cr_processing TEXT,
+        superior_funct_loc TEXT,
+        address_ref INTEGER,
+        PRIMARY KEY(functional_location)
+    );
+"""
+
 
 s4_fd_equi_ddl = """
     CREATE OR REPLACE TABLE s4_fd_equi(
@@ -78,7 +112,42 @@ s4_fd_char_values_ddl = """
     );
 """
 
-def s4_fd_equi_insert(*, sqlite_path: str) -> str: 
+def s4_fd_funcloc_insert(*, sqlite_path: str, funcloc_tablename: str) -> str: 
+    return f"""
+    INSERT INTO s4_fd_funcloc BY NAME
+    SELECT 
+        f.funcloc AS functional_location,
+        f.bukrsfloc AS company_code,
+        IF(f.baumm IS NULL OR f.baumm = '', NULL, CAST(f.baumm AS INTEGER)) AS construction_month,
+        IF(f.baujj IS NULL OR f.baujj = '', NULL, CAST(f.baujj AS INTEGER)) AS construction_year,
+        f.kokr_floc AS controlling_area,
+        f.kost_floc AS cost_center,
+        f.txtmi AS description,
+        f.usta_floc AS user_status,
+        f.fltyp AS category,
+        IF(f.iequi = 'X', true, false) AS installation_allowed,
+        f.stor_floc AS location,
+        f.gewrkfloc AS main_work_center,
+        f.swerk_fl AS maintenance_plant,
+        f.floc_ref AS masked_functional_location,
+        f.eqart AS object_type,
+        f.jobjn_fl AS object_number,
+        f.plnt_floc AS planning_plant,
+        f.beber_fl AS plant_section,
+        f.wergwfloc AS plant_for_work_center,
+        IF(f.posnr IS NULL OR f.posnr = '', NULL, CAST(f.posnr AS INTEGER)) AS display_position,
+        if(f.inbdt IS NOT NULL, strptime(f.inbdt, '%d.%m.%Y'), NULL) AS startup_date,
+        f.stattext AS status,
+        f.stsm_floc AS status_profile,
+        f.ustw_floc AS status_of_an_object,
+        f.tplkz_flc AS structure_indicator,
+        f.tplma1 AS superior_fl_for_cr_processing,
+        f.tplma AS superior_funct_loc,
+        f.adrnr AS address_ref,
+    FROM sqlite_scan('{sqlite_path}', '{funcloc_tablename}') f;
+    """
+
+def s4_fd_equi_insert(*, sqlite_path: str, equi_tablename: str) -> str: 
     return f"""
     INSERT INTO s4_fd_equi BY NAME
     SELECT 
@@ -115,20 +184,45 @@ def s4_fd_equi_insert(*, sqlite_path: str) -> str:
         e.gewei AS unit_of_weight,
         IF(e.data_eeqz IS NOT NULL, strptime(e.data_eeqz, '%d.%m.%Y'), NULL) AS valid_from,
         e.adrnr AS address_ref
-    FROM sqlite_scan('{sqlite_path}', 'equi') e;
+    FROM sqlite_scan('{sqlite_path}', '{equi_tablename}') e;
     """
 
-def s4_fd_classes_insert(*, sqlite_path: str) -> str: 
+def s4_fd_classfloc_insert(*, sqlite_path: str, class_tablename: str) -> str: 
+    return f"""
+    INSERT INTO s4_fd_classes BY NAME
+    SELECT 
+        c.funcloc AS entity_id,
+        c.class AS class_name,
+        c.classtype AS class_type
+    FROM sqlite_scan('{sqlite_path}', '{class_tablename}') c;
+    """
+
+def s4_fd_classequi_insert(*, sqlite_path: str, class_tablename: str) -> str: 
     return f"""
     INSERT INTO s4_fd_classes BY NAME
     SELECT 
         c.equi AS entity_id,
         c.class AS class_name,
         c.classtype AS class_type
-    FROM sqlite_scan('{sqlite_path}', 'classequi') c;
+    FROM sqlite_scan('{sqlite_path}', '{class_tablename}') c;
     """
 
-def s4_fd_char_values_insert(*, sqlite_path: str) -> str: 
+def s4_fd_char_valuafloc_insert(*, sqlite_path: str, valua_tablename: str) -> str: 
+    return f"""
+    INSERT INTO s4_fd_char_values BY NAME
+    SELECT 
+        v.funcloc AS entity_id,
+        v.charid AS char_name,
+        v.atnam AS char_desc,
+        v.atwrt AS char_text_value,
+        v.classtype AS class_type,
+        v.valcnt AS int_counter_value,
+        v.atflv AS value_from,
+        v.atflb AS value_to
+    FROM sqlite_scan('{sqlite_path}', '{valua_tablename}') v;
+    """
+
+def s4_fd_char_valuaequi_insert(*, sqlite_path: str, valua_tablename: str) -> str: 
     return f"""
     INSERT INTO s4_fd_char_values BY NAME
     SELECT 
@@ -140,7 +234,7 @@ def s4_fd_char_values_insert(*, sqlite_path: str) -> str:
         v.valcnt AS int_counter_value,
         v.atflv AS value_from,
         v.atflb AS value_to
-    FROM sqlite_scan('{sqlite_path}', 'valuaequi') v;
+    FROM sqlite_scan('{sqlite_path}', '{valua_tablename}') v;
     """
 
 def s4_classlists_table_copy(*, classlists_duckdb_path: str) -> str: 

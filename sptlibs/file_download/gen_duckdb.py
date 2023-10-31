@@ -24,26 +24,55 @@ class GenDuckdb:
         self.db_name = 'file_downloads.duckdb'
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_setup.s4_fd_equi_ddl, duckdb_setup.s4_fd_classes_ddl, duckdb_setup.s4_fd_char_values_ddl]
-        self.insert_from_stmts = [duckdb_setup.s4_fd_equi_insert(sqlite_path=self.sqlite_src),
-                                     duckdb_setup.s4_fd_classes_insert(sqlite_path=self.sqlite_src),
-                                     duckdb_setup.s4_fd_char_values_insert(sqlite_path=self.sqlite_src)]
+        self.ddl_stmts = [duckdb_setup.s4_fd_funcloc_ddl, duckdb_setup.s4_fd_equi_ddl, duckdb_setup.s4_fd_classes_ddl, duckdb_setup.s4_fd_char_values_ddl]
+        self.insert_from_stmts = []
         self.copy_tables_stmts = []
 
+    def add_funcloc_table(self, *, sqlite_table_name: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_fd_funcloc_insert(sqlite_path=self.sqlite_src, funcloc_tablename=sqlite_table_name))
+
+    def add_equi_table(self, *, sqlite_table_name: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_fd_equi_insert(sqlite_path=self.sqlite_src, equi_tablename=sqlite_table_name))
+
+    def add_classfloc_table(self, *, sqlite_table_name: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_fd_classfloc_insert(sqlite_path=self.sqlite_src, class_tablename=sqlite_table_name))
+
+    def add_valuafloc_table(self, *, sqlite_table_name: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuafloc_insert(sqlite_path=self.sqlite_src, valua_tablename=sqlite_table_name))
+
+    def add_classequi_table(self, *, sqlite_table_name: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_fd_classequi_insert(sqlite_path=self.sqlite_src, class_tablename=sqlite_table_name))
+
+    def add_valuaequi_table(self, *, sqlite_table_name: str) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuaequi_insert(sqlite_path=self.sqlite_src, valua_tablename=sqlite_table_name))
 
     def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
         self.copy_tables_stmts.append(duckdb_setup.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
-
 
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
         con = duckdb.connect(duckdb_outpath)
         for stmt in self.ddl_stmts:
-            con.sql(stmt)
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
         for stmt in self.insert_from_stmts:
-            con.sql(stmt)
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
         for stmt in self.copy_tables_stmts:
-            con.sql(stmt)
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath

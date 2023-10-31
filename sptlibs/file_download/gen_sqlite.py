@@ -29,21 +29,20 @@ class GenSqlite:
         self.output_dir = output_directory
         self.imports = []
 
-    def add_file_download(self, path: str, *, table_name: str, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
-        self.imports.append((path, table_name, df_trafo))
-
+    def add_file_download(self, path: str, *, table_name: str) -> None:
+        self.imports.append((path, table_name))
 
 
     def gen_sqlite(self) -> str:
         sqlite_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
         con = sqlite3.connect(sqlite_outpath)
-        for (path, table_name, df_trafo) in self.imports:
+        for (path, table_name) in self.imports:
             try:
                 dfp = file_download_parser.parse_file_download(path)
                 if dfp is None:
                     print(f'Parsing failed for {path}')
                 else: 
-                    self.__gen_sqlite1(dfp, table_name=table_name, con=con, df_trafo=df_trafo)
+                    self.__gen_sqlite1(dfp, table_name=table_name, con=con, df_trafo=None)
             except Exception as exn:
                 print(exn)
                 continue
