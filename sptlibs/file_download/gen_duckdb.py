@@ -17,6 +17,7 @@ limitations under the License.
 
 import os
 import duckdb
+import sptlibs.assets.duckdb_masterdata_dll as duckdb_masterdata_dll
 import sptlibs.file_download.duckdb_setup as duckdb_setup
 
 class GenDuckdb:
@@ -24,8 +25,8 @@ class GenDuckdb:
         self.db_name = 'file_downloads.duckdb'
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_setup.s4_fd_funcloc_ddl, 
-                            duckdb_setup.s4_fd_equi_ddl, 
+        self.ddl_stmts = [duckdb_masterdata_dll.s4_funcloc_masterdata_ddl,
+                            duckdb_masterdata_dll.s4_equipment_masterdata_ddl,
                             duckdb_setup.s4_fd_classes_ddl, 
                             duckdb_setup.s4_fd_char_values_ddl,
                             duckdb_setup.vw_fd_decimal_values_ddl,
@@ -36,10 +37,10 @@ class GenDuckdb:
         self.copy_tables_stmts = []
 
     def add_funcloc_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_fd_funcloc_insert(sqlite_path=self.sqlite_src, funcloc_tablename=sqlite_table_name))
+        self.insert_from_stmts.append(duckdb_setup.s4_funcloc_masterdata_insert(sqlite_path=self.sqlite_src, funcloc_tablename=sqlite_table_name))
 
     def add_equi_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_fd_equi_insert(sqlite_path=self.sqlite_src, equi_tablename=sqlite_table_name))
+        self.insert_from_stmts.append(duckdb_setup.s4_equipment_masterdata_insert(sqlite_path=self.sqlite_src, equi_tablename=sqlite_table_name))
 
     def add_classfloc_table(self, *, sqlite_table_name: str) -> None:
         self.insert_from_stmts.append(duckdb_setup.s4_fd_classfloc_insert(sqlite_path=self.sqlite_src, class_tablename=sqlite_table_name))

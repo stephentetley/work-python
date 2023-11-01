@@ -34,6 +34,7 @@ s4_equipment_master_ddl = """
         PRIMARY KEY(equi_id)
     );
 """
+
 aib_equipment_master_ddl = """
     CREATE OR REPLACE TABLE aib_equipment_master(
         pli_num TEXT NOT NULL,
@@ -99,7 +100,7 @@ aib_worklist_ddl = """
     );
     """
 
-def s4_master_data_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
+def s4_equipment_master_insert(*, sqlite_path: str, sqlite_table: str) -> str: 
     return f"""
     INSERT INTO s4_equipment_master BY NAME
     SELECT 

@@ -15,80 +15,6 @@ limitations under the License.
 
 """
 
-s4_fd_funcloc_ddl = """
-    CREATE OR REPLACE TABLE s4_fd_funcloc(
-        functional_location TEXT NOT NULL,
-        company_code INTEGER,
-        construction_month INTEGER,
-        construction_year INTEGER,
-        controlling_area INTEGER,
-        cost_center INTEGER,
-        description TEXT,
-        user_status TEXT,
-        category TEXT,
-        installation_allowed BOOLEAN,
-        location TEXT,
-        main_work_center TEXT,
-        maintenance_plant INTEGER, 
-        masked_functional_location TEXT,
-        object_type TEXT,
-        object_number TEXT,
-        planning_plant INTEGER,
-        plant_section TEXT,
-        plant_for_work_center INTEGER,
-        display_position INTEGER,
-        startup_date DATE,
-        status TEXT,
-        status_profile TEXT,
-        status_of_an_object TEXT,
-        structure_indicator TEXT,
-        superior_fl_for_cr_processing TEXT,
-        superior_funct_loc TEXT,
-        address_ref INTEGER,
-        PRIMARY KEY(functional_location)
-    );
-"""
-
-
-s4_fd_equi_ddl = """
-    CREATE OR REPLACE TABLE s4_fd_equi(
-        equi_id TEXT NOT NULL,
-        catalog_profile TEXT,
-        company_code INTEGER,
-        construction_month INTEGER,
-        construction_year INTEGER,
-        controlling_area INTEGER,
-        cost_center INTEGER,
-        data_origin TEXT,
-        description TEXT,
-        display_lines_for_user_status TEXT,
-        functional_location TEXT, 
-        gross_weight DECIMAL,
-        location TEXT,
-        main_work_center TEXT,
-        maintenance_plant INTEGER,
-        serial_number TEXT,
-        manufact_part_number TEXT,
-        manufacturer TEXT,
-        model_number TEXT,
-        object_type TEXT,
-        planning_plant INTEGER,
-        plant_section TEXT,
-        plant_for_work_center INTEGER,
-        display_position INTEGER,
-        startup_date DATE,
-        status TEXT,
-        status_profile TEXT,
-        status_of_an_object TEXT,
-        superord_id TEXT,
-        technical_ident_number TEXT,
-        unit_of_weight TEXT,
-        valid_from DATE,
-        address_ref INTEGER,
-        PRIMARY KEY(equi_id)
-    );
-"""
-
 s4_fd_classes_ddl = """
     -- Same table for classequi and classfloc
     CREATE OR REPLACE TABLE s4_fd_classes(
@@ -166,9 +92,9 @@ vw_fd_text_values_ddl = """
     WHERE sccd.char_type = 'CHAR';
     """
 
-def s4_fd_funcloc_insert(*, sqlite_path: str, funcloc_tablename: str) -> str: 
+def s4_funcloc_masterdata_insert(*, sqlite_path: str, funcloc_tablename: str) -> str: 
     return f"""
-    INSERT INTO s4_fd_funcloc BY NAME
+    INSERT INTO s4_funcloc_masterdata BY NAME
     SELECT 
         f.funcloc AS functional_location,
         f.bukrsfloc AS company_code,
@@ -201,9 +127,9 @@ def s4_fd_funcloc_insert(*, sqlite_path: str, funcloc_tablename: str) -> str:
     FROM sqlite_scan('{sqlite_path}', '{funcloc_tablename}') f;
     """
 
-def s4_fd_equi_insert(*, sqlite_path: str, equi_tablename: str) -> str: 
+def s4_equipment_masterdata_insert(*, sqlite_path: str, equi_tablename: str) -> str: 
     return f"""
-    INSERT INTO s4_fd_equi BY NAME
+    INSERT INTO s4_equipment_masterdata BY NAME
     SELECT 
         e.equi AS equi_id,
         e.rbnr_eeqz AS catalog_profile,
