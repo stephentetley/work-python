@@ -11,6 +11,6 @@ gensqlite.add_ih08_with_aib_reference(XlsxSource('g:/work/2023/telemetry/ih08-ne
 sqlite_path = gensqlite.gen_sqlite()
 
 genduckdb = GenDuckdb(sqlite_path=sqlite_path, output_directory=output_directory)
-genduckdb.add_s4_equipment_master_insert(sqlite_table='netwtl')
+genduckdb.add_s4_equipment_master_insert(sqlite_table='netwtl', has_aib_characteritics=True)
 genduckdb.gen_duckdb()
 

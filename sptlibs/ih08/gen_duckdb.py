@@ -28,8 +28,10 @@ class GenDuckdb:
         self.ddl_stmts = [duckdb_masterdata_dll.s4_equipment_masterdata_ddl]
         self.insert_from_stmts = []
 
-    def add_s4_equipment_master_insert(self, *, sqlite_table: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_equipment_master_insert(sqlite_path=self.sqlite_src, equi_tablename=sqlite_table))
+    def add_s4_equipment_master_insert(self, *, sqlite_table: str, has_aib_characteritics: bool) -> None:
+        self.insert_from_stmts.append(duckdb_setup.s4_equipment_master_insert(sqlite_path=self.sqlite_src, 
+                                                                                equi_tablename=sqlite_table,
+                                                                                has_aib_characteritics=has_aib_characteritics))
 
 
     def gen_duckdb(self) -> str:

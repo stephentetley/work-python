@@ -16,7 +16,11 @@ limitations under the License.
 """
 
 
-def s4_equipment_master_insert(*, sqlite_path: str, equi_tablename: str) -> str: 
+def s4_equipment_master_insert(*, sqlite_path: str, equi_tablename: str, has_aib_characteritics: bool) -> str: 
+    if has_aib_characteritics:
+        where_clause = 'WHERE e.s_4_aib_reference IS NOT NULL'
+    else:
+        where_clause = ''
     return f"""
     INSERT INTO s4_equipment_masterdata BY NAME
     SELECT 
@@ -54,5 +58,5 @@ def s4_equipment_master_insert(*, sqlite_path: str, equi_tablename: str) -> str:
         e.valid_from AS valid_from,
         e.address_number AS address_ref
     FROM sqlite_scan('{sqlite_path}', '{equi_tablename}') e
-    WHERE e.s_4_aib_reference IS NOT NULL;
+    {where_clause};
     """
