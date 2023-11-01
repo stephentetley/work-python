@@ -53,7 +53,7 @@ def s4_characteristic_defs_insert(*, sqlite_path: str) -> str:
         cc.char_description AS char_description,
         cc.char_type AS char_type,
         cc.char_length AS char_length,
-        cc.char_precision AS char_precision
+        IF(cc.char_precision IS NULL, 0, cc.char_precision) AS char_precision
     FROM sqlite_scan('{sqlite_path}', 'classlist_characteristics') cc;
     """
 

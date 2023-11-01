@@ -24,7 +24,14 @@ class GenDuckdb:
         self.db_name = 'file_downloads.duckdb'
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_setup.s4_fd_funcloc_ddl, duckdb_setup.s4_fd_equi_ddl, duckdb_setup.s4_fd_classes_ddl, duckdb_setup.s4_fd_char_values_ddl]
+        self.ddl_stmts = [duckdb_setup.s4_fd_funcloc_ddl, 
+                            duckdb_setup.s4_fd_equi_ddl, 
+                            duckdb_setup.s4_fd_classes_ddl, 
+                            duckdb_setup.s4_fd_char_values_ddl,
+                            duckdb_setup.vw_fd_decimal_values_ddl,
+                            duckdb_setup.vw_fd_integer_values_ddl,
+                            duckdb_setup.vw_fd_text_values_ddl
+                            ]
         self.insert_from_stmts = []
         self.copy_tables_stmts = []
 

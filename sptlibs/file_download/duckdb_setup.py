@@ -112,14 +112,68 @@ s4_fd_char_values_ddl = """
     );
 """
 
+vw_fd_decimal_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_decimal_values AS
+    SELECT 
+        sfcv.entity_id AS entity_id,
+        sfcv.class_type AS class_type,
+        sfe.object_type AS object_type,
+        sccd.char_precision AS decimal_precision,
+        sfc.class_name AS class_name,
+        sfcv.char_name AS char_name,
+        sfcv.int_counter_value AS int_counter_value,
+        CAST(sfcv.value_from AS DECIMAL(26,6)) AS decimal_value,
+    FROM s4_fd_char_values sfcv         -- base table
+    JOIN s4_fd_equi sfe ON sfe.equi_id = sfcv.entity_id
+    JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
+    JOIN s4_classlist_characteristic_defs sccd ON sccd.char_name = sfcv.char_name AND sccd.class_name = sfc.class_name AND sccd.class_type = sfcv.class_type
+    WHERE sccd.char_type = 'NUM'
+    AND sccd.char_precision > 0;
+    """
+
+vw_fd_integer_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_integer_values AS
+    SELECT 
+        sfcv.entity_id AS entity_id,
+        sfcv.class_type AS class_type,
+        sfe.object_type AS object_type,
+        sfc.class_name AS class_name,
+        sfcv.char_name AS char_name,
+        sfcv.int_counter_value AS int_counter_value,
+        CAST(sfcv.value_from AS INTEGER) AS integer_value,
+    FROM s4_fd_char_values sfcv         -- base table
+    JOIN s4_fd_equi sfe ON sfe.equi_id = sfcv.entity_id
+    JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
+    JOIN s4_classlist_characteristic_defs sccd ON sccd.char_name = sfcv.char_name AND sccd.class_name = sfc.class_name AND sccd.class_type = sfcv.class_type
+    WHERE sccd.char_type = 'NUM'
+    AND sccd.char_precision = 0;
+    """
+
+vw_fd_text_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_text_values AS
+    SELECT 
+        sfcv.entity_id AS entity_id,
+        sfcv.class_type AS class_type,
+        sfe.object_type AS object_type,
+        sfc.class_name AS class_name,
+        sfcv.char_name AS char_name,
+        sfcv.int_counter_value AS int_counter_value,
+        sfcv.char_text_value AS text_value,
+    FROM s4_fd_char_values sfcv         -- base table
+    JOIN s4_fd_equi sfe ON sfe.equi_id = sfcv.entity_id
+    JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
+    JOIN s4_classlist_characteristic_defs sccd ON sccd.char_name = sfcv.char_name AND sccd.class_name = sfc.class_name AND sccd.class_type = sfcv.class_type
+    WHERE sccd.char_type = 'CHAR';
+    """
+
 def s4_fd_funcloc_insert(*, sqlite_path: str, funcloc_tablename: str) -> str: 
     return f"""
     INSERT INTO s4_fd_funcloc BY NAME
     SELECT 
         f.funcloc AS functional_location,
         f.bukrsfloc AS company_code,
-        IF(f.baumm IS NULL OR f.baumm = '', NULL, CAST(f.baumm AS INTEGER)) AS construction_month,
-        IF(f.baujj IS NULL OR f.baujj = '', NULL, CAST(f.baujj AS INTEGER)) AS construction_year,
+        TRY_CAST(f.baumm AS INTEGER) AS construction_month,
+        TRY_CAST(f.baujj AS INTEGER) AS construction_year,
         f.kokr_floc AS controlling_area,
         f.kost_floc AS cost_center,
         f.txtmi AS description,
@@ -135,8 +189,8 @@ def s4_fd_funcloc_insert(*, sqlite_path: str, funcloc_tablename: str) -> str:
         f.plnt_floc AS planning_plant,
         f.beber_fl AS plant_section,
         f.wergwfloc AS plant_for_work_center,
-        IF(f.posnr IS NULL OR f.posnr = '', NULL, CAST(f.posnr AS INTEGER)) AS display_position,
-        if(f.inbdt IS NOT NULL, strptime(f.inbdt, '%d.%m.%Y'), NULL) AS startup_date,
+        TRY_CAST(f.posnr AS INTEGER) AS display_position,
+        IF(f.inbdt IS NOT NULL, strptime(f.inbdt, '%d.%m.%Y'), NULL) AS startup_date,
         f.stattext AS status,
         f.stsm_floc AS status_profile,
         f.ustw_floc AS status_of_an_object,
