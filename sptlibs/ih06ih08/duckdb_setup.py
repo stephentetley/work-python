@@ -15,6 +15,41 @@ limitations under the License.
 
 """
 
+def s4_funcloc_master_insert(*, sqlite_path: str, floc_tablename: str, has_aib_characteritics: bool) -> str: 
+    if has_aib_characteritics:
+        where_clause = 'WHERE f.s_4_aib_reference IS NOT NULL'
+    else:
+        where_clause = ''
+    return f"""
+    INSERT INTO s4_funcloc_masterdata BY NAME
+    SELECT 
+        f.functional_location AS functional_location,
+        f.address_number AS address_ref,
+        f.functloccategory AS category,
+        f.company_code AS company_code,
+        f.construction_month AS construction_month,
+        f.construction_year AS construction_year,
+        f.controlling_area AS controlling_area,
+        f.cost_center AS cost_center,
+        f.description_of_functional_location AS description,
+        f.position_in_object AS display_position,
+        if(f.installation_allowed = 'X', True, False) AS installation_allowed,
+        f.location AS location,
+        f.maintenance_plant AS maintenance_plant,
+        f.main_work_center AS main_work_center,
+        f.object_type AS object_type,
+        f.object_number AS object_number,
+        f.planning_plant AS planning_plant,
+        f.plant_section AS plant_section,
+        f.start_up_date AS startup_date,
+        f.structure_indicator AS structure_indicator,
+        f.superior_functional_location AS superior_funct_loc,
+        f.system_status AS system_status,
+        f.user_status AS user_status,
+        f.work_center AS work_center,
+    FROM sqlite_scan('{sqlite_path}', '{floc_tablename}') f
+    {where_clause};
+    """
 
 def s4_equipment_master_insert(*, sqlite_path: str, equi_tablename: str, has_aib_characteritics: bool) -> str: 
     if has_aib_characteritics:

@@ -36,9 +36,9 @@ s4_funcloc_masterdata_ddl = """
         planning_plant INTEGER,
         plant_section TEXT,
         startup_date DATE,
-        status TEXT,
         structure_indicator TEXT,
         superior_funct_loc TEXT,
+        system_status TEXT,
         user_status TEXT,
         work_center TEXT,
         PRIMARY KEY(functional_location)

@@ -25,13 +25,15 @@ from sptlibs.xlsx_source import XlsxSource
     
 class GenSqlite:
     def __init__(self, *, output_directory: str) -> None:
-        self.db_name = 'ih08.sqlite3'
+        self.db_name = 'ih06ih08.sqlite3'
         self.output_dir = output_directory
         self.xlsx_imports = []
 
-    def add_ih08_with_aib_reference(self, xlsx: XlsxSource, table_name: str) -> None:
+    def add_ih06_export(self, xlsx: XlsxSource, table_name: str) -> None:
         self.xlsx_imports.append((xlsx, table_name))
 
+    def add_ih08_export(self, xlsx: XlsxSource, table_name: str) -> None:
+        self.xlsx_imports.append((xlsx, table_name))
 
 
     def gen_sqlite(self) -> str:
