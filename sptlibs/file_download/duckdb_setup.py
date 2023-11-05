@@ -38,55 +38,55 @@ s4_fd_char_values_ddl = """
     );
 """
 
-vw_fd_decimal_values_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_decimal_values AS
+vw_fd_equi_decimal_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_equi_decimal_values AS
     SELECT 
         sfcv.entity_id AS entity_id,
         sfcv.class_type AS class_type,
-        sfe.object_type AS object_type,
+        sem.object_type AS object_type,
         sccd.char_precision AS decimal_precision,
         sfc.class_name AS class_name,
         sfcv.char_name AS char_name,
         sfcv.int_counter_value AS int_counter_value,
         CAST(sfcv.value_from AS DECIMAL(26,6)) AS decimal_value,
-    FROM s4_fd_char_values sfcv         -- base table
-    JOIN s4_fd_equi sfe ON sfe.equi_id = sfcv.entity_id
+    FROM s4_fd_char_values sfcv
+    JOIN s4_equipment_masterdata sem ON sem.equi_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
     JOIN s4_classlist_characteristic_defs sccd ON sccd.char_name = sfcv.char_name AND sccd.class_name = sfc.class_name AND sccd.class_type = sfcv.class_type
     WHERE sccd.char_type = 'NUM'
     AND sccd.char_precision > 0;
     """
 
-vw_fd_integer_values_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_integer_values AS
+vw_fd_equi_integer_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_equi_integer_values AS
     SELECT 
         sfcv.entity_id AS entity_id,
         sfcv.class_type AS class_type,
-        sfe.object_type AS object_type,
+        sem.object_type AS object_type,
         sfc.class_name AS class_name,
         sfcv.char_name AS char_name,
         sfcv.int_counter_value AS int_counter_value,
         CAST(sfcv.value_from AS INTEGER) AS integer_value,
     FROM s4_fd_char_values sfcv         -- base table
-    JOIN s4_fd_equi sfe ON sfe.equi_id = sfcv.entity_id
+    JOIN s4_equipment_masterdata sem ON sem.equi_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
     JOIN s4_classlist_characteristic_defs sccd ON sccd.char_name = sfcv.char_name AND sccd.class_name = sfc.class_name AND sccd.class_type = sfcv.class_type
     WHERE sccd.char_type = 'NUM'
     AND sccd.char_precision = 0;
     """
 
-vw_fd_text_values_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_text_values AS
+vw_fd_equi_text_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_equi_text_values AS
     SELECT 
         sfcv.entity_id AS entity_id,
         sfcv.class_type AS class_type,
-        sfe.object_type AS object_type,
+        sem.object_type AS object_type,
         sfc.class_name AS class_name,
         sfcv.char_name AS char_name,
         sfcv.int_counter_value AS int_counter_value,
         sfcv.char_text_value AS text_value,
     FROM s4_fd_char_values sfcv         -- base table
-    JOIN s4_fd_equi sfe ON sfe.equi_id = sfcv.entity_id
+    JOIN s4_equipment_masterdata sem ON sem.equi_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
     JOIN s4_classlist_characteristic_defs sccd ON sccd.char_name = sfcv.char_name AND sccd.class_name = sfc.class_name AND sccd.class_type = sfcv.class_type
     WHERE sccd.char_type = 'CHAR';
@@ -97,6 +97,7 @@ def s4_funcloc_masterdata_insert(*, sqlite_path: str, funcloc_tablename: str) ->
     INSERT INTO s4_funcloc_masterdata BY NAME
     SELECT 
         f.funcloc AS functional_location,
+        f.adrnr AS address_ref,
         f.bukrsfloc AS company_code,
         TRY_CAST(f.baumm AS INTEGER) AS construction_month,
         TRY_CAST(f.baujj AS INTEGER) AS construction_year,
@@ -109,21 +110,14 @@ def s4_funcloc_masterdata_insert(*, sqlite_path: str, funcloc_tablename: str) ->
         f.stor_floc AS location,
         f.gewrkfloc AS main_work_center,
         f.swerk_fl AS maintenance_plant,
-        f.floc_ref AS masked_functional_location,
         f.eqart AS object_type,
         f.jobjn_fl AS object_number,
         f.plnt_floc AS planning_plant,
         f.beber_fl AS plant_section,
-        f.wergwfloc AS plant_for_work_center,
         TRY_CAST(f.posnr AS INTEGER) AS display_position,
         IF(f.inbdt IS NOT NULL, strptime(f.inbdt, '%d.%m.%Y'), NULL) AS startup_date,
-        f.stattext AS status,
-        f.stsm_floc AS status_profile,
-        f.ustw_floc AS status_of_an_object,
         f.tplkz_flc AS structure_indicator,
-        f.tplma1 AS superior_fl_for_cr_processing,
         f.tplma AS superior_funct_loc,
-        f.adrnr AS address_ref,
     FROM sqlite_scan('{sqlite_path}', '{funcloc_tablename}') f;
     """
 
@@ -138,9 +132,7 @@ def s4_equipment_masterdata_insert(*, sqlite_path: str, equi_tablename: str) -> 
         e.baujj AS construction_year,
         e.kokr_eilo AS controlling_area,
         e.kost_eilo AS cost_center,
-        e.gewrki AS data_origin,
         e.txtmi AS description,
-        e.usta_equi AS display_lines_for_user_status,
         e.tpln_eilo AS functional_location,
         e.brgew AS gross_weight,
         e.stor_eilo AS location,
@@ -153,12 +145,8 @@ def s4_equipment_masterdata_insert(*, sqlite_path: str, equi_tablename: str) -> 
         e.eqart_equ AS object_type,
         e.ppla_eeqz AS planning_plant,
         e.bebe_eilo AS plant_section,
-        e.wergw_eqi AS plant_for_work_center,
         e.heqn_eeqz AS display_position,
         IF(e.inbdt IS NOT NULL, strptime(e.data_eeqz, '%d.%m.%Y'), NULL) AS startup_date,
-        e.stattext AS status,
-        e.stsm_equi AS status_profile,
-        e.ustw_equi AS status_of_an_object,
         e.hequ_eeqz AS  superord_id,
         e.tidn_eeqz AS technical_ident_number,
         e.gewei AS unit_of_weight,

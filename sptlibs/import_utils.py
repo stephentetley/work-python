@@ -22,7 +22,7 @@ from typing import Callable
 from sptlibs.xlsx_source import XlsxSource
 
 
-def import_sheet(source: XlsxSource, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+def import_sheet(source: XlsxSource, *, table_name: str, con: sqlite3.Connection, if_exists: str, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
     xlsx = pd.ExcelFile(source.path)
     df_raw = pd.read_excel(xlsx, source.sheet)
@@ -31,8 +31,7 @@ def import_sheet(source: XlsxSource, *, table_name: str, con: sqlite3.Connection
     else:
         df_clean = df_raw
     df_renamed = normalize_df_column_names(df_clean)
-    con.execute(f'DROP TABLE IF EXISTS {table_name};')
-    df_renamed.to_sql(table_name, con)
+    df_renamed.to_sql(name=table_name, if_exists=if_exists, con=con)
     con.commit()
 
 def normalize_df_column_names(df):

@@ -29,30 +29,19 @@ class GenDuckdb:
                             duckdb_masterdata_dll.s4_equipment_masterdata_ddl,
                             duckdb_setup.s4_fd_classes_ddl, 
                             duckdb_setup.s4_fd_char_values_ddl,
-                            duckdb_setup.vw_fd_decimal_values_ddl,
-                            duckdb_setup.vw_fd_integer_values_ddl,
-                            duckdb_setup.vw_fd_text_values_ddl
+                            duckdb_setup.vw_fd_equi_decimal_values_ddl,
+                            duckdb_setup.vw_fd_equi_integer_values_ddl,
+                            duckdb_setup.vw_fd_equi_text_values_ddl
                             ]
-        self.insert_from_stmts = []
+        self.insert_from_stmts = [duckdb_setup.s4_funcloc_masterdata_insert(sqlite_path=sqlite_path, funcloc_tablename='funcloc_floc1'),
+                                  duckdb_setup.s4_fd_classfloc_insert(sqlite_path=sqlite_path, class_tablename='classfloc_classfloc1'),
+                                  duckdb_setup.s4_fd_char_valuafloc_insert(sqlite_path=sqlite_path, valua_tablename='valuafloc_valuafloc1'),
+                                  duckdb_setup.s4_equipment_masterdata_insert(sqlite_path=sqlite_path, equi_tablename='equi_equi1'),
+                                  duckdb_setup.s4_fd_classequi_insert(sqlite_path=sqlite_path, class_tablename='classequi_classequi1'),
+                                  duckdb_setup.s4_fd_char_valuaequi_insert(sqlite_path=sqlite_path, valua_tablename='valuaequi_valuaequi1')
+                                  ]
         self.copy_tables_stmts = []
 
-    def add_funcloc_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_funcloc_masterdata_insert(sqlite_path=self.sqlite_src, funcloc_tablename=sqlite_table_name))
-
-    def add_equi_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_equipment_masterdata_insert(sqlite_path=self.sqlite_src, equi_tablename=sqlite_table_name))
-
-    def add_classfloc_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_fd_classfloc_insert(sqlite_path=self.sqlite_src, class_tablename=sqlite_table_name))
-
-    def add_valuafloc_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuafloc_insert(sqlite_path=self.sqlite_src, valua_tablename=sqlite_table_name))
-
-    def add_classequi_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_fd_classequi_insert(sqlite_path=self.sqlite_src, class_tablename=sqlite_table_name))
-
-    def add_valuaequi_table(self, *, sqlite_table_name: str) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuaequi_insert(sqlite_path=self.sqlite_src, valua_tablename=sqlite_table_name))
 
     def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
         self.copy_tables_stmts.append(duckdb_setup.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))

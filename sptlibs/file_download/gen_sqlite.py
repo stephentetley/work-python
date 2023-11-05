@@ -29,19 +29,25 @@ class GenSqlite:
         self.output_dir = output_directory
         self.imports = []
 
-    def add_file_download(self, path: str, *, table_name: str) -> None:
-        self.imports.append((path, table_name))
+    def add_file_download(self, *, path: str) -> None:
+        self.imports.append((path))
 
 
     def gen_sqlite(self) -> str:
         sqlite_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
+        tables = {}
         con = sqlite3.connect(sqlite_outpath)
-        for (path, table_name) in self.imports:
+        for path in self.imports:
             try:
                 dfp = file_download_parser.parse_file_download(path)
                 if dfp is None:
                     print(f'Parsing failed for {path}')
                 else: 
+                    table_name = import_utils.normalize_name('%s_%s' % (dfp['entity_type'], dfp['variant']))
+                    if not table_name in tables:
+                        drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
+                        con.execute(drop_table_sql)
+                        tables[table_name] = True
                     self.__gen_sqlite1(dfp, table_name=table_name, con=con, df_trafo=None)
             except Exception as exn:
                 print(exn)
@@ -52,7 +58,6 @@ class GenSqlite:
 
 
     def __gen_sqlite1(self, dict, *, table_name: str, con: sqlite3.Connection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
-        '''Note drops the table `table_name` before filling it'''
         if dict is not None:
             df_raw = dict['dataframe']
             if df_trafo is not None:
@@ -60,7 +65,6 @@ class GenSqlite:
             else:
                 df_clean = df_raw
             df_renamed = import_utils.normalize_df_column_names(df_clean)
-            con.execute(f'DROP TABLE IF EXISTS {table_name};')
             df_renamed.to_sql(table_name, con)
             con.commit()
         else:

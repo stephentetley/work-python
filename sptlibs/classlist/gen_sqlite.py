@@ -72,8 +72,7 @@ class GenSqlite:
     def __gen_sqlite1(self, df: pd.DataFrame, *, table_name: str, con: sqlite3.Connection) -> None:
         '''Note drops the table `table_name` before filling it'''
         if df is not None:
-            con.execute(f'DROP TABLE IF EXISTS {table_name};')
-            df.to_sql(name=table_name, con=con)
+            df.to_sql(name=table_name, if_exists='replace', con=con)
             con.commit()
         else:
             print(f'__gen_sqlite1 - dataframe is None for {table_name}')

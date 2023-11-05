@@ -36,6 +36,7 @@ def _tidy_row(row: list[str]):
 def parse_file_download(path: str) -> dict:
     try: 
         re_entity_type = re.compile(r"\* Entity Type: (?P<entity_type>\w+)")
+        re_variant = re.compile(r"\* Variant: (?P<variant>\w+)")
         re_columns = re.compile(r"\*\w+")
         re_tab = re.compile(r"\t{1}")
         payload = False
@@ -44,9 +45,12 @@ def parse_file_download(path: str) -> dict:
             for line in infile.readlines():
                 if payload == False:
                     find_entity_type = re_entity_type.search(line)
+                    find_variant = re_variant.search(line)
                     column_prefix = re_columns.search(line)
                     if find_entity_type:
                         entity_type = find_entity_type.group('entity_type')
+                    if find_variant:
+                        variant = find_variant.group('variant')                        
                     if column_prefix:
                         payload = True
                         columns = re_tab.split(line)
@@ -58,6 +62,7 @@ def parse_file_download(path: str) -> dict:
                         rows.append(row)
         ans = {}
         ans['entity_type'] = entity_type
+        ans['variant'] = variant
         ans['dataframe'] = pd.DataFrame(rows, columns = columns)
         return ans
     except Exception:
