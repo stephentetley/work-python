@@ -137,7 +137,9 @@ def s4_equipment_masterdata_insert(*, sqlite_path: str) -> str:
     INSERT INTO s4_equipment_masterdata BY NAME
     SELECT 
         e.equi AS equi_id,
+        e.adrnr AS address_ref,
         e.rbnr_eeqz AS catalog_profile,
+        e.eqtyp AS category,
         e.bukr_eilo AS company_code,
         e.baumm_eqi AS construction_month,
         e.baujj AS construction_year,
@@ -158,11 +160,13 @@ def s4_equipment_masterdata_insert(*, sqlite_path: str) -> str:
         e.bebe_eilo AS plant_section,
         e.heqn_eeqz AS display_position,
         IF(e.inbdt IS NOT NULL, strptime(e.data_eeqz, '%d.%m.%Y'), NULL) AS startup_date,
-        e.hequ_eeqz AS  superord_id,
+        e.hequ_eeqz AS superord_id,
+        e.stattext AS system_status,
         e.tidn_eeqz AS technical_ident_number,
         e.gewei AS unit_of_weight,
+        e.usta_equi AS user_status,
         IF(e.data_eeqz IS NOT NULL, strptime(e.data_eeqz, '%d.%m.%Y'), NULL) AS valid_from,
-        e.adrnr AS address_ref
+        e.arbp_eilo AS work_center,
     FROM sqlite_scan('{sqlite_path}', 'equi_equi1') e;
     """
 
