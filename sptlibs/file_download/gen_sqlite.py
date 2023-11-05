@@ -16,13 +16,15 @@ limitations under the License.
 """
 
 import os
+import glob
 import sqlite3 as sqlite3
 import pandas as pd
 from typing import Callable
 import sptlibs.import_utils as import_utils
 import sptlibs.file_download.file_download_parser as file_download_parser
 
-    
+# TODO - store sorce file names in the duckdb
+
 class GenSqlite:
     def __init__(self, *, output_directory: str) -> None:
         self.db_name = 'file_download_imports.sqlite3'
@@ -31,6 +33,11 @@ class GenSqlite:
 
     def add_file_download(self, *, path: str) -> None:
         self.imports.append((path))
+
+    def add_file_downloads_in_directory(self, *, path: str, glob_pattern: str) -> None:
+        globlist = glob.glob(glob_pattern, root_dir=path, recursive=False)
+        for file_name in globlist: 
+            self.imports.append(os.path.join(path, file_name))
 
 
     def gen_sqlite(self) -> str:
