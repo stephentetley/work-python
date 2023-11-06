@@ -17,16 +17,16 @@ limitations under the License.
 
 import os
 import duckdb
-import sptlibs.assets.duckdb_masterdata_dll as duckdb_masterdata_dll
-import sptlibs.ih06ih08.duckdb_setup as duckdb_setup
+import sptlibs.assets.duckdb_masterdata_ddl as duckdb_masterdata_ddl
+import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
 
 class GenDuckdb:
     def __init__(self, *, sqlite_path: str, output_directory: str) -> None:
         self.db_name = 'ih06_ih08_imports.duckdb'
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_masterdata_dll.s4_funcloc_masterdata_ddl,
-                          duckdb_masterdata_dll.s4_equipment_masterdata_ddl                          
+        self.ddl_stmts = [duckdb_masterdata_ddl.s4_funcloc_masterdata_ddl,
+                          duckdb_masterdata_ddl.s4_equipment_masterdata_ddl                          
                           ]
         self.insert_from_stmts = []
 

@@ -1,7 +1,7 @@
 import pandas as pd
 from sptlibs.xlsx_source import XlsxSource
-from sptlibs.ih06ih08.gen_sqlite import GenSqlite
-from sptlibs.ih06ih08.gen_duckdb import GenDuckdb
+from sptlibs.ih06_ih08.gen_sqlite import GenSqlite
+from sptlibs.ih06_ih08.gen_duckdb import GenDuckdb
 
 output_directory = 'g:/work/2023/telemetry'
 

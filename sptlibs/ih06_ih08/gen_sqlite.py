@@ -17,8 +17,6 @@ limitations under the License.
 
 import os
 import sqlite3 as sqlite3
-import pandas as pd
-from typing import Callable
 import sptlibs.import_utils as import_utils
 from sptlibs.xlsx_source import XlsxSource
 
