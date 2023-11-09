@@ -41,6 +41,14 @@ s4_enum_defs_ddl = """
     );
     """
 
+vw_s4_class_defs_ddl = """
+    CREATE OR REPLACE VIEW vw_s4_class_defs AS
+    SELECT DISTINCT
+        scd.class_type,
+        scd.class_name,
+        scd.class_description 
+    FROM s4_characteristic_defs scd;
+    """
 
 def s4_characteristic_defs_insert(*, sqlite_path: str) -> str: 
     return f"""

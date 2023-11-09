@@ -24,7 +24,9 @@ class GenDuckdb:
         self.db_name = 'classlists.duckdb'
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_setup.s4_characteristic_defs_ddl, duckdb_setup.s4_enum_defs_ddl]
+        self.ddl_stmts = [duckdb_setup.s4_characteristic_defs_ddl, 
+                            duckdb_setup.s4_enum_defs_ddl, 
+                            duckdb_setup.vw_s4_class_defs_ddl]
         self.insert_from_stmts = [duckdb_setup.s4_characteristic_defs_insert(sqlite_path=self.sqlite_src),
                                     duckdb_setup.s4_enum_defs_insert(sqlite_path=self.sqlite_src)]
 

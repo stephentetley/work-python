@@ -35,9 +35,15 @@ class GenDuckdb:
                             ]
         self.insert_from_stmts = []
         self.copy_tables_stmts = []
-        self.create_view_stmts = [duckdb_setup.vw_fd_equi_decimal_values_ddl,
-                                    duckdb_setup.vw_fd_equi_integer_values_ddl,
-                                    duckdb_setup.vw_fd_equi_text_values_ddl
+        self.create_view_stmts = [classlist_duckdb_setup.vw_s4_class_defs_ddl,
+                                    duckdb_setup.vw_entity_worklist_ddl,
+                                    duckdb_setup.vw_get_classes_list_ddl,
+                                    duckdb_setup.vw_get_class_name_ddl,
+                                    duckdb_setup.vw_fd_decimal_values_ddl,
+                                    duckdb_setup.vw_fd_integer_values_ddl,
+                                    duckdb_setup.vw_fd_text_values_ddl, 
+                                    duckdb_setup.vw_fd_all_values_json_ddl,
+                                    duckdb_setup.vw_fd_class_chars_json_ddl
                                     ]
 
     def __add_insert_stmts(self, tables: list[str]) -> None:

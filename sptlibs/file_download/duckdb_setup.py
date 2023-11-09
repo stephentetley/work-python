@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
+# TODO
+# This module contains definitions e.g. `vw_get_class_name_ddl` that should be common to ih06 / ih08.
 
 s4_fd_classes_ddl = """
     -- Same table for classequi and classfloc
@@ -38,60 +40,146 @@ s4_fd_char_values_ddl = """
     );
 """
 
-vw_fd_equi_decimal_values_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_equi_decimal_values AS
+vw_entity_worklist_ddl = """
+    CREATE OR REPLACE VIEW vw_entity_worklist AS
+    SELECT 
+        sem.equi_id AS entity_id,
+        sem.object_type AS object_type,
+        'equi' AS data_source
+    FROM s4_equipment_masterdata sem
+    UNION 
+    SELECT 
+        sfm.functional_location AS entity_id,
+        sfm.object_type AS object_type,
+        'floc' AS data_source
+    FROM main.s4_funcloc_masterdata sfm;
+    """
+
+vw_fd_decimal_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_decimal_values AS
     SELECT 
         sfcv.entity_id AS entity_id,
         sfcv.class_type AS class_type,
-        sem.object_type AS object_type,
+        ew.object_type AS object_type,
         scd.char_precision AS decimal_precision,
         sfc.class_name AS class_name,
         sfcv.char_name AS char_name,
         sfcv.int_counter_value AS int_counter_value,
         CAST(sfcv.value_from AS DECIMAL(26,6)) AS decimal_value,
     FROM s4_fd_char_values sfcv
-    JOIN s4_equipment_masterdata sem ON sem.equi_id = sfcv.entity_id
+    JOIN vw_entity_worklist ew ON ew.entity_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
     JOIN s4_characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
     WHERE scd.char_type = 'NUM'
     AND scd.char_precision > 0;
     """
 
-vw_fd_equi_integer_values_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_equi_integer_values AS
+vw_fd_integer_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_integer_values AS
     SELECT 
         sfcv.entity_id AS entity_id,
         sfcv.class_type AS class_type,
-        sem.object_type AS object_type,
+        ew.object_type AS object_type,
         sfc.class_name AS class_name,
         sfcv.char_name AS char_name,
         sfcv.int_counter_value AS int_counter_value,
         CAST(sfcv.value_from AS INTEGER) AS integer_value,
-    FROM s4_fd_char_values sfcv         -- base table
-    JOIN s4_equipment_masterdata sem ON sem.equi_id = sfcv.entity_id
+    FROM s4_fd_char_values sfcv
+    JOIN vw_entity_worklist ew ON ew.entity_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
     JOIN s4_characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
     WHERE scd.char_type = 'NUM'
     AND scd.char_precision = 0;
     """
 
-vw_fd_equi_text_values_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_equi_text_values AS
+vw_fd_text_values_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_text_values AS
     SELECT 
         sfcv.entity_id AS entity_id,
         sfcv.class_type AS class_type,
-        sem.object_type AS object_type,
+        ew.object_type AS object_type,
         sfc.class_name AS class_name,
         sfcv.char_name AS char_name,
         sfcv.int_counter_value AS int_counter_value,
         sfcv.char_text_value AS text_value,
-    FROM s4_fd_char_values sfcv         -- base table
-    JOIN s4_equipment_masterdata sem ON sem.equi_id = sfcv.entity_id
+    FROM s4_fd_char_values sfcv
+    JOIN vw_entity_worklist ew ON ew.entity_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
     JOIN s4_characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
     WHERE scd.char_type = 'CHAR';
     """
 
+vw_get_classes_list_ddl = """
+    CREATE OR REPLACE VIEW vw_get_classes_list AS
+    SELECT 
+        sfc.entity_id AS entity_id,
+        LIST(sfc.class_name) AS classes,
+    FROM 
+        s4_fd_classes sfc
+    GROUP BY sfc.entity_id;
+    """
+
+vw_get_class_name_ddl =  """
+    CREATE OR REPLACE VIEW vw_get_class_name AS
+    SELECT 
+        ew.entity_id AS entity_id,
+        ew.object_type AS object_type,
+        fetv.class_name AS class_name,
+    FROM vw_entity_worklist ew
+    JOIN vw_fd_text_values fetv ON fetv.entity_id = ew.entity_id
+    WHERE fetv.char_name = 'UNICLASS_CODE';
+    """
+
+vw_fd_all_values_json_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_all_values_json AS
+    SELECT 
+        dv.entity_id AS entity_id,
+        dv.class_type AS class_type,
+        dv.class_name AS class_name,
+        dv.char_name AS char_name,
+        to_json(dv.decimal_value) AS json_value,
+    FROM vw_fd_decimal_values dv
+    UNION
+    SELECT
+        iv.entity_id AS entity_id,
+        iv.class_type AS class_type,
+        iv.class_name AS class_name,
+        iv.char_name AS char_name,
+        to_json(iv.integer_value) AS json_value,
+    FROM vw_fd_integer_values iv
+    UNION
+    SELECT
+        tv.entity_id AS entity_id,
+        tv.class_type AS class_type,
+        tv.class_name AS class_name,
+        tv.char_name AS char_name,
+        to_json(IF(tv.text_value IS NULL, '', tv.text_value)) AS json_value,
+    FROM vw_fd_text_values tv;
+    """
+vw_fd_class_chars_json_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_class_chars_json AS
+    SELECT
+        entity_id AS entity_id,
+        json_group_object(class_name, json_characteristics) AS json_classes,
+    FROM
+        (SELECT
+            entity_id AS entity_id,
+            class_name AS class_name,
+            json_group_object(char_name, json_array_values) AS json_characteristics,
+        FROM
+            (SELECT 
+                entity_id AS entity_id,
+                class_name AS class_name,
+                char_name AS char_name,
+                json_group_array(json_value) AS json_array_values,
+            FROM vw_fd_all_values_json
+            GROUP BY entity_id, class_name, char_name
+            ORDER BY entity_id, class_name, char_name)
+        GROUP BY entity_id, class_name
+        ORDER BY entity_id, class_name)
+    GROUP BY entity_id
+    ORDER BY entity_id
+    """
 def query_sqlite_schema_tables(*, sqlite_path: str) -> str:
     return f"""
     SELECT 
