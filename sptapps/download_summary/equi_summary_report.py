@@ -56,10 +56,10 @@ equi_summary_report = """
         sem.address_ref AS address_ref,
         gcn.class_name AS class_type,
         gcl.classes AS equi_classes,
-        ccj.json_classes AS json_classes,
+        cj.json_classes AS json_classes,
     FROM 
         s4_equipment_masterdata sem
     JOIN vw_get_class_name gcn ON gcn.entity_id = sem.equi_id
     JOIN vw_get_classes_list gcl ON gcl.entity_id = sem.equi_id 
-    JOIN vw_fd_class_chars_json ccj ON ccj.entity_id = sem.equi_id;
+    JOIN vw_fd_classes_json cj ON cj.entity_id = sem.equi_id;
     """

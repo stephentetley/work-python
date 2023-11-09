@@ -113,7 +113,7 @@ vw_get_classes_list_ddl = """
     CREATE OR REPLACE VIEW vw_get_classes_list AS
     SELECT 
         sfc.entity_id AS entity_id,
-        LIST(sfc.class_name) AS classes,
+        json_group_array(to_json(sfc.class_name)) AS classes,
     FROM 
         s4_fd_classes sfc
     GROUP BY sfc.entity_id;
@@ -156,8 +156,28 @@ vw_fd_all_values_json_ddl = """
         to_json(IF(tv.text_value IS NULL, '', tv.text_value)) AS json_value,
     FROM vw_fd_text_values tv;
     """
-vw_fd_class_chars_json_ddl = """
-    CREATE OR REPLACE VIEW vw_fd_class_chars_json AS
+
+vw_fd_characteristics_json_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_characteristics_json AS
+    SELECT
+        entity_id AS entity_id,
+        class_name AS class_name,
+        json_group_object(char_name, json_array_values) AS json_characteristics,
+    FROM
+        (SELECT 
+            entity_id AS entity_id,
+            class_name AS class_name,
+            char_name AS char_name,
+            json_group_array(json_value) AS json_array_values,
+        FROM vw_fd_all_values_json
+        GROUP BY entity_id, class_name, char_name
+        ORDER BY entity_id, class_name, char_name)
+    GROUP BY entity_id, class_name
+    ORDER BY entity_id, class_name
+    """
+
+vw_fd_classes_json_ddl = """
+    CREATE OR REPLACE VIEW vw_fd_classes_json AS
     SELECT
         entity_id AS entity_id,
         json_group_object(class_name, json_characteristics) AS json_classes,
@@ -165,21 +185,44 @@ vw_fd_class_chars_json_ddl = """
         (SELECT
             entity_id AS entity_id,
             class_name AS class_name,
-            json_group_object(char_name, json_array_values) AS json_characteristics,
+            json_characteristics AS json_characteristics,
         FROM
-            (SELECT 
-                entity_id AS entity_id,
-                class_name AS class_name,
-                char_name AS char_name,
-                json_group_array(json_value) AS json_array_values,
-            FROM vw_fd_all_values_json
-            GROUP BY entity_id, class_name, char_name
-            ORDER BY entity_id, class_name, char_name)
-        GROUP BY entity_id, class_name
+            vw_fd_characteristics_json
+        GROUP BY entity_id, class_name, json_characteristics
         ORDER BY entity_id, class_name)
     GROUP BY entity_id
     ORDER BY entity_id
     """
+
+vw_worklist_all_characteristics_json_ddl = """
+    CREATE OR REPLACE VIEW vw_worklist_all_characteristics_json AS
+    SELECT 
+        ew.entity_id AS entity_id,
+        sfc.class_type AS class_type,
+        sfc.class_name AS class_name, 
+        scd.char_name AS char_name,
+        json_group_array(avj.json_value) AS json_array_values,
+    FROM
+        vw_entity_worklist ew
+    JOIN s4_fd_classes sfc ON sfc.entity_id = ew.entity_id 
+    JOIN s4_characteristic_defs scd ON scd.class_type = sfc.class_type AND scd.class_name = sfc.class_name
+    LEFT OUTER JOIN vw_fd_all_values_json avj ON ew.entity_id = avj.entity_id AND sfc.class_type = avj.class_type 
+                AND sfc.class_name = avj.class_name AND scd.char_name = avj.char_name
+    GROUP BY ew.entity_id, sfc.class_type, sfc.class_name, scd.char_name;
+    """
+
+vw_worklist_all_classes_json_ddl = """
+CREATE OR REPLACE VIEW vw_worklist_all_classes_json AS
+SELECT 
+    wacj.entity_id AS entity_id,
+    wacj.class_type AS class_type,
+    wacj.class_name AS class_name, 
+    json_group_object(wacj.char_name, json_array_values) AS json_chars,
+FROM
+    vw_worklist_all_characteristics_json wacj
+GROUP BY wacj.entity_id, wacj.class_type, wacj.class_name;
+"""
+
 def query_sqlite_schema_tables(*, sqlite_path: str) -> str:
     return f"""
     SELECT 

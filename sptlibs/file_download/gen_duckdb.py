@@ -43,7 +43,10 @@ class GenDuckdb:
                                     duckdb_setup.vw_fd_integer_values_ddl,
                                     duckdb_setup.vw_fd_text_values_ddl, 
                                     duckdb_setup.vw_fd_all_values_json_ddl,
-                                    duckdb_setup.vw_fd_class_chars_json_ddl
+                                    duckdb_setup.vw_fd_characteristics_json_ddl,
+                                    duckdb_setup.vw_fd_classes_json_ddl,
+                                    duckdb_setup.vw_worklist_all_characteristics_json_ddl, 
+                                    duckdb_setup.vw_worklist_all_classes_json_ddl
                                     ]
 
     def __add_insert_stmts(self, tables: list[str]) -> None:
