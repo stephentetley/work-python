@@ -5,6 +5,7 @@ import duckdb
 from sptlibs.file_download.gen_sqlite import GenSqlite
 from sptlibs.file_download.gen_duckdb import GenDuckdb
 import sptapps.download_summary.equi_summary_report as equi_summary_report
+import sptapps.download_summary.df_transforms as df_transforms
 
 source_directories = ['G:/work/2023/file_download/new-pb4g-to-check-batch02']
 glob_pattern = '*download.txt'
@@ -29,10 +30,11 @@ if os.path.exists(output_directory):
     duckdb_path = genduckdb.gen_duckdb()
 
     # Output...
-    # panads looks best fit...
+    # pandas looks best fit...
     con = duckdb.connect(duckdb_path)
     df = con.sql(equi_summary_report.equi_summary_report).df()
     print(df)
     print(df.dtypes)
-    df.to_excel(output_xls, engine='xlsxwriter')
+    df1 = df_transforms.equipment_rewrite_equi_classes(df)
+    df1.to_excel(output_xls, engine='xlsxwriter', sheet_name='equipment_master')
     con.close()
