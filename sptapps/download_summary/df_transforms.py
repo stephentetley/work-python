@@ -25,3 +25,16 @@ def equipment_rewrite_equi_classes(df: pd.DataFrame) -> pd.DataFrame:
 def _rewrite_equi_classes1(x: str) -> str:
     js = json.loads(x)
     return unjson.pp_value(js)
+
+def class_char_rewrite_characteristics(df: pd.DataFrame) -> pd.DataFrame:
+    df['json'] = df['json_chars'].apply(lambda x: json.loads(x))
+    keys = df.iloc[0].loc['json'].keys()
+    for key in keys:
+        df[key] = df['json'].apply(lambda jv: _pp_values_from_dict(key, jv))
+    df = df.drop(['json', 'json_chars'], axis=1)
+    return df
+
+
+def _pp_values_from_dict(key: str, jsdict: dict) -> str:
+    jsvals = jsdict.get(key, '')
+    return unjson.pp_value(jsvals)

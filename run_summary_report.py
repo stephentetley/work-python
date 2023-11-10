@@ -2,10 +2,13 @@
 
 import os
 import duckdb
+import pandas as pd
 from sptlibs.file_download.gen_sqlite import GenSqlite
 from sptlibs.file_download.gen_duckdb import GenDuckdb
-import sptapps.download_summary.equi_summary_report as equi_summary_report
+import sptapps.download_summary.duckdb_queries as duckdb_queries
+import sptapps.download_summary.duckdb_setup as duckdb_setup
 import sptapps.download_summary.df_transforms as df_transforms
+import sptapps.download_summary.make_summary_report as make_summary_report
 
 source_directories = ['G:/work/2023/file_download/new-pb4g-to-check-batch02']
 glob_pattern = '*download.txt'
@@ -32,9 +35,21 @@ if os.path.exists(output_directory):
     # Output...
     # pandas looks best fit...
     con = duckdb.connect(duckdb_path)
-    df = con.sql(equi_summary_report.equi_summary_report).df()
+    con.execute(duckdb_setup.vw_characteristics_summary_ddl)
+    con.execute(duckdb_queries.equi_summary_report)
+    df = con.df()
     print(df)
     print(df.dtypes)
-    df1 = df_transforms.equipment_rewrite_equi_classes(df)
-    df1.to_excel(output_xls, engine='xlsxwriter', sheet_name='equipment_master')
-    con.close()
+    with pd.ExcelWriter(output_xls) as xlwriter: 
+        df1 = df_transforms.equipment_rewrite_equi_classes(df)
+        df1.to_excel(xlwriter, engine='xlsxwriter', sheet_name='equipment_master')
+        # tabs
+        con.execute(duckdb_queries.get_classes_used_query)
+        for (class_type, class_name) in con.fetchall():
+            tab_name = make_summary_report.make_class_tab_name(class_type=class_type, class_name=class_name)
+            print(tab_name)
+            con.execute(query= duckdb_queries.class_tab_summary_report, parameters={'class_type': class_type, 'class_name': class_name})
+            df2 = con.df()
+            df3 = df_transforms.class_char_rewrite_characteristics(df2)
+            df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)
+        con.close()

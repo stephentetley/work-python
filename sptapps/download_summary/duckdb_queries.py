@@ -15,11 +15,6 @@ limitations under the License.
 
 """
 
-import sptlibs.export_utils as export_utils
-
-
-def output_equi_summary_report(*, duckdb_path: str, csv_outpath: str) -> str:
-    export_utils.output_csv_report(duckdb_path=duckdb_path, select_stmt=equi_summary_report, csv_outpath=csv_outpath)
 
 equi_summary_report = """
     SELECT 
@@ -60,4 +55,29 @@ equi_summary_report = """
         s4_equipment_masterdata sem
     JOIN vw_get_class_name gcn ON gcn.entity_id = sem.equi_id
     JOIN vw_get_classes_list gcl ON gcl.entity_id = sem.equi_id 
+    ORDER BY sem.equi_id
+    """
+
+get_classes_used_query = """
+    SELECT DISTINCT 
+        cs.class_type,
+        cs.class_name
+    FROM vw_characteristics_summary cs;
+    """
+
+class_tab_summary_report = """
+    SELECT 
+        cs.entity_id AS entity_id,
+        cs.description AS description,
+        cs.functional_location AS functional_location,
+        cs.object_type AS object_type,
+        cs.user_status AS user_status,
+        cs.manufacturer AS manufacturer,
+        cs.model_number AS model_number,
+        cs.json_chars AS json_chars,
+    FROM vw_characteristics_summary cs
+    WHERE 
+        cs.class_type = $class_type
+    AND cs.class_name = $class_name
+    ORDER BY cs.entity_id;
     """
