@@ -37,14 +37,14 @@ class GenDuckdb:
         self.copy_tables_stmts = []
         self.create_view_stmts = [classlist_duckdb_setup.vw_s4_class_defs_ddl,
                                     duckdb_setup.vw_entity_worklist_ddl,
-                                    duckdb_setup.vw_get_classes_list_ddl,
-                                    duckdb_setup.vw_get_class_name_ddl,
                                     duckdb_setup.vw_fd_decimal_values_ddl,
                                     duckdb_setup.vw_fd_integer_values_ddl,
                                     duckdb_setup.vw_fd_text_values_ddl, 
                                     duckdb_setup.vw_fd_all_values_json_ddl,
                                     duckdb_setup.vw_fd_characteristics_json_ddl,
                                     duckdb_setup.vw_fd_classes_json_ddl,
+                                    duckdb_setup.vw_get_classes_list_ddl,
+                                    duckdb_setup.vw_get_class_name_ddl,
                                     duckdb_setup.vw_worklist_all_characteristics_json_ddl, 
                                     duckdb_setup.vw_worklist_all_classes_json_ddl
                                     ]

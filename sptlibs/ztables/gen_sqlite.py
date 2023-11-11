@@ -22,7 +22,7 @@ from typing import Callable
 import sptlibs.import_utils as import_utils
 from sptlibs.xlsx_source import XlsxSource
 
-    
+
 class GenSqlite:
     def __init__(self, *, output_directory: str) -> None:
         self.db_name = 'ztables.sqlite3'
