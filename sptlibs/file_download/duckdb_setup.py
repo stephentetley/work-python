@@ -49,7 +49,7 @@ vw_entity_worklist_ddl = """
     FROM s4_equipment_masterdata sem
     UNION 
     SELECT 
-        sfm.functional_location AS entity_id,
+        sfm.funcloc_id AS entity_id,
         sfm.object_type AS object_type,
         'floc' AS data_source
     FROM main.s4_funcloc_masterdata sfm;
@@ -238,7 +238,8 @@ def s4_funcloc_masterdata_insert(*, sqlite_path: str) -> str:
     return f"""
     INSERT INTO s4_funcloc_masterdata BY NAME
     SELECT 
-        f.funcloc AS functional_location,
+        f.funcloc AS funcloc_id,
+        f.floc_ref AS functional_location,
         f.adrnr AS address_ref,
         f.bukrsfloc AS company_code,
         TRY_CAST(f.baumm AS INTEGER) AS construction_month,

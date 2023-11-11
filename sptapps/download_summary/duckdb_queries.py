@@ -16,6 +16,22 @@ limitations under the License.
 """
 
 
+floc_summary_report = """
+    SELECT 
+        sfm.funcloc_id AS funcloc_id,
+        sfm.functional_location AS functional_location,
+        sfm.description AS description,
+        sfm.superior_funct_loc AS superior_functional_location2,
+        sfm.category AS category,
+        gcn.class_name AS class_name,
+        gcl.classes AS floc_classes,
+    FROM 
+        s4_funcloc_masterdata sfm
+    LEFT OUTER JOIN vw_get_class_name gcn ON gcn.entity_id = sfm.funcloc_id
+    JOIN vw_get_classes_list gcl ON gcl.entity_id = sfm.funcloc_id
+    ORDER BY sfm.functional_location;
+    """
+
 equi_summary_report = """
     SELECT 
         sem.equi_id AS equi_id,
@@ -49,35 +65,57 @@ equi_summary_report = """
         lpad(CAST(sem.display_position AS TEXT), 4, '0') AS display_position,
         sem.technical_ident_number AS technical_ident_number,
         sem.address_ref AS address_ref,
-        gcn.class_name AS class_type,
+        gcn.class_name AS class_name,
         gcl.classes AS equi_classes,
     FROM 
         s4_equipment_masterdata sem
     JOIN vw_get_class_name gcn ON gcn.entity_id = sem.equi_id
     JOIN vw_get_classes_list gcl ON gcl.entity_id = sem.equi_id 
-    ORDER BY sem.equi_id
+    ORDER BY sem.equi_id;
     """
 
-get_classes_used_query = """
+get_equi_classes_used_query = """
     SELECT DISTINCT 
         cs.class_type,
         cs.class_name
-    FROM vw_characteristics_summary cs;
+    FROM vw_equi_characteristics_summary cs;
     """
 
-class_tab_summary_report = """
+get_floc_classes_used_query = """
+    SELECT DISTINCT 
+        cs.class_type,
+        cs.class_name
+    FROM vw_floc_characteristics_summary cs;
+    """
+
+equi_class_tab_summary_report = """
+    SELECT 
+        ecs.entity_id AS entity_id,
+        ecs.description AS description,
+        ecs.functional_location AS functional_location,
+        ecs.object_type AS object_type,
+        ecs.user_status AS user_status,
+        ecs.manufacturer AS manufacturer,
+        ecs.model_number AS model_number,
+        ecs.json_chars AS json_chars,
+    FROM vw_equi_characteristics_summary ecs
+    WHERE 
+        ecs.class_type = '002'
+    AND ecs.class_name = $class_name
+    ORDER BY ecs.entity_id;
+    """
+
+floc_class_tab_summary_report = """
     SELECT 
         cs.entity_id AS entity_id,
         cs.description AS description,
         cs.functional_location AS functional_location,
         cs.object_type AS object_type,
         cs.user_status AS user_status,
-        cs.manufacturer AS manufacturer,
-        cs.model_number AS model_number,
         cs.json_chars AS json_chars,
-    FROM vw_characteristics_summary cs
+    FROM vw_floc_characteristics_summary cs
     WHERE 
-        cs.class_type = $class_type
+        cs.class_type = '003'
     AND cs.class_name = $class_name
     ORDER BY cs.entity_id;
     """

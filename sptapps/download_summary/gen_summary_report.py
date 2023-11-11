@@ -73,22 +73,39 @@ class GenSummaryReport:
             # Output...
             output_xls = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
             con = duckdb.connect(duckdb_path)
-            con.execute(duckdb_setup.vw_characteristics_summary_ddl)
-            con.execute(duckdb_queries.equi_summary_report)
-            df = con.df()
+            con.execute(duckdb_setup.vw_floc_characteristics_summary_ddl)
+            con.execute(duckdb_setup.vw_equi_characteristics_summary_ddl)
             with pd.ExcelWriter(output_xls) as xlwriter: 
+                # floc summary
+                con.execute(duckdb_queries.floc_summary_report)
+                df = con.df()                
+                df = df_transforms.funcloc_rewrite_floc_classes(df)
+                df.to_excel(xlwriter, engine='xlsxwriter', sheet_name='funcloc_master')
+                # equi summary
+                con.execute(duckdb_queries.equi_summary_report)
+                df = con.df()                
                 df1 = df_transforms.equipment_rewrite_equi_classes(df)
                 df1.to_excel(xlwriter, engine='xlsxwriter', sheet_name='equipment_master')
-                # tabs
-                con.execute(duckdb_queries.get_classes_used_query)
+                # floc tabs
+                con.execute(duckdb_queries.get_floc_classes_used_query)
                 for (class_type, class_name) in con.fetchall():
                     tab_name = make_summary_report.make_class_tab_name(class_type=class_type, class_name=class_name)
                     print(tab_name)
-                    con.execute(query= duckdb_queries.class_tab_summary_report, parameters={'class_type': class_type, 'class_name': class_name})
+                    con.execute(query= duckdb_queries.floc_class_tab_summary_report, parameters={'class_name': class_name})
                     df2 = con.df()
                     df3 = df_transforms.class_char_rewrite_characteristics(df2)
                     df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)
+                # equi tabs
+                con.execute(duckdb_queries.get_equi_classes_used_query)
+                for (class_type, class_name) in con.fetchall():
+                    tab_name = make_summary_report.make_class_tab_name(class_type=class_type, class_name=class_name)
+                    print(tab_name)
+                    con.execute(query= duckdb_queries.equi_class_tab_summary_report, parameters={'class_name': class_name})
+                    df2 = con.df()
+                    df3 = df_transforms.class_char_rewrite_characteristics(df2)
+                    df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)                    
                 con.close()
             return output_xls
         except Exception as exn:
-                print(exn)
+                print('Exception!')
+                print(f'exn: {str(exn)}')

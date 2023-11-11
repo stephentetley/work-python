@@ -17,6 +17,7 @@ limitations under the License.
 
 s4_funcloc_masterdata_ddl = """
     CREATE OR REPLACE TABLE s4_funcloc_masterdata(
+        funcloc_id TEXT NOT NULL,
         functional_location TEXT NOT NULL,
         address_ref INTEGER,
         category TEXT,

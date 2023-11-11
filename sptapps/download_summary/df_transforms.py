@@ -18,20 +18,30 @@ import json
 import pandas as pd
 import sptapps.download_summary.unjson as unjson
 
-def equipment_rewrite_equi_classes(df: pd.DataFrame) -> pd.DataFrame:
-    df['equi_classes'] = df['equi_classes'].apply(lambda x: _rewrite_equi_classes1(x))
+
+def funcloc_rewrite_floc_classes(df: pd.DataFrame) -> pd.DataFrame:
+    df['floc_classes'] = df['floc_classes'].apply(lambda x: _rewrite_classes1(x))
     return df
 
-def _rewrite_equi_classes1(x: str) -> str:
+
+def equipment_rewrite_equi_classes(df: pd.DataFrame) -> pd.DataFrame:
+    df['equi_classes'] = df['equi_classes'].apply(lambda x: _rewrite_classes1(x))
+    return df
+
+def _rewrite_classes1(x: str) -> str:
     js = json.loads(x)
     return unjson.pp_value(js)
 
 def class_char_rewrite_characteristics(df: pd.DataFrame) -> pd.DataFrame:
     df['json'] = df['json_chars'].apply(lambda x: json.loads(x))
-    keys = df.iloc[0].loc['json'].keys()
-    for key in keys:
-        df[key] = df['json'].apply(lambda jv: _pp_values_from_dict(key, jv))
-    df = df.drop(['json', 'json_chars'], axis=1)
+    if len(df.index) > 0:
+        keys = df.iloc[0].loc['json'].keys()
+        for key in keys:
+            df[key] = df['json'].apply(lambda jv: _pp_values_from_dict(key, jv))
+        df = df.drop(['json', 'json_chars'], axis=1)
+    else:
+        # df = df.drop(['json_chars'], axis=1)
+        print("no rows")
     return df
 
 

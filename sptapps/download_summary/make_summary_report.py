@@ -18,8 +18,6 @@ limitations under the License.
 import sptlibs.export_utils as export_utils
 import sptapps.download_summary.duckdb_queries as duckdb_queries
 
-def output_equi_summary_report(*, duckdb_path: str, csv_outpath: str) -> str:
-    export_utils.output_csv_report(duckdb_path=duckdb_path, select_stmt=duckdb_queries.equi_summary_report, csv_outpath=csv_outpath)
 
 def make_class_tab_name(*, class_type: str, class_name=str) -> str: 
     match class_type: 

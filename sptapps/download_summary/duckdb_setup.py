@@ -16,8 +16,24 @@ limitations under the License.
 """
 
 
-vw_characteristics_summary_ddl = """
-    CREATE OR REPLACE VIEW vw_characteristics_summary AS
+vw_floc_characteristics_summary_ddl = """
+    CREATE OR REPLACE VIEW vw_floc_characteristics_summary AS
+    SELECT 
+        sfm.funcloc_id AS entity_id,
+        sfm.description AS description,
+        sfm.functional_location AS functional_location,
+        sfm.object_type AS object_type,
+        sfm.user_status AS user_status,
+        wacj.class_type AS class_type,
+        wacj.class_name AS class_name, 
+        wacj.json_chars AS json_chars,
+    FROM s4_funcloc_masterdata sfm
+    JOIN vw_worklist_all_classes_json wacj ON wacj.entity_id = sfm.funcloc_id
+    WHERE wacj.class_type = '003';
+    """
+
+vw_equi_characteristics_summary_ddl = """
+    CREATE OR REPLACE VIEW vw_equi_characteristics_summary AS
     SELECT 
         sem.equi_id AS entity_id,
         sem.description AS description,
@@ -30,6 +46,7 @@ vw_characteristics_summary_ddl = """
         wacj.class_name AS class_name, 
         wacj.json_chars AS json_chars,
     FROM s4_equipment_masterdata sem
-    JOIN vw_worklist_all_classes_json wacj ON wacj.entity_id = sem.equi_id;
+    JOIN vw_worklist_all_classes_json wacj ON wacj.entity_id = sem.equi_id
+    WHERE wacj.class_type = '002';
     """
 
