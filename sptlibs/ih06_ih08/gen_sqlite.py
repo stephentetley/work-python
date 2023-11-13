@@ -27,6 +27,10 @@ class GenSqlite:
         self.output_dir = output_directory
         self.xlsx_imports = []
 
+    def set_db_name(self, *, db_name: str) -> None:
+        '''Just the name, not the path.'''
+        self.db_name = db_name
+
     def add_ih06_export(self, xlsx: XlsxSource, table_name: str) -> None:
         self.xlsx_imports.append((xlsx, table_name))
 

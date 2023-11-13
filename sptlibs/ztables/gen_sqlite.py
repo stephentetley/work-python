@@ -39,7 +39,7 @@ class GenSqlite:
         sqlite_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
         con = sqlite3.connect(sqlite_outpath)
         for (src, table_name) in self.xlsx_imports:
-            import_utils.import_sheet(src, table_name=table_name, con=con, df_trafo=None)
+            import_utils.import_sheet(src, table_name=table_name, con=con, df_trafo=None, if_exists='replace')
         con.close()
         print(f'{sqlite_outpath} created')
         return sqlite_outpath

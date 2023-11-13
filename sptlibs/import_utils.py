@@ -34,7 +34,7 @@ def import_sheet(source: XlsxSource, *, table_name: str, con: sqlite3.Connection
     df_renamed.to_sql(name=table_name, if_exists=if_exists, con=con)
     con.commit()
 
-def normalize_df_column_names(df):
+def normalize_df_column_names(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns = lambda s: normalize_name(s))
 
 

@@ -26,6 +26,8 @@ import sptapps.download_summary.duckdb_setup as duckdb_setup
 import sptapps.download_summary.df_transforms as df_transforms
 import sptapps.download_summary.make_summary_report as make_summary_report
 
+# TODO add class specific rewrites, e.g. separating PLI and SAI in AI2_REFERENCE
+
 class GenSummaryReport:
     def __init__(self) -> None:
         self.source_directories = []

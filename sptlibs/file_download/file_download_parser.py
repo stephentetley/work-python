@@ -50,7 +50,7 @@ def parse_file_download(path: str) -> dict:
                     if find_entity_type:
                         entity_type = find_entity_type.group('entity_type')
                     if find_variant:
-                        variant = find_variant.group('variant')                        
+                        variant = find_variant.group('variant')
                     if column_prefix:
                         payload = True
                         columns = re_tab.split(line)
