@@ -20,6 +20,7 @@ import duckdb
 import sptlibs.assets.duckdb_masterdata_ddl as duckdb_masterdata_ddl
 import sptlibs.file_download.duckdb_setup as duckdb_setup
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
+import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 
 class GenDuckdb:
     def __init__(self, *, sqlite_path: str, output_directory: str) -> None:
@@ -67,7 +68,7 @@ class GenDuckdb:
                 print(f'Unrecognized file_download type {table}') 
                 
     def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
-        self.copy_tables_stmts.append(duckdb_setup.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
+        self.copy_tables_stmts.append(classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
 
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))

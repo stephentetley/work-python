@@ -352,10 +352,3 @@ def s4_fd_char_valuaequi_insert(*, sqlite_path: str) -> str:
     FROM sqlite_scan('{sqlite_path}', 'valuaequi_valuaequi1') v;
     """
 
-def s4_classlists_table_copy(*, classlists_duckdb_path: str) -> str: 
-    return f"""
-        ATTACH '{classlists_duckdb_path}' AS classlists_db;
-        INSERT INTO s4_characteristic_defs SELECT * FROM classlists_db.s4_characteristic_defs;
-        INSERT INTO s4_enum_defs SELECT * FROM classlists_db.s4_enum_defs;
-        DETACH classlists_db;
-    """

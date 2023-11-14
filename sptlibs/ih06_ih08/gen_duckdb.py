@@ -26,7 +26,7 @@ class GenDuckdb:
         self.sqlite_src = sqlite_path
         self.output_dir = output_directory
         self.ddl_stmts = [duckdb_masterdata_ddl.s4_funcloc_masterdata_ddl,
-                          duckdb_masterdata_ddl.s4_equipment_masterdata_ddl                          
+                          duckdb_masterdata_ddl.s4_equipment_masterdata_ddl
                           ]
         self.insert_from_stmts = []
 

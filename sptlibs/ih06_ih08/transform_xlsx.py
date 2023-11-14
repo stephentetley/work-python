@@ -66,16 +66,3 @@ def parse_ih08(*, xlsx_src: XlsxSource) -> list:
     tables = map(lambda range1: _make_equi_tables(df, range1), ranges)
     return tables
 
-# con = sqlite3.connect('g:/work/2023/ih06_ih08/ih08-with-multiclasses.sqlite3')
-
-# range1:  ColumnRange
-# for range1 in ranges:
-#     tab1 = transform_xlsx.make_equi_tables(df, range1)
-#     df1 = tab1['data_frame']
-#     print(range1)
-#     print(tab1['table_name'])
-#     print(tab1['data_frame'])
-#     df1.to_sql(name=tab1['table_name'], if_exists='replace', con=con)
-#     con.commit()
-
-# con.close()
