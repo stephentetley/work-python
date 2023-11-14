@@ -19,6 +19,7 @@ import os
 import sqlite3 as sqlite3
 import sptlibs.import_utils as import_utils
 from sptlibs.xlsx_source import XlsxSource
+import sptlibs.ih06_ih08.transform_xlsx as transform_xlsx
 
     
 class GenSqlite:
@@ -31,19 +32,27 @@ class GenSqlite:
         '''Just the name, not the path.'''
         self.db_name = db_name
 
-    def add_ih06_export(self, xlsx: XlsxSource, table_name: str) -> None:
-        self.xlsx_imports.append((xlsx, table_name))
+    def add_ih06_export(self, src: XlsxSource) -> None:
+        self.xlsx_imports.append(src)
 
-    def add_ih08_export(self, xlsx: XlsxSource, table_name: str) -> None:
-        self.xlsx_imports.append((xlsx, table_name))
+    def add_ih08_export(self, src: XlsxSource) -> None:
+        self.xlsx_imports.append(src)
 
 
     def gen_sqlite(self) -> str:
-        '''pandas differentiates columns with the same name for us'''
+        '''Deletes the existing database!'''
         sqlite_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
+        try:
+            os.remove(sqlite_outpath)
+        except OSError:
+            pass
         con = sqlite3.connect(sqlite_outpath)
-        for (src, table_name) in self.xlsx_imports:
-            import_utils.import_sheet(src, table_name=table_name, if_exists='replace', con=con, df_trafo=None)
+        for src in self.xlsx_imports:
+            tables = transform_xlsx.parse_ih08(xlsx_src=src)
+            for table in tables:
+                df = table['data_frame']
+                table_name = table['table_name']
+                df.to_sql(name=table_name, if_exists='append', con=con)
         con.close()
         print(f'{sqlite_outpath} created')
         return sqlite_outpath
