@@ -1,4 +1,4 @@
-# run_classlist.py
+# run_classlists.py
 
 from sptlibs.classlist.gen_duckdb import GenDuckdb
 
