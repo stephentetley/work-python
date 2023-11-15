@@ -21,7 +21,7 @@ classlists_db = 'g:/work/2023/classlist/classlists.duckdb'
 # sqlite_path = gensqlite.gen_sqlite()
 
 genduckdb = GenDuckdb2(output_directory=output_directory)
-genduckdb.set_db_name(db_name='ih08-with-multiclasses.duckdb')
+genduckdb.set_db_name(db_name='ih08-with-multiclasses2.duckdb')
 genduckdb.add_classlist_tables(classlists_duckdb_path=classlists_db)
 # genduckdb.add_ih06_export(XlsxSource('g:/work/2023/telemetry/ih06-ctos-temp.xlsx', 'Sheet1'), table_name='ctos')
 genduckdb.add_ih08_export(XlsxSource(xlsx_path, 'Sheet1'))

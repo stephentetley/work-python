@@ -49,6 +49,32 @@ vw_s4_class_defs_ddl = """
         scd.class_description 
     FROM s4_characteristic_defs scd;
     """
+def df_s4_characteristic_defs_insert(*, dataframe_view: str) -> str: 
+    return f"""
+    INSERT INTO s4_characteristic_defs BY NAME
+    SELECT 
+        df.class_type AS class_type,
+        df.class_name AS class_name,
+        df.char_name AS char_name,
+        df.class_description AS class_description,
+        df.char_description AS char_description,
+        df.char_type AS char_type,
+        df.char_length AS char_length,
+        IF(df.char_precision IS NULL, 0, df.char_precision) AS char_precision
+    FROM {dataframe_view} df;
+    """
+
+def df_s4_enum_defs_insert(*, dataframe_view: str) -> str: 
+    return f"""
+    INSERT INTO s4_enum_defs BY NAME
+    SELECT 
+        df.class_type AS class_type,
+        df.class_name AS class_name,
+        df.char_name AS char_name,
+        df.enum_value AS enum_value,
+        df.enum_description AS enum_description
+    FROM {dataframe_view} df;
+    """
 
 def s4_characteristic_defs_insert(*, sqlite_path: str) -> str: 
     return f"""

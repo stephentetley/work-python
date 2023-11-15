@@ -1,0 +1,73 @@
+"""
+Copyright 2023 Stephen Tetley
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+"""
+
+import os
+import tempfile
+import duckdb
+import pandas as pd
+import sptlibs.classlist.classlist_parser as classlist_parser
+import sptlibs.classlist.duckdb_setup as duckdb_setup
+
+    
+class GenDuckdb2:
+    def __init__(self, *, floc_classlist_path: str, equi_classlist_path: str) -> None:
+        self.db_name = 'classlists.duckdb'
+        self.output_directory = tempfile.gettempdir()
+        self.floc_classlist_path = floc_classlist_path
+        self.equi_classlist_path = equi_classlist_path
+        self.ddl_stmts = [duckdb_setup.s4_characteristic_defs_ddl, 
+                            duckdb_setup.s4_enum_defs_ddl, 
+                            duckdb_setup.vw_s4_class_defs_ddl]
+        self.classlist_dicts = []
+
+    def set_output_directory(self, *, output_directory: str) -> None: 
+        self.output_directory = output_directory
+
+    def set_db_name(self, *, db_name: str) -> None: 
+        self.db_name = db_name
+
+
+    def gen_duckdb(self) -> str:
+        duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
+        con = duckdb.connect(database=duckdb_outpath)
+        # Setup tables
+        for stmt in self.ddl_stmts:
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
+        dict_flocs = classlist_parser.parse_floc_classfile(self.floc_classlist_path)
+        dict_equis = classlist_parser.parse_equi_classfile(self.equi_classlist_path)
+        df_chars = pd.concat(objs=[dict_flocs['characteristics'], dict_equis['characteristics']], ignore_index=True)
+        df_enums = pd.concat(objs=[dict_flocs['enum_values'], dict_equis['enum_values']], ignore_index=True)
+        con.register(view_name='vw_df_chars', python_object=df_chars)
+        con.register(view_name='vw_df_enums', python_object=df_enums)
+        con.execute(duckdb_setup.df_s4_characteristic_defs_insert(dataframe_view='vw_df_chars'))
+        con.execute(duckdb_setup.df_s4_enum_defs_insert(dataframe_view='vw_df_enums'))
+        con.close()
+        return duckdb_outpath
+
+
+    # def __gen_duckdb1(self, df: pd.DataFrame, *, table_name: str, con: duckdb.DuckDBPyConnection) -> None:
+    #     '''Note drops the table `table_name` before filling it'''
+    #     if df is not None:
+    #         df.to_sql(name=table_name, if_exists='replace', con=con)
+    #         con.commit()
+    #     else:
+    #         print(f'__gen_sqlite1 - dataframe is None for {table_name}')
