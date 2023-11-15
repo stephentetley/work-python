@@ -76,29 +76,3 @@ def df_s4_enum_defs_insert(*, dataframe_view: str) -> str:
     FROM {dataframe_view} df;
     """
 
-def s4_characteristic_defs_insert(*, sqlite_path: str) -> str: 
-    return f"""
-    INSERT INTO s4_characteristic_defs BY NAME
-    SELECT 
-        cc.class_type AS class_type,
-        cc.class_name AS class_name,
-        cc.char_name AS char_name,
-        cc.class_description AS class_description,
-        cc.char_description AS char_description,
-        cc.char_type AS char_type,
-        cc.char_length AS char_length,
-        IF(cc.char_precision IS NULL, 0, cc.char_precision) AS char_precision
-    FROM sqlite_scan('{sqlite_path}', 'classlist_characteristics') cc;
-    """
-
-def s4_enum_defs_insert(*, sqlite_path: str) -> str: 
-    return f"""
-    INSERT INTO s4_enum_defs BY NAME
-    SELECT 
-        cev.class_type AS class_type,
-        cev.class_name AS class_name,
-        cev.char_name AS char_name,
-        cev.enum_value AS enum_value,
-        cev.enum_description AS enum_description
-    FROM sqlite_scan('{sqlite_path}', 'classlist_enum_values') cev;
-    """

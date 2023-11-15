@@ -16,30 +16,50 @@ limitations under the License.
 """
 
 import os
+import tempfile
 import duckdb
+import pandas as pd
+import sptlibs.classlist.classlist_parser as classlist_parser
 import sptlibs.classlist.duckdb_setup as duckdb_setup
 
+    
 class GenDuckdb:
-    def __init__(self, *, sqlite_path: str, output_directory: str) -> None:
+    def __init__(self, *, floc_classlist_path: str, equi_classlist_path: str) -> None:
         self.db_name = 'classlists.duckdb'
-        self.sqlite_src = sqlite_path
-        self.output_dir = output_directory
+        self.output_directory = tempfile.gettempdir()
+        self.floc_classlist_path = floc_classlist_path
+        self.equi_classlist_path = equi_classlist_path
         self.ddl_stmts = [duckdb_setup.s4_characteristic_defs_ddl, 
                             duckdb_setup.s4_enum_defs_ddl, 
                             duckdb_setup.vw_s4_class_defs_ddl]
-        self.insert_from_stmts = [duckdb_setup.s4_characteristic_defs_insert(sqlite_path=self.sqlite_src),
-                                    duckdb_setup.s4_enum_defs_insert(sqlite_path=self.sqlite_src)]
+        self.classlist_dicts = []
+
+    def set_output_directory(self, *, output_directory: str) -> None: 
+        self.output_directory = output_directory
+
+    def set_db_name(self, *, db_name: str) -> None: 
+        self.db_name = db_name
+
 
     def gen_duckdb(self) -> str:
-        duckdb_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
-        con = duckdb.connect(duckdb_outpath)
+        duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
+        con = duckdb.connect(database=duckdb_outpath)
+        # Setup tables
         for stmt in self.ddl_stmts:
-            con.sql(stmt)
-        for stmt in self.insert_from_stmts:
-            con.sql(stmt)
+            try:
+                con.sql(stmt)
+            except Exception as exn:
+                print(exn)
+                print(stmt)
+                continue
+        dict_flocs = classlist_parser.parse_floc_classfile(self.floc_classlist_path)
+        dict_equis = classlist_parser.parse_equi_classfile(self.equi_classlist_path)
+        df_chars = pd.concat(objs=[dict_flocs['characteristics'], dict_equis['characteristics']], ignore_index=True)
+        df_enums = pd.concat(objs=[dict_flocs['enum_values'], dict_equis['enum_values']], ignore_index=True)
+        con.register(view_name='vw_df_chars', python_object=df_chars)
+        con.register(view_name='vw_df_enums', python_object=df_enums)
+        con.execute(duckdb_setup.df_s4_characteristic_defs_insert(dataframe_view='vw_df_chars'))
+        con.execute(duckdb_setup.df_s4_enum_defs_insert(dataframe_view='vw_df_enums'))
         con.close()
-        print(f'{duckdb_outpath} created')
         return duckdb_outpath
-    
-
 
