@@ -20,29 +20,9 @@ from sptlibs.xlsx_source import XlsxSource
 import sptlibs.import_utils as import_utils
 from sptlibs.ih06_ih08.column_range import ColumnRange
 
-def _make_equi_tables(df: pd.DataFrame, cr: ColumnRange) -> dict: 
-    indices = list(range(cr.range_start, cr.range_end + 1, 1))
-    if cr.range_name == 'equi_masterdata':
-        df1 = df.iloc[:, indices]
-        df1 = import_utils.normalize_df_column_names(df1)
-        return {'table_name': 'equi_masterdata', 'data_frame': df1}
-    else:
-        # use separate tables for equi and floc values
-        table_name = 'equichars_%s' % cr.range_name.lower()
-        indices.insert(0, 1) # add equipment id
-        df1 = df.iloc[:, indices]
-        class_column_name = 'Class %s is assigned' % cr.range_name
-        class_column_value = '%s is assigned' % cr.range_name
-        # filter
-        df2 = df1[df1[class_column_name] == class_column_value].copy(deep=True)
-        # add constant column
-        df2['class_name'] = cr.range_name
-        df2 = df2.drop([class_column_name], axis=1)
-        df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
-        df2 = import_utils.normalize_df_column_names(df2)
-        return {'table_name': table_name, 'data_frame': df2}
+
     
-def parse_ih08(*, xlsx_src: XlsxSource) -> list:
+def parse_ih08(*, xlsx_src: XlsxSource) -> dict:
     df = pd.read_excel(xlsx_src.path, xlsx_src.sheet)
     re_class_start = re.compile(r"Class (?P<class_name>[\w_]+) is assigned")
 
@@ -63,6 +43,35 @@ def parse_ih08(*, xlsx_src: XlsxSource) -> list:
     # add pending range
     ranges.append(range1)
 
-    tables = map(lambda range1: _make_equi_tables(df, range1), ranges)
-    return tables
+    ans = {}
+    ans['tables'] = map(lambda range1: _make_equi_tables(df, range1), ranges)
+    ans['class_infos'] = pd.DataFrame.from_records(map(_get_equi_class_info, ranges[1:]), columns=['class_type', 'class_name', 'table_name'])
+    return ans
+
+
+def _make_equi_tables(df: pd.DataFrame, cr: ColumnRange) -> dict: 
+    indices = list(range(cr.range_start, cr.range_end + 1, 1))
+    if cr.range_name == 'equi_masterdata':
+        df1 = df.iloc[:, indices]
+        df1 = import_utils.normalize_df_column_names(df1)
+        return {'table_name': 'equi_masterdata', 'data_frame': df1}
+    else:
+        # use separate tables for equi and floc values
+        table_name = 'valuaequi_%s' % cr.range_name.lower()
+        indices.insert(0, 1) # add equipment id
+        df1 = df.iloc[:, indices]
+        class_column_name = 'Class %s is assigned' % cr.range_name
+        class_column_value = '%s is assigned' % cr.range_name
+        # filter
+        df2 = df1[df1[class_column_name] == class_column_value].copy(deep=True)
+        # add constant column
+        df2['class_name'] = cr.range_name
+        df2 = df2.drop([class_column_name], axis=1)
+        df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
+        df2 = import_utils.normalize_df_column_names(df2)
+        return {'table_name': table_name, 'data_frame': df2}
+
+def _get_equi_class_info(cr: ColumnRange) -> tuple: 
+    table_name = 'valuaequi_%s' % cr.range_name.lower()
+    return ('002', cr.range_name, table_name)
 

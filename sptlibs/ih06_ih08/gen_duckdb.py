@@ -16,34 +16,51 @@ limitations under the License.
 """
 
 import os
+import tempfile
 import duckdb
-import sptlibs.assets.duckdb_masterdata_ddl as duckdb_masterdata_ddl
+from sptlibs.xlsx_source import XlsxSource
+import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
+import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
+import sptlibs.ih06_ih08.transform_xlsx as transform_xlsx
 
+    
 class GenDuckdb:
-    def __init__(self, *, sqlite_path: str, output_directory: str) -> None:
-        self.db_name = 'ih06_ih08_imports.duckdb'
-        self.sqlite_src = sqlite_path
-        self.output_dir = output_directory
-        self.ddl_stmts = [duckdb_masterdata_ddl.s4_funcloc_masterdata_ddl,
-                          duckdb_masterdata_ddl.s4_equipment_masterdata_ddl
-                          ]
-        self.insert_from_stmts = []
+    def __init__(self) -> None:
+        self.db_name = 'ih06_ih08.duckdb'
+        self.output_directory = tempfile.gettempdir()
+        self.xlsx_imports = []
+        self.ddl_stmts = [classlist_duckdb_setup.s4_characteristic_defs_ddl,
+                            classlist_duckdb_setup.s4_enum_defs_ddl, 
+                            duckdb_setup.s4_ih_char_values_ddl,
+                            duckdb_setup.s4_classes_used_ddl]
+        self.copy_tables_stmts = []
 
-    def add_s4_equipment_master_insert(self, *, sqlite_table: str, has_aib_characteritics: bool) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_equipment_master_insert(sqlite_path=self.sqlite_src, 
-                                                                                equi_tablename=sqlite_table,
-                                                                                has_aib_characteritics=has_aib_characteritics))
+    def set_output_directory(self, *, output_directory: str) -> None: 
+        self.output_directory = output_directory
 
+    def set_db_name(self, *, db_name: str) -> None:
+        '''Just the name, not the path.'''
+        self.db_name = db_name
 
-    def add_s4_funcloc_master_insert(self, *, sqlite_table: str, has_aib_characteritics: bool) -> None:
-        self.insert_from_stmts.append(duckdb_setup.s4_funcloc_master_insert(sqlite_path=self.sqlite_src, 
-                                                                                floc_tablename=sqlite_table,
-                                                                                has_aib_characteritics=has_aib_characteritics))
-        
+    def add_ih06_export(self, src: XlsxSource) -> None:
+        self.xlsx_imports.append(src)
+
+    def add_ih08_export(self, src: XlsxSource) -> None:
+        self.xlsx_imports.append(src)
+
+    def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
+        self.copy_tables_stmts.append(classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
+
     def gen_duckdb(self) -> str:
-        duckdb_outpath = os.path.normpath(os.path.join(self.output_dir, self.db_name))
-        con = duckdb.connect(duckdb_outpath)
+        ''''''
+        duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
+        try:
+            os.remove(duckdb_outpath)
+        except OSError:
+            pass
+        con = duckdb.connect(database=duckdb_outpath)
+        # Setup tables
         for stmt in self.ddl_stmts:
             try:
                 con.sql(stmt)
@@ -51,16 +68,28 @@ class GenDuckdb:
                 print(exn)
                 print(stmt)
                 continue
-        for stmt in self.insert_from_stmts:
+        for stmt in self.copy_tables_stmts:
             try:
                 con.sql(stmt)
             except Exception as exn:
                 print(exn)
                 print(stmt)
                 continue
+        # TODO properly account for multiple sheets / appending data
+        for src in self.xlsx_imports:
+            ans = transform_xlsx.parse_ih08(xlsx_src=src)
+            # classes used
+            con.register('vw_df_classes_used', ans['class_infos'])
+            con.execute('INSERT INTO s4_classes_used SELECT * FROM vw_df_classes_used')
+            # valuaequi tables
+            for table in ans['tables']:
+                df = table['data_frame']
+                table_name = table['table_name']
+                drop_sql = f'DROP TABLE IF EXISTS {table_name};'
+                con.execute(drop_sql)
+                create_sql = f'CREATE TABLE {table_name} AS SELECT * FROM df;'
+                con.execute(create_sql)
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath
-    
-
 

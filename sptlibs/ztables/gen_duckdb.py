@@ -35,7 +35,7 @@ class GenDuckdb:
         self.xlsx_imports.append((xlsx, table_name))
 
     def gen_duckdb(self) -> str:
-        '''pandas differentiates columns with the same name for us'''
+        '''Note - pandas differentiates columns with the same name for us'''
         duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
         con = duckdb.connect(database=duckdb_outpath)
         for (src, table_name) in self.xlsx_imports:
