@@ -8,7 +8,7 @@ output_directory = 'g:/work/2023/classlist'
 
 genduckdb = GenDuckdb(floc_classlist_path=floc_src, equi_classlist_path=equi_src)
 genduckdb.set_output_directory(output_directory=output_directory)
-genduckdb.set_db_name(db_name='classlist2.duckdb')
+genduckdb.set_db_name(db_name='classlists.duckdb')
 out_path = genduckdb.gen_duckdb()
 print(out_path)
 

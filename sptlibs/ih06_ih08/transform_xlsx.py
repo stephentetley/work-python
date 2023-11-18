@@ -42,14 +42,11 @@ def parse_ih08(*, xlsx_src: XlsxSource) -> dict:
 
     # add pending range
     ranges.append(range1)
-
-    ans = {}
-    ans['tables'] = map(lambda range1: _make_equi_tables(df, range1), ranges)
-    ans['class_infos'] = pd.DataFrame.from_records(map(_get_equi_class_info, ranges[1:]), columns=['class_type', 'class_name', 'table_name'])
-    return ans
+    return map(lambda range1: _make_equi_tables(df, range1), ranges)
 
 
-def _make_equi_tables(df: pd.DataFrame, cr: ColumnRange) -> dict: 
+
+def _make_equi_tables(df: pd.DataFrame, cr: ColumnRange) -> list: 
     indices = list(range(cr.range_start, cr.range_end + 1, 1))
     if cr.range_name == 'equi_masterdata':
         df1 = df.iloc[:, indices]
@@ -69,9 +66,6 @@ def _make_equi_tables(df: pd.DataFrame, cr: ColumnRange) -> dict:
         df2 = df2.drop([class_column_name], axis=1)
         df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
         df2 = import_utils.normalize_df_column_names(df2)
+        df2 = import_utils.remove_df_column_name_indices(df2)
         return {'table_name': table_name, 'data_frame': df2}
-
-def _get_equi_class_info(cr: ColumnRange) -> tuple: 
-    table_name = 'valuaequi_%s' % cr.range_name.lower()
-    return ('002', cr.range_name, table_name)
 

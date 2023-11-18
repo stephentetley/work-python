@@ -52,12 +52,20 @@ def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.Duck
 
 
 def normalize_df_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    return df.rename(columns = lambda s: normalize_name(s))
+    return df.rename(columns = lambda s: normalize_name(s)).copy(deep=True)
 
 
 def normalize_name(s):
     ls = s.lower()
-    remove_suffix = re.sub(r'[\W]+$' , '', ls)
-    remove_bad = re.sub(r'[\W]+' , '_', remove_suffix)
-    return remove_bad
+    replace_non_w = re.sub(pattern=r'[\W]+' , repl=' ', string=ls)
+    trimmed = replace_non_w.strip()
+    remove_spaces = re.sub(pattern=r'[\W]+' , repl='_', string=trimmed)
+    return remove_spaces
+
+def remove_df_column_name_indices(df: pd.DataFrame) -> pd.DataFrame:
+    return df.rename(columns = lambda s: remove_index(s)).copy(deep=True)
+
+def remove_index(s):
+    drop_ix = re.sub(pattern=r'_[\d]+$' , repl='', string=s)
+    return drop_ix
 

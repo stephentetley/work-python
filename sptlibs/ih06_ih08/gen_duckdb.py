@@ -33,7 +33,10 @@ class GenDuckdb:
         self.ddl_stmts = [classlist_duckdb_setup.s4_characteristic_defs_ddl,
                             classlist_duckdb_setup.s4_enum_defs_ddl, 
                             duckdb_setup.s4_ih_char_values_ddl,
-                            duckdb_setup.s4_classes_used_ddl]
+                            duckdb_setup.vw_s4_classes_used_ddl,
+                            duckdb_setup.vw_characteristic_defs_with_type_ddl,
+                            duckdb_setup.vw_s4_charateristics_used_ddl
+                            ]
         self.copy_tables_stmts = []
 
     def set_output_directory(self, *, output_directory: str) -> None: 
@@ -77,12 +80,9 @@ class GenDuckdb:
                 continue
         # TODO properly account for multiple sheets / appending data
         for src in self.xlsx_imports:
-            ans = transform_xlsx.parse_ih08(xlsx_src=src)
-            # classes used
-            con.register('vw_df_classes_used', ans['class_infos'])
-            con.execute('INSERT INTO s4_classes_used SELECT * FROM vw_df_classes_used')
-            # valuaequi tables
-            for table in ans['tables']:
+            # equi and valuaequi tables
+            tables = transform_xlsx.parse_ih08(xlsx_src=src)
+            for table in tables:
                 df = table['data_frame']
                 table_name = table['table_name']
                 drop_sql = f'DROP TABLE IF EXISTS {table_name};'
