@@ -15,6 +15,45 @@ limitations under the License.
 
 """
 
+import os
+import duckdb
+
+
+def make_vw_s4_valuaequi_eav(*, con: duckdb.DuckDBPyConnection) -> None:
+    con.execute(_equiclasses_used_query)
+    rows = con.fetchall()
+    ls = list(map(lambda row: row[0], rows))
+    make_vw_ddl = vw_s4_valuaequi_eav_ddl(valua_table_names=ls)
+    con.execute(make_vw_ddl)
+
+_equiclasses_used_query = """
+    SELECT DISTINCT
+        scu.table_name AS table_name
+    FROM 
+        vw_s4_classes_used scu
+    WHERE 
+        scu.table_name LIKE 'valuaequi_%';
+    """ 
+
+
+
+def vw_s4_valuaequi_eav_ddl(*, valua_table_names: list) -> str:
+    line1 = 'CREATE OR REPLACE VIEW vw_s4_valuaequi_eav AS'
+    sep = os.linesep + 'UNION' + os.linesep
+    stmts = list(map(lambda name: _unpivot_valua1(table_name=name), valua_table_names))
+    sql_all = line1 + sep.join(stmts) + ";"
+    return sql_all
+
+def _unpivot_valua1(*, table_name: str) -> str: 
+    return f"""
+    UNPIVOT {table_name}
+    ON COLUMNS(* EXCLUDE (entity_id, class_name))
+    INTO 
+        NAME attribute_name
+        VALUE attribute_value
+    """
+
+
 def make_select_numeric_characteristic(*, class_name: str, class_type: str, char_name: str, simple_data_type: str, ddl_data_type: str, column_name: str) -> str:
     match simple_data_type:
         case 'TEXT':

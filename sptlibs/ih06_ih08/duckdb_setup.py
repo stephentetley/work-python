@@ -63,6 +63,7 @@ vw_characteristic_defs_with_type_ddl = """
         END AS ddl_data_type
     FROM s4_characteristic_defs scd;
     """
+
 vw_s4_charateristics_used_ddl = """
     CREATE OR REPLACE VIEW vw_s4_charateristics_used AS
     SELECT 

@@ -23,7 +23,7 @@ import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
 import sptlibs.ih06_ih08.transform_xlsx as transform_xlsx
-
+import sptlibs.ih06_ih08.char_values as char_values
     
 class GenDuckdb:
     def __init__(self) -> None:
@@ -89,6 +89,7 @@ class GenDuckdb:
                 con.execute(drop_sql)
                 create_sql = f'CREATE TABLE {table_name} AS SELECT * FROM df;'
                 con.execute(create_sql)
+        char_values.make_vw_s4_valuaequi_eav(con=con)
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath
