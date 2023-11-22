@@ -35,8 +35,6 @@ _equiclasses_used_query = """
         scu.table_name LIKE 'valuaequi_%';
     """ 
 
-
-
 def vw_s4_valuaequi_eav_ddl(*, valua_table_names: list) -> str:
     line1 = 'CREATE OR REPLACE VIEW vw_s4_valuaequi_eav AS'
     sep = os.linesep + 'UNION' + os.linesep

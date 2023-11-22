@@ -290,7 +290,7 @@ def s4_equipment_masterdata_insert(*, sqlite_path: str) -> str:
         e.eqart_equ AS object_type,
         e.ppla_eeqz AS planning_plant,
         e.bebe_eilo AS plant_section,
-        e.heqn_eeqz AS display_position,
+        IF(e.heqn_eeqz IS NULL OR e.heqn_eeqz = '', NULL, CAST(e.heqn_eeqz AS INTEGER)) AS display_position,
         IF(e.inbdt IS NOT NULL, strptime(e.inbdt, '%d.%m.%Y'), NULL) AS startup_date,
         e.hequ_eeqz AS superord_id,
         e.stattext AS system_status,
