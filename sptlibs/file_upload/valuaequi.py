@@ -18,14 +18,19 @@ limitations under the License.
 import pandas as pd
 import io
 
+def blank_na(obj):
+    return '' if pd.isna(obj) else obj
+
 
 def print_valuaequi(df: pd.DataFrame, *, out_path: str) -> str:
+    """Formatting done in DB"""
     columns = ['*EQUI', 'ATAW1', 'ATAWE', 'ATAUT', 'CHARID', 'ATNAM', 'ATWRT', 'CLASSTYPE', 'ATCOD', 'ATVGLART', 'TEXTBEZ', 'ATZIS', 'VALCNT', 'ATIMB', 'ATSRT', 'ATFLV', 'ATFLB']
     with io.open(out_path, mode='w', encoding='utf-8') as outw:
+        outw.write('* Upload\n')
+        outw.write('* Data Model: U1\n')
+        outw.write('* Entity Type: VALUAEQUI\n')
+        outw.write('* Variant: VALUAEQUI1\n')
         outw.write('\t'.join(columns) + '\n')
         for row in df.itertuples():
-            atzis = f'{row.instance_counter:03d}'
-            valcnt = f'{row.val_count:04d}'
-            atsrt = f'{row.position:04d}'
-            outw.write(f'{row.equipment}\t\t\t\t{row.char_id}\t\t{row.char_value}\t{row.class_type}\t{row.code}\t\t\t{atzis}\t{valcnt}\t\t{atsrt}\t{row.value_from}\t{row.value_to}\t\n')
+            outw.write(f'{row.equipment}\t\t\t\t{row.char_id}\t\t{blank_na(row.char_value)}\t{row.class_type}\t{blank_na(row.code)}\t\t\t{row.instance_counter}\t{row.int_counter_value}\t\t{row.position}\t{blank_na(row.value_from)}\t{blank_na(row.value_to)}\t\n')
     outw.close()
