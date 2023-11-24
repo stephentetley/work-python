@@ -2,9 +2,6 @@ import pandas as pd
 import duckdb
 import sptlibs.file_upload.valuaequi as valuaequi
 
-
-duckdb_path = 'g:/work/2023/file_upload/concertor_pumps/80_fd.duckdb'
-
 def uploads_selector_query(*, view_name: str) -> str: 
     return f"""
     SELECT 
@@ -22,15 +19,17 @@ def uploads_selector_query(*, view_name: str) -> str:
     ORDER BY char_id, equipment
     """ 
 
+duckdb_path = 'g:/work/2023/file_upload/concertor_pumps/150_fd.duckdb'
 
 con = duckdb.connect(database=duckdb_path, read_only=False)
+valuaequi.setup_views(con= con, outlet_size_mm='150', rated_power='5.5')
+# gen annihilator
 con.execute(uploads_selector_query(view_name='vw_cp_upload_annihilator'))
 df = con.df()
-valuaequi.print_valuaequi(df, out_path='g:/work/2023/file_upload/concertor_pumps/80_4_annihilator_upload.txt')
-
+valuaequi.print_valuaequi(df, out_path='g:/work/2023/file_upload/concertor_pumps/150_5-5_annihilator_upload.txt')
+# assign const
 con.execute(uploads_selector_query(view_name='vw_cp_upload_assign_const'))
 df = con.df()
-valuaequi.print_valuaequi(df, out_path='g:/work/2023/file_upload/concertor_pumps/80_4_assign_const_upload.txt')
-
+valuaequi.print_valuaequi(df, out_path='g:/work/2023/file_upload/concertor_pumps/150_5-5_assign_const_upload.txt')
 con.close()
 
