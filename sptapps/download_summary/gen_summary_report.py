@@ -19,7 +19,6 @@ import os
 import tempfile
 import duckdb
 import pandas as pd
-from sptlibs.file_download.gen_sqlite import GenSqlite
 from sptlibs.file_download.gen_duckdb import GenDuckdb
 import sptapps.download_summary.duckdb_queries as duckdb_queries
 import sptapps.download_summary.duckdb_setup as duckdb_setup
@@ -34,7 +33,6 @@ class GenSummaryReport:
         self.glob_pattern = '*download.txt'
         self.output_directory = tempfile.gettempdir()
         self.classlists_db_path = None
-        self.sqlite_output_name = 'file_downloads1.sqlite3'
         self.duckdb_output_name = 'file_downloads2.duckdb'
         self.xlsx_output_name = 'downloads_summary.xlsx'
 
@@ -47,9 +45,6 @@ class GenSummaryReport:
     def add_downloads_source_directory(self, *, src_dir: str, glob_pattern: str) -> None:
         self.source_directories.append((src_dir, glob_pattern))
 
-    def set_sqlite_output_name(self, *, sqlite_output_name: str) -> None:
-        """Just the file name, not the directory."""
-        self.sqlite_output_name = sqlite_output_name
 
     def set_duckdb_output_name(self, *, duckdb_output_name: str) -> None:
         """Just the file name, not the directory."""
@@ -61,18 +56,15 @@ class GenSummaryReport:
 
     def gen_summary_report(self) -> str:
         try: 
-            gensqlite = GenSqlite(output_directory=self.output_directory)
-            for (dir, glob) in self.source_directories: 
-                gensqlite.add_file_downloads_in_directory(path=dir, glob_pattern=glob)
-            gensqlite.db_name = self.sqlite_output_name
-            sqlite_path = gensqlite.gen_sqlite()
-
-            genduckdb = GenDuckdb(sqlite_path=sqlite_path, output_directory=self.output_directory)
+            genduckdb = GenDuckdb()
+            genduckdb.set_output_directory(output_directory=self.output_directory)
             genduckdb.db_name = self.duckdb_output_name
+            for (dir, glob) in self.source_directories: 
+                genduckdb.add_file_downloads_in_directory(path=dir, glob_pattern=glob)
             genduckdb.add_classlist_tables(classlists_duckdb_path=self.classlists_db_path)
             duckdb_path = genduckdb.gen_duckdb()
             
-            # Output...
+            # Output xlsx (new db connection)...
             output_xls = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
             con = duckdb.connect(duckdb_path)
             con.execute(duckdb_setup.vw_floc_characteristics_summary_ddl)

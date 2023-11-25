@@ -223,19 +223,15 @@ FROM
 GROUP BY wacj.entity_id, wacj.class_type, wacj.class_name;
 """
 
-def query_sqlite_schema_tables(*, sqlite_path: str) -> str:
-    return f"""
+query_get_raw_tables = """
     SELECT 
-        name
-    FROM 
-        sqlite_scan('{sqlite_path}', 'sqlite_schema')
-    WHERE 
-        type ='table' AND 
-        name NOT LIKE 'sqlite_%';
+        t.table_name AS name,
+    FROM duckdb_tables() t
+    WHERE t.schema_name = 'fd_raw';
     """
 
-def s4_funcloc_masterdata_insert(*, sqlite_path: str) -> str: 
-    return f"""
+
+s4_funcloc_masterdata_insert = """
     INSERT INTO s4_funcloc_masterdata BY NAME
     SELECT 
         f.funcloc AS funcloc_id,
@@ -261,11 +257,10 @@ def s4_funcloc_masterdata_insert(*, sqlite_path: str) -> str:
         IF(f.inbdt IS NOT NULL, strptime(f.inbdt, '%d.%m.%Y'), NULL) AS startup_date,
         f.tplkz_flc AS structure_indicator,
         f.tplma AS superior_funct_loc,
-    FROM sqlite_scan('{sqlite_path}', 'funcloc_floc1') f;
+    FROM fd_raw.funcloc_floc1 f;
     """
 
-def s4_equipment_masterdata_insert(*, sqlite_path: str) -> str: 
-    return f"""
+s4_equipment_masterdata_insert = """
     INSERT INTO s4_equipment_masterdata BY NAME
     SELECT 
         e.equi AS equi_id,
@@ -299,31 +294,28 @@ def s4_equipment_masterdata_insert(*, sqlite_path: str) -> str:
         e.usta_equi AS user_status,
         IF(e.data_eeqz IS NOT NULL, strptime(e.data_eeqz, '%d.%m.%Y'), NULL) AS valid_from,
         e.arbp_eilo AS work_center,
-    FROM sqlite_scan('{sqlite_path}', 'equi_equi1') e;
+    FROM fd_raw.equi_equi1 e;
     """
 
-def s4_fd_classfloc_insert(*, sqlite_path: str) -> str: 
-    return f"""
+s4_fd_classfloc_insert = """
     INSERT INTO s4_fd_classes BY NAME
     SELECT 
         c.funcloc AS entity_id,
         c.class AS class_name,
         c.classtype AS class_type
-    FROM sqlite_scan('{sqlite_path}', 'classfloc_classfloc1') c;
+    FROM fd_raw.classfloc_classfloc1 c;
     """
 
-def s4_fd_classequi_insert(*, sqlite_path: str, ) -> str: 
-    return f"""
+s4_fd_classequi_insert = """
     INSERT INTO s4_fd_classes BY NAME
     SELECT 
         c.equi AS entity_id,
         c.class AS class_name,
         c.classtype AS class_type
-    FROM sqlite_scan('{sqlite_path}', 'classequi_classequi1') c;
+    FROM fd_raw.classequi_classequi1 c;
     """
 
-def s4_fd_char_valuafloc_insert(*, sqlite_path: str) -> str: 
-    return f"""
+s4_fd_char_valuafloc_insert = """
     INSERT INTO s4_fd_char_values BY NAME
     SELECT 
         v.funcloc AS entity_id,
@@ -334,11 +326,10 @@ def s4_fd_char_valuafloc_insert(*, sqlite_path: str) -> str:
         v.valcnt AS int_counter_value,
         v.atflv AS value_from,
         v.atflb AS value_to
-    FROM sqlite_scan('{sqlite_path}', 'valuafloc_valuafloc1') v;
+    FROM fd_raw.valuafloc_valuafloc1 v;
     """
 
-def s4_fd_char_valuaequi_insert(*, sqlite_path: str) -> str: 
-    return f"""
+s4_fd_char_valuaequi_insert = """
     INSERT INTO s4_fd_char_values BY NAME
     SELECT 
         v.equi AS entity_id,
@@ -349,6 +340,6 @@ def s4_fd_char_valuaequi_insert(*, sqlite_path: str) -> str:
         v.valcnt AS int_counter_value,
         v.atflv AS value_from,
         v.atflb AS value_to
-    FROM sqlite_scan('{sqlite_path}', 'valuaequi_valuaequi1') v;
+    FROM fd_raw.valuaequi_valuaequi1 v;
     """
 
