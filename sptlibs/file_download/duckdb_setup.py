@@ -69,7 +69,7 @@ vw_fd_decimal_values_ddl = """
     FROM s4_fd_char_values sfcv
     JOIN vw_entity_worklist ew ON ew.entity_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
-    JOIN s4_characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
+    JOIN s4_classlists.characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
     WHERE scd.char_type = 'NUM'
     AND scd.char_precision > 0;
     """
@@ -87,7 +87,7 @@ vw_fd_integer_values_ddl = """
     FROM s4_fd_char_values sfcv
     JOIN vw_entity_worklist ew ON ew.entity_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
-    JOIN s4_characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
+    JOIN s4_classlists.characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
     WHERE scd.char_type = 'NUM'
     AND scd.char_precision = 0;
     """
@@ -105,7 +105,7 @@ vw_fd_text_values_ddl = """
     FROM s4_fd_char_values sfcv
     JOIN vw_entity_worklist ew ON ew.entity_id = sfcv.entity_id
     JOIN s4_fd_classes sfc ON sfc.entity_id = sfcv.entity_id
-    JOIN s4_characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
+    JOIN s4_classlists.characteristic_defs scd ON scd.char_name = sfcv.char_name AND scd.class_name = sfc.class_name AND scd.class_type = sfcv.class_type
     WHERE scd.char_type = 'CHAR';
     """
 
@@ -205,7 +205,7 @@ vw_worklist_all_characteristics_json_ddl = """
     FROM
         vw_entity_worklist ew
     JOIN s4_fd_classes sfc ON sfc.entity_id = ew.entity_id 
-    JOIN s4_characteristic_defs scd ON scd.class_type = sfc.class_type AND scd.class_name = sfc.class_name
+    JOIN s4_classlists.characteristic_defs scd ON scd.class_type = sfc.class_type AND scd.class_name = sfc.class_name
     LEFT OUTER JOIN vw_fd_all_values_json avj ON ew.entity_id = avj.entity_id AND sfc.class_type = avj.class_type 
                 AND sfc.class_name = avj.class_name AND scd.char_name = avj.char_name
     GROUP BY ew.entity_id, sfc.class_type, sfc.class_name, scd.char_name;

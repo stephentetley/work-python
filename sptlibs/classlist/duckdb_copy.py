@@ -20,8 +20,7 @@ limitations under the License.
 def s4_classlists_table_copy(*, classlists_duckdb_path: str) -> str: 
     return f"""
         ATTACH '{classlists_duckdb_path}' AS classlists_db;
-        CREATE SCHEMA IF NOT EXISTS s4_classlists;
-        INSERT INTO s4_classlists.s4_characteristic_defs SELECT * FROM classlists_db.s4_classlists.characteristic_defs;
-        INSERT INTO s4_classlists.s4_enum_defs SELECT * FROM classlists_db.s4_classlists.enum_defs;
+        INSERT INTO s4_classlists.characteristic_defs SELECT * FROM classlists_db.s4_classlists.characteristic_defs;
+        INSERT INTO s4_classlists.enum_defs SELECT * FROM classlists_db.s4_classlists.enum_defs;
         DETACH classlists_db;
     """

@@ -32,7 +32,9 @@ class GenDuckdb:
     def __init__(self) -> None:
         self.output_directory = tempfile.gettempdir()
         self.db_name = 'file_downloads.duckdb'
-        self.ddl_stmts = [duckdb_masterdata_ddl.s4_funcloc_masterdata_ddl,
+        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS fd_raw;',
+                            'CREATE SCHEMA IF NOT EXISTS s4_classlists;',
+                            duckdb_masterdata_ddl.s4_funcloc_masterdata_ddl,
                             duckdb_masterdata_ddl.s4_equipment_masterdata_ddl,
                             duckdb_setup.s4_fd_classes_ddl, 
                             duckdb_setup.s4_fd_char_values_ddl,
@@ -56,7 +58,6 @@ class GenDuckdb:
                                     ]
         self.imports = []
 
-
     def set_output_directory(self, *, output_directory: str) -> None: 
         self.output_directory = output_directory
 
@@ -70,7 +71,8 @@ class GenDuckdb:
 
 
     def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
-        self.copy_tables_stmts.append(classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
+        stmt = classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path)
+        self.copy_tables_stmts.append(stmt)
 
 
     def __add_insert_stmts(self, tables: list[str]) -> None:
@@ -92,8 +94,6 @@ class GenDuckdb:
 
     def _gen_raw_tables(self, *, con: duckdb.DuckDBPyConnection) -> None:
         tables = {}
-        con.execute('CREATE SCHEMA IF NOT EXISTS fd_raw;')
-        con.commit()
         for path in self.imports:
             try:
                 dfp = file_download_parser.parse_file_download(path)
@@ -130,7 +130,6 @@ class GenDuckdb:
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
         con = duckdb.connect(duckdb_outpath)
-
         for stmt in self.ddl_stmts:
             try:
                 con.sql(stmt)
