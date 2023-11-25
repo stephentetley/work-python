@@ -29,7 +29,8 @@ class GenDuckdb:
         self.output_directory = tempfile.gettempdir()
         self.floc_classlist_path = floc_classlist_path
         self.equi_classlist_path = equi_classlist_path
-        self.ddl_stmts = [duckdb_setup.s4_characteristic_defs_ddl, 
+        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
+                            duckdb_setup.s4_characteristic_defs_ddl, 
                             duckdb_setup.s4_enum_defs_ddl, 
                             duckdb_setup.vw_s4_class_defs_ddl]
         self.classlist_dicts = []

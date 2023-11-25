@@ -17,7 +17,7 @@ limitations under the License.
 
 
 s4_characteristic_defs_ddl = """
-    CREATE OR REPLACE TABLE s4_characteristic_defs(
+    CREATE OR REPLACE TABLE s4_classlists.characteristic_defs(
     class_type TEXT NOT NULL,
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
@@ -32,7 +32,7 @@ s4_characteristic_defs_ddl = """
 
 s4_enum_defs_ddl = """
     -- Dont bother with primary key as it is a 4-tuple.
-    CREATE OR REPLACE TABLE s4_enum_defs(
+    CREATE OR REPLACE TABLE s4_classlists.enum_defs(
     class_type TEXT NOT NULL,
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
@@ -42,16 +42,17 @@ s4_enum_defs_ddl = """
     """
 
 vw_s4_class_defs_ddl = """
-    CREATE OR REPLACE VIEW vw_s4_class_defs AS
+    CREATE OR REPLACE VIEW s4_classlists.vw_class_defs AS
     SELECT DISTINCT
         scd.class_type,
         scd.class_name,
         scd.class_description 
-    FROM s4_characteristic_defs scd;
+    FROM s4_classlists.characteristic_defs scd;
     """
+
 def df_s4_characteristic_defs_insert(*, dataframe_view: str) -> str: 
     return f"""
-    INSERT INTO s4_characteristic_defs BY NAME
+    INSERT INTO s4_classlists.characteristic_defs BY NAME
     SELECT 
         df.class_type AS class_type,
         df.class_name AS class_name,
@@ -66,7 +67,7 @@ def df_s4_characteristic_defs_insert(*, dataframe_view: str) -> str:
 
 def df_s4_enum_defs_insert(*, dataframe_view: str) -> str: 
     return f"""
-    INSERT INTO s4_enum_defs BY NAME
+    INSERT INTO s4_classlists.enum_defs BY NAME
     SELECT 
         df.class_type AS class_type,
         df.class_name AS class_name,
