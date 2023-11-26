@@ -30,7 +30,8 @@ class GenDuckdb:
         self.db_name = 'ih06_ih08.duckdb'
         self.output_directory = tempfile.gettempdir()
         self.xlsx_imports = []
-        self.ddl_stmts = [classlist_duckdb_setup.s4_characteristic_defs_ddl,
+        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
+                            classlist_duckdb_setup.s4_characteristic_defs_ddl,
                             classlist_duckdb_setup.s4_enum_defs_ddl, 
                             duckdb_setup.s4_ih_char_values_ddl,
                             duckdb_setup.vw_s4_classes_used_ddl,

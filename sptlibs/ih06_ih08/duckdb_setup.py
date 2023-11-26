@@ -61,7 +61,7 @@ vw_characteristic_defs_with_type_ddl = """
             WHEN scd.char_type = 'NUM' AND scd.char_precision = 0 THEN 'INTEGER'
             WHEN scd.char_type = 'NUM' AND scd.char_precision > 0 THEN format('DECIMAL({}, {})', scd.char_length, scd.char_precision)
         END AS ddl_data_type
-    FROM s4_characteristic_defs scd;
+    FROM s4_classlists.characteristic_defs scd;
     """
 
 vw_s4_charateristics_used_ddl = """
