@@ -38,7 +38,9 @@ class GenDuckdb:
         '''Note - pandas differentiates columns with the same name for us'''
         duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
         con = duckdb.connect(database=duckdb_outpath)
-        for (src, table_name) in self.xlsx_imports:
+        con.execute('CREATE SCHEMA IF NOT EXISTS s4_ztables;'),
+        for (src, table_name1) in self.xlsx_imports:
+            table_name = f's4_ztables.{table_name1}'
             import_utils.duckdb_import_sheet(src, table_name=table_name, con=con, df_trafo=None, if_exists='replace')
         con.close()
         print(f'{duckdb_outpath} created')
