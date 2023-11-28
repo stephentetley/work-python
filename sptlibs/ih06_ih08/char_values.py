@@ -44,7 +44,7 @@ def vw_s4_valuaequi_eav_ddl(*, valua_table_names: list) -> str:
 
 def _unpivot_valua1(*, table_name: str) -> str: 
     return f"""
-    UNPIVOT {table_name}
+    UNPIVOT s4_raw_data.{table_name}
     ON COLUMNS(* EXCLUDE (entity_id, class_name))
     INTO 
         NAME attribute_name
@@ -75,7 +75,7 @@ def _make_select_text_characteristic(*, class_name: str, class_type: str, char_n
         '{char_name}' AS char_name,
         t.{column_name} AS text_value,
         NULL AS numeric_value,
-    FROM {table_name} t
+    FROM s4_raw_data.{table_name} t
     WHERE t.{column_name} NOT NULL
     """
 
@@ -90,7 +90,7 @@ def _make_select_date_characteristic(*, class_name: str, class_type: str, char_n
         '{char_name}' AS char_name,
         t.{column_name} AS text_value,
         NULL AS numeric_value,
-    FROM {table_name} t
+    FROM s4_raw_data.{table_name} t
     WHERE t.{column_name} NOT NULL
     """
 
@@ -105,6 +105,6 @@ def _make_select_numeric_characteristic(*, class_name: str, class_type: str, cha
         '{char_name}' AS char_name,
         NULL AS text_value,
         CAST(t.{column_name} AS {ddl_data_type}) AS numeric_value,
-    FROM {table_name} t
+    FROM s4_raw_data.{table_name} t
     WHERE t.{column_name} NOT NULL
     """

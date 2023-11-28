@@ -25,7 +25,7 @@ from sptlibs.ih06_ih08.column_range import ColumnRange
 def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     df = pd.read_excel(xlsx_src.path, xlsx_src.sheet)
     re_class_start = re.compile(r"Class (?P<class_name>[\w_]+) is assigned")
-
+    con.execute('CREATE SCHEMA IF NOT EXISTS s4_raw_data;'),
     ranges = []
     # start at column 1, dropping column 0 `selected line`
     range1 = ColumnRange(range_name='equi_masterdata', start=1)
@@ -50,7 +50,7 @@ def _load_equi_masterdata(df: pd.DataFrame, cr: ColumnRange, con: duckdb.DuckDBP
     df1 = df.iloc[:, indices]
     df1 = import_utils.normalize_df_column_names(df1)
     con.register(view_name='vw_df_equi', python_object=df1)
-    sql_stmt = f'CREATE TABLE equi_masterdata AS SELECT * FROM vw_df_equi;'
+    sql_stmt = f'CREATE TABLE s4_raw_data.equi_masterdata AS SELECT * FROM vw_df_equi;'
     con.execute(sql_stmt)
     con.commit()
 
@@ -72,7 +72,7 @@ def _load_equi_values(df: pd.DataFrame, cr: ColumnRange, con: duckdb.DuckDBPyCon
     df2 = import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'
     con.register(view_name=temp_view, python_object=df2)
-    sql_stmt = f'CREATE TABLE {table_name} AS SELECT * FROM {temp_view};'
+    sql_stmt = f'CREATE TABLE s4_raw_data.{table_name} AS SELECT * FROM {temp_view};'
     con.execute(sql_stmt)
     con.commit()
 
