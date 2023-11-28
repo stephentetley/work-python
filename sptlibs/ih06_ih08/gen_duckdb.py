@@ -22,7 +22,7 @@ from sptlibs.xlsx_source import XlsxSource
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
-import sptlibs.ih06_ih08.transform_xlsx as transform_xlsx
+import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
 import sptlibs.ih06_ih08.char_values as char_values
     
 class GenDuckdb:
@@ -82,14 +82,7 @@ class GenDuckdb:
         # TODO properly account for multiple sheets / appending data
         for src in self.xlsx_imports:
             # equi and valuaequi tables
-            tables = transform_xlsx.parse_ih08(xlsx_src=src)
-            for table in tables:
-                df = table['data_frame']
-                table_name = table['table_name']
-                drop_sql = f'DROP TABLE IF EXISTS {table_name};'
-                con.execute(drop_sql)
-                create_sql = f'CREATE TABLE {table_name} AS SELECT * FROM df;'
-                con.execute(create_sql)
+            load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
         char_values.make_vw_s4_valuaequi_eav(con=con)
         con.close()
         print(f'{duckdb_outpath} created')

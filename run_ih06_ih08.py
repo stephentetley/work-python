@@ -3,9 +3,6 @@ import pandas as pd
 import sqlite3
 from sptlibs.xlsx_source import XlsxSource
 from sptlibs.ih06_ih08.gen_duckdb import GenDuckdb
-from sptlibs.ih06_ih08.column_range import ColumnRange
-import sptlibs.ih06_ih08.transform_xlsx as transform_xlsx
-import sptlibs.import_utils as import_utils
 
 output_directory = 'G:/work/2023/ih06_ih08'
 
