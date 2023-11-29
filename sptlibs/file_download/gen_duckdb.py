@@ -26,7 +26,7 @@ import sptlibs.assets.duckdb_masterdata_ddl as duckdb_masterdata_ddl
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.file_download.duckdb_setup as duckdb_setup
-import sptlibs.file_download.file_download_parser as file_download_parser
+import sptlibs.file_download.load_file_download as load_file_download
 
 class GenDuckdb:
     def __init__(self) -> None:
@@ -96,36 +96,11 @@ class GenDuckdb:
         tables = {}
         for path in self.imports:
             try:
-                dfp = file_download_parser.parse_file_download(path)
-                if dfp is None:
-                    print(f'Parsing failed for {path}')
-                else: 
-                    table_name1 = import_utils.normalize_name('%s_%s' % (dfp['entity_type'], dfp['variant']))
-                    table_name = f'fd_raw.{table_name1}'
-                    if not table_name in tables:
-                        drop_table_sql = f'DROP TABLE IF EXISTS {table_name};'
-                        con.execute(drop_table_sql)
-                        tables[table_name] = True
-                    self.__gen_raw_table1(dfp, table_name=table_name, con=con, df_trafo=None)
+                load_file_download.load_file_download(path=path, con=con)
             except Exception as exn:
                 print(exn)
                 continue
 
-
-    def __gen_raw_table1(self, dict, *, table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
-        if dict is not None:
-            df_raw = dict['dataframe']
-            if df_trafo is not None:
-                df_clean = df_trafo(df_raw)
-            else:
-                df_clean = df_raw
-            df_renamed = import_utils.normalize_df_column_names(df_clean)
-            con.register(view_name='vw_df_renamed', python_object=df_renamed)
-            sql_stmt = f'CREATE TABLE {table_name} AS SELECT * FROM vw_df_renamed;'
-            con.execute(sql_stmt)
-            con.commit()
-        else:
-            print('__gen_raw_table1 - dict is None')
 
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
