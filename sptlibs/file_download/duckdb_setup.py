@@ -17,6 +17,75 @@ limitations under the License.
 # TODO
 # This module contains definitions e.g. `vw_get_class_name_ddl` that should be common to ih06 / ih08.
 
+s4_fd_funcloc_masterdata_ddl = """
+    CREATE OR REPLACE TABLE s4_fd_funcloc_masterdata(
+        funcloc_id TEXT NOT NULL,
+        functional_location TEXT NOT NULL,
+        address_ref INTEGER,
+        category TEXT,
+        company_code INTEGER,
+        construction_month INTEGER,
+        construction_year INTEGER,
+        controlling_area INTEGER,
+        cost_center INTEGER,
+        description TEXT,
+        display_position INTEGER,
+        installation_allowed BOOLEAN,
+        location TEXT,
+        maintenance_plant INTEGER, 
+        main_work_center TEXT,
+        object_type TEXT,
+        object_number TEXT,
+        planning_plant INTEGER,
+        plant_section TEXT,
+        startup_date DATE,
+        structure_indicator TEXT,
+        superior_funct_loc TEXT,
+        system_status TEXT,
+        user_status TEXT,
+        work_center TEXT,
+        PRIMARY KEY(functional_location)
+    );
+"""
+
+
+s4_fd_equipment_masterdata_ddl = """
+    CREATE OR REPLACE TABLE s4_fd_equipment_masterdata(
+        equi_id TEXT NOT NULL,
+        address_ref INTEGER,
+        catalog_profile TEXT,
+        category TEXT,
+        company_code INTEGER,
+        construction_month INTEGER,
+        construction_year INTEGER,
+        controlling_area INTEGER,
+        cost_center INTEGER,
+        description TEXT,
+        display_position INTEGER,
+        functional_location TEXT, 
+        gross_weight DECIMAL,
+        location TEXT,
+        main_work_center TEXT,
+        maintenance_plant INTEGER,
+        manufact_part_number TEXT,
+        manufacturer TEXT,
+        model_number TEXT,
+        object_type TEXT,
+        planning_plant INTEGER,
+        plant_section TEXT,
+        serial_number TEXT,
+        startup_date DATE,
+        superord_id TEXT,
+        system_status TEXT,
+        technical_ident_number TEXT,
+        unit_of_weight TEXT,
+        user_status TEXT,
+        valid_from DATE,
+        work_center TEXT,
+        PRIMARY KEY(equi_id)
+    );
+"""
+
 s4_fd_classes_ddl = """
     -- Same table for classequi and classfloc
     CREATE OR REPLACE TABLE s4_fd_classes(
@@ -46,13 +115,13 @@ vw_entity_worklist_ddl = """
         sem.equi_id AS entity_id,
         sem.object_type AS object_type,
         'equi' AS data_source
-    FROM s4_equipment_masterdata sem
+    FROM s4_fd_equipment_masterdata sem
     UNION 
     SELECT 
         sfm.funcloc_id AS entity_id,
         sfm.object_type AS object_type,
         'floc' AS data_source
-    FROM main.s4_funcloc_masterdata sfm;
+    FROM main.s4_fd_funcloc_masterdata sfm;
     """
 
 vw_fd_decimal_values_ddl = """
@@ -231,8 +300,8 @@ query_get_raw_tables = """
     """
 
 
-s4_funcloc_masterdata_insert = """
-    INSERT INTO s4_funcloc_masterdata BY NAME
+s4_fd_funcloc_masterdata_insert = """
+    INSERT INTO s4_fd_funcloc_masterdata BY NAME
     SELECT 
         f.funcloc AS funcloc_id,
         f.floc_ref AS functional_location,
@@ -260,8 +329,8 @@ s4_funcloc_masterdata_insert = """
     FROM fd_raw.funcloc_floc1 f;
     """
 
-s4_equipment_masterdata_insert = """
-    INSERT INTO s4_equipment_masterdata BY NAME
+s4_fd_equipment_masterdata_insert = """
+    INSERT INTO s4_fd_equipment_masterdata BY NAME
     SELECT 
         e.equi AS equi_id,
         e.adrnr AS address_ref,

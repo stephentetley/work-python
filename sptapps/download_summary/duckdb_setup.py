@@ -27,7 +27,7 @@ vw_floc_characteristics_summary_ddl = """
         wacj.class_type AS class_type,
         wacj.class_name AS class_name, 
         wacj.json_chars AS json_chars,
-    FROM s4_funcloc_masterdata sfm
+    FROM s4_fd_funcloc_masterdata sfm
     JOIN vw_worklist_all_classes_json wacj ON wacj.entity_id = sfm.funcloc_id
     WHERE wacj.class_type = '003';
     """
@@ -45,7 +45,7 @@ vw_equi_characteristics_summary_ddl = """
         wacj.class_type AS class_type,
         wacj.class_name AS class_name, 
         wacj.json_chars AS json_chars,
-    FROM s4_equipment_masterdata sem
+    FROM s4_fd_equipment_masterdata sem
     JOIN vw_worklist_all_classes_json wacj ON wacj.entity_id = sem.equi_id
     WHERE wacj.class_type = '002';
     """

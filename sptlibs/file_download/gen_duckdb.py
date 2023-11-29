@@ -21,8 +21,6 @@ from typing import Callable
 import tempfile
 import pandas as pd
 import duckdb
-import sptlibs.import_utils as import_utils
-import sptlibs.assets.duckdb_masterdata_ddl as duckdb_masterdata_ddl
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.file_download.duckdb_setup as duckdb_setup
@@ -34,8 +32,8 @@ class GenDuckdb:
         self.db_name = 'file_downloads.duckdb'
         self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS fd_raw;',
                             'CREATE SCHEMA IF NOT EXISTS s4_classlists;',
-                            duckdb_masterdata_ddl.s4_funcloc_masterdata_ddl,
-                            duckdb_masterdata_ddl.s4_equipment_masterdata_ddl,
+                            duckdb_setup.s4_fd_funcloc_masterdata_ddl,
+                            duckdb_setup.s4_fd_equipment_masterdata_ddl,
                             duckdb_setup.s4_fd_classes_ddl, 
                             duckdb_setup.s4_fd_char_values_ddl,
                             classlist_duckdb_setup.s4_characteristic_defs_ddl,
@@ -78,13 +76,13 @@ class GenDuckdb:
     def __add_insert_stmts(self, tables: list[str]) -> None:
         for table in tables:
             if table == 'funcloc_floc1':
-                self.insert_from_stmts.append(duckdb_setup.s4_funcloc_masterdata_insert)
+                self.insert_from_stmts.append(duckdb_setup.s4_fd_funcloc_masterdata_insert)
             elif table == 'classfloc_classfloc1':
                 self.insert_from_stmts.append(duckdb_setup.s4_fd_classfloc_insert)
             elif table == 'valuafloc_valuafloc1':
                 self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuafloc_insert)
             elif table == 'equi_equi1':
-                self.insert_from_stmts.append(duckdb_setup.s4_equipment_masterdata_insert)
+                self.insert_from_stmts.append(duckdb_setup.s4_fd_equipment_masterdata_insert)
             elif table == 'classequi_classequi1':
                 self.insert_from_stmts.append(duckdb_setup.s4_fd_classequi_insert)
             elif table == 'valuaequi_valuaequi1':

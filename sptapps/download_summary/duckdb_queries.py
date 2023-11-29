@@ -43,7 +43,7 @@ floc_summary_report = """
         gcn.class_name AS class_name,
         gcl.classes AS floc_classes,
     FROM 
-        s4_funcloc_masterdata sfm
+        s4_fd_funcloc_masterdata sfm
     LEFT OUTER JOIN vw_get_class_name gcn ON gcn.entity_id = sfm.funcloc_id
     JOIN vw_get_classes_list gcl ON gcl.entity_id = sfm.funcloc_id
     ORDER BY sfm.functional_location;
@@ -85,7 +85,7 @@ equi_summary_report = """
         gcn.class_name AS class_name,
         gcl.classes AS equi_classes,
     FROM 
-        s4_equipment_masterdata sem
+        s4_fd_equipment_masterdata sem
     JOIN vw_get_class_name gcn ON gcn.entity_id = sem.equi_id
     JOIN vw_get_classes_list gcl ON gcl.entity_id = sem.equi_id 
     ORDER BY sem.equi_id;
