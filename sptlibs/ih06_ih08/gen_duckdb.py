@@ -41,7 +41,7 @@ class GenDuckdb:
                             duckdb_setup.vw_characteristic_defs_with_type_ddl,
                             duckdb_setup.vw_s4_charateristics_used_ddl
                             ]
-        self.copy_tables_stmts = []
+        self.copy_tables_stmts = [duckdb_setup.s4_ih_equipment_masterdata_insert]
 
     def set_output_directory(self, *, output_directory: str) -> None: 
         self.output_directory = output_directory
@@ -75,6 +75,12 @@ class GenDuckdb:
                 print(exn)
                 print(stmt)
                 continue
+        # TODO properly account for multiple sheets / appending data
+        for src in self.xlsx_imports:
+            # equi and valuaequi tables
+            load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
+        char_values.make_vw_s4_valuaequi_eav(con=con)
+        
         for stmt in self.copy_tables_stmts:
             try:
                 con.sql(stmt)
@@ -82,11 +88,6 @@ class GenDuckdb:
                 print(exn)
                 print(stmt)
                 continue
-        # TODO properly account for multiple sheets / appending data
-        for src in self.xlsx_imports:
-            # equi and valuaequi tables
-            load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
-        char_values.make_vw_s4_valuaequi_eav(con=con)
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath

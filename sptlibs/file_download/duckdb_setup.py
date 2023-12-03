@@ -281,16 +281,16 @@ vw_worklist_all_characteristics_json_ddl = """
     """
 
 vw_worklist_all_classes_json_ddl = """
-CREATE OR REPLACE VIEW vw_worklist_all_classes_json AS
-SELECT 
-    wacj.entity_id AS entity_id,
-    wacj.class_type AS class_type,
-    wacj.class_name AS class_name, 
-    json_group_object(wacj.char_name, json_array_values) AS json_chars,
-FROM
-    vw_worklist_all_characteristics_json wacj
-GROUP BY wacj.entity_id, wacj.class_type, wacj.class_name;
-"""
+    CREATE OR REPLACE VIEW vw_worklist_all_classes_json AS
+    SELECT 
+        wacj.entity_id AS entity_id,
+        wacj.class_type AS class_type,
+        wacj.class_name AS class_name, 
+        json_group_object(wacj.char_name, json_array_values) AS json_chars,
+    FROM
+        vw_worklist_all_characteristics_json wacj
+    GROUP BY wacj.entity_id, wacj.class_type, wacj.class_name;
+    """
 
 query_get_raw_tables = """
     SELECT 

@@ -104,7 +104,49 @@ s4_ih_char_values_ddl = """
     );
 """
 
-
+s4_ih_equipment_masterdata_insert = """
+    --- source table has _duplicates_ which cause an error without the row_number interior table 
+    INSERT OR REPLACE INTO s4_ih_equipment_masterdata BY NAME
+    SELECT 
+        e.equipment AS equi_id,
+        e.address_number AS address_ref,
+        e.catalog_profile AS catalog_profile,
+        e.equipment_category AS category,
+        e.company_code AS company_code,
+        e.construction_month AS construction_month,
+        e.construction_year AS construction_year,
+        e.controlling_area AS controlling_area,
+        e.cost_center AS cost_center,
+        e.description_of_technical_object AS description,
+        e.functional_location AS functional_location,
+        e.gross_weight AS gross_weight,
+        e.location AS location,
+        e.main_work_center AS main_work_center,
+        e.maintenance_plant AS maintenance_plant,
+        e.manufactserialnumber AS serial_number,
+        e.manufacturer_part_number AS manufact_part_number,
+        e.manufacturer_of_asset AS manufacturer,
+        e.model_number AS model_number,
+        e.object_type AS object_type,
+        e.planning_plant AS planning_plant,
+        e.plant_section AS plant_section,
+        IF(e.position IS NULL, NULL, CAST(e.position AS INTEGER)) AS display_position,
+        e.start_up_date::TIMESTAMP::DATE AS startup_date,
+        e.superord_equipment AS superord_id,
+        e.system_status AS system_status,
+        e.technical_identification_no AS technical_ident_number,
+        e.weight_unit AS unit_of_weight,
+        e.user_status AS user_status,
+        e.valid_from::TIMESTAMP::DATE AS valid_from,
+        e.work_center AS work_center,
+    FROM (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY e1.equipment) AS rownum,
+        FROM s4_raw_data.equi_masterdata e1
+        ) e
+    WHERE e.rownum = 1
+"""
 
 # OLD ...
 
