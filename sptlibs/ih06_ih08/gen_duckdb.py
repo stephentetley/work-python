@@ -24,6 +24,7 @@ import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
 import sptlibs.ih06_ih08.char_values as char_values
+import sptlibs.ih06_ih08.unpivot_classes as unpivot_classes
     
 class GenDuckdb:
     def __init__(self) -> None:
@@ -88,6 +89,8 @@ class GenDuckdb:
                 print(exn)
                 print(stmt)
                 continue
+
+        unpivot_classes.make_ih_char_and_classes(con=con)
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath
