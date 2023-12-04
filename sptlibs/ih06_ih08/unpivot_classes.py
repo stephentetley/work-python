@@ -65,7 +65,7 @@ def s4_ih_char_values_insert(*, qualified_table_name: str, class_type: str) -> s
         vals.class_name AS class_name,
         '{class_type}' AS class_type,
         cd.char_name AS char_name,
-        IF(cd.char_type IN ('CHAR', 'DATE'), vals.attribute_value, NULL) AS text_value,
+        IF(cd.char_type != 'NUM', vals.attribute_value, NULL) AS text_value,
         IF(cd.char_type = 'NUM', TRY_CAST(vals.attribute_value AS NUMERIC) , NULL) AS numeric_value,
     FROM (UNPIVOT {qualified_table_name}
     ON COLUMNS(* EXCLUDE (entity_id, class_name))

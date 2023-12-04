@@ -15,7 +15,6 @@ limitations under the License.
 
 """
 
-import sptlibs.export_utils as export_utils
 import sptapps.download_summary.duckdb_queries as duckdb_queries
 
 

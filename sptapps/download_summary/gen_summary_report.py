@@ -97,7 +97,7 @@ class GenSummaryReport:
                     con.execute(query= duckdb_queries.equi_class_tab_summary_report, parameters={'class_name': class_name})
                     df2 = con.df()
                     df3 = df_transforms.class_char_rewrite_characteristics(df2)
-                    df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)                    
+                    df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)
                 con.close()
             return output_xls
         except Exception as exn:

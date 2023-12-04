@@ -25,6 +25,7 @@ import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
 import sptlibs.ih06_ih08.char_values as char_values
 import sptlibs.ih06_ih08.unpivot_classes as unpivot_classes
+import sptlibs.ih06_ih08.summary_report as summary_report
     
 class GenDuckdb:
     def __init__(self) -> None:
@@ -43,6 +44,7 @@ class GenDuckdb:
                             duckdb_setup.vw_s4_charateristics_used_ddl
                             ]
         self.copy_tables_stmts = [duckdb_setup.s4_ih_equipment_masterdata_insert]
+        self.xlsx_output_name = 'ih_summary.xlsx'
 
     def set_output_directory(self, *, output_directory: str) -> None: 
         self.output_directory = output_directory
@@ -50,6 +52,10 @@ class GenDuckdb:
     def set_db_name(self, *, db_name: str) -> None:
         '''Just the name, not the path.'''
         self.db_name = db_name
+
+    def set_output_report_name(self, *, xlsx_name: str) -> None:
+        """Just the file name, not the directory."""
+        self.xlsx_output_name = xlsx_name
 
     def add_ih06_export(self, src: XlsxSource) -> None:
         self.xlsx_imports.append(src)
@@ -91,6 +97,9 @@ class GenDuckdb:
                 continue
 
         unpivot_classes.make_ih_char_and_classes(con=con)
+        # Output xlsx (new db connection)...
+        output_xls = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
+        summary_report.make_summary_report(output_xls=output_xls, con=con)
         con.close()
         print(f'{duckdb_outpath} created')
         return duckdb_outpath
