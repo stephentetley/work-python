@@ -31,7 +31,8 @@ class GenDuckdb:
     def __init__(self) -> None:
         self.db_name = 'ih06_ih08.duckdb'
         self.output_directory = tempfile.gettempdir()
-        self.xlsx_imports = []
+        self.xlsx_ih06_imports = []
+        self.xlsx_ih08_imports = []
         self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
                             classlist_duckdb_setup.s4_characteristic_defs_ddl,
                             classlist_duckdb_setup.s4_enum_defs_ddl, 
@@ -58,10 +59,10 @@ class GenDuckdb:
         self.xlsx_output_name = xlsx_name
 
     def add_ih06_export(self, src: XlsxSource) -> None:
-        self.xlsx_imports.append(src)
+        self.xlsx_ih06_imports.append(src)
 
     def add_ih08_export(self, src: XlsxSource) -> None:
-        self.xlsx_imports.append(src)
+        self.xlsx_ih08_imports.append(src)
 
     def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
         self.copy_tables_stmts.append(classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
@@ -83,9 +84,16 @@ class GenDuckdb:
                 print(stmt)
                 continue
         # TODO properly account for multiple sheets / appending data
-        for src in self.xlsx_imports:
+        # flocs
+        for src in self.xlsx_ih06_imports:
+            # equi and valuaequi tables
+            load_raw_xlsx.load_ih06(xlsx_src=src, con=con)
+        # equi
+        for src in self.xlsx_ih08_imports:
             # equi and valuaequi tables
             load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
+        
+        # Is the next obsolete...
         char_values.make_vw_s4_valuaequi_eav(con=con)
         
         for stmt in self.copy_tables_stmts:

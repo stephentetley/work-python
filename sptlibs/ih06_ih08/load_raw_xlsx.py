@@ -21,14 +21,30 @@ from sptlibs.xlsx_source import XlsxSource
 import sptlibs.import_utils as import_utils
 from sptlibs.ih06_ih08.column_range import ColumnRange
 
+def load_ih06(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
+    config = {}
+    config['range_name'] = 'floc_masterdata'
+    config['qualified_table_name'] = 's4_raw_data.floc_masterdata'
+    config['df_view_name'] = 'vw_df_floc'
+    config['name_prefix'] = 'valuafloc'
+    _load_ih_file(config=config, xlsx_src=xlsx_src, con=con)
 
 def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
+    config = {}
+    config['range_name'] = 'equi_masterdata'
+    config['qualified_table_name'] = 's4_raw_data.equi_masterdata'
+    config['df_view_name'] = 'vw_df_equi'
+    config['name_prefix'] = 'valuaequi'
+    _load_ih_file(config=config, xlsx_src=xlsx_src, con=con)
+
+
+def _load_ih_file(*, config: dict, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     df = pd.read_excel(xlsx_src.path, xlsx_src.sheet)
     re_class_start = re.compile(r"Class (?P<class_name>[\w_]+) is assigned")
     con.execute('CREATE SCHEMA IF NOT EXISTS s4_raw_data;'),
     ranges = []
     # start at column 1, dropping column 0 `selected line`
-    range1 = ColumnRange(range_name='equi_masterdata', start=1)
+    range1 = ColumnRange(range_name=config['range_name'], start=1)
     for (ix, col) in enumerate(df.columns):
         find_class_start = re_class_start.search(col)
         if find_class_start:
@@ -41,33 +57,34 @@ def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     # add pending range
     ranges.append(range1)
     # load the data...
-    _load_equi_masterdata(df, ranges[0], con)
+    _load_masterdata(qualified_table_name=config['qualified_table_name'], temp_view_name=config['df_view_name'], data_frame=df, column_range=ranges[0], con=con)
     for crange in ranges[1:]:
-        _load_equi_values(df, crange, con)
+        _load_values(name_prefix=config['name_prefix'], data_frame=df, column_range=crange, con=con)
 
-def _load_equi_masterdata(df: pd.DataFrame, cr: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
-    indices = list(range(cr.range_start, cr.range_end + 1, 1))
-    df1 = df.iloc[:, indices]
+def _load_masterdata(*, qualified_table_name: str, temp_view_name: str, data_frame: pd.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
+    indices = list(range(column_range.range_start, column_range.range_end + 1, 1))
+    df1 = data_frame.iloc[:, indices]
     df1 = import_utils.normalize_df_column_names(df1)
-    con.register(view_name='vw_df_equi', python_object=df1)
-    sql_stmt = f'CREATE TABLE s4_raw_data.equi_masterdata AS SELECT * FROM vw_df_equi;'
+    con.register(view_name=temp_view_name, python_object=df1)
+    sql_stmt = f'CREATE TABLE {qualified_table_name} AS SELECT * FROM {temp_view_name};'
     con.execute(sql_stmt)
     con.commit()
 
-def _load_equi_values(df: pd.DataFrame, cr: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
+def _load_values(*, name_prefix: str, data_frame: pd.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
     # use separate tables for equi and floc values
-    indices = list(range(cr.range_start, cr.range_end + 1, 1))
-    table_name = 'valuaequi_%s' % cr.range_name.lower()
+    indices = list(range(column_range.range_start, column_range.range_end + 1, 1))
+    table_name = f'{name_prefix}_{column_range.range_name.lower()}'
     indices.insert(0, 1) # add equipment id
-    df1 = df.iloc[:, indices]
-    class_column_name = 'Class %s is assigned' % cr.range_name
-    class_column_value = '%s is assigned' % cr.range_name
+    df1 = data_frame.iloc[:, indices]
+    class_column_name = f'Class {column_range.range_name} is assigned'
+    class_column_value = f'{column_range.range_name} is assigned'
     # filter
     df2 = df1[df1[class_column_name] == class_column_value].copy(deep=True)
     # add constant column
-    df2['class_name'] = cr.range_name
+    df2['class_name'] = column_range.range_name
     df2 = df2.drop([class_column_name], axis=1)
-    df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
+    if name_prefix == 'valuaequi': 
+        df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
     df2 = import_utils.normalize_df_column_names(df2)
     df2 = import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'
