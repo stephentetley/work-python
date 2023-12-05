@@ -85,6 +85,8 @@ def _load_values(*, name_prefix: str, data_frame: pd.DataFrame, column_range: Co
     df2 = df2.drop([class_column_name], axis=1)
     if name_prefix == 'valuaequi': 
         df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
+    if name_prefix == 'valuafloc': 
+        df2.rename(columns={'Functional Location': 'entity_id'}, inplace=True)
     df2 = import_utils.normalize_df_column_names(df2)
     df2 = import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'

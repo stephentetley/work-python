@@ -22,11 +22,11 @@ import pandas as pd
 def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> None:
     con.execute(_tabname_macro)
     tabs = []
-    # con.execute(_make_valua_data_query(class_type='003'))
-    # for row in con.fetchall():
-    #     tab_name = row[2]
-    #     tab_query = _make_valuafloc_pivot_query(class_name=row[1], columns=row[3])
-    #     tabs.append((tab_name, tab_query))
+    con.execute(_make_valua_data_query(class_type='003'))
+    for row in con.fetchall():
+        tab_name = row[2]
+        tab_query = _make_valuafloc_pivot_query(class_name=row[1], columns=row[3])
+        tabs.append((tab_name, tab_query))
     con.execute(_make_valua_data_query(class_type='002'))
     for row in con.fetchall():
         tab_name = row[2]
@@ -73,13 +73,12 @@ def _make_valuafloc_pivot_query(*, class_name: str, columns: list) -> str:
     quoted_char_names = _make_quoted_name_list(columns)
     return f"""
         SELECT 
-            em.equi_id AS equipment_id,
-            em.description AS equipment_name,
-            em.functional_location AS functional_location,
-            em.manufacturer AS manufacturer,
-            em.model_number AS model_number,
-            strftime(em.startup_date, '%Y.%m.%d') AS startup_date,
-            em.user_status AS user_status,
+            fm.functional_location AS functional_location,
+            fm.description AS description,
+            strftime(fm.startup_date, '%Y.%m.%d') AS startup_date,
+            fm.structure_indicator AS structure_indicator,
+            fm.object_type AS object_type,
+            fm.user_status AS user_status,
             {pv_selectors}
         FROM (PIVOT (
             SELECT vals.entity_id, vals.class_name, vals.char_name, vals.text_value AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.text_value IS NOT NULL 
@@ -87,7 +86,7 @@ def _make_valuafloc_pivot_query(*, class_name: str, columns: list) -> str:
             SELECT vals.entity_id, vals.class_name, vals.char_name, vals.numeric_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.numeric_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
-        JOIN main.s4_ih_equipment_masterdata em ON fm.equi_id = pv.entity_id; 
+        JOIN main.s4_ih_funcloc_masterdata fm ON fm.functional_location = pv.entity_id; 
         """
 
 def _make_valuaequi_pivot_query(*, class_name: str, columns: list) -> str:

@@ -20,12 +20,16 @@ import duckdb
 
 def make_ih_char_and_classes(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute(normalize_column_name_macro)
-    con.execute(valuaequi_tables_query)
+    _make_ih_char_and_classes1(table_prefix='valuaequi', class_type='002', con=con)
+    _make_ih_char_and_classes1(table_prefix='valuafloc', class_type='003', con=con)
+
+def _make_ih_char_and_classes1(*, table_prefix: str, class_type: str, con: duckdb.DuckDBPyConnection) -> None:
+    con.execute(valua_tables_query(table_prefix=table_prefix))
     for row in con.fetchall():
          qualified_name = f'{row[0]}.{row[1]}'
-         ins1 = s4_ih_classes_insert(qualified_table_name=qualified_name, class_type='002')
+         ins1 = s4_ih_classes_insert(qualified_table_name=qualified_name, class_type=class_type)
          con.execute(ins1)
-         ins2= s4_ih_char_values_insert(qualified_table_name=qualified_name, class_type='002')
+         ins2 = s4_ih_char_values_insert(qualified_table_name=qualified_name, class_type=class_type)
          con.execute(ins2)
     con.commit()
 
@@ -34,13 +38,14 @@ normalize_column_name_macro = """
     CREATE OR REPLACE MACRO normalize_column_name(name) AS regexp_replace(trim(regexp_replace(lower(name), '[\W+]', ' ', 'g')), '[\W]+', '_', 'g');
     """
 
-valuaequi_tables_query = """
+def valua_tables_query(*, table_prefix: str) -> str: 
+    return f"""
     SELECT DISTINCT
         dc.schema_name,
         dc.table_name AS table_name,
     FROM duckdb_columns() dc
     WHERE dc.schema_name = 's4_raw_data'
-    AND dc.table_name LIKE 'valuaequi_%';
+    AND dc.table_name LIKE '{table_prefix}_%';
     """
 
 def s4_ih_classes_insert(*, qualified_table_name: str, class_type: str) -> str:

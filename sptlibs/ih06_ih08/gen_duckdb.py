@@ -44,7 +44,8 @@ class GenDuckdb:
                             duckdb_setup.vw_characteristic_defs_with_type_ddl,
                             duckdb_setup.vw_s4_charateristics_used_ddl
                             ]
-        self.copy_tables_stmts = [duckdb_setup.s4_ih_equipment_masterdata_insert]
+        self.copy_tables_stmts = [duckdb_setup.s4_ih_equipment_masterdata_insert, 
+                                  duckdb_setup.s4_ih_funcloc_masterdata_insert ]
         self.xlsx_output_name = 'ih_summary.xlsx'
 
     def set_output_directory(self, *, output_directory: str) -> None: 

@@ -16,11 +16,11 @@ limitations under the License.
 """
 
 s4_ih_funcloc_masterdata_ddl = """
-    CREATE OR REPLACE TABLE s4_funcloc_masterdata(
-        funcloc_id TEXT NOT NULL,
+    CREATE OR REPLACE TABLE s4_ih_funcloc_masterdata(
         functional_location TEXT NOT NULL,
         address_ref INTEGER,
         category TEXT,
+        catalog_profile TEXT,
         company_code INTEGER,
         construction_month INTEGER,
         construction_year INTEGER,
@@ -102,6 +102,43 @@ s4_ih_char_values_ddl = """
         char_text_value TEXT,
         char_numeric_value DECIMAL(26, 6)
     );
+"""
+s4_ih_funcloc_masterdata_insert = """
+    --- source table has _duplicates_ which cause an error without the row_number interior table 
+    INSERT OR REPLACE INTO s4_ih_funcloc_masterdata BY NAME
+    SELECT 
+        f.functional_location AS functional_location,
+        f.address_number AS address_ref,
+        f.catalog_profile AS catalog_profile,
+        f.functloccategory::TEXT AS category,
+        f.company_code AS company_code,
+        f.construction_month AS construction_month,
+        f.construction_year AS construction_year,
+        f.controlling_area AS controlling_area,
+        f.cost_center AS cost_center,
+        f.description_of_functional_location AS description,
+        f.position_in_object AS display_position,
+        IF(f.installation_allowed = 'X', true, false) AS installation_allowed,
+        f.location AS location,
+        f.maintenance_plant AS maintenance_plant, 
+        f.main_work_center AS main_work_center,
+        f.object_type AS object_type,
+        f.object_number AS object_number,
+        f.planning_plant AS planning_plant,
+        f.plant_section AS plant_section,
+        f.start_up_date::TIMESTAMP::DATE AS startup_date,
+        f.structure_indicator AS structure_indicator,
+        f.superior_functional_location AS superior_funct_loc,
+        f.system_status AS system_status,
+        f.user_status AS user_status,
+        f.work_center AS work_center,
+    FROM (
+        SELECT
+            *,
+            ROW_NUMBER() OVER (PARTITION BY f1.functional_location) AS rownum,
+        FROM s4_raw_data.floc_masterdata f1
+        ) f
+    WHERE f.rownum = 1
 """
 
 s4_ih_equipment_masterdata_insert = """
