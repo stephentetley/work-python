@@ -17,6 +17,8 @@ limitations under the License.
 
 import duckdb
 import pandas as pd
+import sptlibs.export_utils as export_utils
+from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
 
 
 def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> None:
@@ -38,18 +40,21 @@ def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> N
         # funcloc masterdata
         con.execute('SELECT md.* FROM s4_ih_funcloc_masterdata md ORDER BY md.functional_location;')
         df_floc = con.df()
-        df_floc.to_excel(xlwriter, engine='xlsxwriter', sheet_name='functional_location')
+        table_writer = DataFrameXlsxTable(df=df_floc)
+        table_writer.to_excel(writer=xlwriter, sheet_name='functional_location')
         # equipment masterdata
         con.execute('SELECT md.* FROM s4_ih_equipment_masterdata md ORDER BY md.functional_location;')
         df_equi = con.df()
-        df_equi.to_excel(xlwriter, engine='xlsxwriter', sheet_name='equipment')
+        table_writer = DataFrameXlsxTable(df=df_equi)
+        table_writer.to_excel(writer=xlwriter, sheet_name='equipment')
         for (name, query) in tabs:
             print(name)
             con.execute(query)
             df = con.df()
             # TODO need to simplify list output for characteristics columns
-            df.to_excel(xlwriter, engine='xlsxwriter', sheet_name=name)
-
+            table_writer = DataFrameXlsxTable(df=df)
+            table_writer.to_excel(writer=xlwriter, sheet_name=name)
+        
 
 _tabname_macro = """
     CREATE OR REPLACE MACRO tabname(clstype, clsname) AS CASE
