@@ -17,7 +17,7 @@ limitations under the License.
 
 import json
 import pandas as pd
-import sptapps.download_summary.unjson as unjson
+import sptlibs.unjson as unjson
 
 
 def funcloc_rewrite_floc_classes(df: pd.DataFrame) -> pd.DataFrame:

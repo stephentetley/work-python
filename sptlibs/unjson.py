@@ -15,16 +15,27 @@ limitations under the License.
 
 """
 
-def _notEmpty1(x): 
-    if x == None: 
-        return False
-    elif x == '':
-        return False
-    else: 
-        return True
+import json
+import pandas as pd
 
-def _strip_nulls(ls): 
-    return list(filter(_notEmpty1, ls))
+# Rewrite columns in a dtaframe that start with 'json_'
+
+
+def pp_json_columns(df: pd.DataFrame) -> pd.DataFrame:
+    json_columns = list(filter(lambda s: s.startswith('json_'), df.columns.values.tolist()))
+    print(json_columns)
+    for col_name in json_columns: 
+        new_col = col_name[5:]
+        df[new_col] = df[col_name].apply(lambda x: _simplify(x))
+    df = df.drop(json_columns, axis=1)
+    return df
+
+def _simplify(x: str) -> str: 
+    if x:
+        return pp_value(json.loads(x))
+    else:
+        return ''
+
 
 def pp_value(jvalue) -> str:
     '''Expects scalars or arrays of scalars. Strings unquoted, len(1) arrays printed as singletons.'''
@@ -38,4 +49,21 @@ def pp_value(jvalue) -> str:
         return ', '.join(map(pp_value, xs))
     else:
         return str(jvalue)
+
+
+def _pp_values_from_dict(key: str, jsdict: dict) -> str:
+    jsvals = jsdict.get(key, '')
+    return pp_value(jsvals)
+    
+def _notEmpty1(x): 
+    if x == None: 
+        return False
+    elif x == '':
+        return False
+    else: 
+        return True
+
+def _strip_nulls(ls): 
+    return list(filter(_notEmpty1, ls))
+
     

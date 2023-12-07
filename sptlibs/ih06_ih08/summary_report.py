@@ -17,8 +17,8 @@ limitations under the License.
 
 import duckdb
 import pandas as pd
-import sptlibs.export_utils as export_utils
 from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
+import sptlibs.unjson as unjson
 
 
 def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> None:
@@ -51,10 +51,17 @@ def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> N
             print(name)
             con.execute(query)
             df = con.df()
+            df1 = unjson.pp_json_columns(df)
             # TODO need to simplify list output for characteristics columns
-            table_writer = DataFrameXlsxTable(df=df)
+            table_writer = DataFrameXlsxTable(df=df1)
             table_writer.to_excel(writer=xlwriter, sheet_name=name)
         
+
+# def rewrite_lists(df: pd.DataFrame) -> None:
+#     for col in df.columns:
+#         if type(col
+    
+
 
 _tabname_macro = """
     CREATE OR REPLACE MACRO tabname(clstype, clsname) AS CASE
@@ -119,9 +126,9 @@ def _make_valuaequi_pivot_query(*, class_name: str, columns: list) -> str:
             em.user_status AS user_status,
             {pv_selectors}
         FROM (PIVOT (
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.text_value AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.text_value IS NOT NULL 
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.text_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.text_value IS NOT NULL 
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.numeric_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.numeric_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.numeric_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.numeric_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
         JOIN main.s4_ih_equipment_masterdata em ON em.equi_id = pv.entity_id
@@ -129,7 +136,7 @@ def _make_valuaequi_pivot_query(*, class_name: str, columns: list) -> str:
         """
 
 def _make_select_lines(columns: list) -> str:
-    return '\n'.join(map(lambda name: f'    pv.{name},', columns))
+    return '\n'.join(map(lambda name: f'    to_json(pv.{name}) AS json_{name},', columns))
 
 def _make_quoted_name_list(columns: list) -> str:
     return ', '.join(map(lambda name: f'\'{name}\'', columns))
