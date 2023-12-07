@@ -24,6 +24,7 @@ import sptapps.download_summary.duckdb_queries as duckdb_queries
 import sptapps.download_summary.duckdb_setup as duckdb_setup
 import sptapps.download_summary.df_transforms as df_transforms
 import sptapps.download_summary.make_summary_report as make_summary_report
+from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
 
 # TODO add class specific rewrites, e.g. separating PLI and SAI in AI2_REFERENCE
 
@@ -75,11 +76,14 @@ class GenSummaryReport:
                 df = con.df()                
                 df = df_transforms.funcloc_rewrite_floc_classes(df)
                 df.to_excel(xlwriter, engine='xlsxwriter', sheet_name='funcloc_master')
+                table_writer = DataFrameXlsxTable(df=df)
+                table_writer.to_excel(writer=xlwriter, sheet_name='funcloc_master')
                 # equi summary
                 con.execute(duckdb_queries.equi_summary_report)
                 df = con.df()                
                 df1 = df_transforms.equipment_rewrite_equi_classes(df)
-                df1.to_excel(xlwriter, engine='xlsxwriter', sheet_name='equipment_master')
+                table_writer = DataFrameXlsxTable(df=df1)
+                table_writer.to_excel(writer=xlwriter, sheet_name='equipment_master')
                 # floc tabs
                 con.execute(duckdb_queries.get_floc_classes_used_query)
                 for (class_type, class_name) in con.fetchall():
@@ -88,7 +92,8 @@ class GenSummaryReport:
                     con.execute(query= duckdb_queries.floc_class_tab_summary_report, parameters={'class_name': class_name})
                     df2 = con.df()
                     df3 = df_transforms.class_char_rewrite_characteristics(df2)
-                    df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)
+                    table_writer = DataFrameXlsxTable(df=df3)
+                    table_writer.to_excel(writer=xlwriter, sheet_name=tab_name)
                 # equi tabs
                 con.execute(duckdb_queries.get_equi_classes_used_query)
                 for (class_type, class_name) in con.fetchall():
@@ -98,6 +103,8 @@ class GenSummaryReport:
                     df2 = con.df()
                     df3 = df_transforms.class_char_rewrite_characteristics(df2)
                     df3.to_excel(xlwriter, engine='xlsxwriter', sheet_name=tab_name)
+                    table_writer = DataFrameXlsxTable(df=df3)
+                    table_writer.to_excel(writer=xlwriter, sheet_name=tab_name)
                 con.close()
             return output_xls
         except Exception as exn:
