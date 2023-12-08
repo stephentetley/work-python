@@ -38,12 +38,12 @@ def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> N
         tabs.append((tab_name, tab_query))
     with pd.ExcelWriter(output_xls) as xlwriter: 
         # funcloc masterdata
-        con.execute('SELECT md.* FROM s4_ih_funcloc_masterdata md ORDER BY md.functional_location;')
+        con.execute(_funcloc_masterdata_query)
         df_floc = con.df()
         table_writer = DataFrameXlsxTable(df=df_floc)
         table_writer.to_excel(writer=xlwriter, sheet_name='functional_location')
         # equipment masterdata
-        con.execute('SELECT md.* FROM s4_ih_equipment_masterdata md ORDER BY md.functional_location;')
+        con.execute(_equipment_masterdata_query)
         df_equi = con.df()
         table_writer = DataFrameXlsxTable(df=df_equi)
         table_writer.to_excel(writer=xlwriter, sheet_name='equipment')
@@ -140,3 +140,71 @@ def _make_select_lines(columns: list) -> str:
 
 def _make_quoted_name_list(columns: list) -> str:
     return ', '.join(map(lambda name: f'\'{name}\'', columns))
+
+_funcloc_masterdata_query = """
+    SELECT 
+        md.functional_location AS functional_location,
+        md.description AS description,
+        md.object_type AS object_type,
+        md.structure_indicator AS structure_indicator,
+        md.superior_funct_loc AS superior_funct_loc,
+        md.category AS category,
+        md.user_status AS user_status,
+        md.system_status AS system_status,
+        md.installation_allowed AS installation_allowed,
+        strftime(md.startup_date, '%d.%m.%Y') AS startup_date,
+        lpad(CAST(md.construction_month AS TEXT), 2, '0') AS construction_month,
+        md.construction_year AS construction_year,
+        lpad(CAST(md.display_position AS TEXT), 4, '0') AS display_position,
+        md.catalog_profile AS catalog_profile,
+        md.company_code AS company_code,
+        md.cost_center AS cost_center,
+        md.controlling_area AS controlling_area,
+        md.maintenance_plant AS maintenance_plant,
+        md.main_work_center AS main_work_center,
+        md.work_center AS work_center,
+        md.planning_plant AS planning_plant,
+        md.plant_section AS plant_section,
+        md.object_number AS object_number,
+        md.location AS location,
+        md.address_ref AS address_ref,
+    FROM s4_ih_funcloc_masterdata md 
+    ORDER BY md.functional_location;
+    """
+
+_equipment_masterdata_query = """
+    SELECT 
+        md.equi_id AS equi_id,
+        md.description AS description,
+        md.functional_location AS functional_location,
+        md.superord_id AS superord_id,
+        md.category AS category,
+        md.object_type AS object_type,
+        md.user_status AS user_status,
+        md.system_status AS system_status,
+        strftime(md.startup_date, '%d.%m.%Y') AS startup_date,
+        lpad(CAST(md.construction_month AS TEXT), 2, '0') AS construction_month,
+        md.construction_year AS construction_year,
+        md.manufacturer AS manufacturer,
+        md.model_number AS model_number,
+        md.manufact_part_number AS manufact_part_number,
+        md.serial_number AS serial_number,
+        md.gross_weight AS gross_weight,
+        md.unit_of_weight AS unit_of_weight,
+        md.technical_ident_number AS technical_ident_number,
+        strftime(md.valid_from, '%d.%m.%Y') AS valid_from,
+        lpad(CAST(md.display_position AS TEXT), 4, '0') AS display_position,
+        md.catalog_profile AS catalog_profile,
+        md.company_code AS company_code,
+        md.cost_center AS cost_center,
+        md.controlling_area AS controlling_area,
+        md.maintenance_plant AS maintenance_plant,
+        md.main_work_center AS main_work_center,
+        md.work_center AS work_center,
+        md.planning_plant AS planning_plant,
+        md.plant_section AS plant_section,
+        md.location AS location,
+        md.address_ref AS address_ref,
+    FROM s4_ih_equipment_masterdata md 
+    ORDER BY md.functional_location;
+    """

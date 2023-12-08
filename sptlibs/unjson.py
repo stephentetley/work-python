@@ -22,8 +22,7 @@ import pandas as pd
 
 
 def pp_json_columns(df: pd.DataFrame) -> pd.DataFrame:
-    json_columns = list(filter(lambda s: s.startswith('json_'), df.columns.values.tolist()))
-    print(json_columns)
+    json_columns = sorted(filter(lambda s: s.startswith('json_'), df.columns.values.tolist()))
     for col_name in json_columns: 
         new_col = col_name[5:]
         df[new_col] = df[col_name].apply(lambda x: _simplify(x))
@@ -38,7 +37,7 @@ def _simplify(x: str) -> str:
 
 
 def pp_value(jvalue) -> str:
-    '''Expects scalars or arrays of scalars. Strings unquoted, len(1) arrays printed as singletons.'''
+    '''Expects scalars or arrays of scalars. Strings get unquoted, len(1) arrays get printed as singletons.'''
     if jvalue == None:
         return ''
     elif isinstance(jvalue, str): 
