@@ -32,7 +32,8 @@ class GenDuckdb:
         self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
                             duckdb_setup.s4_characteristic_defs_ddl, 
                             duckdb_setup.s4_enum_defs_ddl, 
-                            duckdb_setup.vw_s4_class_defs_ddl]
+                            duckdb_setup.vw_s4_class_defs_ddl, 
+                            duckdb_setup.vw_refined_characteristic_defs_ddl]
         self.classlist_dicts = []
 
     def set_output_directory(self, *, output_directory: str) -> None: 

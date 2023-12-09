@@ -44,10 +44,35 @@ s4_enum_defs_ddl = """
 vw_s4_class_defs_ddl = """
     CREATE OR REPLACE VIEW s4_classlists.vw_class_defs AS
     SELECT DISTINCT
-        scd.class_type,
-        scd.class_name,
-        scd.class_description 
-    FROM s4_classlists.characteristic_defs scd;
+        cd.class_type,
+        cd.class_name,
+        cd.class_description 
+    FROM s4_classlists.characteristic_defs cd;
+    """
+
+vw_refined_characteristic_defs_ddl = """
+    CREATE OR REPLACE VIEW s4_classlists.vw_refined_characteristic_defs AS
+    SELECT 
+        cd.class_type AS class_type, 
+        cd.class_name AS class_name,
+        cd.char_name AS char_name, 
+        cd.class_description AS class_description,
+        cd.char_type AS s4_char_type,
+        cd.char_length AS char_len,
+        cd.char_precision AS char_precision,
+        CASE 
+            WHEN cd.char_type = 'CHAR' THEN 'TEXT'
+            WHEN cd.char_type = 'NUM' AND cd.char_precision = 0 THEN 'INTEGER'
+            WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN 'DECIMAL'
+            ELSE cd.char_type
+        END AS refined_char_type,
+        CASE 
+            WHEN cd.char_type = 'CHAR' THEN format('VARCHAR({})', cd.char_length)
+            WHEN cd.char_type = 'NUM' AND cd.char_precision = 0 THEN 'INTEGER'
+            WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN format('DECIMAL({}, {})', cd.char_length, cd.char_precision)
+            ELSE cd.char_type
+        END AS ddl_data_type
+    FROM s4_classlists.characteristic_defs cd;
     """
 
 def df_s4_characteristic_defs_insert(*, dataframe_view: str) -> str: 

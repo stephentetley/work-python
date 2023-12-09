@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
-# TODO
-# This module contains definitions e.g. `vw_get_class_name_ddl` that should be common to ih06 / ih08.
 
 s4_fd_funcloc_masterdata_ddl = """
     CREATE OR REPLACE TABLE s4_fd_funcloc_masterdata(

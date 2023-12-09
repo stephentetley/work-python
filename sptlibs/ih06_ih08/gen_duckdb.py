@@ -23,7 +23,6 @@ import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
-import sptlibs.ih06_ih08.char_values as char_values
 import sptlibs.ih06_ih08.unpivot_classes as unpivot_classes
 import sptlibs.ih06_ih08.summary_report as summary_report
     
@@ -93,9 +92,6 @@ class GenDuckdb:
         for src in self.xlsx_ih08_imports:
             # equi and valuaequi tables
             load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
-        
-        # Is the next obsolete...
-        char_values.make_vw_s4_valuaequi_eav(con=con)
         
         for stmt in self.copy_tables_stmts:
             try:
