@@ -172,7 +172,7 @@ s4_ih_equipment_masterdata_insert = """
         e.plant_section AS plant_section,
         IF(e.position IS NULL, NULL, CAST(e.position AS INTEGER)) AS display_position,
         e.start_up_date::TIMESTAMP::DATE AS startup_date,
-        e.superord_equipment AS superord_id,
+        IF(e.superord_equipment IS NOT NULL, e.superord_equipment::INT::TEXT, NULL) AS superord_id,
         e.system_status AS system_status,
         e.technical_identification_no AS technical_ident_number,
         e.weight_unit AS unit_of_weight,
