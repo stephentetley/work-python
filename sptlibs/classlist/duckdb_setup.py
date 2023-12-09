@@ -57,6 +57,7 @@ vw_refined_characteristic_defs_ddl = """
         cd.class_name AS class_name,
         cd.char_name AS char_name, 
         cd.class_description AS class_description,
+        cd.char_description AS char_description,
         cd.char_type AS s4_char_type,
         cd.char_length AS char_len,
         cd.char_precision AS char_precision,

@@ -35,13 +35,11 @@ class GenDuckdb:
         self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
                             classlist_duckdb_setup.s4_characteristic_defs_ddl,
                             classlist_duckdb_setup.s4_enum_defs_ddl, 
+                            classlist_duckdb_setup.vw_refined_characteristic_defs_ddl,
                             duckdb_setup.s4_ih_funcloc_masterdata_ddl,
                             duckdb_setup.s4_ih_equipment_masterdata_ddl,
                             duckdb_setup.s4_ih_classes_ddl,
                             duckdb_setup.s4_ih_char_values_ddl,
-                            duckdb_setup.vw_s4_classes_used_ddl,
-                            duckdb_setup.vw_characteristic_defs_with_type_ddl,
-                            duckdb_setup.vw_s4_charateristics_used_ddl
                             ]
         self.copy_tables_stmts = [duckdb_setup.s4_ih_equipment_masterdata_insert, 
                                   duckdb_setup.s4_ih_funcloc_masterdata_insert ]

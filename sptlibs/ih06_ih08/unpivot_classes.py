@@ -70,14 +70,25 @@ def make_s4_ih_char_values_insert(*, qualified_table_name: str, class_type: str)
         vals.class_name AS class_name,
         '{class_type}' AS class_type,
         cd.char_name AS char_name,
-        IF(cd.char_type != 'NUM', vals.attribute_value, NULL) AS text_value,
-        IF(cd.char_type = 'NUM', TRY_CAST(vals.attribute_value AS NUMERIC) , NULL) AS numeric_value,
+        CASE 
+            WHEN cd.refined_char_type = 'TEXT' THEN vals.attribute_value
+            WHEN cd.refined_char_type = 'DATE' THEN vals.attribute_value
+            ELSE NULL
+        END AS char_text_value,
+        CASE 
+            WHEN cd.refined_char_type = 'INTEGER' THEN TRY_CAST(vals.attribute_value AS INTEGER)
+            ELSE NULL
+        END AS char_integer_value,
+        CASE 
+            WHEN cd.refined_char_type = 'DECIMAL' THEN TRY_CAST(vals.attribute_value AS DECIMAL)
+            ELSE NULL
+        END AS char_decimal_value,
     FROM (UNPIVOT {qualified_table_name}
     ON COLUMNS(* EXCLUDE (entity_id, class_name))
     INTO 
         NAME attribute_name
         VALUE attribute_value) vals
-    LEFT OUTER JOIN s4_classlists.characteristic_defs cd ON normalize_column_name(cd.char_description) = vals.attribute_name AND cd.class_name = vals.class_name
+    LEFT OUTER JOIN s4_classlists.vw_refined_characteristic_defs cd ON normalize_column_name(cd.char_description) = vals.attribute_name AND cd.class_name = vals.class_name
     WHERE cd.class_type = '{class_type}'
     ORDER BY entity_id;
     """

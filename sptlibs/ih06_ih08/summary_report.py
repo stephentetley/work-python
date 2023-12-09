@@ -103,9 +103,11 @@ def _make_valuafloc_pivot_query(*, class_name: str, columns: list) -> str:
             fm.user_status AS user_status,
             {pv_selectors}
         FROM (PIVOT (
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.text_value AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.text_value IS NOT NULL 
+            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_text_value AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_text_value IS NOT NULL 
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.numeric_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.numeric_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_integer_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_integer_value IS NOT NULL
+            UNION
+            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_decimal_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
         JOIN main.s4_ih_funcloc_masterdata fm ON fm.functional_location = pv.entity_id
@@ -126,9 +128,11 @@ def _make_valuaequi_pivot_query(*, class_name: str, columns: list) -> str:
             em.user_status AS user_status,
             {pv_selectors}
         FROM (PIVOT (
-            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.text_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.text_value IS NOT NULL 
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_text_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_text_value IS NOT NULL 
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.numeric_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.numeric_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_integer_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_integer_value IS NOT NULL
+            UNION
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_decimal_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
         JOIN main.s4_ih_equipment_masterdata em ON em.equi_id = pv.entity_id
