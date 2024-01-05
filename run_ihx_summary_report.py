@@ -11,7 +11,7 @@ ih06_xlsx_path      = pd.ExcelFile('g:/work/2023/ih06_ih08/fie08-ih06-with-class
 ih08_xlsx_path      = pd.ExcelFile('g:/work/2023/ih06_ih08/fie08-ih08-with-class2.XLSX')
 classlists_db       = 'g:/work/2023/classlist/classlists.duckdb'
 
-gen_duckdb = GenDuckdb(classlists_duckdb_path=classlists_db, duckdb_output_name=output_db_path)
+gen_duckdb = GenDuckdb(classlists_duckdb_path=classlists_db, duckdb_output_path=output_db_path)
 gen_duckdb.add_ih06_export(XlsxSource(ih06_xlsx_path, 'Sheet1'))
 gen_duckdb.add_ih08_export(XlsxSource(ih08_xlsx_path, 'Sheet1'))
 duckdb_path = gen_duckdb.gen_duckdb()

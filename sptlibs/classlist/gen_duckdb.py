@@ -22,14 +22,14 @@ import sptlibs.classlist.duckdb_setup as duckdb_setup
 
     
 class GenDuckdb:
-    def __init__(self, *, floc_classlist_path: str, equi_classlist_path: str, duckdb_output_name: str) -> None:
-        self.duckdb_output_name = duckdb_output_name
+    def __init__(self, *, floc_classlist_path: str, equi_classlist_path: str, duckdb_output_path: str) -> None:
+        self.duckdb_output_path = duckdb_output_path
         self.floc_classlist_path = floc_classlist_path
         self.equi_classlist_path = equi_classlist_path
 
 
     def gen_duckdb(self) -> str:
-        con = duckdb.connect(database=self.duckdb_output_name)
+        con = duckdb.connect(database=self.duckdb_output_path)
         duckdb_setup.setup_tables(con=con)
         dict_flocs = classlist_parser.parse_floc_classfile(self.floc_classlist_path)
         dict_equis = classlist_parser.parse_equi_classfile(self.equi_classlist_path)
@@ -42,6 +42,6 @@ class GenDuckdb:
         con.register(view_name='vw_df_enums', python_object=df_enums)
         con.execute(duckdb_setup.df_s4_enum_defs_insert(dataframe_view='vw_df_enums'))
         con.close()
-        print(f'{self.duckdb_output_name} created')
-        return self.duckdb_output_name
+        print(f'{self.duckdb_output_path} created')
+        return self.duckdb_output_path
 

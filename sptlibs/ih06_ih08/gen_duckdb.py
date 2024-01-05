@@ -23,11 +23,11 @@ import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
     
 class GenDuckdb:
-    def __init__(self, *, classlists_duckdb_path: str, duckdb_output_name: str) -> None:
-        self.duckdb_output_name = duckdb_output_name
+    def __init__(self, *, classlists_duckdb_path: str, duckdb_output_path: str) -> None:
+        self.classlists_source = classlists_duckdb_path
+        self.duckdb_output_path = duckdb_output_path
         self.xlsx_ih06_imports = []
         self.xlsx_ih08_imports = []
-        self.classlists_source = classlists_duckdb_path
 
     def add_ih06_export(self, src: XlsxSource) -> None:
         self.xlsx_ih06_imports.append(src)
@@ -38,7 +38,7 @@ class GenDuckdb:
 
     def gen_duckdb(self) -> str:
         '''Output DuckDB file with raw data.'''
-        con = duckdb.connect(database=self.duckdb_output_name)
+        con = duckdb.connect(database=self.duckdb_output_path)
         
         # Create `s4_ihx_raw_data` tables
         con.execute('CREATE SCHEMA IF NOT EXISTS s4_ihx_raw_data;')
@@ -60,6 +60,6 @@ class GenDuckdb:
         else:
             raise FileNotFoundError('classlist db not found')
         
-        print(f'{self.duckdb_output_name} created')
-        return self.duckdb_output_name
+        print(f'{self.duckdb_output_path} created')
+        return self.duckdb_output_path
 

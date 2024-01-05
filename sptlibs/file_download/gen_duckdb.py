@@ -27,22 +27,17 @@ import sptlibs.file_download.duckdb_setup as duckdb_setup
 import sptlibs.file_download.load_file_download as load_file_download
 
 class GenDuckdb:
-    def __init__(self) -> None:
-        self.output_directory = tempfile.gettempdir()
-        self.db_name = 'file_downloads.duckdb'
-        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS fd_raw;',
-                            'CREATE SCHEMA IF NOT EXISTS s4_classlists;',
+    def __init__(self, *, classlists_duckdb_path: str, duckdb_output_path: str) -> None:
+        self.classlists_source = classlists_duckdb_path
+        self.duckdb_output_path = duckdb_output_path
+        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_fd_raw_data;',
                             duckdb_setup.s4_fd_funcloc_masterdata_ddl,
                             duckdb_setup.s4_fd_equipment_masterdata_ddl,
                             duckdb_setup.s4_fd_classes_ddl, 
                             duckdb_setup.s4_fd_char_values_ddl,
-                            classlist_duckdb_setup.s4_characteristic_defs_ddl,
-                            classlist_duckdb_setup.s4_enum_defs_ddl,
                             ]
         self.insert_from_stmts = []
-        self.copy_tables_stmts = []
-        self.create_view_stmts = [classlist_duckdb_setup.vw_s4_class_defs_ddl,
-                                    duckdb_setup.vw_entity_worklist_ddl,
+        self.create_view_stmts = [duckdb_setup.vw_entity_worklist_ddl,
                                     duckdb_setup.vw_fd_decimal_values_ddl,
                                     duckdb_setup.vw_fd_integer_values_ddl,
                                     duckdb_setup.vw_fd_text_values_ddl, 
@@ -56,21 +51,14 @@ class GenDuckdb:
                                     ]
         self.imports = []
 
-    def set_output_directory(self, *, output_directory: str) -> None: 
-        self.output_directory = output_directory
 
     def add_file_download(self, *, path: str) -> None:
         self.imports.append((path))
 
-    def add_file_downloads_in_directory(self, *, path: str, glob_pattern: str) -> None:
-        globlist = glob.glob(glob_pattern, root_dir=path, recursive=False)
+    def add_downloads_source_directory(self, *, source_dir: str, glob_pattern: str) -> None:
+        globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
         for file_name in globlist: 
-            self.imports.append(os.path.join(path, file_name))
-
-
-    def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
-        stmt = classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path)
-        self.copy_tables_stmts.append(stmt)
+            self.imports.append(os.path.join(source_dir, file_name))
 
 
     def __add_insert_stmts(self, tables: list[str]) -> None:
@@ -101,8 +89,7 @@ class GenDuckdb:
 
 
     def gen_duckdb(self) -> str:
-        duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
-        con = duckdb.connect(duckdb_outpath)
+        con = duckdb.connect(self.duckdb_output_path)
         for stmt in self.ddl_stmts:
             try:
                 con.sql(stmt)
@@ -126,13 +113,6 @@ class GenDuckdb:
                 print(exn)
                 print(stmt)
                 continue
-        for stmt in self.copy_tables_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
         for stmt in self.create_view_stmts:
             try:
                 con.sql(stmt)
@@ -140,9 +120,16 @@ class GenDuckdb:
                 print(exn)
                 print(stmt)
                 continue
+
+        if os.path.exists(self.classlists_source): 
+            classlist_duckdb_setup.setup_tables(con=con)
+            classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
+        else:
+            raise FileNotFoundError('classlist db not found')
+                    
         con.close()
-        print(f'{duckdb_outpath} created')
-        return duckdb_outpath
+        print(f'{self.duckdb_output_path} created')
+        return self.duckdb_output_path
     
 
 
