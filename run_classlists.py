@@ -2,14 +2,12 @@
 
 from sptlibs.classlist.gen_duckdb import GenDuckdb
 
-equi_src = 'g:/work/2023/classlist/002-equi-classlist.txt'
-floc_src = 'g:/work/2023/classlist/003-floc-classlist.txt'
-output_directory = 'g:/work/2023/classlist'
+equi_src = 'g:/work/2024/classlists/002-equi-classlist.txt'
+floc_src = 'g:/work/2024/classlists/003-floc-classlist.txt'
+output_db_path = 'g:/work/2024/classlists/classlists.duckdb'
 
-genduckdb = GenDuckdb(floc_classlist_path=floc_src, equi_classlist_path=equi_src)
-genduckdb.set_output_directory(output_directory=output_directory)
-genduckdb.set_db_name(db_name='classlists.duckdb')
-out_path = genduckdb.gen_duckdb()
+gen_duckdb = GenDuckdb(floc_classlist_path=floc_src, equi_classlist_path=equi_src, duckdb_output_name=output_db_path)
+out_path = gen_duckdb.gen_duckdb()
 print(out_path)
 
 

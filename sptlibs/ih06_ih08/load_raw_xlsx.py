@@ -41,7 +41,6 @@ def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
 def _load_ih_file(*, config: dict, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     df = pd.read_excel(xlsx_src.path, xlsx_src.sheet)
     re_class_start = re.compile(r"Class (?P<class_name>[\w_]+) is assigned")
-    con.execute('CREATE SCHEMA IF NOT EXISTS s4_ihx_raw_data;'),
     ranges = []
     # start at column 1, dropping column 0 `selected line`
     range1 = ColumnRange(range_name=config['range_name'], start=1)

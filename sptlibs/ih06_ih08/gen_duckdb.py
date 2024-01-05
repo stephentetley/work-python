@@ -23,18 +23,11 @@ import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
     
 class GenDuckdb:
-    def __init__(self, *, duckdb_output_name: str) -> None:
+    def __init__(self, *, classlists_duckdb_path: str, duckdb_output_name: str) -> None:
         self.duckdb_output_name = duckdb_output_name
         self.xlsx_ih06_imports = []
         self.xlsx_ih08_imports = []
-        self.classlists_source = None
-
-    def set_output_directory(self, *, output_directory: str) -> None: 
-        self.output_directory = output_directory
-
-    def set_db_name(self, *, db_name: str) -> None:
-        '''Just the name, not the path.'''
-        self.db_name = db_name
+        self.classlists_source = classlists_duckdb_path
 
     def add_ih06_export(self, src: XlsxSource) -> None:
         self.xlsx_ih06_imports.append(src)
@@ -42,12 +35,13 @@ class GenDuckdb:
     def add_ih08_export(self, src: XlsxSource) -> None:
         self.xlsx_ih08_imports.append(src)
 
-    def add_classlist_source(self, *, classlists_duckdb_path: str) -> None:
-        self.classlists_source = classlists_duckdb_path
 
     def gen_duckdb(self) -> str:
         '''Output DuckDB file with raw data.'''
         con = duckdb.connect(database=self.duckdb_output_name)
+        
+        # Create `s4_ihx_raw_data` tables
+        con.execute('CREATE SCHEMA IF NOT EXISTS s4_ihx_raw_data;')
 
         # TODO properly account for multiple sheets / appending data
         # flocs
@@ -59,6 +53,7 @@ class GenDuckdb:
             # equi and valuaequi tables
             load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
         
+        # Create `s4_classlists` tables
         if os.path.exists(self.classlists_source): 
             classlist_duckdb_setup.setup_tables(con=con)
             classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)

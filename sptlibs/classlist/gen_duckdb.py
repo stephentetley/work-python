@@ -15,8 +15,6 @@ limitations under the License.
 
 """
 
-import os
-import tempfile
 import duckdb
 import pandas as pd
 import sptlibs.classlist.classlist_parser as classlist_parser
@@ -24,22 +22,14 @@ import sptlibs.classlist.duckdb_setup as duckdb_setup
 
     
 class GenDuckdb:
-    def __init__(self, *, floc_classlist_path: str, equi_classlist_path: str) -> None:
-        self.db_name = 'classlists.duckdb'
-        self.output_directory = tempfile.gettempdir()
+    def __init__(self, *, floc_classlist_path: str, equi_classlist_path: str, duckdb_output_name: str) -> None:
+        self.duckdb_output_name = duckdb_output_name
         self.floc_classlist_path = floc_classlist_path
         self.equi_classlist_path = equi_classlist_path
 
-    def set_output_directory(self, *, output_directory: str) -> None: 
-        self.output_directory = output_directory
-
-    def set_db_name(self, *, db_name: str) -> None: 
-        self.db_name = db_name
-
 
     def gen_duckdb(self) -> str:
-        duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
-        con = duckdb.connect(database=duckdb_outpath)
+        con = duckdb.connect(database=self.duckdb_output_name)
         duckdb_setup.setup_tables(con=con)
         dict_flocs = classlist_parser.parse_floc_classfile(self.floc_classlist_path)
         dict_equis = classlist_parser.parse_equi_classfile(self.equi_classlist_path)
@@ -52,5 +42,6 @@ class GenDuckdb:
         con.register(view_name='vw_df_enums', python_object=df_enums)
         con.execute(duckdb_setup.df_s4_enum_defs_insert(dataframe_view='vw_df_enums'))
         con.close()
-        return duckdb_outpath
+        print(f'{self.duckdb_output_name} created')
+        return self.duckdb_output_name
 
