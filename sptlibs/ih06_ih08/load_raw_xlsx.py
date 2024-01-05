@@ -66,7 +66,7 @@ def _load_masterdata(*, qualified_table_name: str, temp_view_name: str, data_fra
     df1 = data_frame.iloc[:, indices]
     df1 = import_utils.normalize_df_column_names(df1)
     con.register(view_name=temp_view_name, python_object=df1)
-    sql_stmt = f'CREATE TABLE {qualified_table_name} AS SELECT * FROM {temp_view_name};'
+    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT * FROM {temp_view_name};'
     con.execute(sql_stmt)
     con.commit()
 
@@ -91,7 +91,7 @@ def _load_values(*, name_prefix: str, data_frame: pd.DataFrame, column_range: Co
     df2 = import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'
     con.register(view_name=temp_view, python_object=df2)
-    sql_stmt = f'CREATE TABLE s4_ihx_raw_data.{table_name} AS SELECT * FROM {temp_view};'
+    sql_stmt = f'CREATE OR REPLACE TABLE s4_ihx_raw_data.{table_name} AS SELECT * FROM {temp_view};'
     con.execute(sql_stmt)
     con.commit()
 

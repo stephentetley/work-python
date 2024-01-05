@@ -1,5 +1,5 @@
 """
-Copyright 2023 Stephen Tetley
+Copyright 2024 Stephen Tetley
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,14 +15,8 @@ limitations under the License.
 
 """
 
-import os
-import tempfile
 import duckdb
-from sptlibs.xlsx_source import XlsxSource
-import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
-import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
-import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
-import ih06_ih08.materialize_summary_tables as materialize_summary_tables
+import sptlibs.ih06_ih08.materialize_summary_tables as materialize_summary_tables
 import sptlibs.s4_floc_equi_summary.summary_report as summary_report
     
 class GenSummaryReport:

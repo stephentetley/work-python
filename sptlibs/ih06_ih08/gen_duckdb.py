@@ -16,19 +16,15 @@ limitations under the License.
 """
 
 import os
-import tempfile
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
-import ih06_ih08.materialize_summary_tables as materialize_summary_tables
-import sptlibs.s4_floc_equi_summary.summary_report as summary_report
     
 class GenDuckdb:
-    def __init__(self) -> None:
-        self.db_name = 'ih06_ih08.duckdb'
-        self.output_directory = tempfile.gettempdir()
+    def __init__(self, *, duckdb_output_name: str) -> None:
+        self.duckdb_output_name = duckdb_output_name
         self.xlsx_ih06_imports = []
         self.xlsx_ih08_imports = []
         self.classlists_source = None
@@ -50,13 +46,8 @@ class GenDuckdb:
         self.classlists_source = classlists_duckdb_path
 
     def gen_duckdb(self) -> str:
-        ''''''
-        duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
-        try:
-            os.remove(duckdb_outpath)
-        except OSError:
-            pass
-        con = duckdb.connect(database=duckdb_outpath)
+        '''Output DuckDB file with raw data.'''
+        con = duckdb.connect(database=self.duckdb_output_name)
 
         # TODO properly account for multiple sheets / appending data
         # flocs
@@ -74,6 +65,6 @@ class GenDuckdb:
         else:
             raise FileNotFoundError('classlist db not found')
         
-        print(f'{duckdb_outpath} created')
-        return duckdb_outpath
+        print(f'{self.duckdb_output_name} created')
+        return self.duckdb_output_name
 
