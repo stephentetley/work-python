@@ -44,7 +44,7 @@ def make_valua_tables_query(*, table_prefix: str) -> str:
         dc.schema_name,
         dc.table_name AS table_name,
     FROM duckdb_columns() dc
-    WHERE dc.schema_name = 's4_raw_data'
+    WHERE dc.schema_name = 's4_ihx_raw_data'
     AND dc.table_name LIKE '{table_prefix}_%';
     """
 

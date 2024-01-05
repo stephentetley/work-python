@@ -91,8 +91,6 @@ class GenDuckdb:
         # Output xlsx (new db connection)...
         xls_output_path = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
         summary_report.make_summary_report(xls_output_path=xls_output_path, func=materialize_summary_tables.materialize_summary_tables, con=con)
-        # unpivot_classes.make_ih_char_and_classes(con=con)
-        # summary_report.make_summary_report(output_xls=output_xls, con=con)
         con.close()
         print(f'{duckdb_outpath} created')
         print(f'{xls_output_path} created')

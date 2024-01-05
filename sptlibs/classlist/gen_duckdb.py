@@ -43,11 +43,13 @@ class GenDuckdb:
         duckdb_setup.setup_tables(con=con)
         dict_flocs = classlist_parser.parse_floc_classfile(self.floc_classlist_path)
         dict_equis = classlist_parser.parse_equi_classfile(self.equi_classlist_path)
+        # characteristics...
         df_chars = pd.concat(objs=[dict_flocs['characteristics'], dict_equis['characteristics']], ignore_index=True)
-        df_enums = pd.concat(objs=[dict_flocs['enum_values'], dict_equis['enum_values']], ignore_index=True)
         con.register(view_name='vw_df_chars', python_object=df_chars)
-        con.register(view_name='vw_df_enums', python_object=df_enums)
         con.execute(duckdb_setup.df_s4_characteristic_defs_insert(dataframe_view='vw_df_chars'))
+        # characteristic enums...
+        df_enums = pd.concat(objs=[dict_flocs['enum_values'], dict_equis['enum_values']], ignore_index=True)
+        con.register(view_name='vw_df_enums', python_object=df_enums)
         con.execute(duckdb_setup.df_s4_enum_defs_insert(dataframe_view='vw_df_enums'))
         con.close()
         return duckdb_outpath

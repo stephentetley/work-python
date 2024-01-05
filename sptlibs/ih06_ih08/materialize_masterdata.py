@@ -55,7 +55,7 @@ s4_summary_funcloc_masterdata_insert = """
         SELECT
             *,
             ROW_NUMBER() OVER (PARTITION BY f1.functional_location) AS rownum,
-        FROM s4_raw_data.floc_masterdata f1
+        FROM s4_ihx_raw_data.floc_masterdata f1
         ) f
     WHERE f.rownum = 1
 """
@@ -99,7 +99,7 @@ s4_summary_equipment_masterdata_insert = """
         SELECT
             *,
             ROW_NUMBER() OVER (PARTITION BY e1.equipment) AS rownum,
-        FROM s4_raw_data.equi_masterdata e1
+        FROM s4_ihx_raw_data.equi_masterdata e1
         ) e
     WHERE e.rownum = 1
 """

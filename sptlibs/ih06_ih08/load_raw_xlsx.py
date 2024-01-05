@@ -24,7 +24,7 @@ from sptlibs.ih06_ih08.column_range import ColumnRange
 def load_ih06(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     config = {}
     config['range_name'] = 'floc_masterdata'
-    config['qualified_table_name'] = 's4_raw_data.floc_masterdata'
+    config['qualified_table_name'] = 's4_ihx_raw_data.floc_masterdata'
     config['df_view_name'] = 'vw_df_floc'
     config['name_prefix'] = 'valuafloc'
     _load_ih_file(config=config, xlsx_src=xlsx_src, con=con)
@@ -32,7 +32,7 @@ def load_ih06(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
 def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     config = {}
     config['range_name'] = 'equi_masterdata'
-    config['qualified_table_name'] = 's4_raw_data.equi_masterdata'
+    config['qualified_table_name'] = 's4_ihx_raw_data.equi_masterdata'
     config['df_view_name'] = 'vw_df_equi'
     config['name_prefix'] = 'valuaequi'
     _load_ih_file(config=config, xlsx_src=xlsx_src, con=con)
@@ -41,7 +41,7 @@ def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
 def _load_ih_file(*, config: dict, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     df = pd.read_excel(xlsx_src.path, xlsx_src.sheet)
     re_class_start = re.compile(r"Class (?P<class_name>[\w_]+) is assigned")
-    con.execute('CREATE SCHEMA IF NOT EXISTS s4_raw_data;'),
+    con.execute('CREATE SCHEMA IF NOT EXISTS s4_ihx_raw_data;'),
     ranges = []
     # start at column 1, dropping column 0 `selected line`
     range1 = ColumnRange(range_name=config['range_name'], start=1)
@@ -91,7 +91,7 @@ def _load_values(*, name_prefix: str, data_frame: pd.DataFrame, column_range: Co
     df2 = import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'
     con.register(view_name=temp_view, python_object=df2)
-    sql_stmt = f'CREATE TABLE s4_raw_data.{table_name} AS SELECT * FROM {temp_view};'
+    sql_stmt = f'CREATE TABLE s4_ihx_raw_data.{table_name} AS SELECT * FROM {temp_view};'
     con.execute(sql_stmt)
     con.commit()
 
