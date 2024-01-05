@@ -31,9 +31,7 @@ class GenDuckdb:
         self.output_directory = tempfile.gettempdir()
         self.xlsx_ih06_imports = []
         self.xlsx_ih08_imports = []
-        self.ddl_stmts = []
         self.classlists_source = None
-        self.xlsx_output_name = 'ih_summary.xlsx'
 
     def set_output_directory(self, *, output_directory: str) -> None: 
         self.output_directory = output_directory
@@ -41,10 +39,6 @@ class GenDuckdb:
     def set_db_name(self, *, db_name: str) -> None:
         '''Just the name, not the path.'''
         self.db_name = db_name
-
-    def set_output_report_name(self, *, xlsx_name: str) -> None:
-        """Just the file name, not the directory."""
-        self.xlsx_output_name = xlsx_name
 
     def add_ih06_export(self, src: XlsxSource) -> None:
         self.xlsx_ih06_imports.append(src)
@@ -63,14 +57,7 @@ class GenDuckdb:
         except OSError:
             pass
         con = duckdb.connect(database=duckdb_outpath)
-        # Setup tables
-        for stmt in self.ddl_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
+
         # TODO properly account for multiple sheets / appending data
         # flocs
         for src in self.xlsx_ih06_imports:
@@ -86,13 +73,7 @@ class GenDuckdb:
             classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
         else:
             raise FileNotFoundError('classlist db not found')
-
-
-        # Output xlsx (new db connection)...
-        xls_output_path = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
-        summary_report.make_summary_report(xls_output_path=xls_output_path, func=materialize_summary_tables.materialize_summary_tables, con=con)
-        con.close()
+        
         print(f'{duckdb_outpath} created')
-        print(f'{xls_output_path} created')
         return duckdb_outpath
 
