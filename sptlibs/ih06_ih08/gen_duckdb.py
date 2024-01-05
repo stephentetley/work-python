@@ -58,6 +58,7 @@ class GenDuckdb:
             classlist_duckdb_setup.setup_tables(con=con)
             classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
         else:
+            con.close()
             raise FileNotFoundError('classlist db not found')
         
         print(f'{self.duckdb_output_path} created')

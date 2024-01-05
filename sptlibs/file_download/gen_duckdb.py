@@ -17,38 +17,15 @@ limitations under the License.
 
 import os
 import glob
-from typing import Callable
-import tempfile
-import pandas as pd
 import duckdb
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
-import sptlibs.file_download.duckdb_setup as duckdb_setup
 import sptlibs.file_download.load_file_download as load_file_download
 
 class GenDuckdb:
     def __init__(self, *, classlists_duckdb_path: str, duckdb_output_path: str) -> None:
         self.classlists_source = classlists_duckdb_path
         self.duckdb_output_path = duckdb_output_path
-        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_fd_raw_data;',
-                            duckdb_setup.s4_fd_funcloc_masterdata_ddl,
-                            duckdb_setup.s4_fd_equipment_masterdata_ddl,
-                            duckdb_setup.s4_fd_classes_ddl, 
-                            duckdb_setup.s4_fd_char_values_ddl,
-                            ]
-        self.insert_from_stmts = []
-        self.create_view_stmts = [duckdb_setup.vw_entity_worklist_ddl,
-                                    duckdb_setup.vw_fd_decimal_values_ddl,
-                                    duckdb_setup.vw_fd_integer_values_ddl,
-                                    duckdb_setup.vw_fd_text_values_ddl, 
-                                    duckdb_setup.vw_fd_all_values_json_ddl,
-                                    duckdb_setup.vw_fd_characteristics_json_ddl,
-                                    duckdb_setup.vw_fd_classes_json_ddl,
-                                    duckdb_setup.vw_get_classes_list_ddl,
-                                    duckdb_setup.vw_get_class_name_ddl,
-                                    duckdb_setup.vw_worklist_all_characteristics_json_ddl, 
-                                    duckdb_setup.vw_worklist_all_classes_json_ddl
-                                    ]
         self.imports = []
 
 
@@ -60,26 +37,10 @@ class GenDuckdb:
         for file_name in globlist: 
             self.imports.append(os.path.join(source_dir, file_name))
 
-
-    def __add_insert_stmts(self, tables: list[str]) -> None:
-        for table in tables:
-            if table == 'funcloc_floc1':
-                self.insert_from_stmts.append(duckdb_setup.s4_fd_funcloc_masterdata_insert)
-            elif table == 'classfloc_classfloc1':
-                self.insert_from_stmts.append(duckdb_setup.s4_fd_classfloc_insert)
-            elif table == 'valuafloc_valuafloc1':
-                self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuafloc_insert)
-            elif table == 'equi_equi1':
-                self.insert_from_stmts.append(duckdb_setup.s4_fd_equipment_masterdata_insert)
-            elif table == 'classequi_classequi1':
-                self.insert_from_stmts.append(duckdb_setup.s4_fd_classequi_insert)
-            elif table == 'valuaequi_valuaequi1':
-                self.insert_from_stmts.append(duckdb_setup.s4_fd_char_valuaequi_insert)
-            else:
-                print(f'Unrecognized file_download type {table}') 
-
-    def _gen_raw_tables(self, *, con: duckdb.DuckDBPyConnection) -> None:
-        tables = {}
+    def gen_duckdb(self) -> str:
+        con = duckdb.connect(self.duckdb_output_path)
+        # Create `s4_fd_raw_data` tables
+        con.execute('CREATE SCHEMA IF NOT EXISTS s4_fd_raw_data;')
         for path in self.imports:
             try:
                 load_file_download.load_file_download(path=path, con=con)
@@ -87,44 +48,11 @@ class GenDuckdb:
                 print(exn)
                 continue
 
-
-    def gen_duckdb(self) -> str:
-        con = duckdb.connect(self.duckdb_output_path)
-        for stmt in self.ddl_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
-        # Import raw data from download files
-        self._gen_raw_tables(con=con)
-        # Get raw tables...
-        tables = []
-        con.execute(duckdb_setup.query_get_raw_tables)
-        for tup in con.fetchall():
-            tables.append(tup[0])
-        self.__add_insert_stmts(tables)
-        # Copy from fd_raw tables
-        for stmt in self.insert_from_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
-        for stmt in self.create_view_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
-
         if os.path.exists(self.classlists_source): 
             classlist_duckdb_setup.setup_tables(con=con)
             classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
         else:
+            con.close()
             raise FileNotFoundError('classlist db not found')
                     
         con.close()
