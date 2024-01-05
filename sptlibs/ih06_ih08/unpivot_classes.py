@@ -18,8 +18,8 @@ limitations under the License.
 import duckdb
 
 
-def make_ih_char_and_classes(*, con: duckdb.DuckDBPyConnection) -> None:
-    con.execute(normalize_column_name_macro)
+def unpivot_classes(*, con: duckdb.DuckDBPyConnection) -> None:
+    con.execute(_create_normalize_column_name_macro)
     _make_ih_char_and_classes1(table_prefix='valuaequi', class_type='002', con=con)
     _make_ih_char_and_classes1(table_prefix='valuafloc', class_type='003', con=con)
 
@@ -27,14 +27,14 @@ def _make_ih_char_and_classes1(*, table_prefix: str, class_type: str, con: duckd
     con.execute(make_valua_tables_query(table_prefix=table_prefix))
     for row in con.fetchall():
          qualified_name = f'{row[0]}.{row[1]}'
-         ins1 = make_s4_ih_classes_insert(qualified_table_name=qualified_name, class_type=class_type)
+         ins1 = make_s4_classes_insert(qualified_table_name=qualified_name, class_type=class_type)
          con.execute(ins1)
-         ins2 = make_s4_ih_char_values_insert(qualified_table_name=qualified_name, class_type=class_type)
+         ins2 = make_s4_char_values_insert(qualified_table_name=qualified_name, class_type=class_type)
          con.execute(ins2)
     con.commit()
 
 
-normalize_column_name_macro = """
+_create_normalize_column_name_macro = """
     CREATE OR REPLACE MACRO normalize_column_name(name) AS regexp_replace(trim(regexp_replace(lower(name), '[\W+]', ' ', 'g')), '[\W]+', '_', 'g');
     """
 
@@ -48,9 +48,9 @@ def make_valua_tables_query(*, table_prefix: str) -> str:
     AND dc.table_name LIKE '{table_prefix}_%';
     """
 
-def make_s4_ih_classes_insert(*, qualified_table_name: str, class_type: str) -> str:
+def make_s4_classes_insert(*, qualified_table_name: str, class_type: str) -> str:
      return f"""
-    INSERT INTO s4_ih_classes BY NAME
+    INSERT INTO s4_summary.class_values BY NAME
     SELECT DISTINCT
         vals.entity_id AS entity_id,
         vals.class_name AS class_name,
@@ -62,9 +62,9 @@ def make_s4_ih_classes_insert(*, qualified_table_name: str, class_type: str) -> 
         VALUE attribute_value) vals;
     """
 
-def make_s4_ih_char_values_insert(*, qualified_table_name: str, class_type: str) -> str:
+def make_s4_char_values_insert(*, qualified_table_name: str, class_type: str) -> str:
      return f"""
-    INSERT INTO s4_ih_char_values BY NAME
+    INSERT INTO s4_summary.char_values BY NAME
     SELECT 
         vals.entity_id AS entity_id,
         vals.class_name AS class_name,

@@ -15,100 +15,16 @@ limitations under the License.
 
 """
 
-s4_ih_funcloc_masterdata_ddl = """
-    CREATE OR REPLACE TABLE s4_ih_funcloc_masterdata(
-        functional_location TEXT NOT NULL,
-        address_ref INTEGER,
-        category TEXT,
-        catalog_profile TEXT,
-        company_code INTEGER,
-        construction_month INTEGER,
-        construction_year INTEGER,
-        controlling_area INTEGER,
-        cost_center INTEGER,
-        description TEXT,
-        display_position INTEGER,
-        installation_allowed BOOLEAN,
-        location TEXT,
-        maintenance_plant INTEGER, 
-        main_work_center TEXT,
-        object_type TEXT,
-        object_number TEXT,
-        planning_plant INTEGER,
-        plant_section TEXT,
-        startup_date DATE,
-        structure_indicator TEXT,
-        superior_funct_loc TEXT,
-        system_status TEXT,
-        user_status TEXT,
-        work_center TEXT,
-        PRIMARY KEY(functional_location)
-    );
-"""
+import duckdb
+
+def materialize_masterdata(*, con: duckdb.DuckDBPyConnection) -> None:
+    con.execute(s4_summary_funcloc_masterdata_insert)
+    con.execute(s4_summary_equipment_masterdata_insert)
 
 
-s4_ih_equipment_masterdata_ddl = """
-    CREATE OR REPLACE TABLE s4_ih_equipment_masterdata(
-        equi_id TEXT NOT NULL,
-        address_ref INTEGER,
-        catalog_profile TEXT,
-        category TEXT,
-        company_code INTEGER,
-        construction_month INTEGER,
-        construction_year INTEGER,
-        controlling_area INTEGER,
-        cost_center INTEGER,
-        description TEXT,
-        display_position INTEGER,
-        functional_location TEXT, 
-        gross_weight DECIMAL,
-        location TEXT,
-        main_work_center TEXT,
-        maintenance_plant INTEGER,
-        manufact_part_number TEXT,
-        manufacturer TEXT,
-        model_number TEXT,
-        object_type TEXT,
-        planning_plant INTEGER,
-        plant_section TEXT,
-        serial_number TEXT,
-        startup_date DATE,
-        superord_id TEXT,
-        system_status TEXT,
-        technical_ident_number TEXT,
-        unit_of_weight TEXT,
-        user_status TEXT,
-        valid_from DATE,
-        work_center TEXT,
-        PRIMARY KEY(equi_id)
-    );
-"""
-
-s4_ih_classes_ddl = """
-    -- Same table for classequi and classfloc
-    CREATE OR REPLACE TABLE s4_ih_classes(
-        entity_id TEXT NOT NULL,
-        class_name TEXT NOT NULL,
-        class_type TEXT,
-    );
-    """
-
-s4_ih_char_values_ddl = """
-    -- No primary key
-    CREATE OR REPLACE TABLE s4_ih_char_values(
-        entity_id TEXT NOT NULL,
-        class_type TEXT,
-        class_name TEXT NOT NULL,
-        char_name TEXT NOT NULL,
-        char_text_value TEXT,
-        char_integer_value INTEGER,
-        char_decimal_value DECIMAL(26, 6),
-    );
-"""
-
-s4_ih_funcloc_masterdata_insert = """
+s4_summary_funcloc_masterdata_insert = """
     --- source table has _duplicates_ which cause an error without the row_number interior table 
-    INSERT OR REPLACE INTO s4_ih_funcloc_masterdata BY NAME
+    INSERT OR REPLACE INTO s4_summary.funcloc_masterdata BY NAME
     SELECT 
         f.functional_location AS functional_location,
         f.address_number AS address_ref,
@@ -144,9 +60,9 @@ s4_ih_funcloc_masterdata_insert = """
     WHERE f.rownum = 1
 """
 
-s4_ih_equipment_masterdata_insert = """
+s4_summary_equipment_masterdata_insert = """
     --- source table has _duplicates_ which cause an error without the row_number interior table 
-    INSERT OR REPLACE INTO s4_ih_equipment_masterdata BY NAME
+    INSERT OR REPLACE INTO s4_summary.equipment_masterdata BY NAME
     SELECT 
         e.equipment AS equi_id,
         e.address_number AS address_ref,

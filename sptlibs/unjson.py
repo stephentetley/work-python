@@ -64,5 +64,3 @@ def _notEmpty1(x):
 
 def _strip_nulls(ls): 
     return list(filter(_notEmpty1, ls))
-
-    

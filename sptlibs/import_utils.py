@@ -36,7 +36,7 @@ def sqlite_import_sheet(source: XlsxSource, *, table_name: str, con: sqlite3.Con
     con.commit()
 
 
-def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.DuckDBPyConnection, if_exists: str, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
+def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pd.DataFrame], pd.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
     xlsx = pd.ExcelFile(source.path)
     df_raw = pd.read_excel(xlsx, source.sheet)
@@ -46,7 +46,7 @@ def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.Duck
         df_clean = df_raw
     df_renamed = normalize_df_column_names(df_clean)
     con.register(view_name='vw_df_renamed', python_object=df_renamed)
-    sql_stmt = f'CREATE TABLE {table_name} AS SELECT * FROM vw_df_renamed;'
+    sql_stmt = f'CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM vw_df_renamed;'
     con.execute(sql_stmt)
     con.commit()
 

@@ -21,8 +21,8 @@ from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
 import sptlibs.unjson as unjson
 
 
-def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> None:
-    con.execute(_tabname_macro)
+def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
+    con.execute(_create_tabname_macro)
     tabs = []
     # valuafloc tabs
     con.execute(_make_valua_data_query(class_type='003'))
@@ -36,7 +36,7 @@ def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> N
         tab_name = row[2]
         tab_query = _make_valuaequi_pivot_query(class_name=row[1], columns=row[3])
         tabs.append((tab_name, tab_query))
-    with pd.ExcelWriter(output_xls) as xlwriter: 
+    with pd.ExcelWriter(xls_output_path) as xlwriter: 
         # funcloc masterdata
         con.execute(_funcloc_masterdata_query)
         df_floc = con.df()
@@ -57,13 +57,7 @@ def make_summary_report(*, output_xls: str, con: duckdb.DuckDBPyConnection) -> N
             table_writer.to_excel(writer=xlwriter, sheet_name=name)
         
 
-# def rewrite_lists(df: pd.DataFrame) -> None:
-#     for col in df.columns:
-#         if type(col
-    
-
-
-_tabname_macro = """
+_create_tabname_macro = """
     CREATE OR REPLACE MACRO tabname(clstype, clsname) AS CASE
         WHEN clstype = '002' THEN 'e.' || lower(clsname)
         WHEN clstype = '003' THEN 'f.' || lower(clsname)
@@ -86,7 +80,7 @@ def _make_valua_data_query(*, class_type: str) -> str:
         FROM s4_classlists.characteristic_defs cd
         WHERE class_type = '{class_type}'
         GROUP BY ALL) defs  
-    JOIN (SELECT DISTINCT class_name FROM main.s4_ih_classes) cls_used ON cls_used.class_name = defs.class_name
+    JOIN (SELECT DISTINCT class_name FROM s4_summary.class_values) cls_used ON cls_used.class_name = defs.class_name
     ORDER BY defs.class_type, defs.class_name;
     """
 
@@ -103,14 +97,14 @@ def _make_valuafloc_pivot_query(*, class_name: str, columns: list) -> str:
             fm.user_status AS user_status,
             {pv_selectors}
         FROM (PIVOT (
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_text_value AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_text_value IS NOT NULL 
+            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_text_value AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_text_value IS NOT NULL 
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_integer_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_integer_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_integer_value::TEXT AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_integer_value IS NOT NULL
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_decimal_value::TEXT AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_decimal_value::TEXT AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
-        JOIN main.s4_ih_funcloc_masterdata fm ON fm.functional_location = pv.entity_id
+        JOIN s4_summary.funcloc_masterdata fm ON fm.functional_location = pv.entity_id
         ORDER BY fm.functional_location; 
         """
 
@@ -128,22 +122,26 @@ def _make_valuaequi_pivot_query(*, class_name: str, columns: list) -> str:
             em.user_status AS user_status,
             {pv_selectors}
         FROM (PIVOT (
-            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_text_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_text_value IS NOT NULL 
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_text_value) AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_text_value IS NOT NULL 
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_integer_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_integer_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_integer_value) AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_integer_value IS NOT NULL
             UNION
-            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_decimal_value) AS attr_value FROM s4_ih_char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
+            SELECT vals.entity_id, vals.class_name, vals.char_name, to_json(vals.char_decimal_value) AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
-        JOIN main.s4_ih_equipment_masterdata em ON em.equi_id = pv.entity_id
+        JOIN s4_summary.equipment_masterdata em ON em.equi_id = pv.entity_id
         ORDER BY em.functional_location; 
         """
 
+# multiple lines of form ``to_json(pv.UNICLASS_CODE) AS json_UNICLASS_CODE,``
 def _make_select_lines(columns: list) -> str:
-    return '\n'.join(map(lambda name: f'    to_json(pv.{name}) AS json_{name},', columns))
+    ans = '\n'.join(map(lambda name: f'    to_json(pv.{name}) AS json_{name},', columns))
+    return ans
 
+# line of the form: ``'UNICLASS_CODE', 'UNICLASS_DESC', 'LOCATION_ON_SITE', 'MEMO_LINE'``
 def _make_quoted_name_list(columns: list) -> str:
-    return ', '.join(map(lambda name: f'\'{name}\'', columns))
+    ans = ', '.join(map(lambda name: f'\'{name}\'', columns))
+    return ans
 
 _funcloc_masterdata_query = """
     SELECT 
@@ -172,7 +170,7 @@ _funcloc_masterdata_query = """
         md.object_number AS object_number,
         md.location AS location,
         md.address_ref AS address_ref,
-    FROM s4_ih_funcloc_masterdata md 
+    FROM s4_summary.funcloc_masterdata md 
     ORDER BY md.functional_location;
     """
 
@@ -209,6 +207,6 @@ _equipment_masterdata_query = """
         md.plant_section AS plant_section,
         md.location AS location,
         md.address_ref AS address_ref,
-    FROM s4_ih_equipment_masterdata md 
+    FROM s4_summary.equipment_masterdata md 
     ORDER BY md.functional_location;
     """

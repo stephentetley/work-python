@@ -15,12 +15,18 @@ limitations under the License.
 
 """
 
+import duckdb
+
+def copy_tables(*, classlists_source_db_path: str, con: duckdb.DuckDBPyConnection) -> None:
+    sql = s4_classlists_table_copy(classlists_source_db_path=classlists_source_db_path)
+    con.execute(sql)
 
 
-def s4_classlists_table_copy(*, classlists_duckdb_path: str) -> str: 
+
+def s4_classlists_table_copy(*, classlists_source_db_path: str) -> str: 
     return f"""
-        ATTACH '{classlists_duckdb_path}' AS classlists_db;
-        INSERT INTO s4_classlists.characteristic_defs SELECT * FROM classlists_db.s4_classlists.characteristic_defs;
-        INSERT INTO s4_classlists.enum_defs SELECT * FROM classlists_db.s4_classlists.enum_defs;
-        DETACH classlists_db;
+        ATTACH '{classlists_source_db_path}' AS classlists_source;
+        INSERT INTO s4_classlists.characteristic_defs SELECT * FROM classlists_source.s4_classlists.characteristic_defs;
+        INSERT INTO s4_classlists.enum_defs SELECT * FROM classlists_source.s4_classlists.enum_defs;
+        DETACH classlists_source;
     """

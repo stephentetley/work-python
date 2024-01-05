@@ -21,10 +21,9 @@ import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
-import sptlibs.ih06_ih08.duckdb_setup as duckdb_setup
 import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
-import sptlibs.ih06_ih08.unpivot_classes as unpivot_classes
-import sptlibs.ih06_ih08.summary_report as summary_report
+import ih06_ih08.materialize_summary_tables as materialize_summary_tables
+import sptlibs.s4_floc_equi_summary.summary_report as summary_report
     
 class GenDuckdb:
     def __init__(self) -> None:
@@ -32,17 +31,8 @@ class GenDuckdb:
         self.output_directory = tempfile.gettempdir()
         self.xlsx_ih06_imports = []
         self.xlsx_ih08_imports = []
-        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
-                            classlist_duckdb_setup.s4_characteristic_defs_ddl,
-                            classlist_duckdb_setup.s4_enum_defs_ddl, 
-                            classlist_duckdb_setup.vw_refined_characteristic_defs_ddl,
-                            duckdb_setup.s4_ih_funcloc_masterdata_ddl,
-                            duckdb_setup.s4_ih_equipment_masterdata_ddl,
-                            duckdb_setup.s4_ih_classes_ddl,
-                            duckdb_setup.s4_ih_char_values_ddl,
-                            ]
-        self.copy_tables_stmts = [duckdb_setup.s4_ih_equipment_masterdata_insert, 
-                                  duckdb_setup.s4_ih_funcloc_masterdata_insert ]
+        self.ddl_stmts = []
+        self.classlists_source = None
         self.xlsx_output_name = 'ih_summary.xlsx'
 
     def set_output_directory(self, *, output_directory: str) -> None: 
@@ -62,8 +52,8 @@ class GenDuckdb:
     def add_ih08_export(self, src: XlsxSource) -> None:
         self.xlsx_ih08_imports.append(src)
 
-    def add_classlist_tables(self, *, classlists_duckdb_path: str) -> None:
-        self.copy_tables_stmts.append(classlist_duckdb_copy.s4_classlists_table_copy(classlists_duckdb_path=classlists_duckdb_path))
+    def add_classlist_source(self, *, classlists_duckdb_path: str) -> None:
+        self.classlists_source = classlists_duckdb_path
 
     def gen_duckdb(self) -> str:
         ''''''
@@ -91,19 +81,20 @@ class GenDuckdb:
             # equi and valuaequi tables
             load_raw_xlsx.load_ih08(xlsx_src=src, con=con)
         
-        for stmt in self.copy_tables_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
+        if os.path.exists(self.classlists_source): 
+            classlist_duckdb_setup.setup_tables(con=con)
+            classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
+        else:
+            raise FileNotFoundError('classlist db not found')
 
-        unpivot_classes.make_ih_char_and_classes(con=con)
+
         # Output xlsx (new db connection)...
-        output_xls = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
-        summary_report.make_summary_report(output_xls=output_xls, con=con)
+        xls_output_path = os.path.normpath(os.path.join(self.output_directory, self.xlsx_output_name))
+        summary_report.make_summary_report(xls_output_path=xls_output_path, func=materialize_summary_tables.materialize_summary_tables, con=con)
+        # unpivot_classes.make_ih_char_and_classes(con=con)
+        # summary_report.make_summary_report(output_xls=output_xls, con=con)
         con.close()
         print(f'{duckdb_outpath} created')
+        print(f'{xls_output_path} created')
         return duckdb_outpath
 

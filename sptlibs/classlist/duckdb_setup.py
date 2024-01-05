@@ -15,6 +15,14 @@ limitations under the License.
 
 """
 
+import duckdb
+
+def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
+    con.execute('CREATE SCHEMA IF NOT EXISTS s4_classlists;')
+    con.execute(s4_characteristic_defs_ddl)
+    con.execute(s4_enum_defs_ddl)
+    con.execute(vw_s4_class_defs_ddl)
+    con.execute(vw_refined_characteristic_defs_ddl)
 
 s4_characteristic_defs_ddl = """
     CREATE OR REPLACE TABLE s4_classlists.characteristic_defs(
