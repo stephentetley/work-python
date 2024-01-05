@@ -29,12 +29,6 @@ class GenDuckdb:
         self.output_directory = tempfile.gettempdir()
         self.floc_classlist_path = floc_classlist_path
         self.equi_classlist_path = equi_classlist_path
-        self.ddl_stmts = ['CREATE SCHEMA IF NOT EXISTS s4_classlists;',
-                            duckdb_setup.s4_characteristic_defs_ddl, 
-                            duckdb_setup.s4_enum_defs_ddl, 
-                            duckdb_setup.vw_s4_class_defs_ddl, 
-                            duckdb_setup.vw_refined_characteristic_defs_ddl]
-        self.classlist_dicts = []
 
     def set_output_directory(self, *, output_directory: str) -> None: 
         self.output_directory = output_directory
@@ -46,14 +40,7 @@ class GenDuckdb:
     def gen_duckdb(self) -> str:
         duckdb_outpath = os.path.normpath(os.path.join(self.output_directory, self.db_name))
         con = duckdb.connect(database=duckdb_outpath)
-        # Setup tables
-        for stmt in self.ddl_stmts:
-            try:
-                con.sql(stmt)
-            except Exception as exn:
-                print(exn)
-                print(stmt)
-                continue
+        duckdb_setup.setup_tables(con=con)
         dict_flocs = classlist_parser.parse_floc_classfile(self.floc_classlist_path)
         dict_equis = classlist_parser.parse_equi_classfile(self.equi_classlist_path)
         df_chars = pd.concat(objs=[dict_flocs['characteristics'], dict_equis['characteristics']], ignore_index=True)
