@@ -27,7 +27,7 @@ def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
 
 s4_summary_funcloc_masterdata_ddl = """
     CREATE OR REPLACE TABLE s4_summary.funcloc_masterdata(
-        floc_ref TEXT NOT NULL,
+        floc_id TEXT NOT NULL,
         functional_location TEXT NOT NULL,
         address_ref INTEGER,
         category TEXT,
@@ -53,7 +53,7 @@ s4_summary_funcloc_masterdata_ddl = """
         system_status TEXT,
         user_status TEXT,
         work_center TEXT,
-        PRIMARY KEY(functional_location)
+        PRIMARY KEY(floc_id)
     );
 """
 

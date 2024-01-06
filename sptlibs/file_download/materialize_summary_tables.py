@@ -16,7 +16,8 @@ limitations under the License.
 """
 
 import duckdb
+import file_download.materialize_masterdata as materialize_masterdata
 
 
 def materialize_summary_tables(con: duckdb.DuckDBPyConnection) -> None:
-    return None
+    materialize_masterdata.materialize_masterdata(con=con)
