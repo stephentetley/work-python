@@ -26,6 +26,7 @@ s4_summary_funcloc_masterdata_insert = """
     --- source table has _duplicates_ which cause an error without the row_number interior table 
     INSERT OR REPLACE INTO s4_summary.funcloc_masterdata BY NAME
     SELECT 
+        f.standard_indicator_internal AS floc_ref,
         f.functional_location AS functional_location,
         f.address_number AS address_ref,
         f.catalog_profile AS catalog_profile,

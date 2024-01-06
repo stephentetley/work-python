@@ -89,6 +89,7 @@ def _make_valuafloc_pivot_query(*, class_name: str, columns: list) -> str:
     quoted_char_names = _make_quoted_name_list(columns)
     return f"""
         SELECT 
+            fm.floc_ref AS floc_ref,
             fm.functional_location AS functional_location,
             fm.description AS description,
             strftime(fm.startup_date, '%Y.%m.%d') AS startup_date,
@@ -145,6 +146,7 @@ def _make_quoted_name_list(columns: list) -> str:
 
 _funcloc_masterdata_query = """
     SELECT 
+        md.floc_ref AS floc_ref,
         md.functional_location AS functional_location,
         md.description AS description,
         md.object_type AS object_type,
