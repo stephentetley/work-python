@@ -13,7 +13,6 @@ xlsx_output_path    = 'g:/work/2024/file_download/sample1/hsm-fd-summary-report.
 gen_duckdb = GenDuckdb(classlists_duckdb_path=classlists_db, duckdb_output_path=duckdb_output_path)
 gen_duckdb.add_downloads_source_directory(source_dir=source_directory, glob_pattern=glob_pattern)
 db = gen_duckdb.gen_duckdb()
-print(f'{db} created')
 
 gen_summary = GenSummaryReport(db_path=duckdb_output_path, xlsx_output_name=xlsx_output_path)
 gen_summary.gen_summary_report()
