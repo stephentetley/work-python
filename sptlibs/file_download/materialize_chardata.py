@@ -24,29 +24,17 @@ def materialize_chardata(*, con: duckdb.DuckDBPyConnection) -> None:
 
 s4_summary_classvalues_insert = """
     INSERT INTO s4_summary.class_values BY NAME
-    (SELECT 
+    (SELECT DISTINCT 
         f.funcloc AS entity_id,
         f.class AS class_name,
         f.classtype AS class_type,
-    FROM (
-        SELECT
-            *,
-            ROW_NUMBER() OVER (PARTITION BY f1.funcloc) AS rownum,
-        FROM s4_fd_raw_data.classfloc_classfloc1 f1
-        ) f
-    WHERE f.rownum = 1)
+       FROM s4_fd_raw_data.classfloc_classfloc1 f)
     UNION 
-    (SELECT 
+    (SELECT DISTINCT 
         e.equi AS entity_id,
         e.class AS class_name,
         e.classtype AS class_type,
-    FROM (
-        SELECT
-            *,
-            ROW_NUMBER() OVER (PARTITION BY e1.equi) AS rownum,
-        FROM s4_fd_raw_data.classequi_classequi1 e1
-        ) e
-    WHERE e.rownum = 1)
+    FROM s4_fd_raw_data.classequi_classequi1 e)
 """
 
 s4_summary_charvalues_insert = """
@@ -62,7 +50,7 @@ s4_summary_charvalues_insert = """
     FROM 
         s4_fd_raw_data.classequi_classequi1 ce
     JOIN s4_classlists.vw_refined_characteristic_defs char_defs ON char_defs.class_type = ce.classtype AND char_defs.class_name = ce.class 
-    LEFT OUTER JOIN s4_fd_raw_data.valuaequi_valuaequi1 ve ON ve.charid = char_defs.char_name AND ve.classtype = char_defs.class_type)
+    LEFT OUTER JOIN s4_fd_raw_data.valuaequi_valuaequi1 ve ON ve.charid = char_defs.char_name AND ve.classtype = char_defs.class_type AND ve.equi = ce.equi)
     UNION
     (SELECT 
         cf.funcloc AS entity_id,
@@ -75,5 +63,5 @@ s4_summary_charvalues_insert = """
     FROM 
         s4_fd_raw_data.classfloc_classfloc1 cf
     JOIN s4_classlists.vw_refined_characteristic_defs char_defs ON char_defs.class_type = cf.classtype AND char_defs.class_name = cf.class 
-    LEFT OUTER JOIN s4_fd_raw_data.valuafloc_valuafloc1 vf ON vf.charid = char_defs.char_name AND vf.classtype = char_defs.class_type)
+    LEFT OUTER JOIN s4_fd_raw_data.valuafloc_valuafloc1 vf ON vf.charid = char_defs.char_name AND vf.classtype = char_defs.class_type AND vf.funcloc = cf.funcloc)
 """
