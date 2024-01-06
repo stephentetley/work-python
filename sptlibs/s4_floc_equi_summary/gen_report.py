@@ -105,7 +105,7 @@ def _make_valuafloc_pivot_query(*, class_name: str, columns: list) -> str:
             SELECT vals.entity_id, vals.class_name, vals.char_name, vals.char_decimal_value::TEXT AS attr_value FROM s4_summary.char_values vals WHERE vals.class_name = '{class_name}' AND vals.char_decimal_value IS NOT NULL
             ) 
         ON char_name IN ({quoted_char_names}) USING list(attr_value)) pv
-        JOIN s4_summary.funcloc_masterdata fm ON fm.functional_location = pv.entity_id
+        JOIN s4_summary.funcloc_masterdata fm ON fm.floc_id = pv.entity_id
         ORDER BY fm.functional_location; 
         """
 
