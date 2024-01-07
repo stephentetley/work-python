@@ -3,11 +3,11 @@
 from sptlibs.file_download.gen_duckdb import GenDuckdb
 from sptlibs.file_download.gen_summary_report import GenSummaryReport
 
-source_directory    = 'g:/work/2024/file_download/sample1'
-glob_pattern        = 'hs-*.txt'
+source_directory    = 'g:/work/2024/point_blue/gauri-batch3-to-check'
+glob_pattern        = '*download.txt'
 classlists_db       = 'g:/work/2024/classlists/classlists.duckdb'
-duckdb_output_path  = 'g:/work/2024/file_download/sample1/hsm_fd_data.duckdb'
-xlsx_output_path    = 'g:/work/2024/file_download/sample1/hsm-fd-summary-report.xlsx'
+duckdb_output_path  = 'g:/work/2024/point_blue/gauri-batch3-to-check/fd_batch3_data.duckdb'
+xlsx_output_path    = 'g:/work/2024/point_blue/gauri-batch3-to-check/fd-batch3-summary-report.xlsx'
 
 
 gen_duckdb = GenDuckdb(classlists_duckdb_path=classlists_db, duckdb_output_path=duckdb_output_path)

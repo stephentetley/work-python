@@ -20,6 +20,7 @@ import glob
 import duckdb
 import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
 import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
+import file_download.duckdb_setup as duckdb_setup
 import sptlibs.file_download.load_file_download as load_file_download
 
 class GenDuckdb:
@@ -40,7 +41,7 @@ class GenDuckdb:
     def gen_duckdb(self) -> str:
         con = duckdb.connect(self.duckdb_output_path)
         # Create `s4_fd_raw_data` tables
-        con.execute('CREATE SCHEMA IF NOT EXISTS s4_fd_raw_data;')
+        duckdb_setup.setup_tables(con=con)
         for path in self.imports:
             try:
                 load_file_download.load_file_download(path=path, con=con)
