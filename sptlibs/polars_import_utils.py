@@ -18,13 +18,13 @@ limitations under the License.
 import re
 import polars as pl
 import duckdb
-from typing import Callable
+from typing import Callable, Literal
 from sptlibs.xlsx_source import XlsxSource
 
 
 def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
-    df_raw = pl.read_excel(source = source.path, sheet_name = source.sheet)
+    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True})
     if df_trafo is not None:
         df_clean = df_trafo(df_raw)
     else:
@@ -38,7 +38,7 @@ def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.Duck
 
 def normalize_df_column_names(df: pl.DataFrame) -> pl.DataFrame:
     new_names = {}
-    for name in df.get_columns():
+    for name in df.columns:
         new_names[name] = normalize_name(name)
     return df.rename(new_names)
 
@@ -52,7 +52,7 @@ def normalize_name(s: str) -> str:
 
 def remove_df_column_name_indices(df: pl.DataFrame) -> pl.DataFrame:
     new_names = {}
-    for name in df.get_columns():
+    for name in df.columns:
         new_names[name] = remove_index(name)
     return df.rename(new_names)
 
