@@ -7,8 +7,8 @@ import sptapps.floc_mapping.load_raw_data as load_raw_data
 import sptapps.floc_mapping.duckdb_setup as duckdb_setup
 from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
 
-duckdb_output_path  = 'g:/work/2024/floc-sai-mapping/2024_01_12/jan12-floc-sai.duckdb'
-xlsx_output_path    = 'g:/work/2024/floc-sai-mapping/2024_01_12/jan12_level1_children_report.xlsx'
+duckdb_output_path  = 'g:/work/2024/floc-sai-mapping/2024_01_22/jan22-floc-sai2.duckdb'
+xlsx_output_path    = 'g:/work/2024/floc-sai-mapping/2024_01_22/jan22_level1_children_report.xlsx'
 
 # {"dt": pl.Int64}
 
@@ -20,7 +20,7 @@ raw_tables = [
 
 
 con = duckdb.connect(database=duckdb_output_path, read_only=False)
-# load_raw_data.load_raw_data(tables=raw_tables, con=con)
+load_raw_data.load_raw_data(tables=raw_tables, con=con)
 duckdb_setup.setup_views(con=con)
 
 with pd.ExcelWriter(xlsx_output_path) as xlwriter: 

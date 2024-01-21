@@ -16,8 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-import polars_import_utils as polars_import_utils
-from sptlibs.xlsx_source import XlsxSource
+import sptlibs.polars_import_utils as polars_import_utils
 
 def load_raw_data(*, tables: list, con: duckdb.DuckDBPyConnection) -> None:
     con.execute("CREATE SCHEMA IF NOT EXISTS sai_raw_data;")

@@ -23,10 +23,12 @@ import duckdb
 def setup_views(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS s4_sai_mapping;')
     con.execute(vw_s4_level1_worklist_ddl)
-    con.execute(vw_s4_level1_kids_ddl)
     con.execute(vw_level1_mapping_ddl)
+    con.execute(vw_ai2_sites_ddl)
+    con.execute(vw_ai2_installations_ddl)
     con.execute(vw_ai2_installation_type_codes_ddl)
     con.execute(vw_ai2_level1_kids_ddl)
+    con.execute(vw_s4_level1_kids_ddl)
     con.execute(vw_level1_parent_child_results_ddl)
     con.execute(vw_level1_children_report_ddl)
 
@@ -53,104 +55,78 @@ vw_level1_mapping_ddl = """
     FROM sai_raw_data.site_mapping t;
 """
 
+vw_ai2_sites_ddl = """
+    CREATE OR REPLACE VIEW s4_sai_mapping.vw_ai2_sites AS 
+    SELECT DISTINCT 
+        ai2.sitereference as site_reference,
+        ai2.sitecommonname as common_name,
+    FROM sai_raw_data.ai2_data ai2
+    WHERE ai2.siteassetid IS NOT NULL;
+"""
+
+vw_ai2_installations_ddl = """
+    CREATE OR REPLACE VIEW s4_sai_mapping.vw_ai2_installations AS 
+    (SELECT DISTINCT
+        ai2.installationreference AS sai_num,
+        ai2.installationcommonname AS common_name,
+        ai2.installationstatus AS status,
+        ai2.installationtypecode AS type_code,
+        ai2.sitereference AS site_id,
+    FROM sai_raw_data.ai2_data ai2
+    WHERE ai2.siteassetid IS NOT NULL
+    AND ai2.subinstallationassetid IS NULL)
+    UNION
+    (SELECT DISTINCT
+        ai2.subinstallationreference AS sai_num,
+        ai2.subinstallationcommonname AS common_name,
+        ai2.subinstallationstatus AS status,
+        ai2.subinstallationtypecode AS type_code,
+        ai2.sitereference AS site_id,
+    FROM sai_raw_data.ai2_data ai2
+    WHERE ai2.siteassetid IS NOT NULL
+    AND ai2.subinstallationassetid IS NOT NULL)
+"""
+
 vw_ai2_installation_type_codes_ddl = """
     CREATE OR REPLACE VIEW s4_sai_mapping.vw_ai2_installation_type_codes AS
     SELECT DISTINCT * FROM (
         (SELECT 
-            t1.installationreference AS sai_num,
-            t1.installationcommonname AS name,
-            'INSTALLATION' AS inst_type,
-            t1.installationtypecode AS type_code,
-        FROM sai_raw_data.ai2_data t1
-        WHERE t1.installationreference IS NOT NULL)
+            t1.sai_num AS sai_num,
+            t1.common_name AS common_name,
+            t1.type_code AS type_code,
+        FROM s4_sai_mapping.vw_ai2_installations t1)
         UNION
         (SELECT 
-            t2.subinstallationreference AS sai_num,
-            t2.subinstallationcommonname AS name,
-            'SUBINSTALLATION' AS inst_type,
-            t2.subinstallationtypecode AS type_code,
-        FROM sai_raw_data.ai2_data t2
-        WHERE t2.subinstallationreference IS NOT NULL)
-        UNION
-        (SELECT 
-            t2.sitereference AS sai_num,
-            t2.sitecommonname AS name,
-            'SITE' AS inst_type,
+            t2.site_reference AS sai_num,
+            t2.common_name AS common_name,
             'SITE' AS type_code,
-        FROM sai_raw_data.ai2_data t2
-        WHERE t2.sitereference IS NOT NULL)
-    ) t
-    ORDER BY t.sai_num;
+        FROM s4_sai_mapping.vw_ai2_sites t2)
+    );
 """
+
 vw_ai2_level1_kids_ddl = """
     CREATE OR REPLACE VIEW s4_sai_mapping.vw_ai2_level1_kids AS
-    WITH cte_inst AS (
-            SELECT DISTINCT
-                t.sitereference AS ai2_site_id,
-                mp.s4_site_id AS s4_site_name,
-                t.sitecommonname AS site_common_name,
-                t.installationreference AS child_id,
-                t.installationcommonname AS child_name,
-                t.installationstatus AS child_status,
-                FROM sai_raw_data.ai2_data t
-                JOIN s4_sai_mapping.vw_level1_mapping mp ON mp.ai2_site_id = t.sitereference),
-        cte_subinst AS (
-            SELECT DISTINCT
-                t.sitereference AS ai2_site_id,
-                mp.s4_site_id AS s4_site_name,
-                t.sitecommonname AS site_common_name,
-                t.subinstallationreference AS child_id,
-                t.subinstallationcommonname AS child_name,
-                t.subinstallationstatus AS child_status,
-                FROM sai_raw_data.ai2_data t
-                JOIN s4_sai_mapping.vw_level1_mapping mp ON mp.ai2_site_id = t.sitereference),      
-        cte_site AS (
-            SELECT DISTINCT
-                t.sitereference AS ai2_site_id,
-                mp.s4_site_id AS s4_site_name,
-                t.sitecommonname AS site_common_name,
-                t.sitereference AS child_id,
-                t.sitecommonname AS child_name,
-                'OPERATIONAL' AS child_status,
-                FROM sai_raw_data.ai2_data t
-                JOIN s4_sai_mapping.vw_level1_mapping mp ON mp.ai2_site_id = t.sitereference)            
-    SELECT DISTINCT 
-        t1.s4_site_name AS site_id,
-        t1.site_common_name AS site_common_name,
-        t1.child_id AS child_id,
-        t1.child_name AS child_name,
-        t1.child_status AS child_status,
-        'INSTALLATION' AS child_type,
-    FROM cte_inst t1
-    WHERE 
-        t1.ai2_site_id IS NOT NULL
-    AND t1.child_id IS NOT NULL
-    UNION
-    SELECT DISTINCT 
-        t2.s4_site_name AS site_id,
-        t2.site_common_name AS site_common_name,
-        t2.child_id AS child_id,
-        t2.child_name AS child_name,
-        t2.child_status AS child_status,
-        'SUBINSTALLATION' AS child_type,
-    FROM cte_subinst t2
-    WHERE 
-        t2.ai2_site_id IS NOT NULL
-    AND t2.child_id IS NOT NULL
-    UNION
-    SELECT DISTINCT 
-        t2.s4_site_name AS site_id,
-        t2.site_common_name AS site_common_name,
-        t2.child_id AS child_id,
-        t2.child_name AS child_name,
-        t2.child_status AS child_status,
-        'SITE' AS child_type,
-    FROM cte_site t2
-    WHERE 
-        t2.ai2_site_id IS NOT NULL
-    AND t2.child_id IS NOT NULL
-    ORDER BY site_id;
+    (SELECT DISTINCT 
+        sites.site_reference AS site_id,
+        sites.common_name AS site_description,
+        insts.sai_num AS child_id,
+        s_to_a.s4_site_id AS s4_site_id,
+        insts.status AS child_status,
+    FROM s4_sai_mapping.vw_ai2_sites sites
+    JOIN s4_sai_mapping.vw_ai2_installations insts ON insts.site_id = sites.site_reference
+    JOIN s4_sai_mapping.vw_level1_mapping s_to_a ON s_to_a.ai2_site_id = sites.site_reference)
+    UNION 
+    (SELECT DISTINCT 
+        sites.site_reference AS site_id,
+        sites.common_name AS site_description,
+        sites.site_reference AS child_id,
+        s_to_a.s4_site_id AS s4_site_id,
+        'SITE (no status)' AS child_status,
+    FROM s4_sai_mapping.vw_ai2_sites sites
+    JOIN s4_sai_mapping.vw_level1_mapping s_to_a ON s_to_a.ai2_site_id = sites.site_reference)
+    ORDER BY site_description, site_id
 """
+
 vw_s4_level1_kids_ddl = """
     CREATE OR REPLACE VIEW s4_sai_mapping.vw_s4_level1_kids AS
     SELECT DISTINCT 
@@ -161,75 +137,50 @@ vw_s4_level1_kids_ddl = """
     WHERE t.functloccategory = 1
 """
 
-vw_ai2_installation_type_codes_ddl = """
-    CREATE OR REPLACE VIEW s4_sai_mapping.vw_ai2_installation_type_codes AS
-    SELECT DISTINCT * FROM (
-        (SELECT 
-            t1.installationreference AS sai_num,
-            t1.installationcommonname AS name,
-            'INSTALLATION' AS inst_type,
-            t1.installationtypecode AS type_code,
-        FROM sai_raw_data.ai2_data t1
-        WHERE t1.installationreference IS NOT NULL)
-        UNION
-        (SELECT 
-            t2.subinstallationreference AS sai_num,
-            t2.subinstallationcommonname AS name,
-            'SUBINSTALLATION' AS inst_type,
-            t2.subinstallationtypecode AS type_code,
-        FROM sai_raw_data.ai2_data t2
-        WHERE t2.subinstallationreference IS NOT NULL)
-        UNION
-        (SELECT 
-            t2.sitereference AS sai_num,
-            t2.sitecommonname AS name,
-            'SITE' AS inst_type,
-            'SITE' AS type_code,
-        FROM sai_raw_data.ai2_data t2
-        WHERE t2.sitereference IS NOT NULL)
-    ) t
-    ORDER BY t.sai_num;
-"""
-
 vw_level1_parent_child_results_ddl = """
     CREATE OR REPLACE VIEW s4_sai_mapping.vw_level1_parent_child_results AS 
-    SELECT * FROM (
-        (SELECT DISTINCT
-            t1.site_id AS parent_id,
-            t1.child_id AS child_id,
-            'SAME' as status,
-        FROM s4_sai_mapping.vw_ai2_level1_kids t1
-        INTERSECT
-        SELECT DISTINCT
-            t2.site_floc AS parent_id,
-            t2.child_id AS child_id,
-            'SAME' as status,
-        FROM s4_sai_mapping.vw_s4_level1_kids t2)
+        (SELECT stbl.* FROM
+            (SELECT DISTINCT
+                t1.s4_site_id AS parent_id,
+                t1.child_id AS child_id,
+                'SAME' as status,
+            FROM s4_sai_mapping.vw_ai2_level1_kids t1
+            INTERSECT
+            SELECT DISTINCT
+                t2.site_floc AS parent_id,
+                t2.child_id AS child_id,
+                'SAME' as status,
+            FROM s4_sai_mapping.vw_s4_level1_kids t2) stbl
+        WHERE stbl.parent_id IS NOT NULL)
         UNION
-        (SELECT DISTINCT
-            t1.site_id AS parent_id,
-            t1.child_id AS child_id,
-            'MISSING' as status,
-        FROM s4_sai_mapping.vw_ai2_level1_kids t1
-        EXCEPT
-        SELECT DISTINCT
-            t2.site_floc AS parent_id,
-            t2.child_id AS child_id,
-            'MISSING' as status,
-        FROM s4_sai_mapping.vw_s4_level1_kids t2)
+        (SELECT mtbl.* FROM 
+            (SELECT DISTINCT
+                t1.s4_site_id AS parent_id,
+                t1.child_id AS child_id,
+                'MISSING' as status,
+            FROM s4_sai_mapping.vw_ai2_level1_kids t1
+            EXCEPT
+            SELECT DISTINCT
+                t2.site_floc AS parent_id,
+                t2.child_id AS child_id,
+                'MISSING' as status,
+            FROM s4_sai_mapping.vw_s4_level1_kids t2) mtbl
+        WHERE mtbl.parent_id IS NOT NULL)
         UNION
-        (SELECT DISTINCT
-            t2.site_floc AS parent_id,
-            t2.child_id AS child_id,
-            'ALIEN' as status,
-        FROM s4_sai_mapping.vw_s4_level1_kids t2    
-        EXCEPT
-        SELECT DISTINCT
-            t1.site_id AS parent_id,
-            t1.child_id AS child_id,
-            'ALIEN' as status,
-        FROM s4_sai_mapping.vw_ai2_level1_kids t1)) t
-    ORDER BY t.parent_id, t.child_id;
+        (SELECT atbl.* FROM 
+            (SELECT DISTINCT
+                t2.site_floc AS parent_id,
+                t2.child_id AS child_id,
+                'ALIEN' as status,
+            FROM s4_sai_mapping.vw_s4_level1_kids t2    
+            EXCEPT
+            SELECT DISTINCT
+                t1.s4_site_id AS parent_id,
+                t1.child_id AS child_id,
+                'ALIEN' as status,
+            FROM s4_sai_mapping.vw_ai2_level1_kids t1) atbl
+        WHERE atbl.parent_id IS NOT NULL)
+    ORDER BY parent_id, child_id;
 """
 
 vw_level1_children_report_ddl = """
@@ -237,29 +188,22 @@ vw_level1_children_report_ddl = """
     WITH cte_child_status AS (
         (SELECT 
             t1.child_id AS child_id,
-            first(t1.child_status) AS status,
+            first(t1.child_status) AS asset_status,
         FROM s4_sai_mapping.vw_ai2_level1_kids t1
         GROUP BY t1.child_id)
-        UNION 
-        (SELECT DISTINCT 
-            t2.sitereference AS child_id,
-            'OPERATIONAL' AS status,        -- all sites are operational
-        FROM
-            sai_raw_data.ai2_data t2
-        WHERE t2.sitereference IS NOT NULL)
         )
-    SELECT 
+    (SELECT 
         t.functional_location AS funcloc,
         t.description_of_functional_location AS floc_name,
         ans.child_id AS child_id,
-        tyco.name AS child_name,
+        tyco.common_name AS child_name,
         ans.status AS data_status,
         tyco.type_code AS type_code,
-        cte.status AS child_asset_status,
+        IF (tyco.type_code NOT IN ('ADT', 'BIF', 'BUI', 'CRR', 'CRS', 'CRT', 'CSP', 'IVR', 'IVS', 'LMP', 'SPR', 'STR', 'STU', 'WFM'), '', 'type_code not migrated') AS type_code_migrated,
+        cte.asset_status AS child_asset_status,
     FROM s4_sai_mapping.vw_s4_level1_worklist AS t
     JOIN s4_sai_mapping.vw_level1_parent_child_results ans ON ans.parent_id = t.functional_location 
     JOIN s4_sai_mapping.vw_ai2_installation_type_codes tyco ON tyco.sai_num = ans.child_id 
-    JOIN cte_child_status cte ON cte.child_id = ans.child_id
-    WHERE tyco.type_code NOT IN ('DAZ', 'TST', 'TSR')
-    ORDER BY funcloc, child_id;
+    JOIN cte_child_status cte ON cte.child_id = ans.child_id)
+    ORDER BY funcloc, ans.child_id;
 """

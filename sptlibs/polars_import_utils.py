@@ -21,10 +21,11 @@ import duckdb
 from typing import Callable, Literal
 from sptlibs.xlsx_source import XlsxSource
 
+# 'xlsx2csv' is the fastest engine
 
 def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
-    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True})
+    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
     if df_trafo is not None:
         df_clean = df_trafo(df_raw)
     else:
