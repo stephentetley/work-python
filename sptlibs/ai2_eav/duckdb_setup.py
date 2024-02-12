@@ -40,3 +40,14 @@ equipment_eav_ddl = """
     );
     """
 
+
+def equipment_eav_insert(*, df_view_name: str) -> str: 
+    return f"""
+    INSERT INTO ai2_raw_data.equipment_eav BY NAME
+    SELECT 
+        df.Reference AS sai_num,
+        df.variable AS attr_name,
+        df.value AS attr_value,
+    FROM {df_view_name} AS df
+    ON CONFLICT DO NOTHING;
+    """
