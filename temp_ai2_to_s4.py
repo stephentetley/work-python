@@ -26,6 +26,8 @@ print(out.columns)
 
 out1 = out.select(
     [ (pl.col("sai_num"))
+    , (pl.col("Common Name").str.extract(r"/([^/]+)/EQUIPMENT:", 1).alias("name"))
+    , (pl.col("Common Name").str.extract(r"EQUIPMENT: (.+)", 1).alias("equi_type"))
     , (pl.col("Manufacturer").alias("manufacturer"))
     , (pl.col("Model").alias("model"))
     , (pl.col("Installed From").str.to_datetime("%m/%d/%y %H:%M").dt.to_string("%d.%m.%Y")).alias("startup_date")
