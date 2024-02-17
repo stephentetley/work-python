@@ -34,25 +34,39 @@ def extract_chars(df: pl.DataFrame) -> pl.DataFrame:
 
 
 
-netwtl_ddl = """
-    CREATE OR REPLACE TABLE ai2_to_s4.netwtl  (
+fstnem_ddl = """
+    CREATE OR REPLACE TABLE ai2_to_s4.fstnem  (
         equi VARCHAR,
         uniclass_code VARCHAR,
         uniclass_desc VARCHAR,
         location_on_site VARCHAR,
         memo_line VARCHAR,
         manufacturers_asset_life_yr INTEGER,
+        fstn_field_validation_device VARCHAR,
         ip_rating VARCHAR,
-        netw_supply_voltage INTEGER,
-        netw_supply_voltage_units VARCHAR,
+        fstn_signal_type VARCHAR,
+        fstn_pipe_diameter_mm INTEGER,
+        fstn_range_max INTEGER,
+        fstn_range_min INTEGER,
+        fstn_range_units VARCHAR,
+        fstn_sens_calibration_factor_1 DECIMAL(18, 3),
+        fstn_sens_calibration_factor_2 DECIMAL(18, 3),
+        fstn_sens_calibration_factor_3 DECIMAL(18, 3),
+        fstn_sens_calibration_factor_4 DECIMAL(18, 3),
+        fstn_transducer_model VARCHAR,
+        fstn_transducer_serial_no VARCHAR,
+        fstn_transmitter_model VARCHAR,
+        fstn_transmitter_serial_no VARCHAR,
+        fstn_rated_voltage INTEGER,
+        fstn_rated_voltage_units VARCHAR,
         PRIMARY KEY(equi)
     );
     """
 
 
-def netwtl_insert(*, df_view_name: str) -> str: 
+def fstnem_insert(*, df_view_name: str) -> str: 
     return f"""
-    INSERT INTO ai2_to_s4.netwtl BY NAME
+    INSERT INTO ai2_to_s4.fstnem BY NAME
     SELECT 
         df.sai_num AS equi,
         df.location_on_site AS location_on_site,
@@ -62,7 +76,7 @@ def netwtl_insert(*, df_view_name: str) -> str:
     """
 
 def store_class(*, con: duckdb.DuckDBPyConnection, exec_ddl: bool, df: pl.DataFrame) -> None:
-    con.register(view_name='vw_netwtl_df', python_object=df)
+    con.register(view_name='vw_fstnem_df', python_object=df)
     if exec_ddl:
-        con.execute(netwtl_ddl)
-    con.execute(netwtl_insert(df_view_name="vw_netwtl_df"))
+        con.execute(fstnem_ddl)
+    con.execute(fstnem_insert(df_view_name="vw_fstnem_df"))
