@@ -63,7 +63,7 @@ def extract_masterdata(df: pl.DataFrame) -> pl.DataFrame:
 
 equipment_ddl = """
     CREATE OR REPLACE TABLE ai2_to_s4.equipment  (
-        equi VARCHAR,
+        equi VARCHAR NOT NULL,
         description VARCHAR,
         manufacturer VARCHAR,
         model VARCHAR,

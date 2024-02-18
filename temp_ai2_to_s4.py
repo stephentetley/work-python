@@ -4,6 +4,7 @@ import polars as pl
 import polars.selectors as cs
 import duckdb
 import sptapps.ai2_to_s4.equipment_master_data as equipment_master_data
+import sptapps.ai2_to_s4.asset_condition as asset_condition
 import sptapps.ai2_to_s4.east_north as east_north
 import sptapps.ai2_to_s4.instrument.fstnem as fstnem
 
@@ -15,18 +16,24 @@ df = con.execute("""
 ).pl()
 print(df)
 
-def rename1(s: str, t: str, df: pl.DataFrame) -> pl.DataFrame:
-    return df.rename({s: t})
-
 # NOTE
 # Best way to insure the pivot table has necessary columns is to add fake recods with them.
 # sai_num     ┆ attr_name            ┆ attr_value
 # Doing this then pivoting solves the ai2 to s4 translation puzzle
 
 
-stk = pl.concat([df, equipment_master_data.eav_sample, east_north.eav_sample, fstnem.eav_sample], how='vertical')
+stk = pl.concat([
+    df, 
+    equipment_master_data.eav_sample, 
+    asset_condition.eav_sample,
+    east_north.eav_sample, 
+    fstnem.eav_sample
+    ], 
+    how='vertical'
+)
+
 out = stk.pivot(index="sai_num", columns="attr_name", values="attr_value", aggregate_function="first")
-print(rename1("Common Name", "common_name", out))
+
 
 
 out1 = equipment_master_data.extract_masterdata(out)
@@ -46,6 +53,10 @@ print(out2)
 out3 = east_north.extract_chars(out)
 east_north.store_class(con=con, exec_ddl=True, df=out3)
 print(out3)
+
+out4 = asset_condition.extract_chars(out)
+asset_condition.store_class(con=con, exec_ddl=True, df=out4)
+print(out4)
 
 
 print(out.columns)
