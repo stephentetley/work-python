@@ -39,7 +39,7 @@ eav_sample = pl.DataFrame([
 ])
 
 
-def extract_masterdata(df: pl.DataFrame) -> pl.DataFrame: 
+def extract_masterdata(*, df: pl.DataFrame) -> pl.DataFrame: 
     return df.select(
         [ (pl.col("sai_num"))
         , (pl.col("Common Name").str.extract(r"/([^/]+)/EQUIPMENT:", 1).alias("decription"))

@@ -33,7 +33,7 @@ eav_sample = pl.DataFrame(
 )
 
 
-def extract_chars(df: pl.DataFrame) -> pl.DataFrame: 
+def extract_chars(*, df: pl.DataFrame) -> pl.DataFrame: 
     return df.select(
         [ (pl.col("sai_num"))
         , (pl.col("Location On Site").alias("location_on_site"))

@@ -3,17 +3,22 @@
 import polars as pl
 import polars.selectors as cs
 import duckdb
-import sptapps.ai2_to_s4.equipment_master_data as equipment_master_data
-import sptapps.ai2_to_s4.asset_condition as asset_condition
-import sptapps.ai2_to_s4.east_north as east_north
-import sptapps.ai2_to_s4.instrument.fstnem as fstnem
+import sptlibs.ai2_to_s4.duckdb_setup as duckdb_setup
+import sptlibs.ai2_to_s4.equipment_master_data as equipment_master_data
+import sptlibs.ai2_to_s4.aib_reference as aib_reference
+import sptlibs.ai2_to_s4.asset_condition as asset_condition
+import sptlibs.ai2_to_s4.east_north as east_north
+import sptlibs.ai2_to_s4.instrument.fstnem as fstnem
 
 con = duckdb.connect('g:/work/2024/ai2_to_s4/magflow.db', read_only=False)
+duckdb_setup.setup_tables(con=con)
 
 df = con.execute("""
-    SELECT * FROM ai2_raw_data.equipment_eav
-                 """
+        SELECT * FROM ai2_raw_data.equipment_eav;
+    """
 ).pl()
+
+
 print(df)
 
 # NOTE
@@ -36,7 +41,7 @@ out = stk.pivot(index="sai_num", columns="attr_name", values="attr_value", aggre
 
 
 
-out1 = equipment_master_data.extract_masterdata(out)
+out1 = equipment_master_data.extract_masterdata(df=out)
 
 
 print(out1)
@@ -44,19 +49,23 @@ print(out1)
 con.execute('CREATE SCHEMA IF NOT EXISTS ai2_to_s4;')
 equipment_master_data.store_masterdata(con=con, exec_ddl=True, df=out1)
 
-out2 = fstnem.extract_chars(out)
+out2 = fstnem.extract_chars(df=out)
 fstnem.store_class(con=con, exec_ddl=True, df=out2)
 
 print(out2)
 
 
-out3 = east_north.extract_chars(out)
+out3 = east_north.extract_chars(df=out)
 east_north.store_class(con=con, exec_ddl=True, df=out3)
 print(out3)
 
-out4 = asset_condition.extract_chars(out)
+out4 = asset_condition.extract_chars(df=out)
 asset_condition.store_class(con=con, exec_ddl=True, df=out4)
 print(out4)
 
+
+out5 = aib_reference.extract_chars(con=con)
+aib_reference.store_class(con=con, exec_ddl=True, df=out5)
+print(out5)
 
 print(out.columns)

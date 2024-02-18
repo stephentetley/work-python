@@ -27,7 +27,7 @@ eav_sample = pl.DataFrame([
 ])
 
 
-def extract_chars(df: pl.DataFrame) -> pl.DataFrame: 
+def extract_chars(*, df: pl.DataFrame) -> pl.DataFrame: 
     return df.select(
         [ (pl.col("sai_num"))
         , (pl.col("Condition Grade").str.to_uppercase().alias("condition_grade"))

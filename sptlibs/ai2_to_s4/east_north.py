@@ -25,7 +25,7 @@ eav_sample = pl.DataFrame([
 ])
 
 
-def extract_chars(df: pl.DataFrame) -> pl.DataFrame: 
+def extract_chars(*, df: pl.DataFrame) -> pl.DataFrame: 
     return df.select(
         [ (pl.col("sai_num"))
         , (pl.col("Loc.Ref.").map_elements(lambda s: gridref.to_east_north(s)["easting"]).alias("easting"))
