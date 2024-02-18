@@ -28,9 +28,6 @@ out = stk.pivot(index="sai_num", columns="attr_name", values="attr_value", aggre
 print(rename1("Common Name", "common_name", out))
 
 
-
-print(out.columns)
-
 out1 = equipment_master_data.extract_masterdata(out)
 
 
@@ -42,3 +39,6 @@ equipment_master_data.store_masterdata(con=con, exec_ddl=True, df=out1)
 out2 = fstnem.extract_chars(out)
 fstnem.store_class(con=con, exec_ddl=True, df=out2)
 
+print(out2)
+
+print(out.columns)

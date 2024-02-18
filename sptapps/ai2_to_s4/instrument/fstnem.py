@@ -29,6 +29,11 @@ def extract_chars(df: pl.DataFrame) -> pl.DataFrame:
     return df.select(
         [ (pl.col("sai_num"))
         , (pl.col("Location On Site").alias("location_on_site"))
+        , (pl.col("Pipe Diameter mm").cast(pl.Int32).alias("pipe_diameter_mm"))
+        , (pl.format("{} - {} {}", pl.col("Signal min"), pl.col("Signal max"), pl.col("Signal unit").str.to_uppercase()).alias("signal"))
+        , (pl.col("Range min").cast(pl.Decimal).alias("range_min"))
+        , (pl.col("Range max").cast(pl.Decimal).alias("range_max"))
+        , (pl.col("Range unit").str.to_uppercase().alias("range_units"))
         ]
     )
 
@@ -46,8 +51,8 @@ fstnem_ddl = """
         ip_rating VARCHAR,
         fstn_signal_type VARCHAR,
         fstn_pipe_diameter_mm INTEGER,
-        fstn_range_max INTEGER,
-        fstn_range_min INTEGER,
+        fstn_range_max DECIMAL(18, 3),
+        fstn_range_min DECIMAL(18, 3),
         fstn_range_units VARCHAR,
         fstn_sens_calibration_factor_1 DECIMAL(18, 3),
         fstn_sens_calibration_factor_2 DECIMAL(18, 3),
@@ -70,6 +75,11 @@ def fstnem_insert(*, df_view_name: str) -> str:
     SELECT 
         df.sai_num AS equi,
         df.location_on_site AS location_on_site,
+        df.pipe_diameter_mm AS fstn_pipe_diameter_mm,
+        df.signal AS fstn_signal_type,
+        df.range_min AS fstn_range_min,
+        df.range_max AS fstn_range_max,
+        df.range_units AS fstn_range_units,
     FROM {df_view_name} AS df
     WHERE df.sai_num <> 'X001'
     ON CONFLICT DO NOTHING;
