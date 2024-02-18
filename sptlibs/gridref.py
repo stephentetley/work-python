@@ -15,7 +15,9 @@ limitations under the License.
 
 """
 
-def to_osgb36(easting, northing): 
+from typing import TypedDict
+
+def to_osgb36(easting : int, northing: int) -> str: 
     try:
         major_char = find_major(easting, northing)
         minor_char = find_minor(easting % 500000, northing % 500000)
@@ -96,7 +98,12 @@ def find_minor(e, n):
     else:
         None
 
-def to_east_north(gridref):
+class EastNorth(TypedDict):
+    easting: int
+    northing: int
+
+
+def to_east_north(gridref: str) -> EastNorth:
     try: 
         major = decode_major(gridref[0])
         minor = decode_minor(gridref[1])

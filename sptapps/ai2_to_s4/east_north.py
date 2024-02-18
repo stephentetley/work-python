@@ -17,52 +17,49 @@ limitations under the License.
 
 import duckdb
 import polars as pl
-
+import sptlibs.gridref as gridref
 
 
 eav_sample = pl.DataFrame([ 
-    {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Kiosk'},
+    {'sai_num': 'X001', 'attr_name': 'Loc.Ref.', 'attr_value': 'SD1234512345'},
 ])
 
 
 def extract_chars(df: pl.DataFrame) -> pl.DataFrame: 
     return df.select(
         [ (pl.col("sai_num"))
-        , (pl.col("Location On Site").alias("location_on_site"))
+        , (pl.col("Loc.Ref.").map_elements(lambda s: gridref.to_east_north(s)["easting"]).alias("easting"))
+        , (pl.col("Loc.Ref.").map_elements(lambda s: gridref.to_east_north(s)["northing"]).alias("northing"))
         ]
     )
 
 
 
-netwtl_ddl = """
-    CREATE OR REPLACE TABLE ai2_to_s4.netwtl  (
+east_north_ddl = """
+    CREATE OR REPLACE TABLE ai2_to_s4.east_north  (
         equi VARCHAR,
-        uniclass_code VARCHAR,
-        uniclass_desc VARCHAR,
-        location_on_site VARCHAR,
-        memo_line VARCHAR,
-        manufacturers_asset_life_yr INTEGER,
-        ip_rating VARCHAR,
-        netw_supply_voltage INTEGER,
-        netw_supply_voltage_units VARCHAR,
+        easting INTEGER,
+        northing INTEGER,
         PRIMARY KEY(equi)
     );
     """
 
 
-def netwtl_insert(*, df_view_name: str) -> str: 
+def east_north_insert(*, df_view_name: str) -> str: 
     return f"""
-    INSERT INTO ai2_to_s4.netwtl BY NAME
+    INSERT INTO ai2_to_s4.east_north BY NAME
     SELECT 
         df.sai_num AS equi,
-        df.location_on_site AS location_on_site,
+        df.easting AS easting,
+        df.northing AS northing,
     FROM {df_view_name} AS df
     WHERE df.sai_num <> 'X001'
     ON CONFLICT DO NOTHING;
     """
 
 def store_class(*, con: duckdb.DuckDBPyConnection, exec_ddl: bool, df: pl.DataFrame) -> None:
-    con.register(view_name='vw_netwtl_df', python_object=df)
+    con.register(view_name='vw_east_north_df', python_object=df)
     if exec_ddl:
-        con.execute(netwtl_ddl)
-    con.execute(netwtl_insert(df_view_name="vw_netwtl_df"))
+        con.execute(east_north_ddl)
+    con.execute(east_north_insert(df_view_name="vw_east_north_df"))
+

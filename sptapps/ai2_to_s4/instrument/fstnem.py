@@ -20,9 +20,17 @@ import polars as pl
 
 
 
-chars_sample = pl.DataFrame([ 
-    {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Kiosk'},
-])
+eav_sample = pl.DataFrame(
+    [ {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Outfalll'}
+    , {'sai_num': 'X001', 'attr_name': 'Pipe Diameter mm', 'attr_value': '100'}
+    , {'sai_num': 'X001', 'attr_name': 'Signal min', 'attr_value': '0.0'}
+    , {'sai_num': 'X001', 'attr_name': 'Signal max', 'attr_value': '0.0'}
+    , {'sai_num': 'X001', 'attr_name': 'Signal unit', 'attr_value': 'l/s'}
+    , {'sai_num': 'X001', 'attr_name': 'Range min', 'attr_value': '0.0'}
+    , {'sai_num': 'X001', 'attr_name': 'Range max', 'attr_value': '0.0'}
+    , {'sai_num': 'X001', 'attr_name': 'Range unit', 'attr_value': 'mA'}
+    ]
+)
 
 
 def extract_chars(df: pl.DataFrame) -> pl.DataFrame: 
@@ -38,6 +46,7 @@ def extract_chars(df: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+    
 
 fstnem_ddl = """
     CREATE OR REPLACE TABLE ai2_to_s4.fstnem  (
