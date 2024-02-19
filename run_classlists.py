@@ -2,7 +2,7 @@
 
 from sptlibs.classlist.gen_duckdb import GenDuckdb
 
-equi_src = 'g:/work/2024/classlists/002-equi-classlist.txt'
+equi_src = 'g:/work/2024/classlists/002-equi-classlist-feb24.txt'
 floc_src = 'g:/work/2024/classlists/003-floc-classlist.txt'
 output_db_path = 'g:/work/2024/classlists/classlists.duckdb'
 

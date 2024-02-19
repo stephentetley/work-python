@@ -39,8 +39,8 @@ def extract_chars(*, df: pl.DataFrame) -> pl.DataFrame:
         , (pl.col("Location On Site").alias("location_on_site"))
         , (pl.col("Pipe Diameter mm").cast(pl.Int32).alias("pipe_diameter_mm"))
         , (pl.format("{} - {} {}", pl.col("Signal min"), pl.col("Signal max"), pl.col("Signal unit").str.to_uppercase()).alias("signal"))
-        , (pl.col("Range min").cast(pl.Decimal).alias("range_min"))
-        , (pl.col("Range max").cast(pl.Decimal).alias("range_max"))
+        , (pl.col("Range min").cast(pl.Float64).alias("range_min"))
+        , (pl.col("Range max").cast(pl.Float64).alias("range_max"))
         , (pl.col("Range unit").str.to_uppercase().alias("range_units"))
         ]
     )

@@ -9,6 +9,7 @@ import sptlibs.ai2_to_s4.aib_reference as aib_reference
 import sptlibs.ai2_to_s4.asset_condition as asset_condition
 import sptlibs.ai2_to_s4.east_north as east_north
 import sptlibs.ai2_to_s4.instrument.fstnem as fstnem
+import sptlibs.ai2_to_s4.instrument.lstnut as lstnut
 
 con = duckdb.connect('g:/work/2024/ai2_to_s4/magflow.db', read_only=False)
 duckdb_setup.setup_tables(con=con)
@@ -32,7 +33,8 @@ stk = pl.concat([
     equipment_master_data.eav_sample, 
     asset_condition.eav_sample,
     east_north.eav_sample, 
-    fstnem.eav_sample
+    fstnem.eav_sample,
+    lstnut.eav_sample
     ], 
     how='vertical'
 )
@@ -67,5 +69,9 @@ print(out4)
 out5 = aib_reference.extract_chars(con=con)
 aib_reference.store_class(con=con, exec_ddl=True, df=out5)
 print(out5)
+
+out6 = lstnut.extract_chars(df=out)
+lstnut.store_class(con=con, exec_ddl=True, df=out6)
+print(out6)
 
 print(out.columns)
