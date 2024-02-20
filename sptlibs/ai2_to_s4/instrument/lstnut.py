@@ -21,7 +21,7 @@ import polars as pl
 
 
 eav_sample = pl.DataFrame(
-    [ {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Outfalll'}
+    [ {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Outfall'}
     , {'sai_num': 'X001', 'attr_name': 'Transducer Type', 'attr_value': 'XPS-15'}
     , {'sai_num': 'X001', 'attr_name': 'Transducer Serial No', 'attr_value': 'LDN01'}
     , {'sai_num': 'X001', 'attr_name': 'Relay 1 Function', 'attr_value': 'UNDESIGNATED LEVEL ALARM'}

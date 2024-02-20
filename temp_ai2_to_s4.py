@@ -8,6 +8,7 @@ import sptlibs.ai2_to_s4.equipment_master_data as equipment_master_data
 import sptlibs.ai2_to_s4.aib_reference as aib_reference
 import sptlibs.ai2_to_s4.asset_condition as asset_condition
 import sptlibs.ai2_to_s4.east_north as east_north
+import sptlibs.ai2_to_s4.electrical.pumsmo as pumsmo
 import sptlibs.ai2_to_s4.instrument.fstnem as fstnem
 import sptlibs.ai2_to_s4.instrument.lstnut as lstnut
 
@@ -34,7 +35,8 @@ stk = pl.concat([
     asset_condition.eav_sample,
     east_north.eav_sample, 
     fstnem.eav_sample,
-    lstnut.eav_sample
+    lstnut.eav_sample,
+    pumsmo.eav_sample,
     ], 
     how='vertical'
 )
@@ -73,5 +75,9 @@ print(out5)
 out6 = lstnut.extract_chars(df=out)
 lstnut.store_class(con=con, exec_ddl=True, df=out6)
 print(out6)
+
+out7 = pumsmo.extract_chars(df=out)
+pumsmo.store_class(con=con, exec_ddl=True, df=out7)
+print(out7)
 
 print(out.columns)

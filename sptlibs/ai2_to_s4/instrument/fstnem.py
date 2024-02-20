@@ -21,7 +21,7 @@ import polars as pl
 
 
 eav_sample = pl.DataFrame(
-    [ {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Outfalll'}
+    [ {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Outfall'}
     , {'sai_num': 'X001', 'attr_name': 'Pipe Diameter mm', 'attr_value': '100'}
     , {'sai_num': 'X001', 'attr_name': 'Signal min', 'attr_value': '0.0'}
     , {'sai_num': 'X001', 'attr_name': 'Signal max', 'attr_value': '0.0'}
