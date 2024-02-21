@@ -24,6 +24,12 @@ eav_sample = pl.DataFrame(
     [ {'sai_num': 'X001', 'attr_name': 'Location On Site', 'attr_value': 'Wet Well'}
     , {'sai_num': 'X001', 'attr_name': 'Speed (RPM)', 'attr_value': '100'}
     , {'sai_num': 'X001', 'attr_name': 'Impeller Type', 'attr_value': 'N Adaptive'}
+    , {'sai_num': 'X001', 'attr_name': 'Rating (Power)', 'attr_value': '2.2'}
+    , {'sai_num': 'X001', 'attr_name': 'Rating Units', 'attr_value': 'KILOWATTS'}
+    , {'sai_num': 'X001', 'attr_name': 'Flow', 'attr_value': '5.67'}
+    , {'sai_num': 'X001', 'attr_name': 'Flow Units', 'attr_value': 'l/s'}
+    , {'sai_num': 'X001', 'attr_name': 'Duty Head', 'attr_value': '24.6'}
+    , {'sai_num': 'X001', 'attr_name': 'Duty Head Units', 'attr_value': 'm'}
     ]
 )
 
@@ -34,6 +40,9 @@ def extract_chars(*, df: pl.DataFrame) -> pl.DataFrame:
         , (pl.col("Location On Site").alias("location_on_site"))
         , (pl.col("Speed (RPM)").cast(pl.Int32).alias("speed_rpm"))
         , (pl.col("Impeller Type").str.to_uppercase().alias("impeller_type"))
+        , (pl.when(pl.col("Rating Units") == "KILOWATTS")).then(pl.col("Rating (Power)").cast(pl.Float64)).alias("rated_power_kw") 
+        , (pl.when(pl.col("Flow Units") == "l/s")).then(pl.col("Flow").cast(pl.Float64)).alias("flow_lps") 
+        , (pl.when(pl.col("Duty Head Units") == "m")).then(pl.col("Duty Head").cast(pl.Float64)).alias("duty_head_m") 
         ]
     )
 
@@ -75,6 +84,9 @@ def pumsmo_insert(*, df_view_name: str) -> str:
         df.location_on_site AS location_on_site,
         df.speed_rpm AS pums_rated_speed_rpm,
         df.impeller_type AS pums_impeller_type,
+        df.rated_power_kw AS pums_rated_power_kw,
+        df.flow_lps AS pums_flow_litres_per_sec,
+        df.duty_head_m AS pums_installed_design_head_m,
     FROM {df_view_name} AS df
     WHERE df.sai_num <> 'X001'
     ON CONFLICT DO NOTHING;
