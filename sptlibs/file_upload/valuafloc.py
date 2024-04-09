@@ -24,8 +24,8 @@ __valuafloc1_headers = [
     'ATIMB', 'ATSRT', 'ATFLV', 'ATFLB'
 ]
 
-def blank_na(obj):
-    return '' if pl.isna(obj) else obj
+def blank_na(obj: any) -> str:
+    return '' if obj is None else str(obj)
 
 def output_valuafloc(df: pl.DataFrame, *, out_path: str) -> str:
     with io.open(out_path, mode='w', encoding='utf-8') as outw:
@@ -34,6 +34,12 @@ def output_valuafloc(df: pl.DataFrame, *, out_path: str) -> str:
         outw.write('* Entity Type: VALUAFLOC\n')
         outw.write('* Variant: VALUAFLOC1\n')
         outw.write('\t'.join(__valuafloc1_headers) + '\n')
-        for row in df.iter_rows():
-            outw.write(f'{row.equipment}\t\t\t\t{row.char_id}\t\t{blank_na(row.char_value)}\t{row.class_type}\t{blank_na(row.code)}\t\t\t{row.instance_counter}\t{row.int_counter_value}\t\t{row.position}\t{blank_na(row.value_from)}\t{blank_na(row.value_to)}\t\n')
+        for row in df.iter_rows(named=True):
+            s = "{}\t{}\t{}\t\n".format(
+                blank_na(row['function_location']), 
+                blank_na(None),
+                blank_na(None),
+                )
+            # outw.write(f'{row['function_location']}\t\t\t\t{row['characteristic_id']}\t\t{blank_na(row['charcteristic_value'])}\t{row['class_type']}\t{blank_na(row['code'])}\t\t\t{row['instance_counter']}\t{row['int_counter_value']}\t\t{row['position']}\t{blank_na(row['value_from'])}\t{blank_na(row['value_to'])}\t\n')
+            outw.write(s)
     outw.close()

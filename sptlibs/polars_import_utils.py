@@ -18,7 +18,7 @@ limitations under the License.
 import re
 import polars as pl
 import duckdb
-from typing import Callable, Literal
+from typing import Callable
 from sptlibs.xlsx_source import XlsxSource
 
 # 'xlsx2csv' is the fastest engine
