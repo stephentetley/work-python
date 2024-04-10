@@ -16,10 +16,10 @@ limitations under the License.
 """
 
 import re
-import pandas as pd
+import polars as pl
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
-import sptlibs.import_utils as import_utils
+import sptlibs.polars_import_utils as polars_import_utils
 from sptlibs.ih06_ih08.column_range import ColumnRange
 
 def load_ih06(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
@@ -40,7 +40,7 @@ def load_ih08(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
 
 
 def _load_ih_file(*, config: dict, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
-    df = pd.read_excel(xlsx_src.path, xlsx_src.sheet)
+    df = pl.read_excel(source=xlsx_src.path, sheet_name=xlsx_src.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
     re_class_start = re.compile(r"Class (?P<class_name>[\w_]+) is assigned")
     ranges = []
     # start at column 1, dropping column 0 `selected line`
@@ -61,34 +61,34 @@ def _load_ih_file(*, config: dict, xlsx_src: XlsxSource, con: duckdb.DuckDBPyCon
     for crange in ranges[1:]:
         _load_values(name_prefix=config['name_prefix'], data_frame=df, column_range=crange, con=con)
 
-def _load_masterdata(*, qualified_table_name: str, temp_view_name: str, data_frame: pd.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
+def _load_masterdata(*, qualified_table_name: str, temp_view_name: str, data_frame: pl.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
     indices = list(range(column_range.range_start, column_range.range_end + 1, 1))
-    df1 = data_frame.iloc[:, indices]
-    df1 = import_utils.normalize_df_column_names(df1)
+    df1 = data_frame[:, indices]
+    df1 = polars_import_utils.normalize_df_column_names(df1)
     con.register(view_name=temp_view_name, python_object=df1)
     sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT * FROM {temp_view_name};'
     con.execute(sql_stmt)
     con.commit()
 
-def _load_values(*, name_prefix: str, data_frame: pd.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
+def _load_values(*, name_prefix: str, data_frame: pl.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
     # use separate tables for equi and floc values
     indices = list(range(column_range.range_start, column_range.range_end + 1, 1))
     table_name = f'{name_prefix}_{column_range.range_name.lower()}'
     indices.insert(0, 1) # add equipment id
-    df1 = data_frame.iloc[:, indices]
+    df1 = data_frame[:, indices]
     class_column_name = f'Class {column_range.range_name} is assigned'
     class_column_value = f'{column_range.range_name} is assigned'
     # filter
-    df2 = df1[df1[class_column_name] == class_column_value].copy(deep=True)
+    df2 = df1.filter(pl.col(class_column_name) == class_column_value)
     # add constant column
-    df2['class_name'] = column_range.range_name
-    df2 = df2.drop([class_column_name], axis=1)
+    df2 = df2.with_columns(class_name = pl.lit(column_range.range_name))
+    df2 = df2.drop([class_column_name])
     if name_prefix == 'valuaequi': 
-        df2.rename(columns={'Equipment': 'entity_id'}, inplace=True)
+        df2 = df2.rename({'Equipment': 'entity_id'})
     if name_prefix == 'valuafloc': 
-        df2.rename(columns={'Functional Location': 'entity_id'}, inplace=True)
-    df2 = import_utils.normalize_df_column_names(df2)
-    df2 = import_utils.remove_df_column_name_indices(df2)
+        df2 = df2.rename({'Functional Location': 'entity_id'})
+    df2 = polars_import_utils.normalize_df_column_names(df2)
+    df2 = polars_import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'
     con.register(view_name=temp_view, python_object=df2)
     sql_stmt = f'CREATE OR REPLACE TABLE s4_ihx_raw_data.{table_name} AS SELECT * FROM {temp_view};'
