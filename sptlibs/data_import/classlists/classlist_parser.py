@@ -17,7 +17,7 @@ limitations under the License.
 
 
 import os
-import pandas as pd
+import polars as pl
 
 # TODO change to Polars
 
@@ -114,7 +114,7 @@ def _get_equi_value_props(s: str) -> dict:
     except: 
         return None
     
-def parse_floc_classfile(path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+def parse_floc_classfile(path: str) -> tuple[pl.DataFrame, pl.DataFrame]:
     classes = []
     class1 = None
     char1 = None
@@ -141,7 +141,7 @@ def parse_floc_classfile(path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     return (df_chars, df_enums)
 
 # Note - different spacing to floc files...
-def parse_equi_classfile(path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+def parse_equi_classfile(path: str) -> tuple[pl.DataFrame, pl.DataFrame]:
     classes = []
     class1 = None
     char1 = None
@@ -167,7 +167,7 @@ def parse_equi_classfile(path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     df_enums = _make_enum_values_dataframe(classes)
     return (df_chars, df_enums)
 
-def _make_charcteristics_dataframe(classes: list[dict]) -> pd.DataFrame:
+def _make_charcteristics_dataframe(classes: list[dict]) -> pl.DataFrame:
     values_rows = []
     for class1 in classes:
         class_type = class1['type']
@@ -176,9 +176,9 @@ def _make_charcteristics_dataframe(classes: list[dict]) -> pd.DataFrame:
         for char1 in class1['characteristics']:
             row = [class_type, class_name, class_desc, char1['name'], char1['description'], char1['type'], char1['length'], char1['precision']]
             values_rows.append(row)
-    return pd.DataFrame(values_rows, columns = ['class_type', 'class_name', 'class_description', 'char_name', 'char_description', 'char_type', 'char_length', 'char_precision'])
+    return pl.DataFrame(values_rows, schema=['class_type', 'class_name', 'class_description', 'char_name', 'char_description', 'char_type', 'char_length', 'char_precision'])
 
-def _make_enum_values_dataframe(classes: list[dict]) -> pd.DataFrame:
+def _make_enum_values_dataframe(classes: list[dict]) -> pl.DataFrame:
     values_rows = []
     for class1 in classes:
         class_type = class1['type']
@@ -188,5 +188,5 @@ def _make_enum_values_dataframe(classes: list[dict]) -> pd.DataFrame:
             for value1 in char1['values']:
                 row = [class_type, class_name, char_name, value1['value'], value1['description']]
                 values_rows.append(row)
-    return pd.DataFrame(values_rows, columns = ['class_type', 'class_name', 'char_name', 'enum_value', 'enum_description'])
+    return pl.DataFrame(values_rows, schema=['class_type', 'class_name', 'char_name', 'enum_value', 'enum_description'])
 
