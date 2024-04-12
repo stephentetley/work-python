@@ -19,6 +19,8 @@ limitations under the License.
 import os
 import pandas as pd
 
+# TODO change to Polars
+
 def _is_empty_line(s: str) -> bool: 
     return s in ['', '  |', '  |   |', '      |', '  |   |   |', '  |       |']
 
@@ -112,7 +114,7 @@ def _get_equi_value_props(s: str) -> dict:
     except: 
         return None
     
-def parse_floc_classfile(path: str) -> dict:
+def parse_floc_classfile(path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     classes = []
     class1 = None
     char1 = None
@@ -134,12 +136,12 @@ def parse_floc_classfile(path: str) -> dict:
                     char1['values'].append(value1)
                 else:
                     continue
-    dict = {}
-    dict['characteristics'] = _make_charcteristics_dataframe(classes)
-    dict['enum_values'] = _make_enum_values_dataframe(classes)
-    return dict
+    df_chars = _make_charcteristics_dataframe(classes)
+    df_enums = _make_enum_values_dataframe(classes)
+    return (df_chars, df_enums)
 
-def parse_equi_classfile(path: str) -> dict:
+# Note - different spacing to floc files...
+def parse_equi_classfile(path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     classes = []
     class1 = None
     char1 = None
@@ -161,10 +163,9 @@ def parse_equi_classfile(path: str) -> dict:
                     char1['values'].append(value1)
                 else:
                     continue
-    dict = {}
-    dict['characteristics'] = _make_charcteristics_dataframe(classes)
-    dict['enum_values'] = _make_enum_values_dataframe(classes)
-    return dict
+    df_chars = _make_charcteristics_dataframe(classes)
+    df_enums = _make_enum_values_dataframe(classes)
+    return (df_chars, df_enums)
 
 def _make_charcteristics_dataframe(classes: list[dict]) -> pd.DataFrame:
     values_rows = []

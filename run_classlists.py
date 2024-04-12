@@ -1,13 +1,17 @@
 # run_classlists.py
 
-from sptlibs.classlist.gen_duckdb import GenDuckdb
+import duckdb
+import sptlibs.data_import.classlists.duckdb_import as duckdb_import
 
 equi_src = 'g:/work/2024/classlists/002-equi-classlist-feb24.txt'
 floc_src = 'g:/work/2024/classlists/003-floc-classlist.txt'
-output_db_path = 'g:/work/2024/classlists/classlists.duckdb'
+output_path = 'g:/work/2024/classlists/classlists2.duckdb'
 
-gen_duckdb = GenDuckdb(floc_classlist_path=floc_src, equi_classlist_path=equi_src, duckdb_output_path=output_db_path)
-out_path = gen_duckdb.gen_duckdb()
-print(out_path)
 
+conn = duckdb.connect(database=output_path)
+duckdb_import.init(con=conn)
+duckdb_import.import_floc_classes(floc_src, con=conn)
+duckdb_import.import_equi_classes(equi_src, con=conn)
+conn.close()
+print("Done")
 
