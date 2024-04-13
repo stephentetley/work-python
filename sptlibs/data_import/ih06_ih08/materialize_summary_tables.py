@@ -15,8 +15,8 @@ limitations under the License.
 
 """
 import duckdb
-import ih06_ih08.materialize_masterdata as materialize_masterdata
-import ih06_ih08.unpivot_classes as unpivot_classes
+import sptlibs.data_import.ih06_ih08.materialize_masterdata as materialize_masterdata
+import sptlibs.data_import.ih06_ih08.unpivot_classes as unpivot_classes
 
 def materialize_summary_tables(con: duckdb.DuckDBPyConnection) -> None:
     materialize_masterdata.materialize_masterdata(con=con)

@@ -20,7 +20,7 @@ import polars as pl
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.polars_import_utils as polars_import_utils
-from sptlibs.ih06_ih08.column_range import ColumnRange
+from sptlibs.data_import.ih06_ih08.column_range import ColumnRange
 
 def load_ih06(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
     config = {}

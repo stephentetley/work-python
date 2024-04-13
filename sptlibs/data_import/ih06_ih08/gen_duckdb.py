@@ -18,9 +18,9 @@ limitations under the License.
 import os
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
-import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
-import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
-import sptlibs.ih06_ih08.load_raw_xlsx as load_raw_xlsx
+import sptlibs.data_import.classlists.duckdb_setup as classlist_duckdb_setup
+import sptlibs.data_import.classlists.duckdb_copy as classlist_duckdb_copy
+import sptlibs.data_import.ih06_ih08.load_raw_xlsx as load_raw_xlsx
     
 class GenDuckdb:
     def __init__(self, *, classlists_duckdb_path: str, duckdb_output_path: str) -> None:

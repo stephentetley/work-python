@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-import sptlibs.ih06_ih08.materialize_summary_tables as materialize_summary_tables
+import sptlibs.data_import.ih06_ih08.materialize_summary_tables as materialize_summary_tables
 import sptlibs.s4_floc_equi_summary.summary_report as summary_report
     
 class GenSummaryReport:
