@@ -1,10 +1,10 @@
 # run_fd_summary_report.py
 
-from sptlibs.file_download.gen_duckdb import GenDuckdb
-from sptlibs.file_download.gen_summary_report import GenSummaryReport
+from sptlibs.data_import.file_download.gen_duckdb import GenDuckdb
+from sptlibs.data_import.file_download.gen_summary_report import GenSummaryReport
 
 glob_pattern        = '*download.txt'
-classlists_db       = 'g:/work/2024/classlists/classlists.duckdb'
+classlists_db       = 'g:/work/2024/classlists/classlists2.duckdb'
 source_directory    = 'g:/work/2024/file_download/pb1'
 duckdb_output_path  = source_directory + '/pb1_data.duckdb'
 xlsx_output_path    = source_directory + '/pb1-summary-report.xlsx'

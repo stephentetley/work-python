@@ -26,7 +26,9 @@ def copy_tables(*, classlists_source_db_path: str, con: duckdb.DuckDBPyConnectio
 def s4_classlists_table_copy(*, classlists_source_db_path: str) -> str: 
     return f"""
         ATTACH '{classlists_source_db_path}' AS classlists_source;
-        INSERT INTO s4_classlists.characteristic_defs SELECT * FROM classlists_source.s4_classlists.characteristic_defs;
-        INSERT INTO s4_classlists.enum_defs SELECT * FROM classlists_source.s4_classlists.enum_defs;
+        INSERT INTO s4_classlists.floc_characteristics SELECT * FROM classlists_source.s4_classlists.floc_characteristics;
+        INSERT INTO s4_classlists.floc_enums SELECT * FROM classlists_source.s4_classlists.floc_enums;
+        INSERT INTO s4_classlists.equi_characteristics SELECT * FROM classlists_source.s4_classlists.equi_characteristics;
+        INSERT INTO s4_classlists.equi_enums SELECT * FROM classlists_source.s4_classlists.equi_enums;
         DETACH classlists_source;
     """

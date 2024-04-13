@@ -18,10 +18,10 @@ limitations under the License.
 import os
 import glob
 import duckdb
-import sptlibs.classlist.duckdb_setup as classlist_duckdb_setup
-import sptlibs.classlist.duckdb_copy as classlist_duckdb_copy
-import file_download.duckdb_setup as duckdb_setup
-import sptlibs.file_download.load_file_download as load_file_download
+import sptlibs.data_import.classlists.duckdb_setup as classlist_duckdb_setup
+import sptlibs.data_import.classlists.duckdb_copy as classlist_duckdb_copy
+import sptlibs.data_import.file_download.duckdb_setup as duckdb_setup
+import sptlibs.data_import.file_download.load_file_download as load_file_download
 
 class GenDuckdb:
     def __init__(self, *, classlists_duckdb_path: str, duckdb_output_path: str) -> None:

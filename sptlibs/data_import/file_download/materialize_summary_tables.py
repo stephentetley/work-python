@@ -16,8 +16,8 @@ limitations under the License.
 """
 
 import duckdb
-import file_download.materialize_masterdata as materialize_masterdata
-import file_download.materialize_chardata as materialize_chardata
+import sptlibs.data_import.file_download.materialize_masterdata as materialize_masterdata
+import sptlibs.data_import.file_download.materialize_chardata as materialize_chardata
 
 def materialize_summary_tables(con: duckdb.DuckDBPyConnection) -> None:
     materialize_masterdata.materialize_masterdata(con=con)
