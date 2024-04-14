@@ -23,6 +23,14 @@ from sptlibs.xlsx_source import XlsxSource
 
 # 'xlsx2csv' is the fastest engine
 
+def readXlsxSource(source: XlsxSource, *, normalize_column_names: bool, con: duckdb.DuckDBPyConnection) -> pl.DataFrame:
+    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
+    if normalize_column_names:
+        return normalize_df_column_names(df)
+    else:
+        return df
+
+
 def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
     df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})

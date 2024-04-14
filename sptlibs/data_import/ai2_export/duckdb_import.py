@@ -23,8 +23,11 @@ import sptlibs.data_import.ai2_export.duckdb_setup as duckdb_setup
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     duckdb_setup.setup_tables(con=con)
 
-
 def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
+    __import_master_data(xlsx, con=con)
+    __import_eav_data(xlsx, con=con)
+
+def __import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     insert_stmt = """
         INSERT INTO ai2_export.master_data BY NAME
         SELECT 
@@ -35,9 +38,29 @@ def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> No
             df.model AS model,
             df.hierarchy_key AS hierarchy_key,
             df.assetstatus AS asset_status,
-            df.asset_in_aide AS asset_in_aide,
+            IF(df.asset_in_aide = 'FALSE', false, true) AS asset_in_aide,
         FROM 
             df_dataframe_view df
         ;
         """
     import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
+
+
+def __import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
+    df = import_utils.readXlsxSource(xlsx, normalize_column_names=True, con=con)
+    headers = df.columns
+    headers.remove('reference')
+    header_str =', '.join(headers)
+    pivot_insert = f"""
+        INSERT INTO ai2_export.eav_data BY NAME
+        SELECT 
+            pvt.reference AS ai2_reference, 
+            pvt.attr_name AS attribute_name, 
+            pvt.attr_value AS attribute_value, 
+        FROM (
+            UNPIVOT df ON {header_str} INTO NAME attr_name VALUE attr_value
+        ) pvt
+        WHERE
+            pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'loc_ref', 'asset_in_aide')
+    """
+    con.execute(pivot_insert)
