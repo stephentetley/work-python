@@ -16,7 +16,6 @@ limitations under the License.
 """
 
 import duckdb
-import pandas as pd
 import sptlibs.data_import.classlists.classlist_parser as classlist_parser
 import sptlibs.data_import.classlists.duckdb_setup as duckdb_setup
 
