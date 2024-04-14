@@ -29,7 +29,7 @@ def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> No
 
 def __import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     insert_stmt = """
-        INSERT INTO ai2_export.master_data BY NAME
+        INSERT OR REPLACE INTO ai2_export.master_data BY NAME
         SELECT 
             df.reference AS ai2_reference,
             df.common_name AS common_name,
@@ -49,7 +49,8 @@ def __import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) ->
 def __import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     df = import_utils.readXlsxSource(xlsx, normalize_column_names=True, con=con)
     headers = df.columns
-    headers.remove('reference')
+    headers.remove('reference')    
+    headers = map(lambda x: f'{x}::VARCHAR', headers)
     header_str =', '.join(headers)
     pivot_insert = f"""
         INSERT INTO ai2_export.eav_data BY NAME
@@ -62,5 +63,6 @@ def __import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> No
         ) pvt
         WHERE
             pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'loc_ref', 'asset_in_aide')
+        ON CONFLICT DO UPDATE SET attribute_value = EXCLUDED.attribute_value;
     """
     con.execute(pivot_insert)
