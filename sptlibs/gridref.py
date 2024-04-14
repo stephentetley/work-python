@@ -103,7 +103,7 @@ class EastNorth(TypedDict):
     northing: int
 
 
-def to_east_north(gridref: str) -> EastNorth:
+def to_east_north(gridref: str) -> tuple[int, int]:
     try: 
         major = decode_major(gridref[0])
         minor = decode_minor(gridref[1])
@@ -111,7 +111,7 @@ def to_east_north(gridref: str) -> EastNorth:
         minor_e, minor_n = minor
         east1 = int(gridref[2:7])
         north1 = int(gridref[7:12])
-        return {"easting": major_e + minor_e + east1, "northing": major_n + minor_n + north1}
+        return (major_e + minor_e + east1, major_n + minor_n + north1)
     except (TypeError, ValueError) as exn: 
         return None
     

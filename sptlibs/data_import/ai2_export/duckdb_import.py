@@ -1,5 +1,5 @@
 """
-Copyright 2023 Stephen Tetley
+Copyright 2024 Stephen Tetley
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ def __import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> No
             UNPIVOT df ON {header_str} INTO NAME attr_name VALUE attr_value
         ) pvt
         WHERE
-            pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'loc_ref', 'asset_in_aide')
+            pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'asset_in_aide')
         ON CONFLICT DO UPDATE SET attribute_value = EXCLUDED.attribute_value;
     """
     con.execute(pivot_insert)
