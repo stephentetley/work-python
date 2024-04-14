@@ -19,7 +19,7 @@ import re
 import polars as pl
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
-import sptlibs.polars_import_utils as polars_import_utils
+import sptlibs.data_import.import_utils as import_utils
 from sptlibs.data_import.ih06_ih08.column_range import ColumnRange
 
 def load_ih06(*, xlsx_src: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
@@ -64,7 +64,7 @@ def _load_ih_file(*, config: dict, xlsx_src: XlsxSource, con: duckdb.DuckDBPyCon
 def _load_masterdata(*, qualified_table_name: str, temp_view_name: str, data_frame: pl.DataFrame, column_range: ColumnRange, con: duckdb.DuckDBPyConnection) -> None: 
     indices = list(range(column_range.range_start, column_range.range_end + 1, 1))
     df1 = data_frame[:, indices]
-    df1 = polars_import_utils.normalize_df_column_names(df1)
+    df1 = import_utils.normalize_df_column_names(df1)
     con.register(view_name=temp_view_name, python_object=df1)
     sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT * FROM {temp_view_name};'
     con.execute(sql_stmt)
@@ -87,8 +87,8 @@ def _load_values(*, name_prefix: str, data_frame: pl.DataFrame, column_range: Co
         df2 = df2.rename({'Equipment': 'entity_id'})
     if name_prefix == 'valuafloc': 
         df2 = df2.rename({'Functional Location': 'entity_id'})
-    df2 = polars_import_utils.normalize_df_column_names(df2)
-    df2 = polars_import_utils.remove_df_column_name_indices(df2)
+    df2 = import_utils.normalize_df_column_names(df2)
+    df2 = import_utils.remove_df_column_name_indices(df2)
     temp_view = f'vw_df_{table_name}'
     con.register(view_name=temp_view, python_object=df2)
     sql_stmt = f'CREATE OR REPLACE TABLE s4_ihx_raw_data.{table_name} AS SELECT * FROM {temp_view};'

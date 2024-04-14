@@ -16,10 +16,10 @@ limitations under the License.
 """
 
 import duckdb
-import sptlibs.polars_import_utils as polars_import_utils
+import sptlibs.data_import.import_utils as import_utils
 
 def load_raw_data(*, tables: list, con: duckdb.DuckDBPyConnection) -> None:
     con.execute("CREATE SCHEMA IF NOT EXISTS sai_raw_data;")
     for (table_name, source, trafo) in tables:
-        polars_import_utils.duckdb_import_sheet(source, table_name=table_name, con=con, df_trafo=trafo)
+        import_utils.duckdb_import_sheet(source, table_name=table_name, con=con, df_trafo=trafo)
 

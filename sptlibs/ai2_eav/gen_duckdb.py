@@ -19,7 +19,7 @@ import duckdb
 import polars as pl
 import sptlibs.ai2_eav.duckdb_setup as duckdb_setup
 from sptlibs.xlsx_source import XlsxSource
-import sptlibs.polars_import_utils as polars_import_utils
+import sptlibs.data_import.import_utils as import_utils
 
 
 class GenDuckdb:
@@ -40,7 +40,7 @@ class GenDuckdb:
         duckdb_setup.setup_tables(con=con)
         # parent_flocs...
         if self.xlsx_parents_source:
-            polars_import_utils.duckdb_import_sheet(self.xlsx_parents_source, table_name='ai2_raw_data.parent_flocs', con=con, df_trafo=_get_parent_data)
+            import_utils.duckdb_import_sheet(self.xlsx_parents_source, table_name='ai2_raw_data.parent_flocs', con=con, df_trafo=_get_parent_data)
         # entity attribute values... primary (equipment) attributes first
         if self.xlsx_eav_sources:
             psrc = self.xlsx_eav_sources[0]
