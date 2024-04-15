@@ -25,8 +25,8 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
 
 # DB must have `ai2_export` tables set up
 def ai2_export_to_ai2_classes(*, con: duckdb.DuckDBPyConnection) -> None:
-    duckdb_setup.setup_tables(con=con)
     __translate_equipment_master_data(con=con)
+    __translate_memo_text_data(con=con)
     __translate_asset_condition_data(con=con)
     __translate_east_north_data(con=con)
 
@@ -93,7 +93,7 @@ def __translate_asset_condition_data(*, con: duckdb.DuckDBPyConnection) -> None:
     """
     con.execute(insert_stmt)
 
-
+# This is effectively using a UDF...
 def __translate_east_north_data(*, con: duckdb.DuckDBPyConnection) -> None:
     select_stmt = """
         SELECT 
