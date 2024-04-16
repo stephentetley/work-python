@@ -36,7 +36,9 @@ def gen_cr_table(*, pk_name: str, schema_name: str, class_name: str, con: duckdb
             ec.class_name = ?
     """
     df = con.execute(get_columns_prepstmt, [class_name]).pl()
-    ss = [f'CREATE OR REPLACE TABLE {schema_name}.{class_name.lower()} (',
+    # TODO equi|floc
+    table_name = f'equi_{class_name.lower()}'   
+    ss = [f'CREATE OR REPLACE TABLE {schema_name}.{table_name} (',
           f'    {pk_name} VARCHAR NOT NULL,']
     for row in df.iter_rows(named=True):
         ss.append('    {} {},'.format(import_utils.normalize_name(row['attr_name']), row['attr_type']))

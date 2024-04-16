@@ -5,8 +5,8 @@ import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.data_import.classlists.duckdb_import as classlists_import
 import sptlibs.data_import.ai2_export.duckdb_import as ai2_reports_import
-import sptlibs.data_ir.ai2_class_rep.ai2_export_to_ai2_classss_rep as ai2_export_to_ai2_classss_rep
-import sptlibs.data_ir.class_rep.gen_table as cr_gen_table
+import asset_ir.ai2_class_rep.ai2_export_to_ai2_class_rep as ai2_export_to_ai2_class_rep
+import sptlibs.asset_ir.class_rep.gen_table as cr_gen_table
 
 equi_src = 'g:/work/2024/classlists/002-equi-classlist-feb24.txt'
 floc_src = 'g:/work/2024/classlists/003-floc-classlist.txt'
@@ -26,8 +26,8 @@ ai2_reports_import.import_ai2_export(source1, con=conn)
 ai2_reports_import.import_ai2_export(source2, con=conn)
 ai2_reports_import.import_ai2_export(source3, con=conn)
 
-ai2_export_to_ai2_classss_rep.init(con=conn)
-ai2_export_to_ai2_classss_rep.ai2_export_to_ai2_classes(con=conn)
+ai2_export_to_ai2_class_rep.init(con=conn)
+ai2_export_to_ai2_class_rep.ai2_export_to_ai2_classes(con=conn)
 
 cr_gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='LSTNUT', con=conn)
 cr_gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='FSTNEM', con=conn)
