@@ -39,15 +39,15 @@ columns_query = """
         lower(ec.char_name) AS column_name
     FROM s4_classlists.equi_characteristics ec
     WHERE 
-        ec.class_name = 'LSTNUT'
+        ec.class_name = 'FSTNEM'
     ;
 """
-lstnut_columns = conn.execute(columns_query).pl().get_column('column_name').to_list()
+fstnem_columns = conn.execute(columns_query).pl().get_column('column_name').to_list()
 
-print("lstnut_columns: {}".format(lstnut_columns))
+print("fstnem_columns: {}".format(fstnem_columns))
 
 
-lstnut_pivot = """
+fstnem_pivot = """
     SELECT 
         md.ai2_reference AS ai2_reference, 
         pv.* EXCLUDE (ai2_reference)
@@ -55,18 +55,18 @@ lstnut_pivot = """
         ai2_export.master_data md
     JOIN (PIVOT ai2_export.eav_data ON attribute_name USING first(attribute_value) GROUP BY ai2_reference) pv ON pv.ai2_reference = md.ai2_reference 
     WHERE 
-        md.common_name LIKE '%EQUIPMENT: ULTRASONIC LEVEL INSTRUMENT'
+        md.common_name LIKE '%EQUIPMENT: MAGNETIC FLOW INSTRUMENT'
     """
 
-df = conn.execute(lstnut_pivot).pl()
+df = conn.execute(fstnem_pivot).pl()
 print(df)
 
 source_columns = df.columns
 print("source_columns: {}".format(source_columns))
 
-
-existing_columns = [x for x in lstnut_columns if x in source_columns]
-missing_columns = [x for x in lstnut_columns if not x in source_columns]
+## This is wrong - not a 1-1 name mapping...
+existing_columns = [x for x in fstnem_columns if x in source_columns]
+missing_columns = [x for x in fstnem_columns if not x in source_columns]
 
 
 ## initialize by copying existing columns:
@@ -85,6 +85,38 @@ df2 = df2.with_columns(
 )
 
 print(df2)
+
+def assert_pivot_column(name: str, df: pl.DataFrame) -> pl.DataFrame:
+    cols = df.columns
+    if name in cols:
+        return df
+    else: 
+        return(df.with_columns(pl.lit("").alias(name)))
+
+def assert_pivot_columns(colnames: list[str], df:pl.DataFrame) -> pl.DataFrame:
+    df1 = df
+    for name in colnames:
+        df1 = assert_pivot_column(name, df1)
+    return df1
+
+# New attempt...
+## First step add columns that are missing
+df3 = assert_pivot_columns(['location_on_site', 'relay_6_function', 'relay_6_on_level_m', 'relay_6_off_level_m'], df)
+
+df4 = df3.select(
+    [ (pl.col("ai2_reference").alias("equi_id")), 
+     (pl.lit("").alias("uniclass_code")),
+     (pl.lit("").alias("uniclass_desc")),
+     (pl.col("location_on_site").alias("location_on_site")),
+     (pl.col("relay_6_function").alias("lstn_relay_6_function")),
+     (pl.col("relay_6_on_level_m").str.to_decimal().alias("lstn_relay_6_on_level_m")),
+     (pl.col("relay_6_off_level_m").str.to_decimal().alias("lstn_relay_6_off_level_m")),
+    ]
+)
+
+
+print(df4)
+
 
 conn.close()
 print("done")
