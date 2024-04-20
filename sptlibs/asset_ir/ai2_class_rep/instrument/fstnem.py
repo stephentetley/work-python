@@ -26,7 +26,7 @@ def create_fstnem_table(*, con: duckdb.DuckDBPyConnection) -> None:
 
 def ingest_fstnem_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
     utils.ingest_equipment_eav_data(
-        equipment_ai2_name='ULTRASONIC LEVEL INSTRUMENT', 
+        pivot_table_getter=utils.simple_pivot_getter(equipment_ai2_name='ULTRASONIC LEVEL INSTRUMENT'), 
         equipment_ai2_column_names=pivot_columns, 
         extract_trafo=extract_fstnem_chars, 
         insert_stmt=fstnem_insert_stmt,

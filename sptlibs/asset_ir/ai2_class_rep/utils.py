@@ -22,21 +22,35 @@ import duckdb
 
 def ingest_equipment_eav_data(
         *, 
-        equipment_ai2_name: str, 
+        pivot_table_getter: Callable[[duckdb.DuckDBPyConnection], pl.DataFrame], 
         equipment_ai2_column_names: list[str], 
         extract_trafo: Callable[[pl.DataFrame], pl.DataFrame], 
         insert_stmt: str,
         df_view_name: str,
         con: duckdb.DuckDBPyConnection) -> None: 
-    df = get_pivot_table(equipment_ai2_name=equipment_ai2_name, con=con)
-    
+    df = pivot_table_getter(con)
     df = assert_pivot_columns(equipment_ai2_column_names, df)
     df = extract_trafo(df)
     insert_class_rep_table(insert_stmt=insert_stmt, df_view_name=df_view_name, df=df, con=con)
     con.commit()
 
 
-def get_pivot_table(*, equipment_ai2_name: str, con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
+# def get_pivot_table(*, equipment_ai2_name: str, con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
+#     pivot_query = """
+#         SELECT 
+#             md.ai2_reference AS ai2_reference, 
+#             pv.* EXCLUDE (ai2_reference)
+#         FROM
+#             ai2_export.master_data md
+#         JOIN (PIVOT ai2_export.eav_data ON attribute_name USING first(attribute_value) GROUP BY ai2_reference) pv ON pv.ai2_reference = md.ai2_reference 
+#         WHERE 
+#             md.common_name LIKE ?
+#         """
+#     param = f"%EQUIPMENT: {equipment_ai2_name}"
+#     df = con.execute(pivot_query, [param]).pl()
+#     return df
+
+def simple_pivot_getter(*, equipment_ai2_name: str) -> Callable[[duckdb.DuckDBPyConnection], pl.DataFrame]: 
     pivot_query = """
         SELECT 
             md.ai2_reference AS ai2_reference, 
@@ -48,8 +62,10 @@ def get_pivot_table(*, equipment_ai2_name: str, con: duckdb.DuckDBPyConnection) 
             md.common_name LIKE ?
         """
     param = f"%EQUIPMENT: {equipment_ai2_name}"
-    df = con.execute(pivot_query, [param]).pl()
-    return df
+    def getter(con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
+        df = con.execute(pivot_query, [param]).pl()
+        return df
+    return getter
 
 def assert_pivot_columns(colnames: list[str], df:pl.DataFrame) -> pl.DataFrame:
     cols = df.columns

@@ -20,41 +20,45 @@ import polars as pl
 import sptlibs.asset_ir.ai2_class_rep.utils as utils
 import sptlibs.asset_ir.class_rep.gen_table as gen_table
 
-def create_netwtl_table(*, con: duckdb.DuckDBPyConnection) -> None: 
-    gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='NETWTL', con=con)
+def create_pumsmo_table(*, con: duckdb.DuckDBPyConnection) -> None: 
+    gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='PUMSMO', con=con)
 
-
-def ingest_netwtl_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+# TODO - not enough to rely on 'SUBMERSIBLE CENTRIFUGAL PUMP', should be 
+# EAV:Integral Motor Y/N = 'YES' as well
+def ingest_pumsmo_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
     utils.ingest_equipment_eav_data(
-        pivot_table_getter=utils.simple_pivot_getter(equipment_ai2_name='TELEMETRY OUTSTATION'), 
+        pivot_table_getter=utils.simple_pivot_getter(equipment_ai2_name='SUBMERSIBLE CENTRIFUGAL PUMP'), 
         equipment_ai2_column_names=pivot_columns, 
-        extract_trafo=extract_netwtl_chars, 
-        insert_stmt=netwtl_insert_stmt,
-        df_view_name='df_netwtl_vw',
+        extract_trafo=extract_pumsmo_chars, 
+        insert_stmt=pumsmo_insert_stmt,
+        df_view_name='df_pumsmo_vw',
         con=con)
 
 
 pivot_columns = [ 
+    "impeller_type", 
     "location_on_site",
     ]
 
 
-def extract_netwtl_chars(df: pl.DataFrame) -> pl.DataFrame: 
+def extract_pumsmo_chars(df: pl.DataFrame) -> pl.DataFrame: 
     return df.select([ 
         (pl.col("ai2_reference").alias("equi_id")),
         (pl.lit("").alias("uniclass_code")),
         (pl.lit("").alias("uniclass_desc")),
+        (pl.col("impeller_type").alias("pums_impeller_type")),
         (pl.col("location_on_site").alias("location_on_site")),
         ])
 
 
 
 
-netwtl_insert_stmt = """
-    INSERT INTO ai2_class_rep.equi_netwtl BY NAME
+pumsmo_insert_stmt = """
+    INSERT INTO ai2_class_rep.equi_pumsmo BY NAME
     SELECT 
         df.equi_id AS equi_id,
         df.location_on_site AS location_on_site,
-    FROM df_netwtl_vw AS df
+        df.pums_impeller_type AS pums_impeller_type,
+    FROM df_pumsmo_vw AS df
     ON CONFLICT DO NOTHING;
     """

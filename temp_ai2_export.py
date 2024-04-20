@@ -1,11 +1,13 @@
 # temp_ai2_export.py
 
+from typing import Callable
 import polars as pl
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.data_import.classlists.duckdb_import as classlists_import
 import sptlibs.data_import.ai2_export.duckdb_import as ai2_reports_import
 import sptlibs.asset_ir.ai2_class_rep.ai2_export_to_ai2_class_rep as ai2_export_to_ai2_class_rep
+import sptlibs.asset_ir.ai2_class_rep.electrical.pumsmo as pumsmo
 import sptlibs.asset_ir.ai2_class_rep.instrument.fstnem as fstnem
 import sptlibs.asset_ir.ai2_class_rep.instrument.lstnut as lstnut
 import sptlibs.asset_ir.ai2_class_rep.instrument.netwtl as netwtl
@@ -35,6 +37,8 @@ ai2_export_to_ai2_class_rep.ai2_export_to_ai2_classes(con=conn)
 
 
 # New attempt...
+pumsmo.create_pumsmo_table(con=conn)
+pumsmo.ingest_pumsmo_eav_data(con=conn)
 lstnut.create_lstnut_table(con=conn)
 lstnut.ingest_lstnut_eav_data(con=conn)
 fstnem.create_fstnem_table(con=conn)
@@ -42,5 +46,21 @@ fstnem.ingest_fstnem_eav_data(con=conn)
 netwtl.create_netwtl_table(con=conn)
 netwtl.ingest_netwtl_eav_data(con=conn)
 
+# Closure doodle...
+
+# def make_sql(table_name: str) -> Callable[[duckdb.DuckDBPyConnection], pl.DataFrame]: 
+#     select_stmt = f'SELECT t.* FROM {table_name} t;'
+#     return lambda con: con.execute(select_stmt).pl()
+
+# select_op = make_sql("ai2_class_rep.east_north") 
+
+# ans = select_op(conn)
+
+# print(ans)
+
+
+
 conn.close()
 print("done")
+
+
