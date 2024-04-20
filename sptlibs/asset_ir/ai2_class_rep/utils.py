@@ -35,20 +35,6 @@ def ingest_equipment_eav_data(
     con.commit()
 
 
-# def get_pivot_table(*, equipment_ai2_name: str, con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
-#     pivot_query = """
-#         SELECT 
-#             md.ai2_reference AS ai2_reference, 
-#             pv.* EXCLUDE (ai2_reference)
-#         FROM
-#             ai2_export.master_data md
-#         JOIN (PIVOT ai2_export.eav_data ON attribute_name USING first(attribute_value) GROUP BY ai2_reference) pv ON pv.ai2_reference = md.ai2_reference 
-#         WHERE 
-#             md.common_name LIKE ?
-#         """
-#     param = f"%EQUIPMENT: {equipment_ai2_name}"
-#     df = con.execute(pivot_query, [param]).pl()
-#     return df
 
 def simple_pivot_getter(*, equipment_ai2_name: str) -> Callable[[duckdb.DuckDBPyConnection], pl.DataFrame]: 
     pivot_query = """

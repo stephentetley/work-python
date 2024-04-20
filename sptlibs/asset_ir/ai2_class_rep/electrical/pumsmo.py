@@ -15,6 +15,7 @@ limitations under the License.
 
 """
 
+from typing import Callable
 import duckdb
 import polars as pl
 import sptlibs.asset_ir.ai2_class_rep.utils as utils
@@ -23,17 +24,34 @@ import sptlibs.asset_ir.class_rep.gen_table as gen_table
 def create_pumsmo_table(*, con: duckdb.DuckDBPyConnection) -> None: 
     gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='PUMSMO', con=con)
 
-# TODO - not enough to rely on 'SUBMERSIBLE CENTRIFUGAL PUMP', should be 
-# EAV:Integral Motor Y/N = 'YES' as well
+# pumsmo needs both name LIKE '%SUBMERSIBLE CENTRIFUGAL PUMP', 
+# and EAV:Integral Motor Y/N = 'YES'
 def ingest_pumsmo_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
     utils.ingest_equipment_eav_data(
-        pivot_table_getter=utils.simple_pivot_getter(equipment_ai2_name='SUBMERSIBLE CENTRIFUGAL PUMP'), 
+        pivot_table_getter=__pumsmo_pivot_getter(), 
         equipment_ai2_column_names=pivot_columns, 
         extract_trafo=extract_pumsmo_chars, 
         insert_stmt=pumsmo_insert_stmt,
         df_view_name='df_pumsmo_vw',
         con=con)
 
+def __pumsmo_pivot_getter() -> Callable[[duckdb.DuckDBPyConnection], pl.DataFrame]: 
+    pivot_query = """
+        SELECT 
+            md.ai2_reference AS ai2_reference, 
+            pv.* EXCLUDE (ai2_reference)
+        FROM
+            ai2_export.master_data md
+        JOIN (PIVOT ai2_export.eav_data ON attribute_name USING first(attribute_value) GROUP BY ai2_reference) pv ON pv.ai2_reference = md.ai2_reference 
+        JOIN ai2_export.eav_data eav ON eav.ai2_reference = md.ai2_reference AND eav.attribute_name = 'integral_motor_y_n'
+        WHERE 
+            md.common_name LIKE '%SUBMERSIBLE CENTRIFUGAL PUMP'
+        AND eav.attribute_value = 'YES'
+    """
+    def getter(con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
+        df = con.execute(pivot_query).pl()
+        return df
+    return getter
 
 pivot_columns = [ 
     "impeller_type", 
