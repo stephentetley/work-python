@@ -23,6 +23,11 @@ import sptlibs.data_import.ai2_export.duckdb_setup as duckdb_setup
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     duckdb_setup.setup_tables(con=con)
 
+def import_ai2_exports(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnection) -> None:
+    for src in sources:
+        import_ai2_export(src, con=con)
+
+
 def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     __import_master_data(xlsx, con=con)
     __import_eav_data(xlsx, con=con)

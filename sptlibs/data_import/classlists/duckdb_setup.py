@@ -23,6 +23,7 @@ def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute(equi_characteristics_ddl)
     con.execute(floc_enums_ddl)
     con.execute(equi_enums_ddl)
+    con.execute(vw_refined_characteristic_defs_ddl)
 
 floc_characteristics_ddl = """
     CREATE OR REPLACE TABLE s4_classlists.floc_characteristics(
@@ -69,3 +70,29 @@ equi_enums_ddl = """
         enum_description TEXT
     );
     """
+
+vw_refined_characteristic_defs_ddl = """
+ CREATE OR REPLACE VIEW s4_classlists.vw_refined_characteristic_defs AS
+    SELECT 
+        '002' AS class_type, 
+        cd.class_name AS class_name,
+        cd.char_name AS char_name, 
+        cd.class_description AS class_description,
+        cd.char_description AS char_description,
+        cd.char_type AS s4_char_type,
+        cd.char_length AS char_len,
+        cd.char_precision AS char_precision,
+        CASE 
+            WHEN cd.char_type = 'CHAR' THEN 'TEXT'
+            WHEN cd.char_type = 'NUM' AND cd.char_precision = 0 THEN 'INTEGER'
+            WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN 'DECIMAL'
+            ELSE cd.char_type
+        END AS refined_char_type,
+        CASE 
+            WHEN cd.char_type = 'CHAR' THEN format('VARCHAR({})', cd.char_length)
+            WHEN cd.char_type = 'NUM' AND cd.char_precision = 0 THEN 'INTEGER'
+            WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN format('DECIMAL({}, {})', cd.char_length, cd.char_precision)
+            ELSE cd.char_type
+        END AS ddl_data_type
+    FROM s4_classlists.equi_characteristics  cd;
+"""    

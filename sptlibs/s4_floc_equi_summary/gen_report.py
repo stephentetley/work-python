@@ -74,10 +74,10 @@ def _make_valua_data_query(*, class_type: str) -> str:
         defs.columns AS columns,
     FROM 
         (SELECT
-            cd.class_type AS class_type,
+            '002' AS class_type,
             cd.class_name AS class_name,
             list(cd.char_name) AS columns,
-        FROM s4_classlists.characteristic_defs cd
+        FROM s4_classlists.equi_characteristics cd
         WHERE class_type = '{class_type}'
         GROUP BY ALL) defs  
     JOIN (SELECT DISTINCT class_name FROM s4_summary.class_values) cls_used ON cls_used.class_name = defs.class_name

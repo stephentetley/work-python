@@ -15,11 +15,27 @@ limitations under the License.
 
 """
 
+from typing import Callable
 import polars as pl
 import duckdb
 
 
-def get_pivot_table(*, equipment_name: str, con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
+def ingest_equipment_eav_data(
+        *, 
+        equipment_ai2_name: str, 
+        equipment_ai2_column_names: list[str], 
+        extract_trafo: Callable[[pl.DataFrame], pl.DataFrame], 
+        insert_stmt: str,
+        df_view_name: str,
+        con: duckdb.DuckDBPyConnection) -> None: 
+    df = get_pivot_table(equipment_ai2_name=equipment_ai2_name, con=con)
+    df = assert_pivot_columns(equipment_ai2_column_names, df)
+    df = extract_trafo(df)
+    insert_class_rep_table(insert_stmt=insert_stmt, df_view_name=df_view_name, df=df, con=con)    
+    con.commit()
+
+
+def get_pivot_table(*, equipment_ai2_name: str, con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
     pivot_query = """
         SELECT 
             md.ai2_reference AS ai2_reference, 
@@ -30,7 +46,7 @@ def get_pivot_table(*, equipment_name: str, con: duckdb.DuckDBPyConnection) -> p
         WHERE 
             md.common_name LIKE ?
         """
-    param = f"%EQUIPMENT: {equipment_name}"
+    param = f"%EQUIPMENT: {equipment_ai2_name}"
     df = con.execute(pivot_query, [param]).pl()
     return df
 
@@ -41,3 +57,8 @@ def assert_pivot_columns(colnames: list[str], df:pl.DataFrame) -> pl.DataFrame:
         if not name in cols:
             df1 = df1.with_columns(pl.lit("").alias(name))
     return df1
+
+def insert_class_rep_table(*, insert_stmt: str, df_view_name: str, df: pl.DataFrame, con: duckdb.DuckDBPyConnection) -> None:
+    con.register(view_name=df_view_name, python_object=df)
+    con.execute(insert_stmt)
+    con.commit()
