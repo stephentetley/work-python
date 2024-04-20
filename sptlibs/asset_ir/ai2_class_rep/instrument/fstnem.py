@@ -51,8 +51,8 @@ def extract_fstnem_chars(df: pl.DataFrame) -> pl.DataFrame:
         (pl.lit("").alias("uniclass_code")),
         (pl.lit("").alias("uniclass_desc")),
         (pl.col("location_on_site").alias("location_on_site")),
-        (pl.col("range_min").str.to_decimal().alias("fstn_range_min")),
-        (pl.col("range_max").str.to_decimal().alias("fstn_range_max")),
+        (pl.col("range_min").cast(pl.Float64, strict=False).alias("fstn_range_min")),
+        (pl.col("range_max").cast(pl.Float64, strict=False).alias("fstn_range_max")),
         (pl.col("range_unit").str.to_uppercase().alias("fstn_range_units")),
         (pl.format("{} - {} {}", pl.col("signal_min"), pl.col("signal_max"), pl.col("signal_unit").str.to_uppercase()).alias("fstn_signal_type")),
         ])
