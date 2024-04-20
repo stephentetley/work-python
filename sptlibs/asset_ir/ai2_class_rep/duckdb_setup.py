@@ -25,7 +25,7 @@ def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute(asset_condition_ddl)
 
 master_data_ddl = """
-    CREATE OR REPLACE TABLE ai2_class_rep.equi_master (
+    CREATE OR REPLACE TABLE ai2_class_rep.equi_master_data (
         ai2_reference VARCHAR NOT NULL,
         common_name VARCHAR NOT NULL,
         equipment_name VARCHAR,

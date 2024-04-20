@@ -6,9 +6,9 @@ from sptlibs.xlsx_source import XlsxSource
 import sptlibs.data_import.classlists.duckdb_import as classlists_import
 import sptlibs.data_import.ai2_export.duckdb_import as ai2_reports_import
 import sptlibs.asset_ir.ai2_class_rep.ai2_export_to_ai2_class_rep as ai2_export_to_ai2_class_rep
-import sptlibs.asset_ir.ai2_class_rep.instrument.lstnut as lstnut
 import sptlibs.asset_ir.ai2_class_rep.instrument.fstnem as fstnem
-import sptlibs.asset_ir.class_rep.gen_table as cr_gen_table
+import sptlibs.asset_ir.ai2_class_rep.instrument.lstnut as lstnut
+import sptlibs.asset_ir.ai2_class_rep.instrument.netwtl as netwtl
 
 equi_src = 'g:/work/2024/classlists/002-equi-classlist-feb24.txt'
 floc_src = 'g:/work/2024/classlists/003-floc-classlist.txt'
@@ -39,6 +39,8 @@ lstnut.create_lstnut_table(con=conn)
 lstnut.ingest_lstnut_eav_data(con=conn)
 fstnem.create_fstnem_table(con=conn)
 fstnem.ingest_fstnem_eav_data(con=conn)
+netwtl.create_netwtl_table(con=conn)
+netwtl.ingest_netwtl_eav_data(con=conn)
 
 conn.close()
 print("done")

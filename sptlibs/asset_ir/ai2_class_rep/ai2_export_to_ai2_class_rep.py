@@ -32,7 +32,7 @@ def ai2_export_to_ai2_classes(*, con: duckdb.DuckDBPyConnection) -> None:
 
 def __translate_equipment_master_data(*, con: duckdb.DuckDBPyConnection) -> None:
     insert_stmt = """
-        INSERT INTO ai2_class_rep.equi_master BY NAME
+        INSERT INTO ai2_class_rep.equi_master_data BY NAME
         SELECT
             md.ai2_reference AS ai2_reference,
             md.common_name AS common_name,
