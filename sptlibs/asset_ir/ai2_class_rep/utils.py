@@ -29,9 +29,10 @@ def ingest_equipment_eav_data(
         df_view_name: str,
         con: duckdb.DuckDBPyConnection) -> None: 
     df = get_pivot_table(equipment_ai2_name=equipment_ai2_name, con=con)
+    
     df = assert_pivot_columns(equipment_ai2_column_names, df)
     df = extract_trafo(df)
-    insert_class_rep_table(insert_stmt=insert_stmt, df_view_name=df_view_name, df=df, con=con)    
+    insert_class_rep_table(insert_stmt=insert_stmt, df_view_name=df_view_name, df=df, con=con)
     con.commit()
 
 

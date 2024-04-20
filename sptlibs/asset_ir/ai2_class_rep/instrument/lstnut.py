@@ -18,15 +18,15 @@ limitations under the License.
 import duckdb
 import polars as pl
 import sptlibs.asset_ir.ai2_class_rep.utils as utils
-import sptlibs.asset_ir.class_rep.gen_table as cr_gen_table
+import sptlibs.asset_ir.class_rep.gen_table as gen_table
 
 def create_lstnut_table(*, con: duckdb.DuckDBPyConnection) -> None: 
-    cr_gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='LSTNUT', con=con)
+    gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='LSTNUT', con=con)
 
 
 def ingest_lstnut_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
     utils.ingest_equipment_eav_data(
-        equipment_ai2_name='ULTRASONIC LEVEL CONTROL', 
+        equipment_ai2_name='ULTRASONIC LEVEL INSTRUMENT', 
         equipment_ai2_column_names=pivot_columns, 
         extract_trafo=extract_lstnut_chars, 
         insert_stmt=lstnut_insert_stmt,
