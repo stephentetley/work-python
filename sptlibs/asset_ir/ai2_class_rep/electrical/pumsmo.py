@@ -54,8 +54,16 @@ def __pumsmo_pivot_getter() -> Callable[[duckdb.DuckDBPyConnection], pl.DataFram
     return getter
 
 pivot_columns = [ 
+    "duty_head",
+    "duty_head_units",
+    "flow",
+    "flow_units",
     "impeller_type", 
+    "lifting_type",
     "location_on_site",
+    "rating_power",
+    "rating_units",
+    "speed_rpm",
     ]
 
 
@@ -64,8 +72,21 @@ def extract_pumsmo_chars(df: pl.DataFrame) -> pl.DataFrame:
         (pl.col("ai2_reference").alias("equi_id")),
         (pl.lit("").alias("uniclass_code")),
         (pl.lit("").alias("uniclass_desc")),
-        (pl.col("impeller_type").alias("pums_impeller_type")),
+        (pl.when(pl.col("duty_head_units") == "METRES").then(pl.col("duty_head").cast(pl.Float64, strict=False))
+         .when(pl.col("duty_head_units") == "MILLIMETRES").then(pl.col("duty_head").cast(pl.Float64, strict=False) / 1000)
+         .otherwise(None)
+         .alias("pums_installed_design_head_m")),
+        (pl.when(pl.col("flow_units") == "l/s").then(pl.col("flow").cast(pl.Float64, strict=False))
+         .otherwise(None)
+         .alias("pums_flow_litres_per_sec")),
+        (pl.col('impeller_type').alias("pums_impeller_type")),
+        (pl.col('lifting_type').alias("pums_lifting_type")),
         (pl.col("location_on_site").alias("location_on_site")),
+        (pl.when(pl.col("rating_units") == "KILOWATTS").then(pl.col("rating_power").cast(pl.Float64, strict=False))
+         .when(pl.col("rating_units") == "WATTS").then(pl.col("rating_power").cast(pl.Float64, strict=False) / 1000)
+         .otherwise(None)
+         .alias("pums_rated_power_kw")),
+        (pl.col('speed_rpm').cast(pl.Int64, strict=False).alias('pums_rated_speed_rpm')),
         ])
 
 
@@ -76,7 +97,12 @@ pumsmo_insert_stmt = """
     SELECT 
         df.equi_id AS equi_id,
         df.location_on_site AS location_on_site,
+        df.pums_flow_litres_per_sec AS pums_flow_litres_per_sec,
+        df.pums_installed_design_head_m AS pums_installed_design_head_m,
         df.pums_impeller_type AS pums_impeller_type,
+        df.pums_lifting_type AS pums_lifting_type,
+        df.pums_rated_power_kw AS pums_rated_power_kw,
+        df.pums_rated_speed_rpm AS pums_rated_speed_rpm,
     FROM df_pumsmo_vw AS df
     ON CONFLICT DO NOTHING;
     """

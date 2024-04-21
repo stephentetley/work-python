@@ -37,6 +37,7 @@ master_data_ddl = """
         serial_number VARCHAR,
         asset_status VARCHAR,
         p_and_i_tag VARCHAR,
+        weight_kg INTEGER,
         PRIMARY KEY(ai2_reference)
     );
 """

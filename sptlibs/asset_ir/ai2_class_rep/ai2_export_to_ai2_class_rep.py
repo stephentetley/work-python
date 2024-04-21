@@ -45,10 +45,12 @@ def __translate_equipment_master_data(*, con: duckdb.DuckDBPyConnection) -> None
             eav_serial_num.attribute_value AS serial_number,
             md.asset_status AS asset_status,
             eav_pandi.attribute_value AS p_and_i_tag,
+            TRY_CAST(eav_weight.attribute_value AS INTEGER) AS weight_kg,
         FROM ai2_export.master_data md
         LEFT OUTER JOIN ai2_export.eav_data eav_serial_num ON eav_serial_num.ai2_reference = md.ai2_reference AND eav_serial_num.attribute_name = 'serial_no'
         LEFT OUTER JOIN ai2_export.eav_data eav_specific_model ON eav_specific_model.ai2_reference = md.ai2_reference AND eav_specific_model.attribute_name = 'specific_model_frame'
         LEFT OUTER JOIN ai2_export.eav_data eav_pandi ON eav_pandi.ai2_reference = md.ai2_reference AND eav_pandi.attribute_name = 'p_and_i_tag_no'
+        LEFT OUTER JOIN ai2_export.eav_data eav_weight ON eav_pandi.ai2_reference = md.ai2_reference AND eav_weight.attribute_name = 'weight_kg'
         WHERE md.common_name LIKE '%EQUIPMENT:%'
         ;
     """
