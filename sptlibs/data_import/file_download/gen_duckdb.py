@@ -21,7 +21,7 @@ import duckdb
 import sptlibs.data_import.classlists.duckdb_setup as classlist_duckdb_setup
 import sptlibs.data_import.classlists.duckdb_copy as classlist_duckdb_copy
 import sptlibs.data_import.file_download.duckdb_setup as duckdb_setup
-import sptlibs.data_import.file_download.load_file_download as load_file_download
+from sptlibs.data_import.file_download.file_download import FileDownload
 
 class GenDuckdb:
     def __init__(self, *, classlists_duckdb_path: str, duckdb_output_path: str) -> None:
@@ -44,7 +44,9 @@ class GenDuckdb:
         duckdb_setup.setup_tables(con=con)
         for path in self.imports:
             try:
-                load_file_download.load_file_download(path=path, con=con)
+                fd = FileDownload.from_download(path=path)
+                qual_table_name = fd.gen_std_table_name(schema_name='s4_fd_raw_data')
+                fd.store_to_duckdb(table_name=qual_table_name, con=con)
             except Exception as exn:
                 print(exn)
                 continue

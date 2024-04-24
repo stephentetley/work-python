@@ -16,6 +16,7 @@ limitations under the License.
 """
 
 import re
+import duckdb
 import polars as pl
 import sptlibs.data_import.import_utils as import_utils
 
@@ -71,6 +72,17 @@ class FileDownload:
         return cls(data_model=data_model, entity_type=entity_type, 
                    date=date, time=time,
                    variant=variant, payload=df)
+
+    def store_to_duckdb(self, *, table_name: str, con: duckdb.DuckDBPyConnection) -> None:
+        con.register(view_name='vw_df_file_download', python_object=self.payload)
+        sql_stmt = f'CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM vw_df_file_download;'
+        con.execute(sql_stmt)
+        con.commit()
+
+    def gen_std_table_name(self, *, schema_name: str) -> str: 
+        table_name1 = import_utils.normalize_name(f'{self.entity_type}_{self.variant}')
+        return f'{schema_name}.{table_name1}'
+
 
 def _tidy_headers(headers: list[str]):
     first = headers[0]
