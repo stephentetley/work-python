@@ -19,12 +19,12 @@ import duckdb
 
 def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS ai2_class_rep;')
-    con.execute(master_data_ddl)
+    con.execute(equi_master_data_ddl)
     con.execute(memo_text_ddl)
     con.execute(east_north_ddl)
     con.execute(asset_condition_ddl)
 
-master_data_ddl = """
+equi_master_data_ddl = """
     CREATE OR REPLACE TABLE ai2_class_rep.equi_master_data (
         ai2_reference VARCHAR NOT NULL,
         common_name VARCHAR NOT NULL,

@@ -5,9 +5,9 @@ from sptlibs.data_import.file_download.gen_summary_report import GenSummaryRepor
 
 glob_pattern        = '*download.txt'
 classlists_db       = 'g:/work/2024/classlists/classlists2.duckdb'
-source_directory    = 'g:/work/2024/storm_overflows/apr01'
-duckdb_output_path  = source_directory + '/apr01_data.duckdb'
-xlsx_output_path    = source_directory + '/apr01-summary-report.xlsx'
+source_directory    = 'g:/work/2024/\lstnut/file_download1'
+duckdb_output_path  = source_directory + '/lstnut_fd_data.duckdb'
+xlsx_output_path    = source_directory + '/lstnut_fd-summary-report.xlsx'
 
 
 gen_duckdb = GenDuckdb(classlists_duckdb_path=classlists_db, duckdb_output_path=duckdb_output_path)
