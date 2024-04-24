@@ -1,7 +1,7 @@
 # run_fd_summary_report.py
 
 from sptlibs.data_import.file_download.gen_duckdb import GenDuckdb
-from sptlibs.data_import.file_download.gen_summary_report import GenSummaryReport
+from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryReport
 
 glob_pattern        = '*download.txt'
 classlists_db       = 'g:/work/2024/classlists/classlists2.duckdb'

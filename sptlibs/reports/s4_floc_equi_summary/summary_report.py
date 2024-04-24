@@ -16,9 +16,14 @@ limitations under the License.
 """
 
 import duckdb
-import sptlibs.data_import.file_download.materialize_masterdata as materialize_masterdata
-import sptlibs.data_import.file_download.materialize_chardata as materialize_chardata
+from typing import Callable
+import sptlibs.reports.s4_floc_equi_summary.setup_tables as setup_tables
+import sptlibs.reports.s4_floc_equi_summary.gen_report as gen_report
 
-def materialize_summary_tables(con: duckdb.DuckDBPyConnection) -> None:
-    materialize_masterdata.materialize_masterdata(con=con)
-    materialize_chardata.materialize_chardata(con=con)
+def make_summary_report(*, xls_output_path: str, func: Callable[[duckdb.DuckDBPyConnection], None], con: duckdb.DuckDBPyConnection) -> None:
+    setup_tables.setup_tables(con=con)
+    func(con)
+    gen_report.gen_report(xls_output_path=xls_output_path, con=con)
+
+
+
