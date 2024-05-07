@@ -52,7 +52,7 @@ def __import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) ->
 
 
 def __import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    df = import_utils.readXlsxSource(xlsx, normalize_column_names=True, con=con)
+    df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True, con=con)
     headers = df.columns
     headers.remove('reference')    
     headers = map(lambda x: f'{x}::VARCHAR', headers)
