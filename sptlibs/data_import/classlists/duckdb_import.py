@@ -16,15 +16,15 @@ limitations under the License.
 """
 
 import duckdb
-import sptlibs.data_import.classlists.classlist_parser as classlist_parser
-import sptlibs.data_import.classlists.duckdb_setup as duckdb_setup
+import data_import.classlists._parser as _parser
+import data_import.classlists._dbsetup as _dbsetup
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    duckdb_setup.setup_tables(con=con)
+    _dbsetup.setup_tables(con=con)
 
 
 def import_floc_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -> None:
-    (df_chars, df_enums) = classlist_parser.parse_floc_classfile(textfile_path)
+    (df_chars, df_enums) = _parser.parse_floc_classfile(textfile_path)
     con.register(view_name='vw_df_chars', python_object=df_chars)
     insert_chars_stmt = """
         INSERT INTO s4_classlists.floc_characteristics BY NAME
@@ -54,7 +54,7 @@ def import_floc_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -
     con.commit()
 
 def import_equi_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -> None:
-    (df_chars, df_enums) = classlist_parser.parse_equi_classfile(textfile_path)
+    (df_chars, df_enums) = _parser.parse_equi_classfile(textfile_path)
     con.register(view_name='vw_df_chars', python_object=df_chars)
     insert_chars_stmt = """
         INSERT INTO s4_classlists.equi_characteristics BY NAME
@@ -82,3 +82,15 @@ def import_equi_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -
         """
     con.execute(insert_enums_stmt)
     con.commit()
+
+def copy_classlists_tables(*, classlists_source_db_path: str, dest_con: duckdb.DuckDBPyConnection) -> None:
+    """`dest_con` is the desination database."""
+    copy_tables_sql = f"""
+        ATTACH '{classlists_source_db_path}' AS classlists_source;
+        INSERT INTO s4_classlists.floc_characteristics SELECT * FROM classlists_source.s4_classlists.floc_characteristics;
+        INSERT INTO s4_classlists.floc_enums SELECT * FROM classlists_source.s4_classlists.floc_enums;
+        INSERT INTO s4_classlists.equi_characteristics SELECT * FROM classlists_source.s4_classlists.equi_characteristics;
+        INSERT INTO s4_classlists.equi_enums SELECT * FROM classlists_source.s4_classlists.equi_enums;
+        DETACH classlists_source;
+    """
+    dest_con.execute(copy_tables_sql)
