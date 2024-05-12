@@ -21,13 +21,54 @@ import duckdb
 from typing import Callable
 from sptlibs.xlsx_source import XlsxSource
 
-def read_csv_source(src_path: str, *, normalize_column_names: bool, has_header: bool) -> pl.DataFrame:
-    df = pl.read_csv(source=src_path, ignore_errors=True, has_header=has_header, null_values = ['NULL', 'Null', 'null'])
+def read_csv_source(csv_path: str, *, normalize_column_names: bool, has_header: bool) -> pl.DataFrame:
+    df = pl.read_csv(source=csv_path, ignore_errors=True, has_header=has_header, null_values = ['NULL', 'Null', 'null'])
     if normalize_column_names:
         return normalize_df_column_names(df)
     else:
         return df
-    
+
+
+def duckdb_import_csv(
+        csv_path: str, 
+        *, table_name: str, 
+        rename_before_trafo: bool, 
+        df_trafo: Callable[[pl.DataFrame], pl.DataFrame], 
+        con: duckdb.DuckDBPyConnection) -> None:
+    '''Note drops the table `table_name` before filling it. Must have headers.'''
+    df_raw = pl.read_csv(source=csv_path, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
+    if rename_before_trafo: 
+        df1 = df_renamed = normalize_df_column_names(df_raw)
+    else: 
+        df1 = df_raw
+    if df_trafo is not None:
+        df_clean = df_trafo(df1)
+    else:
+        df_clean = df1
+    if not rename_before_trafo: 
+        df2 = df_renamed = normalize_df_column_names(df_clean)
+    else:
+        df2 = df_clean
+    con.register(view_name='vw_df_renamed', python_object=df2)
+    sql_stmt = f'CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM vw_df_renamed;'
+    con.execute(sql_stmt)
+    con.commit()
+
+
+def duckdb_import_cvs_into(csv_path: str, *, df_name: str, insert_stmt: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
+    '''Fill a table with an INSERT INTO statement'''
+    df_raw = pl.read_csv(source=csv_path, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
+    if df_trafo is not None:
+        df_clean = df_trafo(df_raw)
+    else:
+        df_clean = df_raw
+    df_renamed = normalize_df_column_names(df_clean)
+    # print(df_renamed.columns)
+    con.register(view_name=df_name, python_object=df_renamed)
+    con.execute(insert_stmt)
+    con.commit()
+
+
 # 'xlsx2csv' is the fastest engine
 def read_xlsx_source(source: XlsxSource, *, normalize_column_names: bool) -> pl.DataFrame:
     df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})

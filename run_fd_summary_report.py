@@ -3,8 +3,8 @@
 
 import duckdb
 import sptlibs.data_import.file_download.duckdb_import as duckdb_import
-from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryReport
 import sptlibs.data_import.classlists.duckdb_import as classlists_duckdb_import
+from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryReport
 
 
 glob_pattern        = '*download.txt'
