@@ -15,34 +15,29 @@ limitations under the License.
 
 """
 
+import os
+import glob
 import duckdb
-from sptlibs.xlsx_source import XlsxSource
-import sptlibs.data_import.import_utils as import_utils
-import sptlibs.data_import.file_download.duckdb_setup as duckdb_setup
+import data_import.file_download._dbsetup as _dbsetup
+from data_import.file_download._file_download import _FileDownload
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
+    _dbsetup.setup_tables(con=con)
+
+def store_download_file(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
+    fd = _FileDownload.from_download(path=path)
+    qual_table_name = fd.gen_std_table_name(schema_name='s4_fd_raw_data')
+    fd.store_to_duckdb(table_name=qual_table_name, con=con)
 
 
-def gen_duckdb(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
-    con = duckdb.connect(self.duckdb_output_path)
-    # Create `s4_fd_raw_data` tables
-    duckdb_setup.setup_tables(con=con)
-    for path in self.imports:
+def store_download_files(*, source_dir: str, glob_pattern: str, con: duckdb.DuckDBPyConnection) -> None:
+    globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
+    print(f"root: {source_dir}")
+    for file_name in globlist: 
+        path = os.path.join(source_dir, file_name)
+        print(path)
         try:
-            fd = FileDownload.from_download(path=path)
-            qual_table_name = fd.gen_std_table_name(schema_name='s4_fd_raw_data')
-            fd.store_to_duckdb(table_name=qual_table_name, con=con)
+            store_download_file(path=path, con=con)
         except Exception as exn:
             print(exn)
             continue
-
-    if os.path.exists(self.classlists_source): 
-        classlist_duckdb_setup.setup_tables(con=con)
-        classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
-    else:
-        con.close()
-        raise FileNotFoundError('classlist db not found')
-                
-    con.close()
-    print(f'{self.duckdb_output_path} created')
-    return self.duckdb_output_path

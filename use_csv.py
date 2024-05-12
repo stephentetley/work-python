@@ -3,7 +3,7 @@
 import polars as pl
 import sptlibs.data_import.import_utils as import_utils
 
-csv_input_path      = 'G:/work/2024/rts/os-report-sample.csv'
+csv_input_path      = 'G:/work/2024/rts/os-report.csv'
 csv_output_path     = 'G:/work/2024/rts/os-report-pretty.csv'
 
 df = import_utils.read_csv_source(csv_input_path, normalize_column_names=True, has_header=True)
@@ -22,8 +22,8 @@ df1 = df.select([
         (pl.col("set_name").str.strip_chars()),
         (pl.col("parent_ou").str.strip_chars()),
         (pl.col("parent_ou_comment").str.strip_chars()),
-        (pl.col("last_polled").str.to_datetime("%d/%m/%Y %H:%M")),
-        (pl.col("last_power_up").str.to_datetime("%d/%m/%Y %H:%M")),
+        (pl.col("last_polled").str.strip_chars().str.to_datetime("%d/%m/%Y %H:%M", strict=False)),
+        (pl.col("last_power_up").str.strip_chars().str.to_datetime("%d/%m/%Y %H:%M", strict=False)),
 ])
 
 print(df1)

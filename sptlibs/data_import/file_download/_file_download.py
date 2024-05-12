@@ -20,7 +20,7 @@ import duckdb
 import polars as pl
 import sptlibs.data_import.import_utils as import_utils
 
-class FileDownload:
+class _FileDownload:
     def __init__(self, *, data_model: str=None, entity_type: str=None, 
                  variant: str=None, date: int=None, time: int=None,
                  payload: pl.DataFrame=None):

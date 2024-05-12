@@ -83,8 +83,13 @@ def import_equi_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -
     con.execute(insert_enums_stmt)
     con.commit()
 
-def copy_classlists_tables(*, classlists_source_db_path: str, dest_con: duckdb.DuckDBPyConnection) -> None:
+def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool, dest_con: duckdb.DuckDBPyConnection) -> None:
     """`dest_con` is the desination database."""
+    # Setup tables
+    if setup_tables: 
+        _dbsetup.setup_tables(con=dest_con)
+
+    # copy tables using duckdb builtins
     copy_tables_sql = f"""
         ATTACH '{classlists_source_db_path}' AS classlists_source;
         INSERT INTO s4_classlists.floc_characteristics SELECT * FROM classlists_source.s4_classlists.floc_characteristics;

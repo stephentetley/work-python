@@ -18,10 +18,10 @@ limitations under the License.
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
-import sptlibs.data_import.ai2_export.duckdb_setup as duckdb_setup
+import data_import.ai2_export._dbsetup as _dbsetup
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    duckdb_setup.setup_tables(con=con)
+    _dbsetup.setup_tables(con=con)
 
 def import_ai2_exports(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnection) -> None:
     for src in sources:

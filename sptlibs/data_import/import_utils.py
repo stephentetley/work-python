@@ -29,7 +29,6 @@ def read_csv_source(src_path: str, *, normalize_column_names: bool, has_header: 
         return df
     
 # 'xlsx2csv' is the fastest engine
-
 def read_xlsx_source(source: XlsxSource, *, normalize_column_names: bool) -> pl.DataFrame:
     df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
     if normalize_column_names:

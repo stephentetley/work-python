@@ -18,8 +18,8 @@ limitations under the License.
 import os
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
-import sptlibs.data_import.classlists.duckdb_setup as classlist_duckdb_setup
-import sptlibs.data_import.classlists.duckdb_copy as classlist_duckdb_copy
+import data_import.classlists._dbsetup as classlist_duckdb_setup
+import _old.duckdb_copy as classlist_duckdb_copy
 import sptlibs.data_import.ih06_ih08.load_raw_xlsx as load_raw_xlsx
     
 class GenDuckdb:
