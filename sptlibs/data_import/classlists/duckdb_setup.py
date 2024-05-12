@@ -84,13 +84,13 @@ vw_refined_characteristic_defs_ddl = """
         cd.char_precision AS char_precision,
         CASE 
             WHEN cd.char_type = 'CHAR' THEN 'TEXT'
-            WHEN cd.char_type = 'NUM' AND cd.char_precision = 0 THEN 'INTEGER'
+            WHEN cd.char_type = 'NUM' AND (cd.char_precision IS NULL OR cd.char_precision = 0) THEN 'INTEGER'
             WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN 'DECIMAL'
             ELSE cd.char_type
         END AS refined_char_type,
         CASE 
             WHEN cd.char_type = 'CHAR' THEN format('VARCHAR({})', cd.char_length)
-            WHEN cd.char_type = 'NUM' AND cd.char_precision = 0 THEN 'INTEGER'
+            WHEN cd.char_type = 'NUM' AND (cd.char_precision IS NULL OR cd.char_precision = 0) THEN 'INTEGER'
             WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN format('DECIMAL({}, {})', cd.char_length, cd.char_precision)
             ELSE cd.char_type
         END AS ddl_data_type
