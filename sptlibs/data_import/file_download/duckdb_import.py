@@ -34,10 +34,11 @@ def store_download_files(*, source_dir: str, glob_pattern: str, con: duckdb.Duck
     globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
     print(f"root: {source_dir}")
     for file_name in globlist: 
-        path = os.path.join(source_dir, file_name)
+        path = os.path.normpath(os.path.join(source_dir, file_name))
         print(path)
         try:
             store_download_file(path=path, con=con)
         except Exception as exn:
             print(exn)
             continue
+    con.commit()

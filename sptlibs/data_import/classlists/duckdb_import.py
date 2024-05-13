@@ -99,3 +99,4 @@ def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool
         DETACH classlists_source;
     """
     dest_con.execute(copy_tables_sql)
+    dest_con.commit()

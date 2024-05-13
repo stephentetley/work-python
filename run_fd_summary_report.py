@@ -9,9 +9,9 @@ from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryR
 
 glob_pattern        = '*download.txt'
 classlists_db       = 'g:/work/2024/classlists/classlists2.duckdb'
-source_directory    = 'g:/work/2024/point_blue/apr02'
+source_directory    = 'g:/work/2024/file_download/tho48'
 duckdb_output_path  = source_directory + '/fd_summary_data.duckdb'
-xlsx_output_path    = source_directory + '/apr02-pb-fd-summary-report.xlsx'
+xlsx_output_path    = source_directory + '/tho48-fd-summary-report.xlsx'
 
 
 conn = duckdb.connect(database=duckdb_output_path)

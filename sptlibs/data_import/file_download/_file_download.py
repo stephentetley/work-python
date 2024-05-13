@@ -67,8 +67,7 @@ class _FileDownload:
                     if len(row) > 0: 
                         _tidy_row(row)
                         rows.append(row)
-        df = pl.DataFrame(data=rows, schema=columns)
-        df_renamed = import_utils.normalize_df_column_names(df)
+        df = import_utils.normalize_df_column_names(pl.DataFrame(data=rows, schema=columns))
         return cls(data_model=data_model, entity_type=entity_type, 
                    date=date, time=time,
                    variant=variant, payload=df)
