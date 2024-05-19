@@ -32,7 +32,6 @@ def store_download_file(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
 
 def store_download_files(*, source_dir: str, glob_pattern: str, con: duckdb.DuckDBPyConnection) -> None:
     globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
-    print(f"root: {source_dir}")
     for file_name in globlist: 
         path = os.path.normpath(os.path.join(source_dir, file_name))
         print(path)
