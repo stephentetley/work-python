@@ -18,6 +18,7 @@ limitations under the License.
 import os
 import tomllib
 
+# Class?
 
 def get_asset_data_config() -> dict | None:
     """Deafults to $HOME if $ASSET_DATA_CONFIG_DIR is missing."""
@@ -34,6 +35,12 @@ def get_asset_data_config() -> dict | None:
         print("Cannot find `py_asset_data.toml`")
         return None
 
-    
+def get_expanded_path(field_name: str, config: dict) -> str | None:
+    path = config.get(field_name, None)
+    if path:
+        return os.path.normpath(os.path.expandvars(path))
+    else: 
+        return None
+
 
 

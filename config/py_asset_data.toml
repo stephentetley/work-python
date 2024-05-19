@@ -1,3 +1,9 @@
+[s4_classlists]
+equi_classlist_src      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/002-equi-classlist.txt'
+floc_classlist_src      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/003-floc-classlist.txt'
+classlists_outpath      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/s4_classlist_tables.duckdb'
+
+
 [file_download_summary]
-glob_pattern        = "*download.txt"
-classlists_db       = 's4_classlists/classlists2.duckdb'
+glob_pattern            = "*download.txt"
+classlists_db_path      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/s4_classlist_tables.duckdb'

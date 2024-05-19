@@ -16,12 +16,11 @@ limitations under the License.
 """
 
 import duckdb
-import data_import.classlists._parser as _parser
-import data_import.classlists._dbsetup as _dbsetup
+import sptlibs.data_import.classlists._parser as _parser
+import sptlibs.data_import.classlists._dbsetup as _dbsetup
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     _dbsetup.setup_tables(con=con)
-
 
 def import_floc_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -> None:
     (df_chars, df_enums) = _parser.parse_floc_classfile(textfile_path)

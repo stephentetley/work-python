@@ -18,8 +18,8 @@ limitations under the License.
 import os
 import glob
 import duckdb
-import data_import.file_download._dbsetup as _dbsetup
-from data_import.file_download._file_download import _FileDownload
+import sptlibs.data_import.file_download._dbsetup as _dbsetup
+from sptlibs.data_import.file_download._file_download import _FileDownload
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     _dbsetup.setup_tables(con=con)
