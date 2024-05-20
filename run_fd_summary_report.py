@@ -32,7 +32,6 @@ def main():
     parser.add_argument("--report_prefix", dest='report_prefix', help="Prefix to be added to report name")
     parser.add_argument("--report_name", dest='report_name', help="Report name, use instead of `report_prefix` to specify full name")
     args = parser.parse_args()
-    print(args)
     config = AssetDataConfig()
     config.set_focus('file_download_summary')
 
