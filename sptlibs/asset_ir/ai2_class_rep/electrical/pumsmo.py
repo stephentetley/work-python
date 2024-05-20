@@ -28,14 +28,14 @@ def create_pumsmo_table(*, con: duckdb.DuckDBPyConnection) -> None:
 # and EAV:Integral Motor Y/N = 'YES'
 def ingest_pumsmo_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
     utils.ingest_equipment_eav_data(
-        pivot_table_getter=__pumsmo_pivot_getter(), 
+        pivot_table_getter=_pumsmo_pivot_getter(), 
         equipment_ai2_column_names=pivot_columns, 
         extract_trafo=extract_pumsmo_chars, 
         insert_stmt=pumsmo_insert_stmt,
         df_view_name='df_pumsmo_vw',
         con=con)
 
-def __pumsmo_pivot_getter() -> Callable[[duckdb.DuckDBPyConnection], pl.DataFrame]: 
+def _pumsmo_pivot_getter() -> Callable[[duckdb.DuckDBPyConnection], pl.DataFrame]: 
     pivot_query = """
         SELECT 
             md.ai2_reference AS ai2_reference, 

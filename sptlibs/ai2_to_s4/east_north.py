@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 import polars as pl
-import sptlibs.utils.gridref as gridref
+from sptlibs.utils.grid_ref import Osgb36
 
 
 eav_sample = pl.DataFrame([ 
@@ -28,8 +28,8 @@ eav_sample = pl.DataFrame([
 def extract_chars(*, df: pl.DataFrame) -> pl.DataFrame: 
     return df.select(
         [ (pl.col("sai_num"))
-        , (pl.col("Loc.Ref.").map_elements(lambda s: gridref.to_east_north(s)["easting"]).alias("easting"))
-        , (pl.col("Loc.Ref.").map_elements(lambda s: gridref.to_east_north(s)["northing"]).alias("northing"))
+        , (pl.col("Loc.Ref.").map_elements(lambda s: Osgb36(s).to_east_north().easting).alias("easting"))
+        , (pl.col("Loc.Ref.").map_elements(lambda s: Osgb36(s).to_east_north().northing).alias("northing"))
         ]
     )
 

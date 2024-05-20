@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 import polars as pl
-import sptlibs.utils.gridref as gridref
+from sptlibs.utils.grid_ref import Osgb36
 import sptlibs.asset_ir.ai2_class_rep.duckdb_setup as duckdb_setup
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
@@ -107,8 +107,8 @@ def __translate_east_north_data(*, con: duckdb.DuckDBPyConnection) -> None:
         ;
     """
     df = con.execute(select_stmt).pl()
-    df = df.with_columns(easting = pl.col("grid_ref").apply(lambda gr: gridref.to_east_north(gr)[0], return_dtype=pl.Int64), 
-                         northing = pl.col("grid_ref").apply(lambda gr: gridref.to_east_north(gr)[1], return_dtype=pl.Int64))
+    df = df.with_columns(easting = pl.col("grid_ref").apply(lambda gr: Osgb36(gr).to_east_north().easting, return_dtype=pl.Int64), 
+                         northing = pl.col("grid_ref").apply(lambda gr: Osgb36(gr).to_east_north().northing, return_dtype=pl.Int64))
     insert_stmt = """
         INSERT INTO ai2_class_rep.east_north BY NAME
         SELECT 

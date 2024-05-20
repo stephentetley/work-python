@@ -15,20 +15,23 @@ limitations under the License.
 
 """
 
-from typing import TypedDict
+class EastNorth:
+    def __init__(self, *, easting:int, northing:int):
+        self.easting = easting
+        self.northing = northing
 
-def to_osgb36(easting : int, northing: int) -> str: 
-    try:
-        major_char = find_major(easting, northing)
-        minor_char = find_minor(easting % 500000, northing % 500000)
-        small_e = easting % 100000
-        small_n = northing % 100000
-        return print(f'{major_char}{minor_char}{small_e:05}{small_n:05}')
-    except (TypeError, ValueError) as exn: 
-        print(exn)
-        return None
+    def to_osgb36(easting : int, northing: int) -> str: 
+        try:
+            major_char = _find_major(easting, northing)
+            minor_char = _find_minor(easting % 500000, northing % 500000)
+            small_e = easting % 100000
+            small_n = northing % 100000
+            return print(f'{major_char}{minor_char}{small_e:05}{small_n:05}')
+        except (TypeError, ValueError) as exn: 
+            print(exn)
+            return None
 
-def find_major(e, n):
+def _find_major(e: int, n: int) -> str:
     if   e >= 0       and e < 500_000   and n >= 0         and n < 500_000:
         return 'S'
     elif e >= 500_000 and e < 1_000_000 and n >= 0         and n < 500_000:
@@ -44,7 +47,7 @@ def find_major(e, n):
     else:
         None 
 
-def find_minor(e, n):
+def _find_minor(e: int, n: int) -> str:
     if   e >= 0       and e < 100_000     and n >= 0       and n < 100_000: 
         return 'V'
     elif e >= 100_000 and e < 200_000     and n >= 0       and n < 100_000:
@@ -98,24 +101,25 @@ def find_minor(e, n):
     else:
         None
 
-class EastNorth(TypedDict):
-    easting: int
-    northing: int
+
+class Osgb36():
+    def __init__(self, grid_ref: str):
+        self.grid_ref = grid_ref
 
 
-def to_east_north(gridref: str) -> tuple[int, int]:
-    try: 
-        major = decode_major(gridref[0])
-        minor = decode_minor(gridref[1])
-        major_e, major_n = major
-        minor_e, minor_n = minor
-        east1 = int(gridref[2:7])
-        north1 = int(gridref[7:12])
-        return (major_e + minor_e + east1, major_n + minor_n + north1)
-    except (TypeError, ValueError) as exn: 
-        return None
+    def to_east_north(self) -> EastNorth | None:
+        try: 
+            major = _decode_major(self.grid_ref[0])
+            minor = _decode_minor(self.grid_ref[1])
+            major_e, major_n = major
+            minor_e, minor_n = minor
+            east1 = int(self.grid_ref[2:7])
+            north1 = int(self.grid_ref[7:12])
+            return EastNorth(easting=major_e + minor_e + east1, northing=major_n + minor_n + north1)
+        except (TypeError, ValueError) as exn: 
+            return None
     
-def decode_major(c):
+def _decode_major(c):
     cu = c.upper()
     if cu == 'S':
         return (0,       0)
@@ -130,7 +134,7 @@ def decode_major(c):
     else:
         None
 
-def decode_minor(c):
+def _decode_minor(c):
     cu = c.upper()
     if cu == 'A':
         return (0,       400_000)
