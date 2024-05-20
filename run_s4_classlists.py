@@ -1,4 +1,19 @@
-# run_classlists.py
+"""
+Copyright 2024 Stephen Tetley
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+"""
 
 import duckdb
 import sptlibs.cmdline_utils as cmdline_utils
@@ -7,13 +22,11 @@ import sptlibs.data_import.classlists.duckdb_import as duckdb_import
 
 
 def main(): 
-
     config = cmdline_utils.get_asset_data_config().get('s4_classlists', None)
-
     if config:
         equi_src = cmdline_utils.get_expanded_path('equi_classlist_src', config)
         floc_src = cmdline_utils.get_expanded_path('floc_classlist_src', config)
-        output_path = cmdline_utils.get_expanded_path('classlists_outpath', config)
+        output_path = cmdline_utils.get_expanded_path('s4_classlists_outfile', config)
         conn = duckdb.connect(database=output_path)
         duckdb_import.init(con=conn)
         duckdb_import.import_floc_classes(floc_src, con=conn)

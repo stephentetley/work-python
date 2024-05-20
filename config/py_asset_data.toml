@@ -1,8 +1,15 @@
 [s4_classlists]
 equi_classlist_src      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/002-equi-classlist.txt'
 floc_classlist_src      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/003-floc-classlist.txt'
-classlists_outpath      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/s4_classlist_tables.duckdb'
+s4_classlists_outfile      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/s4_classlist_tables.duckdb'
 
+[s4_ztables]
+eqobjl_src              = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/zte_0343_eqobjl.XLSX'
+flocdes_src             = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/zte_0343_flocdes.XLSX'
+floobjl_src             = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/zte_0343_floobjl.XLSX'
+manuf_model_src         = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/ztequi0075-manuf-model.xlsx'
+objtype_src             = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/ztequi0075-objtype.xlsx'
+s4_ztables_outfile      = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/s4_ztables_tables.duckdb'
 
 [file_download_summary]
 glob_pattern            = "*download.txt"
