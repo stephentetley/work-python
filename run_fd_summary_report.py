@@ -6,14 +6,12 @@ from argparse import ArgumentParser
 
 import os
 import duckdb
-import sptlibs.cmdline_utils as cmdline_utils
+from asset_data_config import AssetDataConfig
 import sptlibs.data_import.file_download.duckdb_import as duckdb_import
 import sptlibs.data_import.classlists.duckdb_import as classlists_duckdb_import
 from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryReport
 
-# Set up path to config file if not done already...
-# $env:ASSET_DATA_CONFIG_DIR = 'e:\\coding\\work\\work-python\\config' 
-# $env:ASSET_DATA_FACT_ROOT_DIR = 'G:\\work\\2024\\asset_data_facts' 
+
 
 def main():
     parser = ArgumentParser()
@@ -21,27 +19,29 @@ def main():
     parser.add_argument("--dest_dir", dest='dest_dir', help="Destination directory for the report")
     args = parser.parse_args()
     print(args)
-    config = cmdline_utils.get_asset_data_config().get('file_download_summary', None)
+    config = AssetDataConfig()
+    config.set_focus('file_download_summary')
 
-    temp1 = config.get('classlists_db_path', '*download.txt')
-    temp2 = cmdline_utils.get_expanded_path(temp1)
-    print(temp2)
+    classlists_db = config.get_expanded_path('classlists_db_src')
+    print(classlists_db)
 
     glob_pattern        = config.get('glob_pattern', '*download.txt')
-    classlists_db       = 'g:/work/2024/asset_data_facts/s4_classlists/classlists2.duckdb'
-    source_directory    = 'g:/work/2024/point_blue/pb04'
-    duckdb_output_path  = source_directory + '/fd_summary_data.duckdb'
-    xlsx_output_path    = source_directory + '/pb04-fd-summary-report.xlsx'
+    source_directory    = args.source_dir
 
+    if args.dest_dir: 
+        dest_directory = args.dest_dir
+    else:
+        dest_directory = source_directory
 
-    conn = duckdb.connect(database=duckdb_output_path)
-
-    duckdb_import.init(con=conn)
-    duckdb_import.store_download_files(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
-    classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
-    conn.close()
-
-    gen_summary = GenSummaryReport(db_path=duckdb_output_path, xlsx_output_name=xlsx_output_path)
-    gen_summary.gen_summary_report()
+    if source_directory and os.path.exists(source_directory) and os.path.exists(dest_directory):
+        duckdb_output_path  = dest_directory + '/fd_summary_data.duckdb'
+        xlsx_output_path    = dest_directory + '/pb04-fd-summary-report.xlsx'
+        conn = duckdb.connect(database=duckdb_output_path)
+        duckdb_import.init(con=conn)
+        duckdb_import.store_download_files(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
+        classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
+        conn.close()
+        gen_summary = GenSummaryReport(db_path=duckdb_output_path, xlsx_output_name=xlsx_output_path)
+        gen_summary.gen_summary_report()
 
 main()

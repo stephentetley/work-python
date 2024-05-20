@@ -17,6 +17,7 @@ limitations under the License.
 
 import os
 import tomllib
+import typing
 
 # Class?
 class AssetDataConfig:
@@ -39,6 +40,9 @@ class AssetDataConfig:
             self.focus = self.config.get(group_name, None)
 
 
+    def get(self, field_name: str, alt: typing.Any) -> str | typing.Any:
+        return self.focus.get(field_name, None)
+        
     def get_expanded_path(self, field_name: str) -> str | None:
         path = self.focus.get(field_name, None)
         if path:

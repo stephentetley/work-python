@@ -13,4 +13,4 @@ s4_ztables_outfile      = '$ASSET_DATA_FACT_ROOT_DIR/s4_ztables/s4_ztables_table
 
 [file_download_summary]
 glob_pattern            = "*download.txt"
-classlists_db_path      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/s4_classlist_tables.duckdb'
+classlists_db_src       = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/s4_classlist_tables.duckdb'
