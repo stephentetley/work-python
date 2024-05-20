@@ -17,20 +17,21 @@ limitations under the License.
 
 
 import duckdb
-import sptlibs.cmdline_utils as cmdline_utils
+from sptlibs.asset_data_config import AssetDataConfig
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.data_import.ztables.duckdb_import as duckdb_import
 
 
 def main(): 
-    config = cmdline_utils.get_asset_data_config().get('s4_ztables', None)
+    config = AssetDataConfig()
+    config.set_focus('s4_ztables')
     if config:
-        eqobjl_src = cmdline_utils.get_expanded_path('eqobjl_src', config)
-        flocdes_src = cmdline_utils.get_expanded_path('flocdes_src', config)
-        floobjl_src = cmdline_utils.get_expanded_path('floobjl_src', config)
-        manuf_model_src = cmdline_utils.get_expanded_path('manuf_model_src', config)
-        objtype_src = cmdline_utils.get_expanded_path('objtype_src', config)
-        output_path = cmdline_utils.get_expanded_path('s4_ztables_outfile', config)
+        eqobjl_src = config.get_expanded_path('eqobjl_src')
+        flocdes_src = config.get_expanded_path('flocdes_src')
+        floobjl_src = config.get_expanded_path('floobjl_src')
+        manuf_model_src = config.get_expanded_path('manuf_model_src')
+        objtype_src = config.get_expanded_path('objtype_src')
+        output_path = config.get_expanded_path('s4_ztables_outfile')
 
         conn = duckdb.connect(database=output_path)
         duckdb_import.init(con=conn)
