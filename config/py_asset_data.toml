@@ -1,3 +1,8 @@
+[rts_outstations]
+rts_outstations_src         = '$ASSET_DATA_FACT_ROOT_DIR/rts_outstations/rts-outstations-export.csv'
+rts_outstations_outfile     = '$ASSET_DATA_FACT_ROOT_DIR/rts_outstations/rts_outstations_tables.duckdb'
+
+
 [s4_classlists]
 equi_classlist_src      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/002-equi-classlist.txt'
 floc_classlist_src      = '$ASSET_DATA_FACT_ROOT_DIR/s4_classlists/003-floc-classlist.txt'

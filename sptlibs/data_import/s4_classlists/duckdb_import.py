@@ -16,8 +16,8 @@ limitations under the License.
 """
 
 import duckdb
-import sptlibs.data_import.classlists._parser as _parser
-import sptlibs.data_import.classlists._dbsetup as _dbsetup
+import sptlibs.data_import.s4_classlists._parser as _parser
+import sptlibs.data_import.s4_classlists._dbsetup as _dbsetup
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     _dbsetup.setup_tables(con=con)

@@ -19,10 +19,10 @@ from argparse import ArgumentParser
 import os
 import duckdb
 from sptlibs.asset_data_config import AssetDataConfig
-import data_import.rts.duckdb_import_outstations_report as duckdb_import_outstations_report
+import sptlibs.data_import.rts_outstations.duckdb_import as duckdb_import
 
 def main(): 
-    parser = ArgumentParser()
+    parser = ArgumentParser(description='Generate rts outstation info table from an rts outstations report')
     parser.add_argument("--report_outfile", dest='report_outfile', help="cvs output path, use to optionally generate a csv report")
     args = parser.parse_args()
     config = AssetDataConfig()
@@ -32,7 +32,7 @@ def main():
     duckdb_output_path = config.get_expanded_path('rts_outstations_outfile')
 
     conn = duckdb.connect(database=duckdb_output_path)
-    duckdb_import_outstations_report.import_outstations_report(csv_input_path, con=conn)
+    duckdb_import.import_outstations_report(csv_input_path, con=conn)
 
     if args.report_outfile:
         csv_output_path = os.path.normpath(args.report_outfile)

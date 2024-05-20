@@ -15,33 +15,34 @@ limitations under the License.
 
 """
 
-
+from argparse import ArgumentParser
 import duckdb
 from sptlibs.asset_data_config import AssetDataConfig
 from sptlibs.xlsx_source import XlsxSource
-import sptlibs.data_import.ztables.duckdb_import as duckdb_import
+import sptlibs.data_import.s4_ztables.duckdb_import as duckdb_import
 
 
 def main(): 
+    parser = ArgumentParser(description='Generate ztable info DuckDB tables')
+    _args = parser.parse_args()
     config = AssetDataConfig()
     config.set_focus('s4_ztables')
-    if config:
-        eqobjl_src = config.get_expanded_path('eqobjl_src')
-        flocdes_src = config.get_expanded_path('flocdes_src')
-        floobjl_src = config.get_expanded_path('floobjl_src')
-        manuf_model_src = config.get_expanded_path('manuf_model_src')
-        objtype_src = config.get_expanded_path('objtype_src')
-        output_path = config.get_expanded_path('s4_ztables_outfile')
+    eqobjl_src = config.get_expanded_path('eqobjl_src')
+    flocdes_src = config.get_expanded_path('flocdes_src')
+    floobjl_src = config.get_expanded_path('floobjl_src')
+    manuf_model_src = config.get_expanded_path('manuf_model_src')
+    objtype_src = config.get_expanded_path('objtype_src')
+    output_path = config.get_expanded_path('s4_ztables_outfile')
 
-        conn = duckdb.connect(database=output_path)
-        duckdb_import.init(con=conn)
-        duckdb_import.import_eqobjl(XlsxSource(eqobjl_src, 'Sheet1'), con=conn)
-        duckdb_import.import_flocdes(XlsxSource(flocdes_src, 'Sheet1'), con=conn)
-        duckdb_import.import_floobjl(XlsxSource(floobjl_src, 'Sheet1'), con=conn)
-        duckdb_import.import_manuf_model(XlsxSource(manuf_model_src, 'Sheet1'), con=conn)
-        duckdb_import.import_objtype_manuf(XlsxSource(objtype_src, 'Sheet1'), con=conn)
-        conn.close()
-        print(f"Done - created: {output_path}")
+    conn = duckdb.connect(database=output_path)
+    duckdb_import.init(con=conn)
+    duckdb_import.import_eqobjl(XlsxSource(eqobjl_src, 'Sheet1'), con=conn)
+    duckdb_import.import_flocdes(XlsxSource(flocdes_src, 'Sheet1'), con=conn)
+    duckdb_import.import_floobjl(XlsxSource(floobjl_src, 'Sheet1'), con=conn)
+    duckdb_import.import_manuf_model(XlsxSource(manuf_model_src, 'Sheet1'), con=conn)
+    duckdb_import.import_objtype_manuf(XlsxSource(objtype_src, 'Sheet1'), con=conn)
+    conn.close()
+    print(f"Done - created: {output_path}")
 
 main()
 

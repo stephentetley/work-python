@@ -18,7 +18,7 @@ limitations under the License.
 import duckdb
 from sptlibs.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
-import data_import.ztables._dbsetup as _dbsetup
+import sptlibs.data_import.s4_ztables._dbsetup as _dbsetup
 
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 

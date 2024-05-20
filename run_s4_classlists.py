@@ -14,14 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
-
+from argparse import ArgumentParser
 import duckdb
 from sptlibs.asset_data_config import AssetDataConfig
-import sptlibs.data_import.classlists.duckdb_import as duckdb_import
+import sptlibs.data_import.s4_classlists.duckdb_import as duckdb_import
 
 
 
 def main(): 
+    parser = ArgumentParser(description='Generate equi and floc classlist DuckDB tables')
+    _args = parser.parse_args()
     config = AssetDataConfig()
     config.set_focus('s4_classlists')
     equi_src = config.get_expanded_path('equi_classlist_src')
