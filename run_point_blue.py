@@ -1,6 +1,6 @@
 import pandas as pd
 from sptlibs.utils.xlsx_source import XlsxSource
-from sptlibs.assets.gen_sqlite import GenSqlite
+from _old.gen_sqlite import GenSqlite
 from sptapps.pointblue.pointblue_gen_duckdb import PointblueGenDuckdb
 import sptapps.pointblue.pointblue_retire_report as pointblue_retire_report
 import sptapps.pointblue.pointblue_new_4g_report as pointblue_new_4g_report

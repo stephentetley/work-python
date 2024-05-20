@@ -1,7 +1,7 @@
 # run_ihx_summary_report.py
 
 import pandas as pd
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.data_import.ih06_ih08.gen_duckdb import GenDuckdb
 from sptlibs.data_import.ih06_ih08.gen_summary_report import GenSummaryReport
 

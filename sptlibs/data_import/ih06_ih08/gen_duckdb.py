@@ -18,8 +18,7 @@ limitations under the License.
 import os
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
-import data_import.s4_classlists._dbsetup as classlist_duckdb_setup
-import _old.duckdb_copy as classlist_duckdb_copy
+import data_import.s4_classlists.duckdb_import as classlist_duckdb_import
 import sptlibs.data_import.ih06_ih08.load_raw_xlsx as load_raw_xlsx
     
 class GenDuckdb:
@@ -55,8 +54,7 @@ class GenDuckdb:
         
         # Create `s4_classlists` tables
         if os.path.exists(self.classlists_source): 
-            classlist_duckdb_setup.setup_tables(con=con)
-            classlist_duckdb_copy.copy_tables(classlists_source_db_path=self.classlists_source, con=con)
+            classlist_duckdb_import.copy_classlists_tables(classlists_source_db_path=self.classlists_source, setup_tables=True, con=con)
         else:
             con.close()
             raise FileNotFoundError('classlist db not found')

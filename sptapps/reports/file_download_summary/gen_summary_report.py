@@ -16,8 +16,8 @@ limitations under the License.
 """
 
 import duckdb
-import sptlibs.reports.file_download_summary.materialize_summary_tables as materialize_summary_tables
-import sptlibs.reports.s4_floc_equi_summary.summary_report as summary_report
+import sptapps.reports.file_download_summary.materialize_summary_tables as materialize_summary_tables
+import sptapps.reports.s4_floc_equi_summary.summary_report as summary_report
     
 class GenSummaryReport:
     def __init__(self, *, db_path: str, xlsx_output_name: str) -> None:
