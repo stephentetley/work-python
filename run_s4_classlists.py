@@ -16,7 +16,7 @@ limitations under the License.
 """
 from argparse import ArgumentParser
 import duckdb
-from sptlibs.asset_data_config import AssetDataConfig
+from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_import.s4_classlists.duckdb_import as duckdb_import
 
 

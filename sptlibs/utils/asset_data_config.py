@@ -19,7 +19,7 @@ import os
 import tomllib
 import typing
 
-# Class?
+
 class AssetDataConfig:
     def __init__(self) -> None:
         """Defaults to $HOME if $ASSET_DATA_CONFIG_DIR is missing."""

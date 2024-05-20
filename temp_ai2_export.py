@@ -3,7 +3,7 @@
 from typing import Callable
 import polars as pl
 import duckdb
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.s4_classlists.duckdb_import as classlists_import
 import sptlibs.data_import.ai2_export.duckdb_import as ai2_reports_import
 import sptlibs.asset_ir.ai2_class_rep.ai2_export_to_ai2_class_rep as ai2_export_to_ai2_class_rep

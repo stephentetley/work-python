@@ -15,7 +15,7 @@ limitations under the License.
 
 """
 
-import sptlibs.export_utils as export_utils
+import sptlibs.utils.export_utils as export_utils
 
 
 def output_retire_report(*, duckdb_path: str, csv_outpath: str) -> str:

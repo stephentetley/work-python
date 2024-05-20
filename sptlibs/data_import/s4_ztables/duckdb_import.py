@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
 import sptlibs.data_import.s4_ztables._dbsetup as _dbsetup
 

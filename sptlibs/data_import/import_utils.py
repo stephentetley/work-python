@@ -19,7 +19,7 @@ import re
 import polars as pl
 import duckdb
 from typing import Callable
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 
 def read_csv_source(csv_path: str, *, normalize_column_names: bool, has_header: bool) -> pl.DataFrame:
     df = pl.read_csv(source=csv_path, ignore_errors=True, has_header=has_header, null_values = ['NULL', 'Null', 'null'])

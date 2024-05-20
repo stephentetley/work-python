@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 import polars as pl
-import sptlibs.gridref as gridref
+import sptlibs.utils.gridref as gridref
 
 
 eav_sample = pl.DataFrame([ 

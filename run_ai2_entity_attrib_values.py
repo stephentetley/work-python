@@ -1,7 +1,7 @@
 # polars is in my (base) env
 
 from sptlibs.ai2_eav.gen_duckdb import GenDuckdb
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 
 parents_source = XlsxSource('g:/work/2024/ai2_to_s4/ai2-magflow-meter-parents-export.xlsx', 'Sheet1')
 

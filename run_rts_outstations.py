@@ -18,7 +18,7 @@ limitations under the License.
 from argparse import ArgumentParser
 import os
 import duckdb
-from sptlibs.asset_data_config import AssetDataConfig
+from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_import.rts_outstations.duckdb_import as duckdb_import
 
 def main(): 

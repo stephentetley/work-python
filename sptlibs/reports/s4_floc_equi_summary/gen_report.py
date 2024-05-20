@@ -17,8 +17,8 @@ limitations under the License.
 
 import duckdb
 import pandas as pd
-from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
-import sptlibs.unjson as unjson
+from sptlibs.utils.data_frame_xlsx_table import DataFrameXlsxTable
+import sptlibs.utils.unjson as unjson
 
 
 def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:

@@ -2,10 +2,11 @@
 
 import duckdb
 import pandas as pd
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
+from sptlibs.utils.data_frame_xlsx_table import DataFrameXlsxTable
 import sptapps.floc_mapping.load_raw_data as load_raw_data
 import sptapps.floc_mapping.duckdb_setup as duckdb_setup
-from sptlibs.data_frame_xlsx_table import DataFrameXlsxTable
+
 
 duckdb_output_path  = 'g:/work/2024/floc-sai-mapping/2024_01_22/jan22-floc-sai2.duckdb'
 xlsx_output_path    = 'g:/work/2024/floc-sai-mapping/2024_01_22/jan22_level1_children_report.xlsx'

@@ -18,7 +18,7 @@ limitations under the License.
 import duckdb
 import polars as pl
 import sptlibs.ai2_eav.duckdb_setup as duckdb_setup
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
 
 

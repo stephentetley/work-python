@@ -1,5 +1,5 @@
 import pandas as pd
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.assets.gen_sqlite import GenSqlite
 from sptapps.pointblue.pointblue_gen_duckdb import PointblueGenDuckdb
 import sptapps.pointblue.pointblue_retire_report as pointblue_retire_report

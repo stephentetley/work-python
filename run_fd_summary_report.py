@@ -18,7 +18,7 @@ limitations under the License.
 from argparse import ArgumentParser
 import os
 import duckdb
-from sptlibs.asset_data_config import AssetDataConfig
+from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_import.file_download.duckdb_import as duckdb_import
 import sptlibs.data_import.s4_classlists.duckdb_import as classlists_duckdb_import
 from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryReport
@@ -27,7 +27,7 @@ from sptlibs.reports.file_download_summary.gen_summary_report import GenSummaryR
 
 def main():
     parser = ArgumentParser(description='Generate a summary report for equi/floc file downloads')
-    parser.add_argument("--source_dir", dest='source_dir', help="Source directory containing file downloads")
+    parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing file downloads")
     parser.add_argument("--dest_dir", dest='dest_dir', help="Destination directory for the report")
     parser.add_argument("--report_prefix", dest='report_prefix', help="Prefix to be added to report name")
     parser.add_argument("--report_name", dest='report_name', help="Report name, use instead of `report_prefix` to specify full name")
@@ -36,7 +36,7 @@ def main():
     config.set_focus('file_download_summary')
 
     classlists_db = config.get_expanded_path('classlists_db_src')
-    print(classlists_db)
+
 
     glob_pattern        = config.get('glob_pattern', '*download.txt')
     source_directory    = args.source_dir
@@ -62,5 +62,6 @@ def main():
         conn.close()
         gen_summary = GenSummaryReport(db_path=duckdb_output_path, xlsx_output_name=xlsx_output_path)
         gen_summary.gen_summary_report()
+        print(f"Created - {xlsx_output_path}")
 
 main()

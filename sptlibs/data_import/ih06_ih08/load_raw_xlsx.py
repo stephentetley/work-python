@@ -18,7 +18,7 @@ limitations under the License.
 import re
 import polars as pl
 import duckdb
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
 from sptlibs.data_import.ih06_ih08.column_range import ColumnRange
 

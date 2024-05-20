@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.xlsx_source import XlsxSource
+from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
 import data_import.ai2_export._dbsetup as _dbsetup
 
@@ -29,10 +29,10 @@ def import_ai2_exports(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnect
 
 
 def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    __import_master_data(xlsx, con=con)
-    __import_eav_data(xlsx, con=con)
+    _import_master_data(xlsx, con=con)
+    _import_eav_data(xlsx, con=con)
 
-def __import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
+def _import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     insert_stmt = """
         INSERT OR REPLACE INTO ai2_export.master_data BY NAME
         SELECT 
@@ -51,7 +51,7 @@ def __import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) ->
     import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
 
 
-def __import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
+def _import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True, con=con)
     headers = df.columns
     headers.remove('reference')    

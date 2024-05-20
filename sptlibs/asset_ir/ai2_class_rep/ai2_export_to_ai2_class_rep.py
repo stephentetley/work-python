@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 import polars as pl
-import sptlibs.gridref as gridref
+import sptlibs.utils.gridref as gridref
 import sptlibs.asset_ir.ai2_class_rep.duckdb_setup as duckdb_setup
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
