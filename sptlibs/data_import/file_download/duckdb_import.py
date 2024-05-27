@@ -21,7 +21,7 @@ import duckdb
 import sptlibs.data_import.file_download._dbsetup as _dbsetup
 from sptlibs.data_import.file_download._file_download import _FileDownload
 
-def init(*, con: duckdb.DuckDBPyConnection) -> None: 
+def init_s4_fd_raw_data_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
     _dbsetup.setup_tables(con=con)
 
 def store_download_file(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
