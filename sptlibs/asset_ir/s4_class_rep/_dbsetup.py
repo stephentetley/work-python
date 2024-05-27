@@ -16,14 +16,14 @@ limitations under the License.
 """
 
 import duckdb
+import sptlibs.asset_ir.s4_class_rep._gen_class_tables as _gen_class_tables
 
 def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS s4_class_rep;')
     con.execute(floc_master_data_ddl)
     con.execute(equi_master_data_ddl)
-    con.execute(equi_memo_text_ddl)
-    con.execute(equi_east_north_ddl)
-    con.execute(equi_asset_condition_ddl)
+    con.execute(equi_solution_id_ddl)
+    _gen_class_tables.gen_equi_class_tables(con=con)
 
 
 floc_master_data_ddl = """
@@ -103,37 +103,12 @@ equi_memo_text_ddl = """
     );
 """
 
-# TODO - generate sql for class tables?
+# generate sql for class tables except SOLUTION_ID and AIB_REFERENCE
 
 equi_solution_id_ddl = """
-    CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
+    CREATE OR REPLACE TABLE s4_class_rep.equiclass_solution_id (
         equipment_id VARCHAR NOT NULL,
         idx_solution_id INTEGER,
         solution_id INTEGER,
-        PRIMARY KEY(equipment_id)
-    );
-"""
-
-equi_east_north_ddl = """
-    CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
-        equipment_id VARCHAR NOT NULL,
-        idx_easting INTEGER,
-        easting INTEGER,
-        idx_northing INTEGER,
-        northing INTEGER,
-        PRIMARY KEY(equipment_id)
-    );
-"""
-
-equi_asset_condition_ddl = """
-    CREATE OR REPLACE TABLE s4_class_rep.equi_asset_condition (
-        equipment_id VARCHAR NOT NULL,
-        idx_condition_grade INTEGER,
-        condition_grade VARCHAR,
-        idx_condition_grade_reason INTEGER,
-        condition_grade_reason VARCHAR,
-        idx_survey_date INTEGER,
-        survey_date INTEGER,
-        PRIMARY KEY(equipment_id)
     );
 """
