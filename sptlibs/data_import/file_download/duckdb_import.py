@@ -26,8 +26,8 @@ def init_s4_fd_raw_data_tables(*, con: duckdb.DuckDBPyConnection) -> None:
 
 def store_download_file(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
     fd = _FileDownload.from_download(path=path)
-    qual_table_name = fd.gen_std_table_name(schema_name='s4_fd_raw_data')
-    fd.store_to_duckdb(table_name=qual_table_name, con=con)
+    if fd:
+        fd.store_to_duckdb(con=con)
 
 
 def store_download_files(*, source_dir: str, glob_pattern: str, con: duckdb.DuckDBPyConnection) -> None:
@@ -40,4 +40,3 @@ def store_download_files(*, source_dir: str, glob_pattern: str, con: duckdb.Duck
         except Exception as exn:
             print(exn)
             continue
-    con.commit()

@@ -22,8 +22,9 @@ def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS s4_class_rep;')
     con.execute(floc_master_data_ddl)
     con.execute(equi_master_data_ddl)
+    con.execute(floc_solution_id_ddl)
     con.execute(equi_solution_id_ddl)
-    _gen_class_tables.gen_equi_class_tables(con=con)
+    _gen_class_tables.gen_class_tables(con=con)
 
 
 floc_master_data_ddl = """
@@ -104,6 +105,14 @@ equi_memo_text_ddl = """
 """
 
 # generate sql for class tables except SOLUTION_ID and AIB_REFERENCE
+
+floc_solution_id_ddl = """
+    CREATE OR REPLACE TABLE s4_class_rep.flocclass_solution_id (
+        floc_id VARCHAR NOT NULL,
+        idx_solution_id INTEGER,
+        solution_id INTEGER,
+    );
+"""
 
 equi_solution_id_ddl = """
     CREATE OR REPLACE TABLE s4_class_rep.equiclass_solution_id (
