@@ -5,7 +5,9 @@ import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_import.s4_classlists.duckdb_import as classlists_duckdb_import
 import sptlibs.data_import.file_download.duckdb_import as file_download_duckdb_import
-import asset_ir.s4_class_rep.duckdb_init as s4_class_rep_duckdb_setup
+import sptlibs.asset_ir.s4_class_rep.duckdb_init as s4_class_rep_duckdb_setup
+import sptlibs.asset_ir.s4_class_rep._materialize_class_tables as _materialize_class_tables
+
 
 def main():
     config = AssetDataConfig()
@@ -25,5 +27,7 @@ def main():
 
     s4_class_rep_duckdb_setup.init_s4_class_rep_tables(con=conn)
     s4_class_rep_duckdb_setup.materialize_data(con=conn)
+
+    _materialize_class_tables.materialize_class_tables(con=conn)
 
 main()
