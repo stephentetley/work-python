@@ -18,13 +18,10 @@ limitations under the License.
 import duckdb
 from sptlibs.utils.asset_data_sql import AssetDataSql
 import sptlibs.asset_ir.s4_class_rep._gen_class_tables as _gen_class_tables
-import sptlibs.asset_ir.s4_class_rep._materialize_masterdata as _materialize_masterdata
 
 def init_s4_class_rep_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = AssetDataSql()
     runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_create_tables.sql', con=con)
     _gen_class_tables.gen_class_tables(con=con)
-
-def materialize_data(*, con: duckdb.DuckDBPyConnection) -> None:
-    _materialize_masterdata.materialize_masterdata(con=con)
+    runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_insert_into.sql', con=con)
     
