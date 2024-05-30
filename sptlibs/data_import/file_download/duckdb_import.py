@@ -18,11 +18,13 @@ limitations under the License.
 import os
 import glob
 import duckdb
-import sptlibs.data_import.file_download._dbsetup as _dbsetup
+from sptlibs.utils.asset_data_sql import AssetDataSql
 from sptlibs.data_import.file_download._file_download import _FileDownload
 
 def init_s4_fd_raw_data_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
-    _dbsetup.setup_tables(con=con)
+    runner = AssetDataSql()
+    runner.exec_sql_file(file_rel_path='s4_fd_raw_data/s4_fd_raw_data_create_tables.sql', con=con)
+
 
 def store_download_file(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
     fd = _FileDownload.from_download(path=path)
