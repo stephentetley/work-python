@@ -19,6 +19,7 @@ import duckdb
 import polars as pl
 import sptlibs.data_import.import_utils as import_utils
 
+# TODO change to use Jinja
 
 def gen_class_tables(*, con: duckdb.DuckDBPyConnection) -> pl.DataFrame: 
     for row in _get_equi_classes(con=con).iter_rows(named=True):
