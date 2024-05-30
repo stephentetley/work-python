@@ -17,6 +17,9 @@ limitations under the License.
 
 import duckdb
 
+# This is due to be retired, so it hasn't been converted to a sql script
+
+
 def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS s4_summary;')
     con.execute(s4_summary_funcloc_masterdata_ddl)
