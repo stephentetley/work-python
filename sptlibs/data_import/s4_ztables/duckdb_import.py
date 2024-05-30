@@ -18,11 +18,13 @@ limitations under the License.
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
-import sptlibs.data_import.s4_ztables._dbsetup as _dbsetup
+from sptlibs.utils.asset_data_sql import AssetDataSql
+
 
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    _dbsetup.setup_tables(con=con)
+    runner = AssetDataSql()
+    runner.exec_sql_file(file_rel_path='s4_ztables/s4_ztables_create_tables.sql', con=con)
 
 
 
