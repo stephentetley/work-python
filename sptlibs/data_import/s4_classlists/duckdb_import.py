@@ -17,11 +17,11 @@ limitations under the License.
 
 import duckdb
 import sptlibs.data_import.s4_classlists._parser as _parser
-from sptlibs.utils.asset_data_sql import AssetDataSql
+from utils.sql_script_runner import SqlScriptRunner
 
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    runner = AssetDataSql()
+    runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_create_tables.sql', con=con)
 
 def import_floc_classes(textfile_path: str, *, con: duckdb.DuckDBPyConnection) -> None:
@@ -88,7 +88,7 @@ def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool
     """`dest_con` is the desination database."""
     # Setup tables
     if setup_tables: 
-        runner = AssetDataSql()
+        runner = SqlScriptRunner()
         runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_create_tables.sql', con=dest_con)
 
     # copy tables using duckdb builtins

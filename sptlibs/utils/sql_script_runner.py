@@ -18,7 +18,7 @@ limitations under the License.
 import os
 import duckdb
 
-class AssetDataSql:
+class SqlScriptRunner:
     def __init__(self) -> None:
         """Throws exception if $ASSET_DATA_SQL_DIR is missing."""
         sql_root_dir = os.environ.get('ASSET_DATA_SQL_DIR', '')
@@ -40,7 +40,8 @@ class AssetDataSql:
                 statements = file.read()
                 con.execute(statements)
         else: 
-            return None
+            print(f"SQL file does not exist {sql_file_path}")
+            raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 
 
 

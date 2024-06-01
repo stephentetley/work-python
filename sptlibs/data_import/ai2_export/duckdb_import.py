@@ -17,12 +17,12 @@ limitations under the License.
 
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
-from sptlibs.utils.asset_data_sql import AssetDataSql
+from utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_import.import_utils as import_utils
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    runner = AssetDataSql()
-    runner.exec_sql_file(file_rel_path='ai2_export/ai2_export.sql', con=con)
+    runner = SqlScriptRunner()
+    runner.exec_sql_file(file_rel_path='ai2_export/ai2_export_create_tables.sql', con=con)
 
 def import_ai2_exports(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnection) -> None:
     for src in sources:

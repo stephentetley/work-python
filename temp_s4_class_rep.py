@@ -26,7 +26,6 @@ def main():
     file_download_duckdb_import.store_download_files(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
 
     s4_class_rep_duckdb_setup.init_s4_class_rep_tables(con=conn)
-    s4_class_rep_duckdb_setup.materialize_data(con=conn)
 
     _materialize_class_tables.materialize_class_tables(con=conn)
 
