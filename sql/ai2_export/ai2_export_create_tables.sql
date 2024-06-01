@@ -17,7 +17,7 @@
 CREATE SCHEMA IF NOT EXISTS ai2_export;
 
 
-CREATE OR REPLACE TABLE ai2_export.master_data (
+CREATE OR REPLACE TABLE ai2_export.equi_master_data (
     ai2_reference VARCHAR NOT NULL,
     common_name VARCHAR NOT NULL,
     installed_from DATE,
@@ -29,7 +29,7 @@ CREATE OR REPLACE TABLE ai2_export.master_data (
     PRIMARY KEY(ai2_reference)
 );
 
-CREATE OR REPLACE TABLE ai2_export.eav_data(
+CREATE OR REPLACE TABLE ai2_export.equi_eav_data(
     ai2_reference VARCHAR NOT NULL,
     attribute_name VARCHAR NOT NULL,
     attribute_value VARCHAR,

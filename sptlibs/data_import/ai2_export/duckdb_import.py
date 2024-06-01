@@ -35,7 +35,7 @@ def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> No
 
 def _import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
     insert_stmt = """
-        INSERT OR REPLACE INTO ai2_export.master_data BY NAME
+        INSERT OR REPLACE INTO ai2_export.equi_master_data BY NAME
         SELECT 
             df.reference AS ai2_reference,
             df.common_name AS common_name,
@@ -59,7 +59,7 @@ def _import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> Non
     headers = map(lambda x: f'{x}::VARCHAR', headers)
     header_str =', '.join(headers)
     pivot_insert = f"""
-        INSERT INTO ai2_export.eav_data BY NAME
+        INSERT INTO ai2_export.equi_eav_data BY NAME
         SELECT 
             pvt.reference AS ai2_reference, 
             pvt.attr_name AS attribute_name, 
