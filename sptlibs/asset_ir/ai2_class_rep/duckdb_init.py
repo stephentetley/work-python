@@ -20,15 +20,17 @@ import polars as pl
 from utils.sql_script_runner import SqlScriptRunner
 from sptlibs.utils.grid_ref import Osgb36
 
+# TODO use SQL statements run by `SqlScriptRunner` where possible...
+
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_create_tables.sql', con=con)
+    runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_insert_into.sql', con=con)
 
 # DB must have `ai2_export` tables set up
 def ai2_export_to_ai2_classes(*, con: duckdb.DuckDBPyConnection) -> None:
     __translate_equipment_master_data(con=con)
     __translate_memo_text_data(con=con)
-    __translate_asset_condition_data(con=con)
     __translate_east_north_data(con=con)
 
 def __translate_equipment_master_data(*, con: duckdb.DuckDBPyConnection) -> None:
@@ -80,22 +82,6 @@ def __translate_memo_text_data(*, con: duckdb.DuckDBPyConnection) -> None:
     con.execute(insert_stmt)
 
 
-def __translate_asset_condition_data(*, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO ai2_class_rep.asset_condition BY NAME
-        SELECT 
-            emd.ai2_reference AS ai2_reference, 
-            eav_asset_cond1.attribute_value AS condition_grade,
-            eav_asset_cond2.attribute_value AS condition_grade_reason,
-            TRY_CAST(eav_asset_cond3.attribute_value AS INTEGER) AS survey_date,
-        FROM ai2_export.equi_master_data emd
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_asset_cond1 ON eav_asset_cond1.ai2_reference = emd.ai2_reference AND eav_asset_cond1.attribute_name = 'condition_grade'
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_asset_cond2 ON eav_asset_cond1.ai2_reference = emd.ai2_reference AND eav_asset_cond1.attribute_name = 'condition_grade_reason'
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_asset_cond3 ON eav_asset_cond1.ai2_reference = emd.ai2_reference AND eav_asset_cond1.attribute_name = 'agasp_survey_year'
-        WHERE emd.common_name LIKE '%EQUIPMENT:%'
-        ;
-    """
-    con.execute(insert_stmt)
 
 # This is effectively using a UDF...
 def __translate_east_north_data(*, con: duckdb.DuckDBPyConnection) -> None:
