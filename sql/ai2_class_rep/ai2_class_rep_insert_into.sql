@@ -47,3 +47,29 @@ FROM ai2_export.equi_master_data emd
 JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
 WHERE emd.common_name LIKE '%EQUIPMENT:%'
 GROUP BY emd.ai2_reference;
+
+
+INSERT INTO ai2_class_rep.memo_text BY NAME
+SELECT DISTINCT ON(emd.ai2_reference)
+    emd.ai2_reference AS ai2_reference,
+    any_value(CASE WHEN eav.attribute_name = 'memo_line_1' THEN eav.attribute_value ELSE NULL END) AS memo_line1,
+    any_value(CASE WHEN eav.attribute_name = 'memo_line_2' THEN eav.attribute_value ELSE NULL END) AS memo_line2,
+    any_value(CASE WHEN eav.attribute_name = 'memo_line_3' THEN eav.attribute_value ELSE NULL END) AS memo_line3,
+    any_value(CASE WHEN eav.attribute_name = 'memo_line_4' THEN eav.attribute_value ELSE NULL END) AS memo_line4,
+    any_value(CASE WHEN eav.attribute_name = 'memo_line_5' THEN eav.attribute_value ELSE NULL END) AS memo_line5,
+FROM ai2_export.equi_master_data emd
+JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+WHERE emd.common_name LIKE '%EQUIPMENT:%'
+GROUP BY emd.ai2_reference;
+
+-- uses scalar udfs `udf_get_easting` and `udf_get_northing` that must be registered first...
+INSERT INTO ai2_class_rep.east_north BY NAME
+SELECT DISTINCT ON(emd.ai2_reference)
+    emd.ai2_reference AS ai2_reference,
+    any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN eav.attribute_value ELSE NULL END) AS grid_ref,
+    any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN udf_get_easting(eav.attribute_value) ELSE NULL END) AS easting,
+    any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN udf_get_northing(eav.attribute_value) ELSE NULL END) AS northing,
+FROM ai2_export.equi_master_data emd
+JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+WHERE emd.common_name LIKE '%EQUIPMENT:%'
+GROUP BY emd.ai2_reference;

@@ -31,7 +31,6 @@ ai2_exports_import.init(con=conn)
 ai2_exports_import.import_ai2_exports([source1, source2, source3, source4, source5, source6, source7], con=conn)
 
 ai2_class_duckdb_init.init(con=conn)
-ai2_class_duckdb_init.ai2_export_to_ai2_classes(con=conn)
 
 conn.close()
 print("done")
