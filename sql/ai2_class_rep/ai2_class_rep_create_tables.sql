@@ -59,7 +59,26 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_asset_condition (
     PRIMARY KEY(ai2_reference)
 );
 
+-- TEMP TABLES
+CREATE OR REPLACE TEMP TABLE temp_signal_type(
+    ai2_reference VARCHAR NOT NULL,
+    signal_type VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
+
+
+-- MACROS
+CREATE OR REPLACE MACRO format_output_type(a) AS
+    CASE 
+        WHEN upper(a) = 'DIGITAL' THEN 'DIGITAL'
+        WHEN upper(a) = 'MA' OR upper(a) = 'MV' THEN 'ANALOGUE' 
+    END;
+
+
+
 -- INSTRUMENT
+
+-- INSTRUMENT: LSTNCO (conductive level device)
 CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnco (
     ai2_reference VARCHAR NOT NULL,
     uniclass_code VARCHAR,
@@ -76,14 +95,3 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnco (
     lstn_supply_voltage_units VARCHAR,
     PRIMARY KEY(ai2_reference)
 );
-
--- MACROS
-CREATE OR REPLACE MACRO format_output_signal(a, b, c) AS a || ' - ' || b || ' ' || upper(c);
-
--- Calling `upper(a)` repeatedly seems faster than using a CTE...
-CREATE OR REPLACE MACRO format_signal_type(a) AS
-    CASE 
-        WHEN upper(a) = 'DIGITAL' THEN 'DIGITAL'
-        WHEN upper(a) = 'MA' OR upper(a) = 'MV' THEN 'ANALGUE' 
-    END;
-

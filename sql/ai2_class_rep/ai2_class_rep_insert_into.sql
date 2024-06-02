@@ -77,6 +77,23 @@ JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference
 WHERE emd.common_name LIKE '%EQUIPMENT:%'
 GROUP BY emd.ai2_reference;
 
+-- Fill temp tables
+
+INSERT INTO temp_signal_type BY NAME
+WITH cte AS 
+    (SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'signal_max' THEN eav.attribute_value ELSE NULL END) AS signal_max,
+        any_value(CASE WHEN eav.attribute_name = 'signal_min' THEN eav.attribute_value ELSE NULL END) AS signal_min,
+        any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN eav.attribute_value ELSE NULL END) AS signal_unit,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    GROUP BY emd.ai2_reference)
+SELECT 
+    t.ai2_reference AS ai2_reference,
+    t.signal_min || ' - ' || t.signal_max || ' ' || upper(t.signal_unit) AS signal_type
+FROM cte t
+WHERE t.signal_unit IS NOT NULL;
 
 
 
@@ -90,12 +107,11 @@ SELECT DISTINCT ON(emd.ai2_reference)
     any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
     any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
     any_value(CASE WHEN eav.attribute_name = 'range_unit' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_range_units,
-    any_value(CASE WHEN eav.attribute_name = 'signal_min' AND eav2.attribute_name = 'signal_max' AND eav3.attribute_name = 'signal_unit'
-                    THEN format_output_signal(eav.attribute_value, eav2.attribute_value, eav3.attribute_value) ELSE NULL END) AS lstn_signal_type,
-    any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN format_signal_type(eav.attribute_value) ELSE NULL END) AS lstn_output_type,
+    temp.signal_type AS lstn_signal_type,
+    any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN format_output_type(eav.attribute_value) ELSE NULL END) AS lstn_output_type,
 FROM ai2_export.equi_master_data emd
 JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN ai2_export.equi_eav_data eav2 ON eav.ai2_reference = emd.ai2_reference 
-JOIN ai2_export.equi_eav_data eav3 ON eav.ai2_reference = emd.ai2_reference 
+JOIN temp_signal_type temp ON temp.ai2_reference = emd.ai2_reference 
 WHERE emd.common_name LIKE '%EQUIPMENT: CONDUCTIVITY LEVEL INSTRUMENT'
-GROUP BY emd.ai2_reference;
+GROUP BY emd.ai2_reference, temp.signal_type;
+
