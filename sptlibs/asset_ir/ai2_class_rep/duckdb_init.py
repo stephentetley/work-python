@@ -17,11 +17,8 @@ limitations under the License.
 
 import duckdb
 from duckdb.typing import *
-import polars as pl
 from utils.sql_script_runner import SqlScriptRunner
 from sptlibs.utils.grid_ref import Osgb36
-
-# TODO use SQL statements run by `SqlScriptRunner` where possible...
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     con.create_function("udf_get_easting", udf_get_easting, [VARCHAR], INTEGER)

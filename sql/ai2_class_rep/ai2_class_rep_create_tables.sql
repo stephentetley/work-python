@@ -59,3 +59,31 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_asset_condition (
     PRIMARY KEY(ai2_reference)
 );
 
+-- INSTRUMENT
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnco (
+    ai2_reference VARCHAR NOT NULL,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    location_on_site VARCHAR,
+    manufacturers_asset_life_yr INTEGER,
+    ip_rating VARCHAR,
+    lstn_signal_type VARCHAR,
+    lstn_output_type VARCHAR,
+    lstn_range_max DECIMAL(10, 3),
+    lstn_range_min DECIMAL(10, 3),
+    lstn_range_units VARCHAR,
+    lstn_supply_voltage INTEGER,
+    lstn_supply_voltage_units VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
+
+-- MACROS
+CREATE OR REPLACE MACRO format_output_signal(a, b, c) AS a || ' - ' || b || ' ' || upper(c);
+
+-- Calling `upper(a)` repeatedly seems faster than using a CTE...
+CREATE OR REPLACE MACRO format_signal_type(a) AS
+    CASE 
+        WHEN upper(a) = 'DIGITAL' THEN 'DIGITAL'
+        WHEN upper(a) = 'MA' OR upper(a) = 'MV' THEN 'ANALGUE' 
+    END;
+
