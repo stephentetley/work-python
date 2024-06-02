@@ -29,36 +29,9 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
 
 # DB must have `ai2_export` tables set up
 def ai2_export_to_ai2_classes(*, con: duckdb.DuckDBPyConnection) -> None:
-    __translate_equipment_master_data(con=con)
     __translate_memo_text_data(con=con)
     __translate_east_north_data(con=con)
 
-def __translate_equipment_master_data(*, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO ai2_class_rep.equi_master_data BY NAME
-        SELECT
-            DISTINCT ON (emd.ai2_reference)
-            emd.ai2_reference AS ai2_reference,
-            emd.common_name AS common_name,
-            regexp_extract(emd.common_name, '/([^/]*)/EQUIPMENT:', 1) AS equipment_name,
-            regexp_extract(emd.common_name, '.*EQUIPMENT: (.*)$', 1) AS equipment_type,
-            emd.installed_from AS installed_from,
-            emd.manufacturer AS manufacturer,
-            emd.model AS model,
-            eav_specific_model.attribute_value AS specific_model_frame,
-            eav_serial_num.attribute_value AS serial_number,
-            emd.asset_status AS asset_status,
-            eav_pandi.attribute_value AS p_and_i_tag,
-            TRY_CAST(eav_weight.attribute_value AS INTEGER) AS weight_kg,
-        FROM ai2_export.equi_master_data emd
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_serial_num ON eav_serial_num.ai2_reference = emd.ai2_reference AND eav_serial_num.attribute_name = 'serial_no'
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_specific_model ON eav_specific_model.ai2_reference = emd.ai2_reference AND eav_specific_model.attribute_name = 'specific_model_frame'
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_pandi ON eav_pandi.ai2_reference = emd.ai2_reference AND eav_pandi.attribute_name = 'p_and_i_tag_no'
-        LEFT OUTER JOIN ai2_export.equi_eav_data eav_weight ON eav_pandi.ai2_reference = emd.ai2_reference AND eav_weight.attribute_name = 'weight_kg'
-        WHERE emd.common_name LIKE '%EQUIPMENT:%'
-        ;
-    """
-    con.execute(insert_stmt)
 
 def __translate_memo_text_data(*, con: duckdb.DuckDBPyConnection) -> None:
     insert_stmt = """
