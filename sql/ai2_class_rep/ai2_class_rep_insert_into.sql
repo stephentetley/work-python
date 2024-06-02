@@ -31,25 +31,14 @@ SELECT DISTINCT ON (emd.ai2_reference)
     any_value(CASE WHEN eav.attribute_name = 'serial_no' THEN eav.attribute_value ELSE NULL END) AS serial_number,
     any_value(CASE WHEN eav.attribute_name = 'p_and_i_tag_no' THEN eav.attribute_value ELSE NULL END) AS p_and_i_tag,
     any_value(CASE WHEN eav.attribute_name = 'weight_kg' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS weight_kg,
+    any_value(CASE WHEN eav.attribute_name = 'work_centre' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS work_centre,
 FROM ai2_export.equi_master_data emd
 JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference
 WHERE emd.common_name LIKE '%EQUIPMENT:%'
 GROUP BY emd.ai2_reference, emd.common_name, emd.installed_from, emd.asset_status, emd.manufacturer, emd.model;
 
 
-INSERT OR REPLACE INTO ai2_class_rep.asset_condition BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'condition_grade' THEN eav.attribute_value ELSE NULL END) AS condition_grade,
-    any_value(CASE WHEN eav.attribute_name = 'condition_grade_reason' THEN eav.attribute_value ELSE NULL END) AS condition_grade_reason,
-    any_value(CASE WHEN eav.attribute_name = 'agasp_survey_year' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS survey_date,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT:%'
-GROUP BY emd.ai2_reference;
-
-
-INSERT INTO ai2_class_rep.memo_text BY NAME
+INSERT INTO ai2_class_rep.equi_memo_text BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference,
     any_value(CASE WHEN eav.attribute_name = 'memo_line_1' THEN eav.attribute_value ELSE NULL END) AS memo_line1,
@@ -62,8 +51,22 @@ JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference
 WHERE emd.common_name LIKE '%EQUIPMENT:%'
 GROUP BY emd.ai2_reference;
 
+
+INSERT OR REPLACE INTO ai2_class_rep.equiclass_asset_condition BY NAME
+SELECT DISTINCT ON(emd.ai2_reference)
+    emd.ai2_reference AS ai2_reference, 
+    any_value(CASE WHEN eav.attribute_name = 'condition_grade' THEN eav.attribute_value ELSE NULL END) AS condition_grade,
+    any_value(CASE WHEN eav.attribute_name = 'condition_grade_reason' THEN eav.attribute_value ELSE NULL END) AS condition_grade_reason,
+    any_value(CASE WHEN eav.attribute_name = 'agasp_survey_year' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS survey_date,
+FROM ai2_export.equi_master_data emd
+JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+WHERE emd.common_name LIKE '%EQUIPMENT:%'
+GROUP BY emd.ai2_reference;
+
+
+
 -- uses scalar udfs `udf_get_easting` and `udf_get_northing` that must be registered first...
-INSERT INTO ai2_class_rep.east_north BY NAME
+INSERT INTO ai2_class_rep.equiclass_east_north BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference,
     any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN eav.attribute_value ELSE NULL END) AS grid_ref,

@@ -29,10 +29,11 @@ CREATE OR REPLACE TABLE ai2_class_rep.equi_master_data (
     asset_status VARCHAR,
     p_and_i_tag VARCHAR,
     weight_kg INTEGER,
+    work_centre VARCHAR,
     PRIMARY KEY(ai2_reference)
 );
 
-CREATE OR REPLACE TABLE ai2_class_rep.memo_text(
+CREATE OR REPLACE TABLE ai2_class_rep.equi_memo_text(
     ai2_reference VARCHAR NOT NULL,
     memo_line1 VARCHAR,
     memo_line2 VARCHAR,
@@ -42,7 +43,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.memo_text(
     PRIMARY KEY(ai2_reference)
 );
 
-CREATE OR REPLACE TABLE ai2_class_rep.east_north (
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_east_north (
     ai2_reference VARCHAR NOT NULL,
     grid_ref VARCHAR,
     easting INTEGER,
@@ -50,7 +51,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.east_north (
     PRIMARY KEY(ai2_reference)
 );
 
-CREATE OR REPLACE TABLE ai2_class_rep.asset_condition (
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_asset_condition (
     ai2_reference VARCHAR NOT NULL,
     condition_grade VARCHAR,
     condition_grade_reason VARCHAR,
