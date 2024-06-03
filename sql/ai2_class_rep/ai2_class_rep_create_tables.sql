@@ -74,7 +74,12 @@ CREATE OR REPLACE TEMP TABLE temp_voltage_in(
     PRIMARY KEY(ai2_reference)
 );
 
-
+CREATE OR REPLACE TEMP TABLE temp_power(
+    ai2_reference VARCHAR NOT NULL,
+    power_kilowatts DECIMAL(10, 3),
+    power_watts DECIMAL(10, 3),
+    PRIMARY KEY(ai2_reference)
+);
 
 -- MACROS
 CREATE OR REPLACE MACRO format_output_type(a) AS
