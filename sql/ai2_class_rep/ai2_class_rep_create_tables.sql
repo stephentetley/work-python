@@ -67,6 +67,14 @@ CREATE OR REPLACE TEMP TABLE temp_signal_type(
     PRIMARY KEY(ai2_reference)
 );
 
+CREATE OR REPLACE TEMP TABLE temp_voltage_in(
+    ai2_reference VARCHAR NOT NULL,
+    voltage_in INTEGER,
+    voltage_in_ac_or_dc VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
+
+
 
 -- MACROS
 CREATE OR REPLACE MACRO format_output_type(a) AS
@@ -76,10 +84,34 @@ CREATE OR REPLACE MACRO format_output_type(a) AS
     END;
 
 
+-- ## CLASS TABLES
 
--- INSTRUMENT
+-- EMTRIN (induction motor)
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_emtrin (
+    ai2_reference VARCHAR NOT NULL,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    location_on_site VARCHAR,
+    manufacturers_asset_life_yr INTEGER,
+    emtr_anti_condensation_heaters VARCHAR,
+    emtr_atex_code VARCHAR,
+    emtr_frame_size VARCHAR,
+    insulation_class_deg_c VARCHAR,
+    ip_rating VARCHAR,
+    emtr_mounting_type VARCHAR,
+    emtr_number_of_phase INTEGER,
+    emtr_rated_current_a DECIMAL(10, 3),
+    emtr_rated_power_kw DECIMAL(10, 3),
+    emtr_rated_speed_rpm INTEGER,
+    emtr_rated_voltage INTEGER,
+    emtr_rated_voltage_units VARCHAR,
+    emtr_thermal_protection VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
 
--- INSTRUMENT: LSTNCO (conductive level device)
+
+
+-- LSTNCO (conductive level device)
 CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnco (
     ai2_reference VARCHAR NOT NULL,
     uniclass_code VARCHAR,
@@ -97,7 +129,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnco (
     PRIMARY KEY(ai2_reference)
 );
 
--- INSTRUMENT: LSTNUT (ultrasonic time of flight level device)
+-- LSTNUT (ultrasonic time of flight level device)
 CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnut (
     ai2_reference VARCHAR NOT NULL,
     uniclass_code VARCHAR,
@@ -137,7 +169,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnut (
     PRIMARY KEY(ai2_reference)
 );
 
--- ELECTRICAL: STARDO (direct on line starter)
+-- STARDO (direct on line starter)
 CREATE OR REPLACE TABLE ai2_class_rep.equiclass_stardo (
     ai2_reference VARCHAR NOT NULL,
     uniclass_code VARCHAR,

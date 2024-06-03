@@ -96,9 +96,49 @@ SELECT
 FROM cte t
 WHERE t.signal_unit IS NOT NULL;
 
+INSERT INTO temp_voltage_in BY NAME
+WITH cte AS 
+    (SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'voltage_in' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS voltage_in,
+        any_value(CASE WHEN eav.attribute_name = 'voltage_in_ac_or_dc' THEN upper(eav.attribute_value) ELSE NULL END) AS voltage_in_ac_or_dc,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    GROUP BY emd.ai2_reference)
+SELECT 
+    t.ai2_reference AS ai2_reference,
+    t.voltage_in AS voltage_in,
+    CASE 
+        WHEN t.voltage_in_ac_or_dc = 'DIRECT CURRENT' THEN 'VDC' 
+        WHEN t.voltage_in_ac_or_dc = 'ALTERNATING CURRENT' THEN 'VAC'
+        ELSE NULL
+    END AS voltage_in_ac_or_dc
+FROM cte t
+WHERE t.voltage_in_ac_or_dc IS NOT NULL;
+
+-- ## CLASS TABLES
+
+-- EMTRIN (direct on line starter)
+INSERT OR REPLACE INTO ai2_class_rep.equiclass_emtrin BY NAME
+SELECT DISTINCT ON(emd.ai2_reference)
+    emd.ai2_reference AS ai2_reference, 
+    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+    any_value(CASE WHEN eav.attribute_name = 'insulation_class' THEN eav.attribute_value ELSE NULL END) AS insulation_class_deg_c,
+    any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN upper(eav.attribute_value) ELSE NULL END) AS ip_rating,
+    any_value(CASE WHEN eav.attribute_name = 'current_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS emtr_rated_current_a,
+    -- any_value(CASE WHEN eav.attribute_name = 'power' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_power_kw,
+    -- any_value(CASE WHEN eav.attribute_name = 'power_units' THEN 'TODO make temp table' ELSE NULL END) AS star_rated_power_kw,
+    any_value(CASE WHEN eav.attribute_name = 'spped_rpm' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS emtr_rated_speed_rpm,
+    temp_voltage.voltage_in AS emtr_rated_voltage,
+    temp_voltage.voltage_in_ac_or_dc AS emtr_rated_voltage_units,
+FROM ai2_export.equi_master_data emd
+JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+JOIN temp_voltage_in temp_voltage ON temp_voltage.ai2_reference = emd.ai2_reference 
+WHERE emd.common_name LIKE '%EQUIPMENT: NON-IMMERSIBLE MOTOR'
+GROUP BY emd.ai2_reference, temp_voltage.voltage_in, temp_voltage.voltage_in_ac_or_dc;
 
 
--- INSTRUMENT: LSTNCO (conductive level device)
+-- LSTNCO (conductive level device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnco BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference, 
@@ -106,20 +146,20 @@ SELECT DISTINCT ON(emd.ai2_reference)
     any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
     any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
     any_value(CASE WHEN eav.attribute_name = 'range_unit' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_range_units,
-    temp.signal_type AS lstn_signal_type,
+    temp_signal.signal_type AS lstn_signal_type,
     any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN format_output_type(eav.attribute_value) ELSE NULL END) AS lstn_output_type,
 FROM ai2_export.equi_master_data emd
 JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_signal_type temp ON temp.ai2_reference = emd.ai2_reference 
+JOIN temp_signal_type temp_signal ON temp_signal.ai2_reference = emd.ai2_reference 
 WHERE emd.common_name LIKE '%EQUIPMENT: CONDUCTIVITY LEVEL INSTRUMENT'
-GROUP BY emd.ai2_reference, temp.signal_type;
+GROUP BY emd.ai2_reference, temp_signal.signal_type;
 
--- INSTRUMENT: LSTNCO (ultrasonic time of flight level device)
+-- LSTNCO (ultrasonic time of flight level device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnut BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference, 
     any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    temp.signal_type AS lstn_signal_type,
+    temp_signal.signal_type AS lstn_signal_type,
     any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS ip_rating,
     any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
     any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
@@ -146,12 +186,12 @@ SELECT DISTINCT ON(emd.ai2_reference)
     any_value(CASE WHEN eav.attribute_name = 'transducer_serial_no' THEN eav.attribute_value ELSE NULL END) AS lstn_transducer_serial_no,
 FROM ai2_export.equi_master_data emd
 JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_signal_type temp ON temp.ai2_reference = emd.ai2_reference 
+JOIN temp_signal_type temp_signal ON temp_signal.ai2_reference = emd.ai2_reference 
 WHERE emd.common_name LIKE '%EQUIPMENT: ULTRASONIC LEVEL INSTRUMENT'
-GROUP BY emd.ai2_reference, temp.signal_type;
+GROUP BY emd.ai2_reference, temp_signal.signal_type;
 
 
--- ELECTRICAL: STARDO (direct on line starter)
+-- STARDO (direct on line starter)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_stardo BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference, 
@@ -160,9 +200,10 @@ SELECT DISTINCT ON(emd.ai2_reference)
     any_value(CASE WHEN eav.attribute_name = 'current_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_current_a,
     any_value(CASE WHEN eav.attribute_name = 'power' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_power_kw,
    -- any_value(CASE WHEN eav.attribute_name = 'power_units' THEN 'TODO make temp table' ELSE NULL END) AS star_rated_power_kw,
-    any_value(CASE WHEN eav.attribute_name = 'voltage_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_voltage,
-    any_value(CASE WHEN eav.attribute_name = 'voltage_in_ac_or_dc' THEN upper(eav.attribute_value) ELSE NULL END) AS star_rated_voltage_units,
+    temp_voltage.voltage_in AS star_rated_voltage,
+    temp_voltage.voltage_in_ac_or_dc AS star_rated_voltage_units,
 FROM ai2_export.equi_master_data emd
 JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+JOIN temp_voltage_in temp_voltage ON temp_voltage.ai2_reference = emd.ai2_reference 
 WHERE emd.common_name LIKE '%EQUIPMENT: DIRECT ON LINE STARTER'
-GROUP BY emd.ai2_reference;
+GROUP BY emd.ai2_reference, temp_voltage.voltage_in, temp_voltage.voltage_in_ac_or_dc;
