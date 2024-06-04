@@ -60,7 +60,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_asset_condition (
     PRIMARY KEY(ai2_reference)
 );
 
--- TEMP TABLES
+-- ## TEMP TABLES
 CREATE OR REPLACE TEMP TABLE temp_signal_type(
     ai2_reference VARCHAR NOT NULL,
     signal_type VARCHAR,
@@ -81,7 +81,20 @@ CREATE OR REPLACE TEMP TABLE temp_power(
     PRIMARY KEY(ai2_reference)
 );
 
--- MACROS
+CREATE OR REPLACE TEMP TABLE temp_valve_type(
+    ai2_reference VARCHAR NOT NULL,
+    valve_type VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
+
+CREATE OR REPLACE TEMP TABLE temp_valve_size(
+    ai2_reference VARCHAR NOT NULL,
+    valve_size_mm INTEGER,
+    PRIMARY KEY(ai2_reference)
+);
+
+
+-- ## MACROS
 CREATE OR REPLACE MACRO format_output_type(a) AS
     CASE 
         WHEN upper(a) = 'DIGITAL' THEN 'DIGITAL'
@@ -97,6 +110,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_emtrin (
     uniclass_code VARCHAR,
     uniclass_desc VARCHAR,
     location_on_site VARCHAR,
+    memo_line VARCHAR,
     manufacturers_asset_life_yr INTEGER,
     emtr_anti_condensation_heaters VARCHAR,
     emtr_atex_code VARCHAR,
@@ -122,6 +136,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnco (
     uniclass_code VARCHAR,
     uniclass_desc VARCHAR,
     location_on_site VARCHAR,
+    memo_line VARCHAR,
     manufacturers_asset_life_yr INTEGER,
     ip_rating VARCHAR,
     lstn_signal_type VARCHAR,
@@ -140,6 +155,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_lstnut (
     uniclass_code VARCHAR,
     uniclass_desc VARCHAR,
     location_on_site VARCHAR,
+    memo_line VARCHAR,
     manufacturers_asset_life_yr INTEGER,
     ip_rating VARCHAR,
     lstn_signal_type VARCHAR,
@@ -180,6 +196,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_stardo (
     uniclass_code VARCHAR,
     uniclass_desc VARCHAR,
     location_on_site VARCHAR,
+    memo_line VARCHAR,
     manufacturers_asset_life_yr INTEGER,
     ip_rating VARCHAR,
     star_number_of_phase VARCHAR,
@@ -189,5 +206,40 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_stardo (
     star_rated_voltage INTEGER,
     star_rated_voltage_units VARCHAR,
     star_sld_ref_no VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
+
+-- VALVBA (ball valve)
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_valvba (
+    ai2_reference VARCHAR NOT NULL,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    memo_line VARCHAR,
+    location_on_site VARCHAR,
+    valv_inlet_size_mm INTEGER,
+    valv_media_type VARCHAR,
+    valv_valve_configuration VARCHAR,
+    PRIMARY KEY(ai2_reference)
+);
+
+-- VALVGA (gate valve)
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_valvga (
+    ai2_reference VARCHAR NOT NULL,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    memo_line VARCHAR,
+    location_on_site VARCHAR,
+    valv_inlet_size_mm INTEGER,
+    PRIMARY KEY(ai2_reference)
+);
+
+-- VALVPG (plug valve)
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_valvpg (
+    ai2_reference VARCHAR NOT NULL,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    memo_line VARCHAR,
+    location_on_site VARCHAR,
+    valv_inlet_size_mm INTEGER,
     PRIMARY KEY(ai2_reference)
 );
