@@ -27,9 +27,16 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_create_tables.sql', con=con)
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_insert_into.sql', con=con)
 
-def udf_get_easting(osgb: str) -> int:
-    return Osgb36(osgb).to_east_north().easting
+# Note - sometimes osgb is '0' rather than valid or null
 
-def udf_get_northing(osgb: str) -> int:
-    return Osgb36(osgb).to_east_north().northing
+def udf_get_easting(osgb: str) -> int | None:
+    try:
+        return Osgb36(osgb).to_east_north().easting
+    except:
+        return None
 
+def udf_get_northing(osgb: str) -> int | None:
+    try:
+        return Osgb36(osgb).to_east_north().northing
+    except:
+        return None

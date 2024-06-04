@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
+import re
 
 class EastNorth:
     def __init__(self, *, easting:int, northing:int):
@@ -103,9 +104,14 @@ def _find_minor(e: int, n: int) -> str:
 
 
 class Osgb36():
-    def __init__(self, grid_ref: str):
-        self.grid_ref = grid_ref
+    regex = re.compile(r'[ST][A-Z]\d{10}')
 
+    def __init__(self, grid_ref: str):
+        if Osgb36.regex.match(grid_ref):
+            self.grid_ref = grid_ref
+        else:
+            # print(f"bad: {grid_ref}")
+            None
 
     def to_east_north(self) -> EastNorth | None:
         try: 

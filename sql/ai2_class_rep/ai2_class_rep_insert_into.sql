@@ -307,5 +307,5 @@ JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference
 JOIN temp_valve_type tmp_valve_type ON tmp_valve_type.ai2_reference = emd.ai2_reference 
 JOIN temp_valve_size tmp_valve_size ON tmp_valve_size.ai2_reference = emd.ai2_reference 
 WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
-AND tmp_valve_type.valve_type = 'WEDGE GATE'
+AND tmp_valve_type.valve_type = 'PLUG'
 GROUP BY emd.ai2_reference, tmp_valve_size.valve_size_mm;
