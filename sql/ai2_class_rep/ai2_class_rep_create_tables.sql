@@ -104,6 +104,30 @@ CREATE OR REPLACE MACRO format_output_type(a) AS
 
 -- ## CLASS TABLES
 
+-- ACTUEM (Electric Motor Actuator)
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_actuem (
+    ai2_reference VARCHAR NOT NULL,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+    location_on_site VARCHAR,
+    memo_line VARCHAR,
+    manufacturers_asset_life_yr INTEGER,
+    actu_atex_code VARCHAR,
+    insulation_class_deg_c VARCHAR,
+    ip_rating VARCHAR,
+    actu_number_of_phase INTEGER,
+    actu_rated_current_a DECIMAL(10, 3),
+    actu_rated_power_kw DECIMAL(10, 3),
+    actu_rated_voltage INTEGER,
+    actu_rated_voltage_units VARCHAR,
+    actu_speed_rpm DECIMAL(10, 3),
+    actu_valve_torque_nm DECIMAL(10, 3),
+    PRIMARY KEY(ai2_reference)
+);
+
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_actuep(ai2_reference VARCHAR NOT NULL, uniclass_code VARCHAR(14), uniclass_desc VARCHAR(30), location_on_site VARCHAR(30), memo_line VARCHAR(30), manufacturers_asset_life_yr INTEGER, PRIMARY KEY(ai2_reference));
+CREATE OR REPLACE TABLE ai2_class_rep.equiclass_analam(ai2_reference VARCHAR NOT NULL, anal_signal_type VARCHAR(30), anal_rated_voltage_units VARCHAR(30), anal_rated_voltage INTEGER, anal_range_units VARCHAR(30), anal_range_min DECIMAL(8, 3), anal_range_max DECIMAL(10, 3), uniclass_code VARCHAR(14), uniclass_desc VARCHAR(30), location_on_site VARCHAR(30), memo_line VARCHAR(30), manufacturers_asset_life_yr INTEGER, anal_instrument_power_w DECIMAL(8, 3), ip_rating VARCHAR(5), PRIMARY KEY(ai2_reference));
+
 -- EMTRIN (induction motor)
 CREATE OR REPLACE TABLE ai2_class_rep.equiclass_emtrin (
     ai2_reference VARCHAR NOT NULL,

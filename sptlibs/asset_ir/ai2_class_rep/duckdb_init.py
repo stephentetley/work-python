@@ -25,6 +25,7 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
     con.create_function("udf_get_northing", udf_get_northing, [VARCHAR], INTEGER)
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_create_tables.sql', con=con)
+    runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_create_equiclass_tables.sql', con=con)
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_insert_into.sql', con=con)
 
 # Note - sometimes osgb is '0' rather than valid or null

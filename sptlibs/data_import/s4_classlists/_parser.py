@@ -19,7 +19,6 @@ limitations under the License.
 import os
 import polars as pl
 
-# TODO change to Polars
 
 def _is_empty_line(s: str) -> bool: 
     return s in ['', '  |', '  |   |', '      |', '  |   |   |', '  |       |']

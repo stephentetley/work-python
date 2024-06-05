@@ -178,7 +178,7 @@ WHERE t.voltage_in_ac_or_dc IS NOT NULL;
 
 -- ## CLASS TABLES
 
--- EMTRIN (direct on line starter)
+-- EMTRIN (induction motor)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_emtrin BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference, 
