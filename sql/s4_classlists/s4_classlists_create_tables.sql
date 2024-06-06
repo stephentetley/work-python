@@ -63,26 +63,114 @@ CREATE OR REPLACE TABLE s4_classlists.equi_enums(
 
 
 
-CREATE OR REPLACE VIEW s4_classlists.vw_refined_characteristic_defs AS
+CREATE OR REPLACE VIEW s4_classlists.vw_refined_equi_characteristic_defs AS
 SELECT 
-    '002' AS class_type, 
-    cd.class_name AS class_name,
-    cd.char_name AS char_name, 
-    cd.class_description AS class_description,
-    cd.char_description AS char_description,
-    cd.char_type AS s4_char_type,
-    cd.char_length AS char_len,
-    cd.char_precision AS char_precision,
+    ec.class_name AS class_name,
+    ec.char_name AS char_name, 
+    ec.class_description AS class_description,
+    ec.char_description AS char_description,
+    ec.char_type AS s4_char_type,
+    ec.char_length AS char_len,
+    ec.char_precision AS char_precision,
     CASE 
-        WHEN cd.char_type = 'CHAR' THEN 'TEXT'
-        WHEN cd.char_type = 'NUM' AND (cd.char_precision IS NULL OR cd.char_precision = 0) THEN 'INTEGER'
-        WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN 'DECIMAL'
-        ELSE cd.char_type
+        WHEN ec.char_type = 'CHAR' THEN 'TEXT'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) THEN 'INTEGER'
+        WHEN ec.char_type = 'NUM' AND ec.char_precision > 0 THEN 'DECIMAL'
+        ELSE ec.char_type
     END AS refined_char_type,
     CASE 
-        WHEN cd.char_type = 'CHAR' THEN format('VARCHAR({})', cd.char_length)
-        WHEN cd.char_type = 'NUM' AND (cd.char_precision IS NULL OR cd.char_precision = 0) THEN 'INTEGER'
-        WHEN cd.char_type = 'NUM' AND cd.char_precision > 0 THEN format('DECIMAL({}, {})', cd.char_length, cd.char_precision)
-        ELSE cd.char_type
+        WHEN ec.char_type = 'CHAR' THEN 'VARCHAR'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) THEN 'INTEGER'
+        WHEN ec.char_type = 'NUM' AND ec.char_precision > 0 THEN format('DECIMAL({}, {})', ec.char_length, ec.char_precision)
+        ELSE ec.char_type
     END AS ddl_data_type
-FROM s4_classlists.equi_characteristics  cd;
+FROM s4_classlists.equi_characteristics ec;
+
+CREATE OR REPLACE VIEW s4_classlists.vw_refined_floc_characteristic_defs AS
+SELECT 
+    fc.class_name AS class_name,
+    fc.char_name AS char_name, 
+    fc.class_description AS class_description,
+    fc.char_description AS char_description,
+    fc.char_type AS s4_char_type,
+    fc.char_length AS char_len,
+    fc.char_precision AS char_precision,
+    CASE 
+        WHEN fc.char_type = 'CHAR' THEN 'TEXT'
+        WHEN fc.char_type = 'NUM' AND (fc.char_precision IS NULL OR fc.char_precision = 0) THEN 'INTEGER'
+        WHEN fc.char_type = 'NUM' AND fc.char_precision > 0 THEN 'DECIMAL'
+        ELSE fc.char_type
+    END AS refined_char_type,
+    CASE 
+        WHEN fc.char_type = 'CHAR' THEN 'VARCHAR'
+        WHEN fc.char_type = 'NUM' AND (fc.char_precision IS NULL OR fc.char_precision = 0) THEN 'INTEGER'
+        WHEN fc.char_type = 'NUM' AND fc.char_precision > 0 THEN format('DECIMAL({}, {})', fc.char_length, fc.char_precision)
+        ELSE fc.char_type
+    END AS ddl_data_type
+FROM s4_classlists.floc_characteristics fc;
+
+
+CREATE OR REPLACE VIEW s4_classlists.vw_equi_class_defs (class_name, class_description, is_object_class) AS
+WITH cte_equi_classes AS (
+    SELECT
+        DISTINCT ON(ec.class_name)
+        ec.class_name AS class_name,
+        ec.class_description AS class_description,
+    FROM
+        s4_classlists.equi_characteristics AS ec
+), 
+cte_has_uniclass_code  AS (
+    SELECT ec.class_name AS class_name,
+    FROM s4_classlists.equi_characteristics ec
+    WHERE ec.char_name = 'UNICLASS_CODE'
+)
+SELECT * FROM (
+    (SELECT 
+        base.class_name AS class_name,
+        base.class_description AS class_description,
+        TRUE AS is_object_class,
+    FROM cte_equi_classes base
+    JOIN cte_has_uniclass_code has_uniclass
+        ON has_uniclass.class_name = base.class_name)
+    UNION
+    (SELECT 
+        base.class_name AS class_name,
+        base.class_description AS class_description,
+        FALSE AS is_object_class,
+    FROM cte_equi_classes base
+    ANTI JOIN cte_has_uniclass_code has_uniclass
+        ON has_uniclass.class_name = base.class_name)
+);
+
+CREATE OR REPLACE VIEW s4_classlists.vw_floc_class_defs (class_name, class_description, is_system_class) AS
+WITH cte_equi_classes AS (
+    SELECT
+        DISTINCT ON(fc.class_name)
+        fc.class_name AS class_name,
+        fc.class_description AS class_description,
+    FROM
+        s4_classlists.floc_characteristics AS fc
+), 
+cte_has_uniclass_code  AS (
+    SELECT fc.class_name AS class_name,
+    FROM s4_classlists.floc_characteristics fc
+    WHERE fc.char_name = 'SYSTEM_TYPE'
+)
+SELECT * FROM (
+    (SELECT 
+        base.class_name AS class_name,
+        base.class_description AS class_description,
+        TRUE AS is_system_class,
+    FROM cte_equi_classes base
+    JOIN cte_has_uniclass_code has_uniclass
+        ON has_uniclass.class_name = base.class_name)
+    UNION
+    (SELECT 
+        base.class_name AS class_name,
+        base.class_description AS class_description,
+        FALSE AS is_system_class,
+    FROM cte_equi_classes base
+    ANTI JOIN cte_has_uniclass_code has_uniclass
+        ON has_uniclass.class_name = base.class_name)
+);
+
