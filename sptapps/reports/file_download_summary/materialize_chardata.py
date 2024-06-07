@@ -41,7 +41,7 @@ s4_summary_charvalues_insert = """
     INSERT INTO s4_summary.char_values BY NAME
     (SELECT 
         ce.equi AS entity_id,
-        ce.classtype AS class_type,
+        '002' AS class_type,
         ce.class AS class_name,
         char_defs.char_name AS char_name,
         IF(char_defs.refined_char_type NOT IN ('INTEGER', 'DECIMAL'), ve.atwrt, NULL) AS char_text_value,
@@ -49,12 +49,12 @@ s4_summary_charvalues_insert = """
         IF(char_defs.refined_char_type = 'DECIMAL', TRY_CAST(ve.atflv AS DECIMAL), NULL) AS char_decimal_value,
     FROM 
         s4_fd_raw_data.classequi_classequi1 ce
-    JOIN s4_classlists.vw_refined_characteristic_defs char_defs ON char_defs.class_type = ce.classtype AND char_defs.class_name = ce.class 
-    LEFT OUTER JOIN s4_fd_raw_data.valuaequi_valuaequi1 ve ON ve.charid = char_defs.char_name AND ve.classtype = char_defs.class_type AND ve.equi = ce.equi)
+    JOIN s4_classlists.vw_refined_equi_characteristic_defs char_defs ON char_defs.class_name = ce.class 
+    LEFT OUTER JOIN s4_fd_raw_data.valuaequi_valuaequi1 ve ON ve.charid = char_defs.char_name AND ve.equi = ce.equi)
     UNION
     (SELECT 
         cf.funcloc AS entity_id,
-        cf.classtype AS class_type,
+        '003' AS class_type,
         cf.class AS class_name,
         char_defs.char_name AS char_name,
         IF(char_defs.refined_char_type NOT IN ('INTEGER', 'DECIMAL'), vf.atwrt, NULL) AS char_text_value,
@@ -62,6 +62,6 @@ s4_summary_charvalues_insert = """
         IF(char_defs.refined_char_type = 'DECIMAL', TRY_CAST(vf.atflv AS DECIMAL), NULL) AS char_decimal_value,
     FROM 
         s4_fd_raw_data.classfloc_classfloc1 cf
-    JOIN s4_classlists.vw_refined_characteristic_defs char_defs ON char_defs.class_type = cf.classtype AND char_defs.class_name = cf.class 
-    LEFT OUTER JOIN s4_fd_raw_data.valuafloc_valuafloc1 vf ON vf.charid = char_defs.char_name AND vf.classtype = char_defs.class_type AND vf.funcloc = cf.funcloc)
+    JOIN s4_classlists.vw_refined_floc_characteristic_defs char_defs ON char_defs.class_name = cf.class 
+    LEFT OUTER JOIN s4_fd_raw_data.valuafloc_valuafloc1 vf ON vf.charid = char_defs.char_name AND vf.funcloc = cf.funcloc)
 """

@@ -272,6 +272,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.equi_equi1 (
     uii VARCHAR
 );
 
+-- TODO change class to class_name...
 CREATE OR REPLACE TABLE s4_fd_raw_data.classequi_classequi1 (
     equi VARCHAR,
     class VARCHAR,
@@ -280,6 +281,16 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.classequi_classequi1 (
     clstatus1 VARCHAR,
     lkenz_cla VARCHAR
 );
+
+CREATE OR REPLACE TABLE s4_fd_raw_data.classfloc_classfloc1 (
+    funcloc VARCHAR,
+    class VARCHAR,
+    classtype VARCHAR,
+    clint VARCHAR,
+    clstatus1 VARCHAR,
+    lkenz_cla VARCHAR
+);
+
 
 CREATE OR REPLACE TABLE s4_fd_raw_data.valuafloc_valuafloc1 (
     funcloc VARCHAR,

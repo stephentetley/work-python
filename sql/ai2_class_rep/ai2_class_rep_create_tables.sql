@@ -81,6 +81,7 @@ CREATE OR REPLACE TEMP TABLE temp_power(
     PRIMARY KEY(ai2_reference)
 );
 
+-- This can be one table for Iso valves, grearboxes...
 CREATE OR REPLACE TEMP TABLE temp_valve_type(
     ai2_reference VARCHAR NOT NULL,
     valve_type VARCHAR,
