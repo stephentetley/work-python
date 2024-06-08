@@ -81,24 +81,29 @@ CREATE OR REPLACE TEMP TABLE temp_power(
     PRIMARY KEY(ai2_reference)
 );
 
--- This can be one table for Iso valves, grearboxes...
-CREATE OR REPLACE TEMP TABLE temp_valve_type(
-    ai2_reference VARCHAR NOT NULL,
-    valve_type VARCHAR,
-    PRIMARY KEY(ai2_reference)
-);
-
-CREATE OR REPLACE TEMP TABLE temp_valve_size(
-    ai2_reference VARCHAR NOT NULL,
-    valve_size_mm INTEGER,
-    PRIMARY KEY(ai2_reference)
-);
-
 
 -- ## MACROS
+
+
+CREATE OR REPLACE MACRO voltage_ac_or_dc(ac_or_dc) AS (
+    CASE 
+        WHEN upper(ac_or_dc) = 'DIRECT CURRENT' THEN 'VDC' 
+        WHEN upper(ac_or_dc) = 'ALTERNATING CURRENT' THEN 'VAC'
+        ELSE NULL
+    END
+);
+
 CREATE OR REPLACE MACRO format_output_type(a) AS
     CASE 
         WHEN upper(a) = 'DIGITAL' THEN 'DIGITAL'
         WHEN upper(a) = 'MA' OR upper(a) = 'MV' THEN 'ANALOGUE' 
     END;
 
+CREATE OR REPLACE MACRO size_to_millimetres(size_units, size_value) AS (
+    CASE 
+        WHEN upper(size_units) = 'MILLIMETRES' THEN round(size_value, 0)
+        WHEN upper(size_units) = 'CENTIMETRES' THEN round(size_value  * 10, 0) 
+        WHEN upper(size_units) = 'INCH' THEN round(size_value * 25.4, 0) 
+        ELSE NULL
+    END
+);

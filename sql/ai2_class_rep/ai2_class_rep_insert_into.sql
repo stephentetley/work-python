@@ -121,39 +121,6 @@ SELECT
 FROM cte t
 WHERE t.signal_unit IS NOT NULL;
 
-INSERT INTO temp_valve_size BY NAME
-WITH cte AS 
-    (SELECT DISTINCT ON(emd.ai2_reference)
-        emd.ai2_reference AS ai2_reference, 
-        any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS valve_size,
-        any_value(CASE WHEN eav.attribute_name = 'size_units' THEN upper(eav.attribute_value) ELSE NULL END) AS size_units,
-    FROM ai2_export.equi_master_data emd
-    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-    GROUP BY emd.ai2_reference)
-SELECT 
-    t.ai2_reference AS ai2_reference,
-    CASE 
-        WHEN t.size_units = 'MILLIMETRES' THEN round(t.valve_size, 0)
-        WHEN t.size_units = 'CENTIMETRES' THEN round(t.valve_size * 10.0, 0)
-        WHEN t.size_units = 'INCHES' THEN round(t.valve_size * 24.5, 0)
-        ELSE NULL
-    END AS valve_size_mm
-FROM cte t
-WHERE t.valve_size IS NOT NULL;
-
-INSERT INTO temp_valve_type BY NAME
-WITH cte AS 
-    (SELECT DISTINCT ON(emd.ai2_reference)
-        emd.ai2_reference AS ai2_reference, 
-        any_value(CASE WHEN eav.attribute_name = 'valve_type' THEN upper(eav.attribute_value) ELSE NULL END) AS valve_type,
-    FROM ai2_export.equi_master_data emd
-    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-    GROUP BY emd.ai2_reference)
-SELECT 
-    t.ai2_reference AS ai2_reference,
-    t.valve_type AS valve_type,
-FROM cte t
-WHERE t.valve_type IS NOT NULL;
 
 INSERT INTO temp_voltage_in BY NAME
 WITH cte AS 
@@ -253,20 +220,24 @@ GROUP BY emd.ai2_reference, tmp_signal.signal_type;
 
 -- STARDO (direct on line starter)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_stardo BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN eav.attribute_value ELSE NULL END) AS ip_rating,
-    any_value(CASE WHEN eav.attribute_name = 'current_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_current_a,
-    tmp_power.power_kilowatts AS star_rated_power_kw,
-    tmp_voltage.voltage_in AS star_rated_voltage,
-    tmp_voltage.voltage_in_ac_or_dc AS star_rated_voltage_units,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_voltage_in tmp_voltage ON tmp_voltage.ai2_reference = emd.ai2_reference 
-JOIN temp_power tmp_power ON tmp_power.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: DIRECT ON LINE STARTER'
-GROUP BY emd.ai2_reference, tmp_voltage.voltage_in, tmp_voltage.voltage_in_ac_or_dc, tmp_power.power_kilowatts;
+WITH cte AS(
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN eav.attribute_value ELSE NULL END) AS ip_rating,
+        any_value(CASE WHEN eav.attribute_name = 'current_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_current_a,
+        any_value(CASE WHEN eav.attribute_name = 'power' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __power, 
+        any_value(CASE WHEN eav.attribute_name = 'power_units' THEN eav.attribute_value ELSE NULL END) AS __power_units,
+        power_to_killowatts(__power_units, __power) AS star_rated_power_kw,
+        any_value(CASE WHEN eav.attribute_name = 'voltage_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS star_rated_voltage,
+        any_value(CASE WHEN eav.attribute_name = 'voltage_in_ac_or_dc' THEN voltage_ac_or_dc(eav.attribute_value) ELSE NULL END) AS star_rated_voltage_units,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: DIRECT ON LINE STARTER'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
+FROM cte;
 
 -- VALVBA (ball valve)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvba BY NAME
@@ -274,14 +245,9 @@ WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-        any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS _size, 
-        any_value(CASE WHEN eav.attribute_name = 'size_units' THEN upper(eav.attribute_value) ELSE NULL END) AS _size_units,
-        CASE 
-            WHEN _size_units = 'MILLIMETRES' THEN round(_size, 0)
-            WHEN _size_units = 'CENTIMETRES' THEN round(_size  * 10, 0) 
-            WHEN _size_units = 'INCH' THEN round(_size * 25.4, 0) 
-            ELSE NULL
-        END AS valv_inlet_size_mm, 
+        any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
+        any_value(CASE WHEN eav.attribute_name = 'size_units' THEN upper(eav.attribute_value) ELSE NULL END) AS __size_units,
+        size_to_millimetres(__size_units, __size) AS valv_inlet_size_mm, 
     FROM ai2_export.equi_master_data emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     JOIN ai2_export.equi_eav_data eav2 ON eav2.ai2_reference = eav.ai2_reference 
@@ -289,35 +255,43 @@ WITH cte AS(
     AND eav2.attribute_name = 'valve_type' AND upper(eav2.attribute_value) = 'BALL'
     GROUP BY emd.ai2_reference, emd.common_name)
 SELECT 
-    cte.ai2_reference AS ai2_reference,
-    cte.location_on_site AS location_on_site,
-    cte.valv_inlet_size_mm AS valv_inlet_size_mm,
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
 FROM cte;
 
 -- VALVGA (gate valve)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvga BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    tmp_valve_size.valve_size_mm AS valv_inlet_size_mm,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_valve_type tmp_valve_type ON tmp_valve_type.ai2_reference = emd.ai2_reference 
-JOIN temp_valve_size tmp_valve_size ON tmp_valve_size.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
-AND tmp_valve_type.valve_type = 'WEDGE GATE'
-GROUP BY emd.ai2_reference, tmp_valve_size.valve_size_mm;
+WITH cte AS(
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
+        any_value(CASE WHEN eav.attribute_name = 'size_units' THEN upper(eav.attribute_value) ELSE NULL END) AS __size_units,
+        size_to_millimetres(__size_units, __size) AS valv_inlet_size_mm, 
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    JOIN ai2_export.equi_eav_data eav2 ON eav2.ai2_reference = eav.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
+    AND eav2.attribute_name = 'valve_type' AND upper(eav2.attribute_value) = 'WEDGE GATE'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
+FROM cte;
 
 -- VALVPG (plug valve)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvpg BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    tmp_valve_size.valve_size_mm AS valv_inlet_size_mm,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_valve_type tmp_valve_type ON tmp_valve_type.ai2_reference = emd.ai2_reference 
-JOIN temp_valve_size tmp_valve_size ON tmp_valve_size.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
-AND tmp_valve_type.valve_type = 'PLUG'
-GROUP BY emd.ai2_reference, tmp_valve_size.valve_size_mm;
+WITH cte AS(
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
+        any_value(CASE WHEN eav.attribute_name = 'size_units' THEN upper(eav.attribute_value) ELSE NULL END) AS __size_units,
+        size_to_millimetres(__size_units, __size) AS valv_inlet_size_mm, 
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    JOIN ai2_export.equi_eav_data eav2 ON eav2.ai2_reference = eav.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
+    AND eav2.attribute_name = 'valve_type' AND upper(eav2.attribute_value) = 'PLUG'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
+FROM cte;
