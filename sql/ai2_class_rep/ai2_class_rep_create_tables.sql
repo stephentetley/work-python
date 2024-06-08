@@ -60,30 +60,12 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_asset_condition (
     PRIMARY KEY(ai2_reference)
 );
 
--- ## TEMP TABLES
-CREATE OR REPLACE TEMP TABLE temp_signal_type(
-    ai2_reference VARCHAR NOT NULL,
-    signal_type VARCHAR,
-    PRIMARY KEY(ai2_reference)
-);
-
-CREATE OR REPLACE TEMP TABLE temp_voltage_in(
-    ai2_reference VARCHAR NOT NULL,
-    voltage_in INTEGER,
-    voltage_in_ac_or_dc VARCHAR,
-    PRIMARY KEY(ai2_reference)
-);
-
-CREATE OR REPLACE TEMP TABLE temp_power(
-    ai2_reference VARCHAR NOT NULL,
-    power_kilowatts DECIMAL(10, 3),
-    power_watts DECIMAL(10, 3),
-    PRIMARY KEY(ai2_reference)
-);
-
 
 -- ## MACROS
 
+CREATE OR REPLACE MACRO format_signal(signal_min, signal_max, signal_unit) AS (
+    signal_min || ' - ' || signal_max || ' ' || upper(signal_unit)
+);
 
 CREATE OR REPLACE MACRO voltage_ac_or_dc(ac_or_dc) AS (
     CASE 
@@ -93,11 +75,12 @@ CREATE OR REPLACE MACRO voltage_ac_or_dc(ac_or_dc) AS (
     END
 );
 
-CREATE OR REPLACE MACRO format_output_type(a) AS
+CREATE OR REPLACE MACRO format_output_type(a) AS (
     CASE 
         WHEN upper(a) = 'DIGITAL' THEN 'DIGITAL'
         WHEN upper(a) = 'MA' OR upper(a) = 'MV' THEN 'ANALOGUE' 
-    END;
+    END
+);
 
 CREATE OR REPLACE MACRO size_to_millimetres(size_units, size_value) AS (
     CASE 

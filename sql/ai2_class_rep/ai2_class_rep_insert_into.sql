@@ -78,144 +78,96 @@ JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference
 WHERE emd.common_name LIKE '%EQUIPMENT:%'
 GROUP BY emd.ai2_reference;
 
--- ## TEMP TABLES
-
-INSERT INTO temp_power BY NAME
-WITH cte AS 
-    (SELECT DISTINCT ON(emd.ai2_reference)
-        emd.ai2_reference AS ai2_reference, 
-        any_value(CASE WHEN eav.attribute_name = 'power' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS rated_power,
-        any_value(CASE WHEN eav.attribute_name = 'power_units' THEN upper(eav.attribute_value) ELSE NULL END) AS power_units,
-    FROM ai2_export.equi_master_data emd
-    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-    GROUP BY emd.ai2_reference)
-SELECT 
-    t.ai2_reference AS ai2_reference,
-    CASE 
-        WHEN t.power_units = 'KILOWATTS' THEN t.rated_power
-        WHEN t.power_units = 'WATTS' THEN t.rated_power * 1000
-        ELSE NULL
-    END AS power_kilowatts,
-    CASE 
-        WHEN t.power_units = 'KILOWATTS' THEN t.rated_power / 1000
-        WHEN t.power_units = 'WATTS' THEN t.rated_power
-        ELSE NULL
-    END AS power_watts,
-FROM cte t
-WHERE t.power_units IS NOT NULL;
-
-
-INSERT INTO temp_signal_type BY NAME
-WITH cte AS 
-    (SELECT DISTINCT ON(emd.ai2_reference)
-        emd.ai2_reference AS ai2_reference, 
-        any_value(CASE WHEN eav.attribute_name = 'signal_max' THEN eav.attribute_value ELSE NULL END) AS signal_max,
-        any_value(CASE WHEN eav.attribute_name = 'signal_min' THEN eav.attribute_value ELSE NULL END) AS signal_min,
-        any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN eav.attribute_value ELSE NULL END) AS signal_unit,
-    FROM ai2_export.equi_master_data emd
-    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-    GROUP BY emd.ai2_reference)
-SELECT 
-    t.ai2_reference AS ai2_reference,
-    t.signal_min || ' - ' || t.signal_max || ' ' || upper(t.signal_unit) AS signal_type
-FROM cte t
-WHERE t.signal_unit IS NOT NULL;
-
-
-INSERT INTO temp_voltage_in BY NAME
-WITH cte AS 
-    (SELECT DISTINCT ON(emd.ai2_reference)
-        emd.ai2_reference AS ai2_reference, 
-        any_value(CASE WHEN eav.attribute_name = 'voltage_in' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS voltage_in,
-        any_value(CASE WHEN eav.attribute_name = 'voltage_in_ac_or_dc' THEN upper(eav.attribute_value) ELSE NULL END) AS voltage_in_ac_or_dc,
-    FROM ai2_export.equi_master_data emd
-    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-    GROUP BY emd.ai2_reference)
-SELECT 
-    t.ai2_reference AS ai2_reference,
-    t.voltage_in AS voltage_in,
-    CASE 
-        WHEN t.voltage_in_ac_or_dc = 'DIRECT CURRENT' THEN 'VDC' 
-        WHEN t.voltage_in_ac_or_dc = 'ALTERNATING CURRENT' THEN 'VAC'
-        ELSE NULL
-    END AS voltage_in_ac_or_dc
-FROM cte t
-WHERE t.voltage_in_ac_or_dc IS NOT NULL;
-
 
 -- ## CLASS TABLES
 
 -- EMTRIN (induction motor)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_emtrin BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    any_value(CASE WHEN eav.attribute_name = 'insulation_class' THEN eav.attribute_value ELSE NULL END) AS insulation_class_deg_c,
-    any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN upper(eav.attribute_value) ELSE NULL END) AS ip_rating,
-    any_value(CASE WHEN eav.attribute_name = 'current_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS emtr_rated_current_a,
-    tmp_power.power_kilowatts AS emtr_rated_power_kw,
-    any_value(CASE WHEN eav.attribute_name = 'speed_rpm' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS emtr_rated_speed_rpm,
-    tmp_voltage.voltage_in AS emtr_rated_voltage,
-    tmp_voltage.voltage_in_ac_or_dc AS emtr_rated_voltage_units,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_voltage_in tmp_voltage ON tmp_voltage.ai2_reference = emd.ai2_reference 
-JOIN temp_power tmp_power ON tmp_power.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: NON-IMMERSIBLE MOTOR'
-GROUP BY emd.ai2_reference, tmp_voltage.voltage_in, tmp_voltage.voltage_in_ac_or_dc, tmp_power.power_kilowatts;
+WITH cte AS (
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'insulation_class' THEN eav.attribute_value ELSE NULL END) AS insulation_class_deg_c,
+        any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN upper(eav.attribute_value) ELSE NULL END) AS ip_rating,
+        any_value(CASE WHEN eav.attribute_name = 'current_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS emtr_rated_current_a,
+        any_value(CASE WHEN eav.attribute_name = 'speed_rpm' THEN TRY_CAST(eav.attribute_value AS INTEGER) ELSE NULL END) AS emtr_rated_speed_rpm,
+        any_value(CASE WHEN eav.attribute_name = 'power' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __power, 
+        any_value(CASE WHEN eav.attribute_name = 'power_units' THEN eav.attribute_value ELSE NULL END) AS __power_units,
+        power_to_killowatts(__power_units, __power) AS emtr_rated_power_kw,
+        any_value(CASE WHEN eav.attribute_name = 'voltage_in' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS emtr_rated_voltage,
+        any_value(CASE WHEN eav.attribute_name = 'voltage_in_ac_or_dc' THEN voltage_ac_or_dc(eav.attribute_value) ELSE NULL END) AS emtr_rated_voltage_units,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference
+    WHERE emd.common_name LIKE '%EQUIPMENT: NON-IMMERSIBLE MOTOR'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
+FROM cte;
 
 
 -- LSTNCO (conductive level device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnco BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
-    any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
-    any_value(CASE WHEN eav.attribute_name = 'range_unit' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_range_units,
-    tmp_signal.signal_type AS lstn_signal_type,
-    any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN format_output_type(eav.attribute_value) ELSE NULL END) AS lstn_output_type,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_signal_type tmp_signal ON tmp_signal.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: CONDUCTIVITY LEVEL INSTRUMENT'
-GROUP BY emd.ai2_reference, tmp_signal.signal_type;
+WITH cte AS (
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
+        any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
+        any_value(CASE WHEN eav.attribute_name = 'range_unit' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_range_units,
+        any_value(CASE WHEN eav.attribute_name = 'signal_max' THEN eav.attribute_value ELSE NULL END) AS __signal_max,
+        any_value(CASE WHEN eav.attribute_name = 'signal_min' THEN eav.attribute_value ELSE NULL END) AS __signal_min,
+        any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN eav.attribute_value ELSE NULL END) AS __signal_unit,
+        format_signal(__signal_min, __signal_max, __signal_unit) AS lstn_signal_type,
+        format_output_type(__signal_unit) AS lstn_output_type,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: CONDUCTIVITY LEVEL INSTRUMENT'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
+FROM cte;
 
 -- LSTNCO (ultrasonic time of flight level device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnut BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    tmp_signal.signal_type AS lstn_signal_type,
-    any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS ip_rating,
-    any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
-    any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
-    any_value(CASE WHEN eav.attribute_name = 'range_unit' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_range_units,
-    any_value(CASE WHEN eav.attribute_name = 'relay_1_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_1_function,
-    any_value(CASE WHEN eav.attribute_name = 'relay_1_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_1_off_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_1_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_1_on_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_2_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_2_function,
-    any_value(CASE WHEN eav.attribute_name = 'relay_2_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_2_off_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_2_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_2_on_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_3_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_3_function,
-    any_value(CASE WHEN eav.attribute_name = 'relay_3_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_3_off_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_3_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_3_on_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_4_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_4_function,
-    any_value(CASE WHEN eav.attribute_name = 'relay_4_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_4_off_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_4_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_4_on_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_5_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_5_function,
-    any_value(CASE WHEN eav.attribute_name = 'relay_5_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_5_off_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_5_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_5_on_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_6_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_6_function,
-    any_value(CASE WHEN eav.attribute_name = 'relay_6_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_6_off_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'relay_6_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_6_on_level_m,
-    any_value(CASE WHEN eav.attribute_name = 'transducer_type' THEN eav.attribute_value ELSE NULL END) AS lstn_transducer_model,
-    any_value(CASE WHEN eav.attribute_name = 'transducer_serial_no' THEN eav.attribute_value ELSE NULL END) AS lstn_transducer_serial_no,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_signal_type tmp_signal ON tmp_signal.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: ULTRASONIC LEVEL INSTRUMENT'
-GROUP BY emd.ai2_reference, tmp_signal.signal_type;
+WITH cte AS (
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'signal_max' THEN eav.attribute_value ELSE NULL END) AS __signal_max,
+        any_value(CASE WHEN eav.attribute_name = 'signal_min' THEN eav.attribute_value ELSE NULL END) AS __signal_min,
+        any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN eav.attribute_value ELSE NULL END) AS __signal_unit,
+        format_signal(__signal_min, __signal_max, __signal_unit) AS lstn_signal_type,
+        any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS ip_rating,
+        any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
+        any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
+        any_value(CASE WHEN eav.attribute_name = 'range_unit' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_range_units,
+        any_value(CASE WHEN eav.attribute_name = 'relay_1_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_1_function,
+        any_value(CASE WHEN eav.attribute_name = 'relay_1_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_1_off_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_1_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_1_on_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_2_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_2_function,
+        any_value(CASE WHEN eav.attribute_name = 'relay_2_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_2_off_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_2_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_2_on_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_3_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_3_function,
+        any_value(CASE WHEN eav.attribute_name = 'relay_3_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_3_off_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_3_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_3_on_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_4_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_4_function,
+        any_value(CASE WHEN eav.attribute_name = 'relay_4_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_4_off_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_4_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_4_on_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_5_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_5_function,
+        any_value(CASE WHEN eav.attribute_name = 'relay_5_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_5_off_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_5_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_5_on_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_6_function' THEN upper(eav.attribute_value) ELSE NULL END) AS lstn_relay_6_function,
+        any_value(CASE WHEN eav.attribute_name = 'relay_6_off_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_6_off_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'relay_6_on_level_m' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_relay_6_on_level_m,
+        any_value(CASE WHEN eav.attribute_name = 'transducer_type' THEN eav.attribute_value ELSE NULL END) AS lstn_transducer_model,
+        any_value(CASE WHEN eav.attribute_name = 'transducer_serial_no' THEN eav.attribute_value ELSE NULL END) AS lstn_transducer_serial_no,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: ULTRASONIC LEVEL INSTRUMENT'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> c NOT LIKE '#__%' ESCAPE '#')
+FROM cte;
 
 
 -- STARDO (direct on line starter)
