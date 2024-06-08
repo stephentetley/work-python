@@ -270,17 +270,29 @@ GROUP BY emd.ai2_reference, tmp_voltage.voltage_in, tmp_voltage.voltage_in_ac_or
 
 -- VALVBA (ball valve)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvba BY NAME
-SELECT DISTINCT ON(emd.ai2_reference)
-    emd.ai2_reference AS ai2_reference, 
-    any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    tmp_valve_size.valve_size_mm AS valv_inlet_size_mm,
-FROM ai2_export.equi_master_data emd
-JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
-JOIN temp_valve_type tmp_valve_type ON tmp_valve_type.ai2_reference = emd.ai2_reference 
-JOIN temp_valve_size tmp_valve_size ON tmp_valve_size.ai2_reference = emd.ai2_reference 
-WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
-AND tmp_valve_type.valve_type = 'BALL'
-GROUP BY emd.ai2_reference, tmp_valve_size.valve_size_mm;
+WITH cte AS(
+    SELECT DISTINCT ON(emd.ai2_reference)
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS _size, 
+        any_value(CASE WHEN eav.attribute_name = 'size_units' THEN upper(eav.attribute_value) ELSE NULL END) AS _size_units,
+        CASE 
+            WHEN _size_units = 'MILLIMETRES' THEN round(_size, 0)
+            WHEN _size_units = 'CENTIMETRES' THEN round(_size  * 10, 0) 
+            WHEN _size_units = 'INCH' THEN round(_size * 25.4, 0) 
+            ELSE NULL
+        END AS valv_inlet_size_mm, 
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    JOIN ai2_export.equi_eav_data eav2 ON eav2.ai2_reference = eav.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: ISOLATING VALVES'
+    AND eav2.attribute_name = 'valve_type' AND upper(eav2.attribute_value) = 'BALL'
+    GROUP BY emd.ai2_reference, emd.common_name)
+SELECT 
+    cte.ai2_reference AS ai2_reference,
+    cte.location_on_site AS location_on_site,
+    cte.valv_inlet_size_mm AS valv_inlet_size_mm,
+FROM cte;
 
 -- VALVGA (gate valve)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvga BY NAME
