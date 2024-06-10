@@ -53,7 +53,7 @@ WHERE emd.common_name LIKE '%EQUIPMENT:%'
 GROUP BY emd.ai2_reference;
 
 
-INSERT OR REPLACE INTO ai2_class_rep.equiclass_asset_condition BY NAME
+INSERT OR REPLACE INTO ai2_class_rep.equi_asset_condition BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference, 
     any_value(CASE WHEN eav.attribute_name = 'condition_grade' THEN eav.attribute_value ELSE NULL END) AS condition_grade,
@@ -67,7 +67,7 @@ GROUP BY emd.ai2_reference;
 
 
 -- uses scalar udfs `udf_get_easting` and `udf_get_northing` that must be registered first...
-INSERT INTO ai2_class_rep.equiclass_east_north BY NAME
+INSERT INTO ai2_class_rep.equi_east_north BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
     emd.ai2_reference AS ai2_reference,
     any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN eav.attribute_value ELSE NULL END) AS grid_ref,

@@ -44,7 +44,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equi_memo_text(
     PRIMARY KEY(ai2_reference)
 );
 
-CREATE OR REPLACE TABLE ai2_class_rep.equiclass_east_north (
+CREATE OR REPLACE TABLE ai2_class_rep.equi_east_north (
     ai2_reference VARCHAR NOT NULL,
     grid_ref VARCHAR,
     easting INTEGER,
@@ -52,7 +52,7 @@ CREATE OR REPLACE TABLE ai2_class_rep.equiclass_east_north (
     PRIMARY KEY(ai2_reference)
 );
 
-CREATE OR REPLACE TABLE ai2_class_rep.equiclass_asset_condition (
+CREATE OR REPLACE TABLE ai2_class_rep.equi_asset_condition (
     ai2_reference VARCHAR NOT NULL,
     condition_grade VARCHAR,
     condition_grade_reason VARCHAR,

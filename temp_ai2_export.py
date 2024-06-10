@@ -38,6 +38,7 @@ classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classl
 ai2_exports_import.init(con=conn)
 ai2_exports_import.import_ai2_exports(sources, con=conn)
 
+print("translating...")
 ai2_class_duckdb_init.init(con=conn)
 
 conn.close()
