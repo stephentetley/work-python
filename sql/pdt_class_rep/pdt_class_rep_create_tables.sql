@@ -1,0 +1,51 @@
+-- 
+-- Copyright 2024 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
+
+CREATE SCHEMA IF NOT EXISTS pdt_class_rep;
+
+CREATE OR REPLACE TABLE pdt_class_rep.equi_master_data (
+    equi_name VARCHAR NOT NULL,
+    source_file VARCHAR NOT NULL,
+    equipment_type VARCHAR,
+    installed_from VARCHAR,
+    manufacturer VARCHAR,
+    model VARCHAR,
+    specific_model_frame VARCHAR,
+    serial_number VARCHAR,
+    asset_status VARCHAR,
+    p_and_i_tag VARCHAR,
+    weight_kg VARCHAR,
+);
+
+
+CREATE OR REPLACE TABLE pdt_class_rep.equiclass_pumpce (
+    equi_name VARCHAR NOT NULL,
+    source_file VARCHAR NOT NULL,
+    location_on_site VARCHAR,
+    manufacturers_asset_life_yr INTEGER,
+    memo_line VARCHAR,
+    pump_flow_litres_per_sec DECIMAL(8, 2),
+    pump_impeller_type VARCHAR,
+    pump_inlet_size_mm INTEGER,
+    pump_installed_design_head_m DECIMAL(7, 2),
+    pump_media_type VARCHAR,
+    pump_number_of_stage INTEGER,
+    pump_outlet_size_mm INTEGER,
+    pump_rated_power_kw DECIMAL(7, 3),
+    pump_rated_speed_rpm INTEGER,
+    uniclass_code VARCHAR,
+    uniclass_desc VARCHAR,
+);

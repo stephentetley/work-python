@@ -21,8 +21,9 @@ from utils.sql_script_runner import SqlScriptRunner
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='pdt_raw_data/pdt_raw_data_create_tables.sql', con=con)
+    runner.exec_sql_file(file_rel_path='pdt_class_rep/pdt_class_rep_create_tables.sql', con=con)
 
-# def import_ai2_exports(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnection) -> None:
-#     for src in sources:
-#         import_ai2_export(src, con=con)
+def build_class_rep(*, con: duckdb.DuckDBPyConnection) -> None: 
+    runner = SqlScriptRunner()
+    runner.exec_sql_file(file_rel_path='pdt_class_rep/pdt_class_rep_insert_into.sql', con=con)
 

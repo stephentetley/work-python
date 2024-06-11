@@ -31,3 +31,4 @@ CREATE OR REPLACE TABLE pdt_raw_data.pdt_eav(
     attr_value VARCHAR,
 );
 
+CREATE OR REPLACE MACRO normalize_db_name(name) AS regexp_replace(trim(regexp_replace(lower(name), '[\W+]', ' ', 'g')), '[\W]+', '_', 'g');

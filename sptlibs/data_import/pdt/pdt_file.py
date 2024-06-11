@@ -67,7 +67,7 @@ _unpivot_template = """
     WITH cte AS (
         UNPIVOT eav_df ON COLUMNS (* EXCLUDE asset_name) INTO NAME entity_name VALUE attr_value
     )
-    SELECT '{{base_name}}' AS base_name, t.entity_name AS entity_name, t.asset_name AS attr_name, t.attr_value AS attr_value FROM cte t ORDER BY t.entity_name, t.asset_name;
+    SELECT '{{base_name}}' AS base_name, t.entity_name AS entity_name, normalize_db_name(t.asset_name) AS attr_name, t.attr_value AS attr_value FROM cte t ORDER BY t.entity_name, t.asset_name;
 """
 
 

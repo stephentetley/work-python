@@ -39,6 +39,7 @@ class SqlScriptRunner:
             with open(sql_file_path) as file:
                 statements = file.read()
                 con.execute(statements)
+                con.commit()
         else: 
             print(f"SQL file does not exist {sql_file_path}")
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
