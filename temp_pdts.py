@@ -13,6 +13,7 @@ pdts = PdtFiles.from_files(src_dir='G:/work/2024/pdts/har65')
 pdts.store(con=con)
 
 duckdb_import.build_class_rep(con=con)
+duckdb_import.build_equiclass_summary_views(con=con)
 
 con.close()
 print(f"Wrote: `{duckdb_path}`")

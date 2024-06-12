@@ -60,7 +60,7 @@ class PdtFile:
         pdt_src = XlsxSource(self.file_name, self.pdt_type)
         eav_df = import_utils.read_xlsx_source(pdt_src, normalize_column_names=True)
         con.register(view_name="eav_df", python_object=eav_df)
-        con.execute(Template(_unpivot_template).render(base_name=os.path.basename(self.file_name))).pl()
+        con.execute(Template(_unpivot_template).render(base_name=os.path.basename(self.file_name)))
 
 _unpivot_template = """
     INSERT INTO pdt_raw_data.pdt_eav BY NAME

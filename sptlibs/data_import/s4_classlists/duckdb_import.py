@@ -19,6 +19,7 @@ import duckdb
 from jinja2 import Template
 import sptlibs.data_import.s4_classlists._parser as _parser
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.asset_data_config import AssetDataConfig
 
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 
@@ -71,6 +72,12 @@ _insert_enums_template = """
         df.enum_description AS enum_description
     FROM {{dataframe_name}} df;
 """
+
+def copy_standard_classlists_tables(*, con: duckdb.DuckDBPyConnection) -> None:
+    config = AssetDataConfig()
+    config.set_focus('file_download_summary')
+    classlists_db = config.get_expanded_path('classlists_db_src')
+    copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=con)
 
 
 def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool, dest_con: duckdb.DuckDBPyConnection) -> None:
