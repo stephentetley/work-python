@@ -20,7 +20,7 @@
 
 CREATE SCHEMA IF NOT EXISTS s4_classlists;
 
-CREATE OR REPLACE TABLE s4_classlists.floc_characteristics(
+CREATE OR REPLACE TABLE s4_classlists.floc_characteristics (
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
     class_description TEXT,
@@ -32,7 +32,7 @@ CREATE OR REPLACE TABLE s4_classlists.floc_characteristics(
 );
 
 
-CREATE OR REPLACE TABLE s4_classlists.equi_characteristics(
+CREATE OR REPLACE TABLE s4_classlists.equi_characteristics (
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
     class_description TEXT,
@@ -45,7 +45,7 @@ CREATE OR REPLACE TABLE s4_classlists.equi_characteristics(
 
 
 -- Dont bother with primary key as it is a 3-tuple.
-CREATE OR REPLACE TABLE s4_classlists.floc_enums(
+CREATE OR REPLACE TABLE s4_classlists.floc_enums (
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
     enum_value TEXT NOT NULL,
@@ -54,7 +54,7 @@ CREATE OR REPLACE TABLE s4_classlists.floc_enums(
 
 
 -- Dont bother with primary key as it is a 3-tuple.
-CREATE OR REPLACE TABLE s4_classlists.equi_enums(
+CREATE OR REPLACE TABLE s4_classlists.equi_enums (
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
     enum_value TEXT NOT NULL,

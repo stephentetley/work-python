@@ -1,5 +1,5 @@
 import duckdb
-from sptlibs.data_import.pdt.pdt_file import PdtFiles
+from data_import.pdt._pdt_file import PdtFiles
 import sptlibs.data_import.pdt.duckdb_import as duckdb_import
 
 duckdb_path = 'G:/work/2024/pdts/har65-pdt-summary.duckdb'
