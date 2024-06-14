@@ -45,4 +45,17 @@ class SqlScriptRunner:
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 
 
+    def exec_sql_generating_file(self, *, file_rel_path: str, con: duckdb.DuckDBPyConnection) -> None:
+        """The SQL file should have a single query and contain a column called `sql_text`"""
+        sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, file_rel_path))
+        if os.path.exists(sql_file_path):
+            with open(sql_file_path) as file:
+                statement = file.read()
+                df = con.execute(statement).pl()
+                for row in df.rows(named=True):
+                    con.execute(row['sql_text'])
+                con.commit()
+        else: 
+            print(f"SQL file does not exist {sql_file_path}")
+            raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 

@@ -25,6 +25,7 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='pdt_raw_data/pdt_raw_data_create_tables.sql', con=con)
     runner.exec_sql_file(file_rel_path='pdt_class_rep/pdt_class_rep_create_tables.sql', con=con)
+    runner.exec_sql_generating_file(file_rel_path='pdt_class_rep/gen_pdt_class_rep_tables.sql', con=con)
 
 def build_class_rep(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
