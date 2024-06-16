@@ -15,19 +15,75 @@ limitations under the License.
 
 """
 
+import random
 import re
+from typing import Callable
 import polars as pl
 import duckdb
-from typing import Callable
+from jinja2 import Template
 from sptlibs.utils.xlsx_source import XlsxSource
 
-def read_csv_source(csv_path: str, *, normalize_column_names: bool, has_header: bool) -> pl.DataFrame:
+def read_csv_source(
+        csv_path: str, 
+        *, 
+        normalize_column_names = True, 
+        has_header = True, 
+        pre_normalize_names_trafo = None | Callable[[pl.DataFrame], pl.DataFrame],
+        post_normalize_names_trafo = None | Callable[[pl.DataFrame], pl.DataFrame]) -> pl.DataFrame:
     df = pl.read_csv(source=csv_path, ignore_errors=True, has_header=has_header, null_values = ['NULL', 'Null', 'null'])
+    if pre_normalize_names_trafo: 
+        df = pre_normalize_names_trafo(df)
     if normalize_column_names:
-        return normalize_df_column_names(df)
-    else:
-        return df
+        df = pre_normalize_names_trafo(df)
+    if post_normalize_names_trafo: 
+        df = post_normalize_names_trafo(df)
+    return df
 
+# 'xlsx2csv' is the fastest engine
+def read_xlsx_source(
+        source: XlsxSource, 
+        *, 
+        pre_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
+        post_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
+        normalize_column_names = True) -> pl.DataFrame:
+    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
+    if pre_normalize_names_trafo: 
+        df = pre_normalize_names_trafo(df)
+    if normalize_column_names:
+        df = normalize_df_column_names(df)
+    if post_normalize_names_trafo: 
+        df = post_normalize_names_trafo(df)
+    return df
+
+def duckdb_write_dataframe_to_table(
+        df:  pl.DataFrame, 
+        *, 
+        qualified_table_name: str, 
+        con: duckdb.DuckDBPyConnection,
+        columns_and_aliases = None | dict[str, str]) -> None:
+    if not columns_and_aliases:
+        columns = [{'column_name': x, 'alias_name': x} for x in df.columns]
+    else:
+        columns = [{'column_name': k, 'alias_name': v} for (k, v) in columns_and_aliases.items()]
+    if columns: 
+        df_view_name = f"vw_dataframe_{random.randint(1, 20000)}"
+        con.register(view_name=df_view_name, python_object=df)
+        sql_stmt = Template(_renaming_insert_stmt).render(qualified_table_name=qualified_table_name, df_view_name=df_view_name, columns=columns)
+        con.execute(sql_stmt)
+        con.commit()
+    else:
+        print(f"duckdb_store_dataframe - empty columns list...")
+
+
+_renaming_insert_stmt = """
+    INSERT INTO {{qualified_table_name}} BY NAME
+    SELECT 
+        {% for col in columns %}
+        {{col.column_name }} AS {{col.alias_name}},
+        {% endfor %}
+    FROM 
+        {{df_view_name}} df;
+"""
 
 def duckdb_import_csv(
         csv_path: str, 
@@ -69,16 +125,8 @@ def duckdb_import_cvs_into(csv_path: str, *, df_name: str, insert_stmt: str, con
     con.commit()
 
 
-# 'xlsx2csv' is the fastest engine
-def read_xlsx_source(source: XlsxSource, *, normalize_column_names: bool) -> pl.DataFrame:
-    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
-    if normalize_column_names:
-        return normalize_df_column_names(df)
-    else:
-        return df
 
-
-def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
+def duckdb_import_sheet(source: XlsxSource, *, qualified_table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
     df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
     if df_trafo is not None:
@@ -87,7 +135,7 @@ def duckdb_import_sheet(source: XlsxSource, *, table_name: str, con: duckdb.Duck
         df_clean = df_raw
     df_renamed = normalize_df_column_names(df_clean)
     con.register(view_name='vw_df_renamed', python_object=df_renamed)
-    sql_stmt = f'CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM vw_df_renamed;'
+    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT * FROM vw_df_renamed;'
     con.execute(sql_stmt)
     con.commit()
 
@@ -122,10 +170,10 @@ def normalize_name(s: str) -> str:
 def remove_df_column_name_indices(df: pl.DataFrame) -> pl.DataFrame:
     new_names = {}
     for name in df.columns:
-        new_names[name] = remove_index(name)
+        new_names[name] = _remove_index(name)
     return df.rename(new_names)
 
-def remove_index(s: str) -> str:
+def _remove_index(s: str) -> str:
     drop_ix = re.sub(pattern=r'_[\d]+$' , repl='', string=s)
     return drop_ix
 

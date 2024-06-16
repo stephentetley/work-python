@@ -29,68 +29,49 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
 
 
 def import_manuf_model(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO s4_ztables.manuf_model BY NAME
-        SELECT 
-            df.manufacturer_of_asset AS manufacturer,
-            df.model_number AS model_number,
-        FROM 
-            df_dataframe_view df
-        ;
-        """
-    import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
-
+        df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True)
+        import_utils.duckdb_write_dataframe_to_table(
+             df, con=con, 
+             qualified_table_name='s4_ztables.manuf_model',
+             columns_and_aliases={'manufacturer_of_asset' : 'manufacturer', 
+                                  'model_number' : 'model_number'})
 
 def import_eqobjl(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO s4_ztables.eqobjl BY NAME
-        SELECT 
-            df.object_type AS parent_objtype,
-            df.object_type_duplicated_0 AS child_objtype,
-            df.equipment_category AS equipment_category,
-            df.remarks AS remarks,
-        FROM 
-            df_dataframe_view df
-        ;
-        """
-    import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
+    df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True)
+    import_utils.duckdb_write_dataframe_to_table(
+            df, con=con, 
+            qualified_table_name='s4_ztables.eqobjl',
+            columns_and_aliases={'object_type': 'parent_objtype', 
+                                 'object_type_duplicated_0': 'child_objtype', 
+                                 'equipment_category': 'equipment_category', 
+                                 'remarks' : 'remarks'})
 
 def import_flocdes(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO s4_ztables.flocdes BY NAME
-        SELECT 
-            df.object_type AS objtype,
-            df.standard_floc_description AS standard_floc_description,
-        FROM 
-            df_dataframe_view df
-        ;
-        """
-    import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
+    df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True)
+    import_utils.duckdb_write_dataframe_to_table(
+            df, con=con, 
+            qualified_table_name='s4_ztables.flocdes',
+            columns_and_aliases={'object_type': 'objtype', 
+                                 'standard_floc_description': 'standard_floc_description'})    
+
 
 def import_floobjl(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO s4_ztables.floobjl BY NAME
-        SELECT 
-            df.structure_indicator AS structure_indicator,
-            df.object_type AS parent_objtype,
-            df.object_type_duplicated_0 AS child_objtype,
-            df.remarks AS remarks,
-        FROM 
-            df_dataframe_view df
-        ;
-        """
-    import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
+    df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True)
+    import_utils.duckdb_write_dataframe_to_table(
+            df, con=con, 
+            qualified_table_name='s4_ztables.floobjl',
+            columns_and_aliases={'structure_indicator': 'structure_indicator', 
+                                 'object_type': 'parent_objtype', 
+                                 'object_type_duplicated_0': 'child_objtype', 
+                                 'remarks': 'remarks'})   
+
 
 
 def import_objtype_manuf(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT INTO s4_ztables.objtype_manuf BY NAME
-        SELECT 
-            df.object_type AS objtype,
-            df.manufacturer_of_asset AS manufacturer,
-            df.remarks AS remarks,
-        FROM 
-            df_dataframe_view df
-        ;
-        """
-    import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
+    df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True)
+    import_utils.duckdb_write_dataframe_to_table(
+            df, con=con, 
+            qualified_table_name='s4_ztables.objtype_manuf',
+            columns_and_aliases={'object_type': 'objtype', 
+                                 'manufacturer_of_asset': 'manufacturer', 
+                                 'remarks': 'remarks'})  
