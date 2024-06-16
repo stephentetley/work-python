@@ -17,6 +17,8 @@ limitations under the License.
 
 import os
 import duckdb
+import jinja2
+
 
 class SqlScriptRunner:
     def __init__(self) -> None:
@@ -25,6 +27,8 @@ class SqlScriptRunner:
         if sql_root_dir:
             if os.path.exists(sql_root_dir):
                 self.sql_root_dir = sql_root_dir
+                loader = jinja2.FileSystemLoader(searchpath=self.sql_root_dir)
+                self.jinja_env = jinja2.Environment(loader=loader)
             else: 
                 print("Cannot find $ASSET_DATA_SQL_DIR") 
                 raise NotADirectoryError(f"Cannot find $ASSET_DATA_SQL_DIR = `{sql_root_dir}`")
@@ -32,7 +36,6 @@ class SqlScriptRunner:
             print("Environment Variable $ASSET_DATA_SQL_DIR not set")
             raise OSError("Environment Variable $ASSET_DATA_SQL_DIR not set")
 
-        
     def exec_sql_file(self, *, file_rel_path: str, con: duckdb.DuckDBPyConnection) -> None:
         sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, file_rel_path))
         if os.path.exists(sql_file_path):
@@ -43,6 +46,16 @@ class SqlScriptRunner:
         else: 
             print(f"SQL file does not exist {sql_file_path}")
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
+
+    def exec_jinja_sql_file(self, *, args: dict, file_rel_path: str, con: duckdb.DuckDBPyConnection) -> None:
+        template = self.jinja_env.get_template(file_rel_path)
+        if template: 
+            statement = template.render(args)
+            con.execute(statement)
+        else: 
+            print(f"Jinja SQL template file does not exist {file_rel_path}")
+            raise FileNotFoundError(f"Jinja SQL template file does not exist {file_rel_path}")
+
 
 
     def exec_sql_generating_file(self, *, file_rel_path: str, con: duckdb.DuckDBPyConnection) -> None:
