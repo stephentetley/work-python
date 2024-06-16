@@ -60,7 +60,7 @@ def duckdb_write_dataframe_to_table(
         *, 
         qualified_table_name: str, 
         con: duckdb.DuckDBPyConnection,
-        columns_and_aliases = None | dict[str, str]) -> None:
+        columns_and_aliases: dict[str, str] = {} ) -> None:
     if not columns_and_aliases:
         columns = [{'column_name': x, 'alias_name': x} for x in df.columns]
     else:
@@ -84,6 +84,33 @@ _renaming_insert_stmt = """
     FROM 
         {{df_view_name}} df;
 """
+
+
+def duckdb_import_tables_from_duckdb(
+        *, 
+        source_db_path: str, 
+        dest_con: duckdb.DuckDBPyConnection,
+        source_and_dest_tables: dict[str, str] = {} ) -> None:
+    if not source_and_dest_tables:
+        copy_rows = []
+    else:
+        copy_rows = [{'source_table_qname': k, 'dest_table_qname': v} for (k, v) in source_and_dest_tables.items()]
+    if copy_rows: 
+        sql_stmt = Template(_copy_tables_template).render(source_db_path=source_db_path, copy_rows=copy_rows)
+        dest_con.execute(sql_stmt)
+        dest_con.commit()
+    else:
+        print(f"duckdb_import_tables_from_duckdb - source_and_dest_tables...")
+
+_copy_tables_template = """
+    ATTACH '{{source_db_path}}' AS source_database_xyz;
+    {% for row in copy_rows %}
+    INSERT INTO {{row.dest_table_qname}} SELECT * FROM source_database_xyz.{{row.source_table_qname}};
+    {% endfor %}
+    DETACH source_database_xyz;
+"""
+
+
 
 def duckdb_import_csv(
         csv_path: str, 
