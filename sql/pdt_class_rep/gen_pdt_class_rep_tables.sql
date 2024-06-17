@@ -28,10 +28,9 @@ WITH cte AS (
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'CREATE OR REPLACE TABLE pdt_class_rep.equiclass_{} (\n    {}\n    {}\n{}\n);', 
+    format(E'CREATE OR REPLACE TABLE pdt_class_rep.equiclass_{} (\n    {}\n    {}\n);', 
         lower(t.class_name),
-        'equi_name VARCHAR NOT NULL, ',
-        'source_file VARCHAR NOT NULL, ',
+        'equipment_key UBIGINT,',
         list_sort(t.field_elements).list_aggregate('string_agg', E'\n')
         ) AS sql_text,
 FROM cte t

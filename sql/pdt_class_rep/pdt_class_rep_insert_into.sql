@@ -23,6 +23,7 @@ WITH cte AS (
     FROM pdt_raw_data.pdt_eav t
 )
 SELECT DISTINCT ON(cte.entity_name) 
+    hash(cte.entity_name || cte.base_name) AS equipment_key,
     cte.entity_name AS equi_name,
     cte.base_name AS source_file,
     any_value(CASE WHEN eav.attr_name = 'asset_type' THEN upper(eav.attr_value) ELSE NULL END) AS equipment_type,
@@ -44,8 +45,7 @@ GROUP BY cte.entity_name, cte.base_name;
 
 INSERT INTO pdt_class_rep.equiclass_actuem BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'ip_rating' THEN eav.attr_value ELSE NULL END) AS ip_rating,
@@ -64,8 +64,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_conpnl BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'rated_voltage' THEN TRY_CAST(eav.attr_value AS INTEGER) ELSE NULL END) AS conp_rated_voltage,
@@ -81,8 +80,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_decoeb BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
 FROM pdt_class_rep.equi_master_data e
@@ -94,8 +92,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_decoes BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
 FROM pdt_class_rep.equi_master_data e
@@ -107,8 +104,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_distbd BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'ip_rating' THEN eav.attr_value ELSE NULL END) AS ip_rating,
@@ -129,8 +125,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_emtrin BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'rated_current_a' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS emtr_rated_current_a,
@@ -148,8 +143,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_gaswmg BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'ip_rating' THEN eav.attr_value ELSE NULL END) AS ip_rating,
@@ -165,8 +159,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_heatim BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'rated_current_a' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS heat_rated_current_a,
@@ -182,8 +175,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_intflo BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'ip_rating' THEN eav.attr_value ELSE NULL END) AS ip_rating,
@@ -198,8 +190,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_kiskki BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,	
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'cat_flap_available' THEN upper(eav.attr_value) ELSE NULL END) AS kisk_cat_flap_available,
@@ -216,8 +207,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_lideem BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
 FROM pdt_class_rep.equi_master_data e
@@ -229,8 +219,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_lideex BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
 FROM pdt_class_rep.equi_master_data e
@@ -242,8 +231,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_lidein BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
 FROM pdt_class_rep.equi_master_data e
@@ -256,8 +244,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_lstnco BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
 FROM pdt_class_rep.equi_master_data e
@@ -269,8 +256,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_lstnfl BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'supply_voltage' THEN TRY_CAST(eav.attr_value AS INTEGER) ELSE NULL END) AS lstn_supply_voltage,
@@ -285,8 +271,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_lstnut BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'ip_rating' THEN eav.attr_value ELSE NULL END) AS ip_rating,
@@ -306,8 +291,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_netwmo BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'supply_voltage' THEN TRY_CAST(eav.attr_value AS INTEGER) ELSE NULL END) AS netw_supply_voltage,
@@ -321,8 +305,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_pstndi BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'range_max' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS pstn_range_max,
@@ -339,8 +322,7 @@ GROUP BY e.source_file, e.equi_name;
 INSERT INTO pdt_class_rep.equiclass_pumpce BY NAME 
 WITH cte AS(
     SELECT DISTINCT ON(e.equi_name, e.source_file)   
-        e.equi_name AS equi_name,
-        e.source_file AS source_file,
+        hash(e.equi_name || e.source_file) AS equipment_key,
         any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
         any_value(CASE WHEN eav.attr_name = 'flow_l_s' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS pump_flow_litres_per_sec,
@@ -361,8 +343,7 @@ FROM cte;
 
 INSERT INTO pdt_class_rep.equiclass_pumpdi BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'ip_rating' THEN eav.attr_value ELSE NULL END) AS ip_rating,
@@ -380,8 +361,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_valvba BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'inlet_size_mm' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS valv_inlet_size_mm,
@@ -394,8 +374,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_valvga BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'inlet_size_mm' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS valv_inlet_size_mm,
@@ -408,8 +387,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_valvnr BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'inlet_size_mm' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS valv_inlet_size_mm,
@@ -423,8 +401,7 @@ GROUP BY e.source_file, e.equi_name;
 
 INSERT INTO pdt_class_rep.equiclass_valvpr BY NAME 
 SELECT DISTINCT ON(e.equi_name, e.source_file)   
-    e.equi_name AS equi_name,
-    e.source_file AS source_file,
+    hash(e.equi_name || e.source_file) AS equipment_key,
     any_value(CASE WHEN eav.attr_name = 'location_on_site' THEN upper(eav.attr_value) ELSE NULL END) AS location_on_site,
     any_value(CASE WHEN eav.attr_name = 'memo_line' THEN eav.attr_value ELSE NULL END) AS memo_line,
     any_value(CASE WHEN eav.attr_name = 'inlet_size_mm' THEN TRY_CAST(eav.attr_value AS DECIMAL) ELSE NULL END) AS valv_inlet_size_mm,

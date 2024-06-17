@@ -17,6 +17,7 @@
 CREATE SCHEMA IF NOT EXISTS pdt_class_rep;
 
 CREATE OR REPLACE TABLE pdt_class_rep.equi_master_data (
+    equipment_key UBIGINT,
     equi_name VARCHAR NOT NULL,
     source_file VARCHAR NOT NULL,
     equipment_type VARCHAR,

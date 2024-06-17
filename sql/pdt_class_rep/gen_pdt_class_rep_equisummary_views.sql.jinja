@@ -17,12 +17,13 @@
 
 CREATE OR REPLACE VIEW pdt_class_rep.vw_equisummary_{{class_name}} AS
 SELECT 
+    emd.equipment_key AS equipment_key,
     emd.source_file AS source_file,
     emd.equi_name AS equi_name,
     emd.manufacturer AS manufacturer,
     emd.model AS model,
     emd.specific_model_frame AS specific_model_frame,
     emd.serial_number AS serial_number,
-    ec.* EXCLUDE (equi_name, source_file),
+    ec.* EXCLUDE (equipment_key),
 FROM pdt_class_rep.equiclass_{{class_name}} ec
-JOIN pdt_class_rep.equi_master_data emd ON emd.equi_name = ec.equi_name AND emd.source_file = ec.source_file;
+JOIN pdt_class_rep.equi_master_data emd ON emd.equipment_key = ec.equipment_key;
