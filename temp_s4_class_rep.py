@@ -1,4 +1,3 @@
-# temp_s4_eavalues.py
 
 
 import duckdb
@@ -16,7 +15,7 @@ def main():
 
     glob_pattern        = 'hs*.txt'
     source_directory    = 'g:/work/2024/file_download/hsm'
-    output_db           = 'g:/work/2024/file_download/hsm/hsm_s4_class_rep.duckdb'
+    output_db           = 'g:/work/2024/file_download/hsm/hsm_s4_class_rep_v2.duckdb'
 
 
     conn = duckdb.connect(database=output_db)
@@ -27,6 +26,6 @@ def main():
 
     s4_class_rep_duckdb_setup.init_s4_class_rep_tables(con=conn)
 
-    _materialize_class_tables.materialize_class_tables(con=conn)
+    print(f"Wrote `{output_db}`")
 
 main()

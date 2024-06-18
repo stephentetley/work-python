@@ -28,11 +28,12 @@ WITH cte AS (
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'CREATE OR REPLACE TABLE pdt_class_rep.equiclass_{} (\n    {}\n    {}\n{}\n);', 
-        lower(t.class_name),
-        'equi_name VARCHAR NOT NULL, ',
-        'source_file VARCHAR NOT NULL, ',
-        list_sort(t.field_elements).list_aggregate('string_agg', E'\n')
+    concat_ws(E'\n',
+        format(E'CREATE OR REPLACE TABLE s4_class_rep.equiclass_{} (', lower(t.class_name)),
+        '    equipment_id VARCHAR NOT NULL, ',
+        list_sort(t.field_elements).list_aggregate('string_agg', E'\n'),
+        '    PRIMARY KEY(equipment_id)',
+        ');'
         ) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC; 
