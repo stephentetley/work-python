@@ -103,3 +103,13 @@ CREATE OR REPLACE TABLE s4_class_rep.equiclass_solution_id (
     solution_id INTEGER,
 );
 
+CREATE OR REPLACE VIEW s4_class_rep.vw_equiclass_stats AS
+SELECT 
+    array_slice(table_name, 11, len(table_name)) AS class_name,
+    t.table_name AS table_name,
+    t.estimated_size AS estimated_size, 
+    t.estimated_size > 0 AS is_populated,
+FROM duckdb_tables() t
+WHERE 
+    t.schema_name = 's4_class_rep'
+AND t.table_name LIKE 'equiclass_%';
