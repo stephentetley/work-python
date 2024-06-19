@@ -21,8 +21,11 @@ from utils.sql_script_runner import SqlScriptRunner
 
 def init_s4_class_rep_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
+    # create tables, views...
     runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_create_tables.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s3_class_rep_equiclass_tables.sql', con=con)
+    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_equiclass_tables.sql', con=con)
+    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_equisummary_views.sql', con=con)
+    # insert data...
     runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_insert_into.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s3_class_rep_equiclass_insert_into.sql', con=con)
+    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_equiclass_insert_into.sql', con=con)
     
