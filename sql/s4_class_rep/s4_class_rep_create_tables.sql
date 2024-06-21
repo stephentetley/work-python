@@ -88,20 +88,49 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_long_text(
     PRIMARY KEY(equipment_id)
 );
 
--- generate sql for class tables except SOLUTION_ID and AIB_REFERENCE
+-- generate sql for class tables except EAST_NORTH, SOLUTION_ID and AIB_REFERENCE ...
 
 
-CREATE OR REPLACE TABLE s4_class_rep.flocclass_solution_id (
+CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
     floc_id VARCHAR NOT NULL,
-    idx_solution_id INTEGER,
-    solution_id INTEGER,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY(floc_id)
 );
 
-CREATE OR REPLACE TABLE s4_class_rep.equiclass_solution_id (
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
     equipment_id VARCHAR NOT NULL,
-    idx_solution_id INTEGER,
-    solution_id INTEGER,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY(equipment_id)
 );
+
+
+CREATE OR REPLACE TABLE s4_class_rep.floc_solution_id (
+    floc_id VARCHAR NOT NULL,
+    index_solution_id INTEGER,
+    solution_id VARCHAR,
+);
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
+    equipment_id VARCHAR NOT NULL,
+    index_solution_id INTEGER,
+    solution_id VARCHAR,
+);
+
+CREATE OR REPLACE TABLE s4_class_rep.floc_aib_reference (
+    floc_id VARCHAR NOT NULL,
+    index_solution_id INTEGER,
+    aib_reference VARCHAR,
+);
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_aib_reference (
+    equipment_id VARCHAR NOT NULL,
+    index_aib_reference INTEGER,
+    aib_reference VARCHAR,
+);
+
 
 CREATE OR REPLACE VIEW s4_class_rep.vw_equiclass_stats AS
 SELECT 
