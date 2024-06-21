@@ -90,6 +90,16 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_long_text(
 
 -- generate sql for class tables except EAST_NORTH, SOLUTION_ID and AIB_REFERENCE ...
 
+CREATE OR REPLACE TABLE s4_class_rep.equi_asset_condition (
+    equipment_id VARCHAR NOT NULL,
+    condition_grade VARCHAR,
+    condition_grade_reason VARCHAR,
+    survey_comments VARCHAR,
+    survey_date INTEGER,
+    last_refurbished_date DATE,
+    PRIMARY KEY(equipment_id)
+);
+
 
 CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
     floc_id VARCHAR NOT NULL,
