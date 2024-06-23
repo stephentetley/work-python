@@ -117,29 +117,30 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
     PRIMARY KEY(equipment_id)
 );
 
+-- ## floc SOLUTION_ID
 
 CREATE OR REPLACE TABLE s4_class_rep.floc_solution_id (
     floc_id VARCHAR NOT NULL,
-    index_solution_id INTEGER,
-    solution_id VARCHAR,
+    solution_ids VARCHAR[],
+    PRIMARY KEY(floc_id)
 );
+
+
+-- ## equi SOLUTION_ID
 
 CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
     equipment_id VARCHAR NOT NULL,
-    index_solution_id INTEGER,
-    solution_id VARCHAR,
-);
-
-CREATE OR REPLACE TABLE s4_class_rep.floc_aib_reference (
-    floc_id VARCHAR NOT NULL,
-    index_solution_id INTEGER,
-    aib_reference VARCHAR,
+    solution_ids VARCHAR[],
+    PRIMARY KEY(equipment_id)
 );
 
 
 
 
--- ## AIB_REFERENCE uses staging tables
+-- ## equi AIB_REFERENCE uses staging tables
+-- We consider equipment as having principal SAI and PLI numbers. 
+-- Equipment may also have a list of extra refernces which probably 
+-- indicate data errors...
 
 CREATE OR REPLACE TABLE s4_class_rep_staging.equi_ai2_sai_reference (
     equipment_id VARCHAR,
@@ -186,6 +187,14 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_aib_reference (
     s4_aib_reference VARCHAR,
     PRIMARY KEY(equipment_id)
 );
+
+-- ## TODO 
+
+-- CREATE OR REPLACE TABLE s4_class_rep.floc_aib_reference (
+--     floc_id VARCHAR NOT NULL,
+--     index_solution_id INTEGER,
+--     aib_reference VARCHAR,
+-- );
 
 
 -- ## stats tables

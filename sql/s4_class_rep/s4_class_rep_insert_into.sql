@@ -138,6 +138,27 @@ FROM s4_class_rep.equi_master_data e
 JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
 GROUP BY equipment_id;
 
+
+INSERT OR REPLACE INTO s4_class_rep.floc_solution_id BY NAME
+SELECT DISTINCT ON(f.floc_id)   
+    f.floc_id AS floc_id,
+    array_agg(eav.atwrt) AS solution_ids,
+FROM s4_class_rep.floc_master_data f
+JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
+WHERE eav.charid = 'SOLUTION_ID'
+GROUP BY floc_id;
+
+
+INSERT OR REPLACE INTO s4_class_rep.equi_solution_id BY NAME
+SELECT DISTINCT ON (e.equipment_id)
+    e.equipment_id AS equipment_id,
+    array_agg(eav.atwrt) AS solution_ids,
+FROM s4_class_rep.equi_master_data e
+JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+WHERE eav.charid = 'SOLUTION_ID'
+GROUP BY equipment_id;
+
+
 INSERT OR REPLACE INTO s4_class_rep_staging.equi_ai2_sai_reference  BY NAME
 WITH cte AS (
     SELECT  
