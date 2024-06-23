@@ -308,8 +308,8 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.valuafloc_valuafloc1 (
     valcnt VARCHAR,
     atimb VARCHAR,
     atsrt VARCHAR,
-    atflv VARCHAR,
-    atflb VARCHAR
+    atflv DECIMAL(18, 3),
+    atflb DECIMAL(18, 3)
 );
 
 CREATE OR REPLACE TABLE s4_fd_raw_data.valuaequi_valuaequi1 (
@@ -328,7 +328,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.valuaequi_valuaequi1 (
     valcnt VARCHAR,
     atimb VARCHAR,
     atsrt VARCHAR,
-    atflv VARCHAR,
-    atflb VARCHAR
+    atflv DECIMAL(18, 3),
+    atflb DECIMAL(18, 3)
 );
 

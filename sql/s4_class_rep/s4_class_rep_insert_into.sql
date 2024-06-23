@@ -98,15 +98,25 @@ WHERE e.rownum = 1;
 -- TODO AI2_REFERENCE, SOLUTION_ID etc.
 
 INSERT OR REPLACE INTO s4_class_rep.equi_asset_condition BY NAME
-SELECT DISTINCT ON(e.equipment_id)   
-    e.equipment_id AS equipment_id,
-    any_value(CASE WHEN eav.charid = 'CONDITION_GRADE' THEN eav.atwrt ELSE NULL END) AS condition_grade,
-    any_value(CASE WHEN eav.charid = 'CONDITION_GRADE_REASON' THEN eav.atwrt ELSE NULL END) AS condition_grade_reason,
-    any_value(CASE WHEN eav.charid = 'SURVEY_COMMENTS' THEN eav.atwrt ELSE NULL END) AS survey_comments,
-    any_value(CASE WHEN eav.charid = 'SURVEY_DATE' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS survey_date,
-FROM s4_class_rep.equi_master_data e
-JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-GROUP BY equipment_id;
+WITH cte AS (
+    SELECT DISTINCT ON(e.equipment_id)   
+        e.equipment_id AS equipment_id,
+        any_value(CASE WHEN eav.charid = 'CONDITION_GRADE' THEN eav.atwrt ELSE NULL END) AS condition_grade,
+        any_value(CASE WHEN eav.charid = 'CONDITION_GRADE_REASON' THEN eav.atwrt ELSE NULL END) AS condition_grade_reason,
+        any_value(CASE WHEN eav.charid = 'SURVEY_COMMENTS' THEN eav.atwrt ELSE NULL END) AS survey_comments,
+        any_value(CASE WHEN eav.charid = 'SURVEY_DATE' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS survey_date,
+    FROM s4_class_rep.equi_master_data e
+    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+    GROUP BY equipment_id
+)
+SELECT 
+    equipment_id,
+    condition_grade,
+    condition_grade_reason,
+    survey_comments,
+    survey_date,
+FROM cte
+WHERE condition_grade IS NOT NULL OR condition_grade_reason IS NOT NULL OR survey_comments IS NOT NULL OR survey_date IS NOT NULL; 
 
 
 INSERT OR REPLACE INTO s4_class_rep.floc_east_north BY NAME

@@ -41,8 +41,14 @@ class SqlScriptRunner:
         if os.path.exists(sql_file_path):
             with open(sql_file_path) as file:
                 statements = file.read()
-                con.execute(statements)
-                con.commit()
+                try: 
+                    con.execute(statements)
+                    con.commit()
+                except Exception as exn: 
+                    print(f"SQL script failed:")
+                    print(statements)
+                    print(exn)
+                    raise(exn)
         else: 
             print(f"SQL file does not exist {sql_file_path}")
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
@@ -66,7 +72,14 @@ class SqlScriptRunner:
                 statement = file.read()
                 df = con.execute(statement).pl()
                 for row in df.rows(named=True):
-                    con.execute(row['sql_text'])
+                    sql_stmt = row['sql_text']
+                    try:
+                        con.execute(sql_stmt)
+                    except Exception as exn: 
+                        print(f"SQL script failed:")
+                        print(sql_stmt)
+                        print(exn)
+                        raise(exn)
                 con.commit()
         else: 
             print(f"SQL file does not exist {sql_file_path}")
