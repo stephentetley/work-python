@@ -68,7 +68,7 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_master_data (
     unit_of_weight VARCHAR,
     technical_ident_number VARCHAR,
     valid_from DATE,
-    display_position VARCHAR,
+    display_position INTEGER,
     catalog_profile VARCHAR,
     company_code INTEGER,
     cost_center INTEGER,
