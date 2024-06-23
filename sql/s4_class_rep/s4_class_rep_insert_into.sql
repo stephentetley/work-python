@@ -97,6 +97,7 @@ WHERE e.rownum = 1;
 
 -- TODO AI2_REFERENCE, SOLUTION_ID etc.
 
+-- Don't add empty records so use a cte for filtering
 INSERT OR REPLACE INTO s4_class_rep.equi_asset_condition BY NAME
 WITH cte AS (
     SELECT DISTINCT ON(e.equipment_id)   
@@ -129,11 +130,64 @@ JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
 GROUP BY floc_id;
 
 INSERT OR REPLACE INTO s4_class_rep.equi_east_north BY NAME
-SELECT DISTINCT ON(e.equipment_id)   
+SELECT DISTINCT ON(e.equipment_id)
     e.equipment_id AS equipment_id,
     any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
     any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
 FROM s4_class_rep.equi_master_data e
 JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
 GROUP BY equipment_id;
+
+INSERT OR REPLACE INTO s4_class_rep_staging.equi_ai2_sai_reference  BY NAME
+WITH cte AS (
+    SELECT  
+        e.equipment_id AS equipment_id,
+        eav.valcnt AS value_index,
+        eav.atwrt AS ai2_sai_reference,
+    FROM s4_class_rep.equi_master_data e
+    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+    WHERE eav.charid = 'AI2_AIB_REFERENCE'
+    AND NOT starts_with(ai2_sai_reference, 'PLI') 
+    ORDER BY equipment_id ASC, value_index ASC
+)
+SELECT 
+    equipment_id, 
+    any_value(ai2_sai_reference) AS ai2_sai_reference,
+    min(value_index) AS value_index
+FROM cte
+GROUP BY equipment_id;
+
+INSERT OR REPLACE INTO s4_class_rep_staging.equi_ai2_pli_reference BY NAME
+WITH cte AS (
+    SELECT  
+        e.equipment_id AS equipment_id,
+        eav.valcnt AS value_index,
+        eav.atwrt AS ai2_pli_reference,
+    FROM s4_class_rep.equi_master_data e
+    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+    WHERE eav.charid = 'AI2_AIB_REFERENCE'
+    AND starts_with(ai2_pli_reference, 'PLI') 
+    ORDER BY equipment_id ASC, value_index ASC
+)
+SELECT 
+    equipment_id, 
+    any_value(ai2_pli_reference) AS ai2_pli_reference,
+    min(value_index) AS value_index
+FROM cte
+GROUP BY equipment_id;
+
+INSERT OR REPLACE INTO s4_class_rep.equi_aib_reference BY NAME
+SELECT DISTINCT ON(e.equipment_id)
+    e.equipment_id AS equipment_id,
+    sai.value_index AS sai_value_index,
+    sai.ai2_sai_reference AS ai2_sai_reference,
+    pli.value_index AS pli_value_index,
+    pli.ai2_pli_reference AS ai2_pli_reference,
+    s4.s4_aib_reference AS s4_aib_reference,
+    extras.extra_aib_references AS ai2_extra_references,
+FROM s4_class_rep.equi_master_data e
+LEFT JOIN s4_class_rep_staging.equi_ai2_sai_reference sai ON sai.equipment_id = e.equipment_id
+LEFT JOIN s4_class_rep_staging.equi_ai2_pli_reference pli ON pli.equipment_id = e.equipment_id
+LEFT JOIN s4_class_rep_staging.vw_equi_ai2_extra_references extras ON extras.equipment_id = e.equipment_id
+LEFT JOIN s4_class_rep_staging.vw_equi_s4_aib_references s4 ON s4.equipment_id = e.equipment_id;
 
