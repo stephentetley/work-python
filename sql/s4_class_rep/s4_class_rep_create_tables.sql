@@ -101,6 +101,19 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_asset_condition (
     PRIMARY KEY(equipment_id)
 );
 
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_asset_condition AS
+SELECT 
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.manufact_part_number AS manufact_part_number,
+    emd.serial_number AS serial_number,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_asset_condition ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+
 
 CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
     floc_id VARCHAR NOT NULL,
@@ -108,6 +121,19 @@ CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
     northing INTEGER,
     PRIMARY KEY(floc_id)
 );
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_east_north AS
+SELECT 
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.manufact_part_number AS manufact_part_number,
+    emd.serial_number AS serial_number,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_east_north ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
 
 
 CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
@@ -135,6 +161,18 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
 );
 
 
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_solution_id AS
+SELECT 
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.manufact_part_number AS manufact_part_number,
+    emd.serial_number AS serial_number,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_solution_id ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
 
 
 -- ## equi AIB_REFERENCE uses staging tables
@@ -187,6 +225,19 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_aib_reference (
     s4_aib_reference VARCHAR,
     PRIMARY KEY(equipment_id)
 );
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_aib_reference AS
+SELECT 
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.manufact_part_number AS manufact_part_number,
+    emd.serial_number AS serial_number,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_aib_reference ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
 
 -- ## TODO 
 

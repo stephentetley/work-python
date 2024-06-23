@@ -14,8 +14,8 @@ def main():
     classlists_db = config.get_expanded_path('classlists_db_src')
 
     glob_pattern        = '*download.txt'
-    source_directory    = 'g:/work/2024/file_download/boo06'
-    output_db           = 'g:/work/2024/file_download/boo06/boo06_s4_class_rep_v2.duckdb'
+    source_directory    = 'g:/work/2024/file_download/hsm'
+    output_db           = 'g:/work/2024/file_download/hsm/hsm_s4_class_rep_v2.duckdb'
 
 
     conn = duckdb.connect(database=output_db)
