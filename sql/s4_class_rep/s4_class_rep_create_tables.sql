@@ -122,6 +122,26 @@ CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
     PRIMARY KEY(floc_id)
 );
 
+CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_east_north AS
+SELECT 
+    fmd.floc_id AS floc_id, 
+    fmd.functional_location AS functional_location,
+    fmd.description AS description,
+    fmd.startup_date AS startup_date,
+    fmd.object_type AS object_type,
+    fmd.user_status AS user_status,
+    fa.* EXCLUDE (floc_id),
+FROM s4_class_rep.floc_east_north fa
+JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fa.floc_id;
+
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
+    equipment_id VARCHAR NOT NULL,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY(equipment_id)
+);
+
 CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_east_north AS
 SELECT 
     emd.equipment_id AS equipment_id, 
@@ -136,12 +156,6 @@ FROM s4_class_rep.equi_east_north ea
 JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
 
 
-CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
-    equipment_id VARCHAR NOT NULL,
-    easting INTEGER,
-    northing INTEGER,
-    PRIMARY KEY(equipment_id)
-);
 
 -- ## floc SOLUTION_ID
 

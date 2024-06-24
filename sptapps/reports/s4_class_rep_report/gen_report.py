@@ -47,6 +47,12 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
             con=con, workbook=workbook)
         
         _add_table(
+            select_query=_flocsummary_east_north,
+            sheet_name='f.east_north', 
+            column_formats = _general_columns(['easting', 'northing']),
+            con=con, workbook=workbook)
+        
+        _add_table(
             select_query=_equisummary_aib_reference,
             sheet_name='e.aib_reference', 
             column_formats = {},
@@ -110,6 +116,13 @@ _equisummary_aib_reference = """
 SELECT 
     t.*,
 FROM s4_class_rep.vw_equisummary_aib_reference t;
+"""
+
+
+_flocsummary_east_north = """
+SELECT 
+    t.*,
+FROM s4_class_rep.vw_flocsummary_east_north t;
 """
 
 _equisummary_east_north = """
