@@ -89,107 +89,27 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_long_text(
     PRIMARY KEY(equipment_id)
 );
 
+
+-- ## stats tables
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_equiclass_stats AS
+SELECT 
+    array_slice(table_name, 11, len(table_name)) AS class_name,
+    t.table_name AS table_name,
+    t.estimated_size AS estimated_size, 
+    t.estimated_size > 0 AS is_populated,
+FROM duckdb_tables() t
+WHERE 
+    t.schema_name = 's4_class_rep'
+AND t.table_name LIKE 'equiclass_%';
+
+
+
 -- generate sql for class tables except EAST_NORTH, SOLUTION_ID and AIB_REFERENCE ...
 
-CREATE OR REPLACE TABLE s4_class_rep.equi_asset_condition (
-    equipment_id VARCHAR NOT NULL,
-    condition_grade VARCHAR,
-    condition_grade_reason VARCHAR,
-    survey_comments VARCHAR,
-    survey_date INTEGER,
-    last_refurbished_date DATE,
-    PRIMARY KEY(equipment_id)
-);
+-- ## AIB_REFERENCE
 
-CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_asset_condition AS
-SELECT 
-    emd.equipment_id AS equipment_id, 
-    emd.description AS description,
-    emd.functional_location AS functional_location,
-    emd.manufacturer AS manufacturer,
-    emd.model_number AS model_number,
-    emd.manufact_part_number AS manufact_part_number,
-    emd.serial_number AS serial_number,
-    ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_asset_condition ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
-
-
-CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
-    floc_id VARCHAR NOT NULL,
-    easting INTEGER,
-    northing INTEGER,
-    PRIMARY KEY(floc_id)
-);
-
-CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_east_north AS
-SELECT 
-    fmd.floc_id AS floc_id, 
-    fmd.functional_location AS functional_location,
-    fmd.description AS description,
-    fmd.startup_date AS startup_date,
-    fmd.object_type AS object_type,
-    fmd.user_status AS user_status,
-    fa.* EXCLUDE (floc_id),
-FROM s4_class_rep.floc_east_north fa
-JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fa.floc_id;
-
-
-CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
-    equipment_id VARCHAR NOT NULL,
-    easting INTEGER,
-    northing INTEGER,
-    PRIMARY KEY(equipment_id)
-);
-
-CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_east_north AS
-SELECT 
-    emd.equipment_id AS equipment_id, 
-    emd.description AS description,
-    emd.functional_location AS functional_location,
-    emd.manufacturer AS manufacturer,
-    emd.model_number AS model_number,
-    emd.manufact_part_number AS manufact_part_number,
-    emd.serial_number AS serial_number,
-    ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_east_north ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
-
-
-
--- ## floc SOLUTION_ID
-
-CREATE OR REPLACE TABLE s4_class_rep.floc_solution_id (
-    floc_id VARCHAR NOT NULL,
-    solution_ids VARCHAR[],
-    PRIMARY KEY(floc_id)
-);
-
-
--- ## equi SOLUTION_ID
-
-CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
-    equipment_id VARCHAR NOT NULL,
-    solution_ids VARCHAR[],
-    PRIMARY KEY(equipment_id)
-);
-
-
-CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_solution_id AS
-SELECT 
-    emd.equipment_id AS equipment_id, 
-    emd.description AS description,
-    emd.functional_location AS functional_location,
-    emd.manufacturer AS manufacturer,
-    emd.model_number AS model_number,
-    emd.manufact_part_number AS manufact_part_number,
-    emd.serial_number AS serial_number,
-    ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_solution_id ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
-
-
--- ## equi AIB_REFERENCE uses staging tables
+-- equi AIB_REFERENCE uses staging tables
 -- We consider equipment as having principal SAI and PLI numbers. 
 -- Equipment may also have a list of extra refernces which probably 
 -- indicate data errors...
@@ -247,8 +167,9 @@ SELECT
     emd.functional_location AS functional_location,
     emd.manufacturer AS manufacturer,
     emd.model_number AS model_number,
-    emd.manufact_part_number AS manufact_part_number,
-    emd.serial_number AS serial_number,
+    emd.startup_date AS startup_date,
+    emd.object_type AS object_type,
+    emd.user_status AS user_status,
     ea.* EXCLUDE (equipment_id),
 FROM s4_class_rep.equi_aib_reference ea
 JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
@@ -262,16 +183,121 @@ JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
 -- );
 
 
--- ## stats tables
 
-CREATE OR REPLACE VIEW s4_class_rep.vw_equiclass_stats AS
+
+-- ## ASSET_CONDITION
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_asset_condition (
+    equipment_id VARCHAR NOT NULL,
+    condition_grade VARCHAR,
+    condition_grade_reason VARCHAR,
+    survey_comments VARCHAR,
+    survey_date INTEGER,
+    last_refurbished_date DATE,
+    PRIMARY KEY(equipment_id)
+);
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_asset_condition AS
 SELECT 
-    array_slice(table_name, 11, len(table_name)) AS class_name,
-    t.table_name AS table_name,
-    t.estimated_size AS estimated_size, 
-    t.estimated_size > 0 AS is_populated,
-FROM duckdb_tables() t
-WHERE 
-    t.schema_name = 's4_class_rep'
-AND t.table_name LIKE 'equiclass_%';
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.startup_date AS startup_date,
+    emd.object_type AS object_type,
+    emd.user_status AS user_status,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_asset_condition ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+
+-- ## EAST_NORTH
+
+CREATE OR REPLACE TABLE s4_class_rep.floc_east_north (
+    floc_id VARCHAR NOT NULL,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY(floc_id)
+);
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_east_north AS
+SELECT 
+    fmd.floc_id AS floc_id, 
+    fmd.functional_location AS functional_location,
+    fmd.description AS description,
+    fmd.startup_date AS startup_date,
+    fmd.object_type AS object_type,
+    fmd.user_status AS user_status,
+    fa.* EXCLUDE (floc_id),
+FROM s4_class_rep.floc_east_north fa
+JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fa.floc_id;
+
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
+    equipment_id VARCHAR NOT NULL,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY(equipment_id)
+);
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_east_north AS
+SELECT 
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.startup_date AS startup_date,
+    emd.object_type AS object_type,
+    emd.user_status AS user_status,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_east_north ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+
+
+
+-- ## SOLUTION_ID
+
+CREATE OR REPLACE TABLE s4_class_rep.floc_solution_id (
+    floc_id VARCHAR NOT NULL,
+    solution_ids VARCHAR[],
+    PRIMARY KEY(floc_id)
+);
+
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_solution_id AS
+SELECT 
+    fmd.floc_id AS floc_id, 
+    fmd.functional_location AS functional_location,
+    fmd.description AS description,
+    fmd.startup_date AS startup_date,
+    fmd.object_type AS object_type,
+    fmd.user_status AS user_status,
+    fa.* EXCLUDE (floc_id),
+FROM s4_class_rep.floc_solution_id fa
+JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fa.floc_id;
+
+-- ## SOLUTION_ID
+
+CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
+    equipment_id VARCHAR NOT NULL,
+    solution_ids VARCHAR[],
+    PRIMARY KEY(equipment_id)
+);
+
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_solution_id AS
+SELECT 
+    emd.equipment_id AS equipment_id, 
+    emd.description AS description,
+    emd.functional_location AS functional_location,
+    emd.manufacturer AS manufacturer,
+    emd.model_number AS model_number,
+    emd.startup_date AS startup_date,
+    emd.object_type AS object_type,
+    emd.user_status AS user_status,
+    ea.* EXCLUDE (equipment_id),
+FROM s4_class_rep.equi_solution_id ea
+JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+
 
