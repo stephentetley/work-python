@@ -171,8 +171,8 @@ SELECT
     emd.object_type AS object_type,
     emd.user_status AS user_status,
     ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_aib_reference ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+FROM s4_class_rep.equi_master_data emd
+LEFT OUTER JOIN s4_class_rep.equi_aib_reference ea ON ea.equipment_id = emd.equipment_id;
 
 -- ## TODO 
 
@@ -208,8 +208,8 @@ SELECT
     emd.object_type AS object_type,
     emd.user_status AS user_status,
     ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_asset_condition ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+FROM s4_class_rep.equi_master_data emd
+LEFT OUTER JOIN s4_class_rep.equi_asset_condition ea ON ea.equipment_id = emd.equipment_id;
 
 -- ## EAST_NORTH
 
@@ -229,8 +229,8 @@ SELECT
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
     fa.* EXCLUDE (floc_id),
-FROM s4_class_rep.floc_east_north fa
-JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fa.floc_id;
+FROM s4_class_rep.floc_master_data fmd
+LEFT OUTER JOIN s4_class_rep.floc_east_north fa ON fa.floc_id = fmd.floc_id;
 
 
 CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
@@ -251,8 +251,8 @@ SELECT
     emd.object_type AS object_type,
     emd.user_status AS user_status,
     ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_east_north ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+FROM s4_class_rep.equi_master_data emd
+LEFT OUTER JOIN s4_class_rep.equi_east_north ea ON ea.equipment_id = emd.equipment_id;
 
 
 
@@ -274,8 +274,8 @@ SELECT
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
     fa.* EXCLUDE (floc_id),
-FROM s4_class_rep.floc_solution_id fa
-JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fa.floc_id;
+FROM s4_class_rep.floc_master_data fmd
+LEFT OUTER JOIN s4_class_rep.floc_solution_id fa ON fa.floc_id = fmd.floc_id;
 
 -- ## SOLUTION_ID
 
@@ -297,7 +297,7 @@ SELECT
     emd.object_type AS object_type,
     emd.user_status AS user_status,
     ea.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equi_solution_id ea
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ea.equipment_id;
+FROM s4_class_rep.equi_master_data emd
+LEFT OUTER JOIN s4_class_rep.equi_solution_id ea ON ea.equipment_id = emd.equipment_id;
 
 
