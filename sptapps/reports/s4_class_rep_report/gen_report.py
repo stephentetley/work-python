@@ -50,6 +50,12 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
             con=con, workbook=workbook)
         
         _add_table(
+            select_query=_flocsummary_aib_reference,
+            sheet_name='f.aib_reference', 
+            column_formats = {},
+            con=con, workbook=workbook)
+        
+        _add_table(
             select_query=_flocsummary_east_north,
             sheet_name='f.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
@@ -124,17 +130,26 @@ SELECT
 FROM s4_class_rep.floc_master_data t;
 """
 
-_equisummary_asset_condition = """
+_flocsummary_aib_reference = """
 SELECT 
-    t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
-FROM s4_class_rep.vw_equisummary_asset_condition t;
+    t.*,
+FROM s4_class_rep.vw_flocsummary_aib_reference t;
 """
+
 
 _equisummary_aib_reference = """
 SELECT 
     t.*,
 FROM s4_class_rep.vw_equisummary_aib_reference t;
 """
+
+
+_equisummary_asset_condition = """
+SELECT 
+    t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
+FROM s4_class_rep.vw_equisummary_asset_condition t;
+"""
+
 
 
 _flocsummary_east_north = """

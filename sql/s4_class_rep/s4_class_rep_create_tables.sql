@@ -119,7 +119,45 @@ AND t.table_name LIKE 'equiclass_%';
 
 -- generate sql for class tables except EAST_NORTH, SOLUTION_ID and AIB_REFERENCE ...
 
--- ## AIB_REFERENCE
+-- ## AIB_REFERENCE (floc)
+
+
+CREATE OR REPLACE TABLE s4_class_rep.floc_aib_reference (
+    floc_id VARCHAR NOT NULL,
+    ai2_aib_references VARCHAR[],
+    s4_aib_reference VARCHAR,
+    PRIMARY KEY(floc_id)
+);
+
+CREATE OR REPLACE TABLE s4_class_rep_staging.floc_ai2_sai_references (
+    floc_id VARCHAR,
+    ai2_aib_references VARCHAR[],
+    PRIMARY KEY(floc_id)
+);
+
+
+CREATE OR REPLACE TABLE s4_class_rep_staging.floc_s4_aib_reference (
+    floc_id VARCHAR,
+    s4_aib_reference VARCHAR,
+    PRIMARY KEY(floc_id)
+);
+
+
+CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_aib_reference AS
+SELECT 
+    fmd.floc_id AS floc_id, 
+    fmd.functional_location AS functional_location,
+    fmd.floc_description AS floc_description,
+    fmd.startup_date AS startup_date,
+    fmd.object_type AS object_type,
+    fmd.user_status AS user_status,
+    fa.* EXCLUDE (floc_id),
+FROM s4_class_rep.floc_master_data fmd
+LEFT OUTER JOIN s4_class_rep.floc_aib_reference fa ON fa.floc_id = fmd.floc_id;
+
+
+
+-- ## AIB_REFERENCE (equi)
 
 -- equi AIB_REFERENCE uses staging tables
 -- We consider equipment as having principal SAI and PLI numbers. 
@@ -185,15 +223,6 @@ SELECT
     ea.* EXCLUDE (equipment_id),
 FROM s4_class_rep.equi_master_data emd
 LEFT OUTER JOIN s4_class_rep.equi_aib_reference ea ON ea.equipment_id = emd.equipment_id;
-
--- ## TODO 
-
--- CREATE OR REPLACE TABLE s4_class_rep.floc_aib_reference (
---     floc_id VARCHAR NOT NULL,
---     index_solution_id INTEGER,
---     aib_reference VARCHAR,
--- );
-
 
 
 

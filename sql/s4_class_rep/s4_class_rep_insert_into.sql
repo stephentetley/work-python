@@ -96,69 +96,37 @@ FROM (
     ) e
 WHERE e.rownum = 1;
 
--- TODO AI2_REFERENCE, SOLUTION_ID etc.
+-- ## AIB_REFERENCE (floc)
 
--- Don't add empty records so use a cte for filtering
-INSERT OR REPLACE INTO s4_class_rep.equi_asset_condition BY NAME
-WITH cte AS (
-    SELECT DISTINCT ON(e.equipment_id)   
-        e.equipment_id AS equipment_id,
-        any_value(CASE WHEN eav.charid = 'CONDITION_GRADE' THEN eav.atwrt ELSE NULL END) AS condition_grade,
-        any_value(CASE WHEN eav.charid = 'CONDITION_GRADE_REASON' THEN eav.atwrt ELSE NULL END) AS condition_grade_reason,
-        any_value(CASE WHEN eav.charid = 'SURVEY_COMMENTS' THEN eav.atwrt ELSE NULL END) AS survey_comments,
-        any_value(CASE WHEN eav.charid = 'SURVEY_DATE' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS survey_date,
-    FROM s4_class_rep.equi_master_data e
-    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-    GROUP BY equipment_id
-)
-SELECT 
-    equipment_id,
-    condition_grade,
-    condition_grade_reason,
-    survey_comments,
-    survey_date,
-FROM cte
-WHERE condition_grade IS NOT NULL OR condition_grade_reason IS NOT NULL OR survey_comments IS NOT NULL OR survey_date IS NOT NULL; 
-
-
-INSERT OR REPLACE INTO s4_class_rep.floc_east_north BY NAME
+INSERT OR REPLACE INTO s4_class_rep_staging.floc_ai2_sai_references BY NAME
 SELECT DISTINCT ON(f.floc_id)   
     f.floc_id AS floc_id,
-    any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
-    any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
+    list_sort(array_agg(eav.atwrt)) AS ai2_aib_references,
 FROM s4_class_rep.floc_master_data f
 JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
-GROUP BY floc_id;
-
-INSERT OR REPLACE INTO s4_class_rep.equi_east_north BY NAME
-SELECT DISTINCT ON(e.equipment_id)
-    e.equipment_id AS equipment_id,
-    any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
-    any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
-FROM s4_class_rep.equi_master_data e
-JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-GROUP BY equipment_id;
-
-
-INSERT OR REPLACE INTO s4_class_rep.floc_solution_id BY NAME
-SELECT DISTINCT ON(f.floc_id)   
-    f.floc_id AS floc_id,
-    array_agg(eav.atwrt) AS solution_ids,
-FROM s4_class_rep.floc_master_data f
-JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
-WHERE eav.charid = 'SOLUTION_ID'
+WHERE eav.charid = 'AI2_AIB_REFERENCE'
 GROUP BY floc_id;
 
 
-INSERT OR REPLACE INTO s4_class_rep.equi_solution_id BY NAME
-SELECT DISTINCT ON (e.equipment_id)
-    e.equipment_id AS equipment_id,
-    array_agg(eav.atwrt) AS solution_ids,
-FROM s4_class_rep.equi_master_data e
-JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-WHERE eav.charid = 'SOLUTION_ID'
-GROUP BY equipment_id;
+INSERT OR REPLACE INTO s4_class_rep_staging.floc_s4_aib_reference BY NAME
+SELECT DISTINCT ON(f.floc_id)   
+    f.floc_id AS floc_id,
+    any_value(eav.atwrt) AS s4_aib_reference,
+FROM s4_class_rep.floc_master_data f
+JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
+WHERE eav.charid = 'S4_AIB_REFERENCE'
+GROUP BY floc_id;
 
+INSERT OR REPLACE INTO s4_class_rep.floc_aib_reference BY NAME
+SELECT DISTINCT ON(f.floc_id)
+    f.floc_id AS floc_id,
+    sai.ai2_aib_references AS ai2_aib_references,
+    s4.s4_aib_reference AS s4_aib_reference,
+FROM s4_class_rep.floc_master_data f
+LEFT JOIN s4_class_rep_staging.floc_ai2_sai_references sai ON sai.floc_id = f.floc_id
+LEFT JOIN s4_class_rep_staging.floc_s4_aib_reference s4 ON s4.floc_id = f.floc_id;
+
+-- ## AIB_REFERENCE (equi)
 
 INSERT OR REPLACE INTO s4_class_rep_staging.equi_ai2_sai_reference  BY NAME
 WITH cte AS (
@@ -212,4 +180,70 @@ LEFT JOIN s4_class_rep_staging.equi_ai2_sai_reference sai ON sai.equipment_id = 
 LEFT JOIN s4_class_rep_staging.equi_ai2_pli_reference pli ON pli.equipment_id = e.equipment_id
 LEFT JOIN s4_class_rep_staging.vw_equi_ai2_extra_references extras ON extras.equipment_id = e.equipment_id
 LEFT JOIN s4_class_rep_staging.vw_equi_s4_aib_references s4 ON s4.equipment_id = e.equipment_id;
+
+-- ## ASSET_CONDITION
+
+-- Don't add empty records so use a cte for filtering
+INSERT OR REPLACE INTO s4_class_rep.equi_asset_condition BY NAME
+WITH cte AS (
+    SELECT DISTINCT ON(e.equipment_id)   
+        e.equipment_id AS equipment_id,
+        any_value(CASE WHEN eav.charid = 'CONDITION_GRADE' THEN eav.atwrt ELSE NULL END) AS condition_grade,
+        any_value(CASE WHEN eav.charid = 'CONDITION_GRADE_REASON' THEN eav.atwrt ELSE NULL END) AS condition_grade_reason,
+        any_value(CASE WHEN eav.charid = 'SURVEY_COMMENTS' THEN eav.atwrt ELSE NULL END) AS survey_comments,
+        any_value(CASE WHEN eav.charid = 'SURVEY_DATE' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS survey_date,
+    FROM s4_class_rep.equi_master_data e
+    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+    GROUP BY equipment_id
+)
+SELECT 
+    equipment_id,
+    condition_grade,
+    condition_grade_reason,
+    survey_comments,
+    survey_date,
+FROM cte
+WHERE condition_grade IS NOT NULL OR condition_grade_reason IS NOT NULL OR survey_comments IS NOT NULL OR survey_date IS NOT NULL; 
+
+-- ## EAST_NORTH 
+
+INSERT OR REPLACE INTO s4_class_rep.floc_east_north BY NAME
+SELECT DISTINCT ON(f.floc_id)   
+    f.floc_id AS floc_id,
+    any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
+    any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
+FROM s4_class_rep.floc_master_data f
+JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
+GROUP BY floc_id;
+
+INSERT OR REPLACE INTO s4_class_rep.equi_east_north BY NAME
+SELECT DISTINCT ON(e.equipment_id)
+    e.equipment_id AS equipment_id,
+    any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
+    any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
+FROM s4_class_rep.equi_master_data e
+JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+GROUP BY equipment_id;
+
+
+-- ## SOLUTION_ID
+
+INSERT OR REPLACE INTO s4_class_rep.floc_solution_id BY NAME
+SELECT DISTINCT ON(f.floc_id)   
+    f.floc_id AS floc_id,
+    list_sort(array_agg(eav.atwrt)) AS solution_ids,
+FROM s4_class_rep.floc_master_data f
+JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id
+WHERE eav.charid = 'SOLUTION_ID'
+GROUP BY floc_id;
+
+
+INSERT OR REPLACE INTO s4_class_rep.equi_solution_id BY NAME
+SELECT DISTINCT ON (e.equipment_id)
+    e.equipment_id AS equipment_id,
+    list_sort(array_agg(eav.atwrt)) AS solution_ids,
+FROM s4_class_rep.equi_master_data e
+JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+WHERE eav.charid = 'SOLUTION_ID'
+GROUP BY equipment_id;
 

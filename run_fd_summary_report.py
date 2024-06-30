@@ -48,13 +48,15 @@ def main():
         dest_directory = source_directory
 
     report_name = 'fd-summary-report.xlsx'
+    output_db_name = 'fd_summary_data.duckdb'
     if args.report_name: 
         report_name = args.report_name
     elif args.report_prefix:
         report_name = args.report_prefix + report_name
+        output_db_name = args.report_prefix + output_db_name
 
     if source_directory and os.path.exists(source_directory) and os.path.exists(dest_directory):
-        duckdb_output_path  = os.path.join(dest_directory, 'fd_summary_data.duckdb')
+        duckdb_output_path  = os.path.join(dest_directory, output_db_name)
         xlsx_output_path    = os.path.join(dest_directory, report_name)
         conn = duckdb.connect(database=duckdb_output_path)
         classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
