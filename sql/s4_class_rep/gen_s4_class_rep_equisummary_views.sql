@@ -26,7 +26,7 @@ SELECT
         format('CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_{} AS', t.class_name),
         'SELECT', 
         '    emd.equipment_id AS equipment_id,', 
-        '    emd.description AS description,',
+        '    emd.equi_description AS equi_description,',
         '    emd.functional_location AS functional_location,',
         '    emd.manufacturer AS manufacturer,',
         '    emd.model_number AS model_number,',

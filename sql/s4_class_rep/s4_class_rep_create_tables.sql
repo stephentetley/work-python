@@ -21,7 +21,8 @@ CREATE SCHEMA IF NOT EXISTS s4_class_rep_staging;
 CREATE OR REPLACE TABLE s4_class_rep.floc_master_data (
     floc_id VARCHAR NOT NULL,
     functional_location VARCHAR NOT NULL,
-    description VARCHAR,
+    floc_description VARCHAR,
+    internal_floc_ref VARCHAR,
     object_type VARCHAR,
     structure_indicator VARCHAR,
     superior_funct_loc VARCHAR,
@@ -43,14 +44,14 @@ CREATE OR REPLACE TABLE s4_class_rep.floc_master_data (
     planning_plant INTEGER,
     plant_section VARCHAR,
     object_number VARCHAR,
-    location VARCHAR,
+    floc_location VARCHAR,
     address_ref INTEGER,
     PRIMARY KEY(floc_id)
 );
 
 CREATE OR REPLACE TABLE s4_class_rep.equi_master_data (
     equipment_id VARCHAR NOT NULL,
-    description VARCHAR NOT NULL,
+    equi_description VARCHAR NOT NULL,
     functional_location VARCHAR,
     superord_id VARCHAR,
     category VARCHAR,
@@ -78,7 +79,7 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_master_data (
     work_center VARCHAR,
     planning_plant INTEGER,
     plant_section VARCHAR,
-    location VARCHAR,
+    equi_location VARCHAR,
     address_ref INTEGER,
     PRIMARY KEY(equipment_id)
 );
@@ -174,7 +175,7 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_aib_reference (
 CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_aib_reference AS
 SELECT 
     emd.equipment_id AS equipment_id, 
-    emd.description AS description,
+    emd.equi_description AS equi_description,
     emd.functional_location AS functional_location,
     emd.manufacturer AS manufacturer,
     emd.model_number AS model_number,
@@ -211,7 +212,7 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_asset_condition (
 CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_asset_condition AS
 SELECT 
     emd.equipment_id AS equipment_id, 
-    emd.description AS description,
+    emd.equi_description AS equi_description,
     emd.functional_location AS functional_location,
     emd.manufacturer AS manufacturer,
     emd.model_number AS model_number,
@@ -235,7 +236,7 @@ CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_east_north AS
 SELECT 
     fmd.floc_id AS floc_id, 
     fmd.functional_location AS functional_location,
-    fmd.description AS description,
+    fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
@@ -254,7 +255,7 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_east_north (
 CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_east_north AS
 SELECT 
     emd.equipment_id AS equipment_id, 
-    emd.description AS description,
+    emd.equi_description AS equi_description,
     emd.functional_location AS functional_location,
     emd.manufacturer AS manufacturer,
     emd.model_number AS model_number,
@@ -280,7 +281,7 @@ CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_solution_id AS
 SELECT 
     fmd.floc_id AS floc_id, 
     fmd.functional_location AS functional_location,
-    fmd.description AS description,
+    fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
@@ -300,7 +301,7 @@ CREATE OR REPLACE TABLE s4_class_rep.equi_solution_id (
 CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_solution_id AS
 SELECT 
     emd.equipment_id AS equipment_id, 
-    emd.description AS description,
+    emd.equi_description AS equi_description,
     emd.functional_location AS functional_location,
     emd.manufacturer AS manufacturer,
     emd.model_number AS model_number,

@@ -28,7 +28,7 @@ SELECT
         'SELECT', 
         '        fmd.floc_id AS floc_id,',
         '        fmd.functional_location AS functional_location,', 
-        '        fmd.description AS description,',
+        '        fmd.floc_description AS floc_description,',
         '        fmd.startup_date AS startup_date,',
         '        fmd.object_type AS object_type,',
         '        fmd.user_status AS user_status,',
