@@ -111,6 +111,16 @@ def _add_table(
             workbook=workbook, sheet_name=sheet_name, 
             column_formats = column_formats)
 
+_floc_master_data = """
+SELECT 
+    t.* REPLACE (
+        format('{:02d}', construction_month) AS construction_month, 
+        format('{:04d}', display_position) AS display_position,
+        strftime(startup_date, '%d.%m.%Y') AS startup_date),
+FROM s4_class_rep.floc_master_data t
+ORDER BY t.functional_location;
+"""
+
 _equi_master_data = """
 SELECT 
     t.* REPLACE (
@@ -118,36 +128,32 @@ SELECT
         format('{:04d}', display_position) AS display_position,
         strftime(startup_date, '%d.%m.%Y') AS startup_date, 
         strftime(valid_from, '%d.%m.%Y') AS valid_from),
-FROM s4_class_rep.equi_master_data t;
+FROM s4_class_rep.equi_master_data t
+ORDER BY t.equipment_id;
 """
 
-_floc_master_data = """
-SELECT 
-    t.* REPLACE (
-        format('{:02d}', construction_month) AS construction_month, 
-        format('{:04d}', display_position) AS display_position,
-        strftime(startup_date, '%d.%m.%Y') AS startup_date),
-FROM s4_class_rep.floc_master_data t;
-"""
 
 _flocsummary_aib_reference = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_flocsummary_aib_reference t;
+FROM s4_class_rep.vw_flocsummary_aib_reference t
+ORDER BY t.functional_location;
 """
 
 
 _equisummary_aib_reference = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_equisummary_aib_reference t;
+FROM s4_class_rep.vw_equisummary_aib_reference t
+ORDER BY t.equipment_id;
 """
 
 
 _equisummary_asset_condition = """
 SELECT 
     t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
-FROM s4_class_rep.vw_equisummary_asset_condition t;
+FROM s4_class_rep.vw_equisummary_asset_condition t
+ORDER BY t.equipment_id;
 """
 
 
@@ -155,25 +161,29 @@ FROM s4_class_rep.vw_equisummary_asset_condition t;
 _flocsummary_east_north = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_flocsummary_east_north t;
+FROM s4_class_rep.vw_flocsummary_east_north t
+ORDER BY t.functional_location;
 """
 
 _equisummary_east_north = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_equisummary_east_north t;
+FROM s4_class_rep.vw_equisummary_east_north t
+ORDER BY t.equipment_id;
 """
 
 _flocsummary_solution_id = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_flocsummary_solution_id t;
+FROM s4_class_rep.vw_flocsummary_solution_id t
+ORDER BY t.functional_location;
 """
 
 _equisummary_solution_id = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_equisummary_solution_id t;
+FROM s4_class_rep.vw_equisummary_solution_id t
+ORDER BY t.equipment_id;
 """
 
 def _add_flocclass_tables(
@@ -198,7 +208,7 @@ WITH cte AS (
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'SELECT t.* FROM s4_class_rep.vw_flocsummary_{} t;', t.class_name) AS sql_text,
+    format(E'SELECT t.* FROM s4_class_rep.vw_flocsummary_{} t ORDER BY t.functional_location;', t.class_name) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
 """
@@ -225,7 +235,7 @@ WITH cte AS (
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'SELECT t.* FROM s4_class_rep.vw_equisummary_{} t;', t.class_name) AS sql_text,
+    format(E'SELECT t.* FROM s4_class_rep.vw_equisummary_{} t ORDER BY t.equipment_id;', t.class_name) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
 """
