@@ -61,6 +61,8 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
             column_formats = {},
             con=con, workbook=workbook)
         
+        _add_flocclass_tables(con=con, workbook=workbook)
+        
         _add_table(
             select_query=_equisummary_aib_reference,
             sheet_name='e.aib_reference', 
@@ -160,6 +162,32 @@ SELECT
 FROM s4_class_rep.vw_equisummary_solution_id t;
 """
 
+def _add_flocclass_tables(
+        *, 
+        workbook: Workbook, 
+        con: duckdb.DuckDBPyConnection) -> None:
+    def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
+        sheet_name = "f.{}".format(row.get('class_name', "unknown"))
+        PolarsXlsxTable(df=df).write_excel(
+            workbook=workbook, sheet_name=sheet_name, 
+            column_formats = {})
+    runner = SqlScriptRunner()
+    runner.eval_sql_generating_stmt(sql_query=_get_flocclass_tables, action=action, con=con)
+
+
+_get_flocclass_tables = """
+WITH cte AS (
+    SELECT 
+        t.class_name,
+    FROM s4_class_rep.vw_flocclass_stats t 
+    WHERE t.estimated_size > 0
+)
+SELECT 
+    t.class_name AS class_name,
+    format(E'SELECT t.* FROM s4_class_rep.vw_flocsummary_{} t;', t.class_name) AS sql_text,
+FROM cte t
+ORDER BY t.class_name ASC;
+"""
 
 def _add_equiclass_tables(
         *, 
@@ -187,3 +215,4 @@ SELECT
 FROM cte t
 ORDER BY t.class_name ASC;
 """
+

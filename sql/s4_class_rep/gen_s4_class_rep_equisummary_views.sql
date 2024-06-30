@@ -14,18 +14,6 @@
 -- limitations under the License.
 -- 
 
-SELECT 
-    emd.equipment_id AS equipment_id,
-    emd.description AS description,
-    emd.functional_location AS functional_location,
-    emd.manufacturer AS manufacturer,
-    emd.model_number AS model_number,
-    emd.manufact_part_number AS manufact_part_number,
-    emd.serial_number AS serial_number,
-    ec.* EXCLUDE (equipment_id),
-FROM s4_class_rep.equiclass_actuem ec
-JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ec.equipment_id;
-
 WITH cte AS (
     SELECT 
         lower(ecl.class_name) AS class_name,
