@@ -16,9 +16,10 @@ limitations under the License.
 """
 
 import os
+from typing import Callable, Any
 import duckdb
 import jinja2
-
+import polars as pl
 
 class SqlScriptRunner:
     def __init__(self) -> None:
@@ -85,3 +86,34 @@ class SqlScriptRunner:
             print(f"SQL file does not exist {sql_file_path}")
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 
+
+    def exec_sql_generating_stmt(self, *, sql_query: str, con: duckdb.DuckDBPyConnection) -> None:
+        """`sql_query` should be a single query and contain a column called `sql_text`"""
+        df = con.execute(sql_query).pl()
+        for row in df.rows(named=True):
+            sql_stmt = row['sql_text']
+            try:
+                con.execute(sql_stmt)
+            except Exception as exn: 
+                print(f"SQL query failed:")
+                print(sql_query)
+                print(exn)
+                raise(exn)
+        con.commit()
+
+
+    def eval_sql_generating_stmt(self, *, sql_query: str, action: Callable[[dict[str, Any], pl.DataFrame], None],  con: duckdb.DuckDBPyConnection) -> None:
+        """`sql_query` should be a single query and contain a column called `sql_text`"""
+        df = con.execute(sql_query).pl()
+        for row in df.rows(named=True):
+            sql_stmt = row['sql_text']
+            row.pop('sql_text')
+            try:
+                df1 = con.execute(sql_stmt).pl()
+                action(row, df1)
+            except Exception as exn: 
+                print(f"SQL query failed:")
+                print(sql_query)
+                print(exn)
+                raise(exn)
+        con.commit()        

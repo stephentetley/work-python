@@ -15,10 +15,13 @@ limitations under the License.
 
 """
 
+from typing import Callable, Any
 import duckdb
+import polars as pl
 import xlsxwriter
 from xlsxwriter import Workbook
 from sptlibs.utils.polars_xlsx_table import PolarsXlsxTable
+from utils.sql_script_runner import SqlScriptRunner
 
 def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
     with xlsxwriter.Workbook(xls_output_path) as workbook:
@@ -81,6 +84,8 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
             sheet_name='e.solution_id', 
             column_formats = {},
             con=con, workbook=workbook)
+        
+        _add_equiclass_tables(con=con, workbook=workbook)
         
         print(f'Wrote: {xls_output_path}')
 
@@ -153,4 +158,32 @@ _equisummary_solution_id = """
 SELECT 
     t.*,
 FROM s4_class_rep.vw_equisummary_solution_id t;
+"""
+
+
+def _add_equiclass_tables(
+        *, 
+        workbook: Workbook, 
+        con: duckdb.DuckDBPyConnection) -> None:
+    def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
+        sheet_name = "e.{}".format(row.get('class_name', "unknown"))
+        PolarsXlsxTable(df=df).write_excel(
+            workbook=workbook, sheet_name=sheet_name, 
+            column_formats = {})
+    runner = SqlScriptRunner()
+    runner.eval_sql_generating_stmt(sql_query=_get_equiclass_tables, action=action, con=con)
+    
+    
+_get_equiclass_tables = """
+WITH cte AS (
+    SELECT 
+        t.class_name,
+    FROM s4_class_rep.vw_equiclass_stats t 
+    WHERE t.estimated_size > 0
+)
+SELECT 
+    t.class_name AS class_name,
+    format(E'SELECT t.* FROM s4_class_rep.vw_equisummary_{} t;', t.class_name) AS sql_text,
+FROM cte t
+ORDER BY t.class_name ASC;
 """
