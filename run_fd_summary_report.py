@@ -19,9 +19,10 @@ from argparse import ArgumentParser
 import os
 import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
-import sptlibs.data_import.file_download.duckdb_import as file_download_duckdb_import
 import sptlibs.data_import.s4_classlists.duckdb_import as classlists_duckdb_import
-from sptapps.reports.file_download_summary.gen_summary_report import GenSummaryReport
+import sptlibs.data_import.file_download.duckdb_import as file_download_duckdb_import
+import sptlibs.asset_ir.s4_class_rep.duckdb_init as s4_class_rep_duckdb_setup
+import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 
 
 
@@ -56,12 +57,14 @@ def main():
         duckdb_output_path  = os.path.join(dest_directory, 'fd_summary_data.duckdb')
         xlsx_output_path    = os.path.join(dest_directory, report_name)
         conn = duckdb.connect(database=duckdb_output_path)
+        classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
+
         file_download_duckdb_import.init_s4_fd_raw_data_tables(con=conn)
         file_download_duckdb_import.store_download_files(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
-        classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
+
+        s4_class_rep_duckdb_setup.init_s4_class_rep_tables(con=conn)
+        gen_report.gen_report(xls_output_path=xlsx_output_path, con=conn)
         conn.close()
-        gen_summary = GenSummaryReport(db_path=duckdb_output_path, xlsx_output_name=xlsx_output_path)
-        gen_summary.gen_summary_report()
         print(f"Created - {xlsx_output_path}")
 
 main()

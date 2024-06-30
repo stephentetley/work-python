@@ -89,7 +89,6 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
         
         _add_equiclass_tables(con=con, workbook=workbook)
         
-        print(f'Wrote: {xls_output_path}')
 
 def _general_columns(ls: list[str]) -> dict[str, str]:
     return {key: 'General' for key in ls}
