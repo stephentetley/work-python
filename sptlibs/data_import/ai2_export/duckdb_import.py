@@ -16,6 +16,7 @@ limitations under the License.
 """
 
 import duckdb
+from jinja2 import Template
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_import.import_utils as import_utils
@@ -58,17 +59,19 @@ def _import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> Non
     headers.remove('reference')    
     headers = map(lambda x: f'{x}::VARCHAR', headers)
     header_str =', '.join(headers)
-    pivot_insert = f"""
-        INSERT INTO ai2_export.equi_eav_data BY NAME
-        SELECT 
-            pvt.reference AS ai2_reference, 
-            pvt.attr_name AS attribute_name, 
-            pvt.attr_value AS attribute_value, 
-        FROM (
-            UNPIVOT df ON {header_str} INTO NAME attr_name VALUE attr_value
-        ) pvt
-        WHERE
-            pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'asset_in_aide')
-        ON CONFLICT DO UPDATE SET attribute_value = EXCLUDED.attribute_value;
-    """
-    con.execute(pivot_insert)
+    insert_stmt = Template(_pivot_insert).render(headers=header_str)
+    con.execute(insert_stmt)
+
+_pivot_insert = """
+    INSERT INTO ai2_export.equi_eav_data BY NAME
+    SELECT 
+        pvt.reference AS ai2_reference, 
+        pvt.attr_name AS attribute_name, 
+        pvt.attr_value AS attribute_value, 
+    FROM (
+        UNPIVOT df ON {{headers}} INTO NAME attr_name VALUE attr_value
+    ) pvt
+    WHERE
+        pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'asset_in_aide')
+    ON CONFLICT DO UPDATE SET attribute_value = EXCLUDED.attribute_value;
+"""
