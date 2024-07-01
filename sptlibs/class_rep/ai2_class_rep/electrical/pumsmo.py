@@ -18,8 +18,8 @@ limitations under the License.
 from typing import Callable
 import duckdb
 import polars as pl
-import sptlibs.asset_ir.ai2_class_rep.utils as utils
-import sptlibs.asset_ir.class_rep.gen_table as gen_table
+import sptlibs.class_rep.ai2_class_rep.utils as utils
+import sptlibs.class_rep.class_rep.gen_table as gen_table
 
 def create_pumsmo_table(*, con: duckdb.DuckDBPyConnection) -> None: 
     gen_table.gen_cr_table(pk_name='equi_id', schema_name='ai2_class_rep', class_name='PUMSMO', con=con)
