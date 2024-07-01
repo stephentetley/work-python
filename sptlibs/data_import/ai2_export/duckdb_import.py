@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
-from utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_import.import_utils as import_utils
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 

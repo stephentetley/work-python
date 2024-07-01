@@ -7,7 +7,7 @@ from sptlibs.utils.asset_data_config import AssetDataConfig
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.s4_classlists.duckdb_import as classlists_duckdb_import
 import sptlibs.data_import.ai2_export.duckdb_import as ai2_exports_import
-import asset_ir.ai2_class_rep.duckdb_init as ai2_class_duckdb_init
+import sptlibs.class_rep.ai2_class_rep.duckdb_init as ai2_class_duckdb_init
 
 
 def get_downloads(*, source_dir: str, glob_pattern: str) -> list[XlsxSource]:
