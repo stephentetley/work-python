@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
+
 from argparse import ArgumentParser
 import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
