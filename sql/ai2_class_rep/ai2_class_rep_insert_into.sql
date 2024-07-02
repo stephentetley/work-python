@@ -19,6 +19,7 @@
 --- source table may have _duplicates_ hence use `DISTINCT ON`...
 INSERT INTO ai2_class_rep.equi_master_data BY NAME
 SELECT DISTINCT ON (emd.ai2_reference)
+    hash(emd.ai2_reference) AS equipment_key,
     emd.ai2_reference AS ai2_reference,
     emd.common_name AS common_name,
     regexp_extract(emd.common_name, '/([^/]*)/EQUIPMENT:', 1) AS equipment_name,
@@ -41,6 +42,7 @@ GROUP BY emd.ai2_reference, emd.common_name, emd.installed_from, emd.asset_statu
 
 INSERT INTO ai2_class_rep.equi_memo_text BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
+    hash(emd.ai2_reference) AS equipment_key,
     emd.ai2_reference AS ai2_reference,
     any_value(CASE WHEN eav.attribute_name = 'memo_line_1' THEN eav.attribute_value ELSE NULL END) AS memo_line1,
     any_value(CASE WHEN eav.attribute_name = 'memo_line_2' THEN eav.attribute_value ELSE NULL END) AS memo_line2,
@@ -55,6 +57,7 @@ GROUP BY emd.ai2_reference;
 
 INSERT OR REPLACE INTO ai2_class_rep.equi_asset_condition BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
+    hash(emd.ai2_reference) AS equipment_key,
     emd.ai2_reference AS ai2_reference, 
     any_value(CASE WHEN eav.attribute_name = 'condition_grade' THEN eav.attribute_value ELSE NULL END) AS condition_grade,
     any_value(CASE WHEN eav.attribute_name = 'condition_grade_reason' THEN eav.attribute_value ELSE NULL END) AS condition_grade_reason,
@@ -69,6 +72,7 @@ GROUP BY emd.ai2_reference;
 -- uses scalar udfs `udf_get_easting` and `udf_get_northing` that must be registered first...
 INSERT INTO ai2_class_rep.equi_east_north BY NAME
 SELECT DISTINCT ON(emd.ai2_reference)
+    hash(emd.ai2_reference) AS equipment_key,
     emd.ai2_reference AS ai2_reference,
     any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN eav.attribute_value ELSE NULL END) AS grid_ref,
     any_value(CASE WHEN eav.attribute_name = 'loc_ref' THEN udf_get_easting(eav.attribute_value) ELSE NULL END) AS easting,

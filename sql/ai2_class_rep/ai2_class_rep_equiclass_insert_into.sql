@@ -15,41 +15,13 @@
 -- 
 
 
-
-CREATE OR REPLACE MACRO ai2_class_rep.voltage_ac_or_dc(ac_or_dc) AS (
-    CASE 
-        WHEN upper(ac_or_dc) = 'DIRECT CURRENT' THEN 'VDC' 
-        WHEN upper(ac_or_dc) = 'ALTERNATING CURRENT' THEN 'VAC'
-        ELSE NULL
-    END
-);
-
-
-CREATE OR REPLACE MACRO ai2_class_rep.size_to_millimetres(size_units, size_value) AS (
-    CASE 
-        WHEN upper(size_units) = 'MILLIMETRES' THEN round(size_value, 0)
-        WHEN upper(size_units) = 'CENTIMETRES' THEN round(size_value  * 10, 0) 
-        WHEN upper(size_units) = 'INCH' THEN round(size_value * 25.4, 0) 
-        ELSE NULL
-    END
-);
-
--- Ignore `KILOVOLT AMP`
-CREATE OR REPLACE MACRO ai2_class_rep.power_to_killowatts(power_units, power_value) AS (
-    CASE 
-        WHEN upper(power_units) = 'KILOWATTS' THEN power_value
-        WHEN upper(power_units) = 'WATTS' THEN power_value  * 1000.0  
-        ELSE NULL
-    END
-);
-
-
 -- # EQUICLASS TABLES
 
 -- ## ACSTBR (Bridge)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_acstbr BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -63,7 +35,8 @@ FROM cte;
 -- ## AERASD (Submerged Aeration Diffuser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_aerasd BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -77,7 +50,8 @@ FROM cte;
 -- ## AIRCON (Air Conditioning Unit)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_aircon BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -91,7 +65,8 @@ FROM cte;
 -- ## ALAMCC (CCTV Camera)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_alamcc BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -106,7 +81,8 @@ FROM cte;
 -- ## ALAMFS (Fire Alarm System)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_alamfs BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -120,7 +96,8 @@ FROM cte;
 -- ## ALAMIA (Intruder Alarm)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_alamia BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -134,7 +111,8 @@ FROM cte;
 -- ## ANALAM (Ammonia (Ion) Analyser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_analam BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -148,7 +126,8 @@ FROM cte;
 -- ## ANALCL (Chlorine (Ion) Analyser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_analcl BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -162,7 +141,8 @@ FROM cte;
 -- ## ANALCO (Conductivity (in fluid) Analyser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_analco BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -176,7 +156,8 @@ FROM cte;
 -- ## ANALDE (Density Analyser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_analde BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -190,7 +171,8 @@ FROM cte;
 -- ## ANALDO (Dissolved Oxygen Analyser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_analdo BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -204,7 +186,8 @@ FROM cte;
 -- ## ANALTB (Turbidity in Fluid Analyser)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_analtb BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -219,7 +202,8 @@ FROM cte;
 -- ## CCBKAC (Air Circuit Breaker)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_ccbkac BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -233,7 +217,8 @@ FROM cte;
 -- ## CFUGCE (Centrifuge)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_cfugce BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -248,7 +233,8 @@ FROM cte;
 -- ## CHAMBR (Chamber)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_chambr BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -264,7 +250,8 @@ FROM cte;
 -- ## COUNCP (Compactor)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_councp BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -278,7 +265,8 @@ FROM cte;
 -- ## COTRCT (Condensate Trap)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_cotrct BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -292,7 +280,8 @@ FROM cte;
 -- ## CRHTBT (Beam Trolley)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_crhtbt BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -307,7 +296,8 @@ FROM cte;
 -- ## CRHTCR (Crane)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_crhtcr BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -321,7 +311,8 @@ FROM cte;
 -- ## CRHTDS (Davit Socket)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_crhtds BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -337,7 +328,8 @@ FROM cte;
 -- TODO type refinement
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_crhtji BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -351,7 +343,8 @@ FROM cte;
 -- ## DECOEB (Emergency Eye Wash Station)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_decoeb BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -365,7 +358,8 @@ FROM cte;
 -- ## DECOES (Emergency Eye Wash and Shower)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_decoes BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -380,7 +374,8 @@ FROM cte;
 -- ## DECOSH (Emergency Shower)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_decosh BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -394,7 +389,8 @@ FROM cte;
 -- ## DISTBD (Distribution Board)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_distbd BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -409,6 +405,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_emtrin BY NAME
 WITH cte AS (
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'insulation_class' THEN eav.attribute_value ELSE NULL END) AS insulation_class_deg_c,
@@ -432,7 +429,8 @@ FROM cte;
 -- ## FSTNIP (Emag Insertion Probe Flow Device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_fstnip BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -446,7 +444,8 @@ FROM cte;
 -- ## FSTNOC (Open Channel (usonic) Flow Device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_fstnoc BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -460,7 +459,8 @@ FROM cte;
 -- ## FSTNTM (Thermal Mass Flow Transmitter)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_fstntm BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -474,7 +474,8 @@ FROM cte;
 -- ## FSTNVA (Variable Area Flow Device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_fstnva BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -488,7 +489,8 @@ FROM cte;
 -- ## HEATIM (Immersion Heater)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_heatim BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -502,7 +504,8 @@ FROM cte;
 -- ## HSYSPP (Hydraulic Power Pack)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_hsyspp BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -516,7 +519,8 @@ FROM cte;
 -- ## INTFLO (Local Operator Interface for PLCs)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_intflo BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -530,7 +534,8 @@ FROM cte;
 -- ## KISKKI (Kiosk)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_kiskki BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -544,7 +549,8 @@ FROM cte;
 -- ## LIACBS (Bow Shackle)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_liacbs BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -559,7 +565,8 @@ FROM cte;
 -- ## LIDEEX (Exterior Lighting)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lideex BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -573,7 +580,8 @@ FROM cte;
 -- ## LIDEIN (Interior Lighting)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lidein BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -587,7 +595,8 @@ FROM cte;
 -- ## LISLBS (Belt Sling)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lislbs BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -602,7 +611,8 @@ FROM cte;
 -- ## LISLCS (Chain Sling)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lislcs BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -617,6 +627,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnco BY NAME
 WITH cte AS (
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
@@ -625,8 +636,8 @@ WITH cte AS (
         any_value(CASE WHEN eav.attribute_name = 'signal_max' THEN eav.attribute_value ELSE NULL END) AS __signal_max,
         any_value(CASE WHEN eav.attribute_name = 'signal_min' THEN eav.attribute_value ELSE NULL END) AS __signal_min,
         any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN eav.attribute_value ELSE NULL END) AS __signal_unit,
-        format_signal(__signal_min, __signal_max, __signal_unit) AS lstn_signal_type,
-        format_output_type(__signal_unit) AS lstn_output_type,
+        ai2_class_rep.format_signal(__signal_min, __signal_max, __signal_unit) AS lstn_signal_type,
+        ai2_class_rep.format_output_type(__signal_unit) AS lstn_output_type,
     FROM ai2_export.equi_master_data emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     WHERE emd.common_name LIKE '%EQUIPMENT: CONDUCTIVITY LEVEL INSTRUMENT'
@@ -638,7 +649,8 @@ FROM cte;
 -- ## LSTNCP (Capacitive Level Device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstncp BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -652,7 +664,8 @@ FROM cte;
 -- ## LSTNFL                             Level Float Device
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnfl BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -667,12 +680,13 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_lstnut BY NAME
 WITH cte AS (
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'signal_max' THEN eav.attribute_value ELSE NULL END) AS __signal_max,
         any_value(CASE WHEN eav.attribute_name = 'signal_min' THEN eav.attribute_value ELSE NULL END) AS __signal_min,
         any_value(CASE WHEN eav.attribute_name = 'signal_unit' THEN eav.attribute_value ELSE NULL END) AS __signal_unit,
-        format_signal(__signal_min, __signal_max, __signal_unit) AS lstn_signal_type,
+        ai2_class_rep.format_signal(__signal_min, __signal_max, __signal_unit) AS lstn_signal_type,
         any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS ip_rating,
         any_value(CASE WHEN eav.attribute_name = 'range_max' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_max,
         any_value(CASE WHEN eav.attribute_name = 'range_min' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS lstn_range_min,
@@ -708,7 +722,8 @@ FROM cte;
 -- ## METREL (Electricity Meter)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_metrel BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -719,11 +734,27 @@ SELECT
     COLUMNS(c -> NOT starts_with(c, '__'))
 FROM cte;
 
+-- ## NETWTL (Telemetry System Network Node)
+INSERT OR REPLACE INTO ai2_class_rep.equiclass_netwtl BY NAME
+WITH cte AS(
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
+        emd.ai2_reference AS ai2_reference, 
+        any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+    FROM ai2_export.equi_master_data emd
+    JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
+    WHERE emd.common_name LIKE '%EQUIPMENT: TELEMETRY OUTSTATION'
+    GROUP BY emd.ai2_reference)
+SELECT 
+    COLUMNS(c -> NOT starts_with(c, '__'))
+FROM cte;
+
 
 -- ## PODEUP (Uninterruptable Power Supply)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_podeup BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -734,10 +765,11 @@ SELECT
     COLUMNS(c -> NOT starts_with(c, '__'))
 FROM cte;
 
--- ## POGEAC                             Alternator
+-- ## POGEAC (Alternator)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_pogeac BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -751,7 +783,8 @@ FROM cte;
 -- ## PSTNDI (Diaphragm Type Pressure Device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_pstndi BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -765,7 +798,8 @@ FROM cte;
 -- ## PUMPCE (Centrifugal Pump)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_pumpce BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -779,7 +813,8 @@ FROM cte;
 -- ## PUMPDI (Diaphragm Pump)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_pumpdi BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -793,7 +828,8 @@ FROM cte;
 -- ## PUMPHR (Helical Rotor Pump)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_pumphr BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -807,7 +843,8 @@ FROM cte;
 -- ## SFERBA (Breathing Apparatus Cylinder)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_sferba BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -822,7 +859,8 @@ FROM cte;
 -- ## SFERFA (Fall Arrester)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_sferfa BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -836,7 +874,8 @@ FROM cte;
 -- ## SHWRDE (Domestic Electrical Shower)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_shwrde BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -851,6 +890,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_stardo BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN eav.attribute_value ELSE NULL END) AS ip_rating,
@@ -872,6 +912,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_starvf BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'ip_rating' THEN eav.attribute_value ELSE NULL END) AS ip_rating,
@@ -892,7 +933,8 @@ FROM cte;
 -- ## TSTNTT (Temperature Monitoring Device)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_tstntt BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -907,6 +949,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvav BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
@@ -924,6 +967,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvba BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
@@ -943,6 +987,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvbe BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
@@ -961,6 +1006,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvga BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
@@ -980,6 +1026,7 @@ FROM cte;
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_valvpg BY NAME
 WITH cte AS(
     SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'size' THEN TRY_CAST(eav.attribute_value AS DECIMAL) ELSE NULL END) AS __size, 
@@ -998,7 +1045,8 @@ FROM cte;
 -- ## VEPRAR (Air Receiver Vessel)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_veprar BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -1012,7 +1060,8 @@ FROM cte;
 -- ## WELLWT (Wet Well)
 INSERT OR REPLACE INTO ai2_class_rep.equiclass_wellwt BY NAME
 WITH cte AS(
-    SELECT DISTINCT ON(emd.ai2_reference)   
+    SELECT DISTINCT ON(emd.ai2_reference)
+        hash(emd.ai2_reference) AS equipment_key,
         emd.ai2_reference AS ai2_reference, 
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
     FROM ai2_export.equi_master_data emd
@@ -1022,3 +1071,4 @@ WITH cte AS(
 SELECT 
     COLUMNS(c -> NOT starts_with(c, '__'))
 FROM cte;
+

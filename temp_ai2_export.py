@@ -23,11 +23,11 @@ config.set_focus('file_download_summary')
 
 glob_pattern        = '*.xlsx'
 
-sources = get_downloads(source_dir = 'G:/work/2024/ai2_to_s4/multi', glob_pattern="*.xlsx")
+sources = get_downloads(source_dir = 'G:/work/2024/ai2_to_s4/wo100-telemetry', glob_pattern="sample*.xlsx")
 
 print(sources)
 
-output_path = 'G:/work/2024/ai2_to_s4/multi/multi-aib.duckdb'
+output_path = 'G:/work/2024/ai2_to_s4/wo100-telemetry/wo100-telemetry-aib.duckdb'
 
 
 classlists_db = config.get_expanded_path('classlists_db_src')
