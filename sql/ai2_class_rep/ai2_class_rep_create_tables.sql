@@ -110,4 +110,14 @@ CREATE OR REPLACE TABLE ai2_class_rep.equi_asset_condition (
     PRIMARY KEY(equipment_key)
 );
 
+CREATE OR REPLACE VIEW ai2_class_rep.vw_equiclass_stats AS
+SELECT 
+    array_slice(table_name, 11, len(table_name)) AS class_name,
+    t.table_name AS table_name,
+    t.estimated_size AS estimated_size, 
+    t.estimated_size > 0 AS is_populated,
+FROM duckdb_tables() t
+WHERE 
+    t.schema_name = 'ai2_class_rep'
+AND t.table_name LIKE 'equiclass_%';
 
