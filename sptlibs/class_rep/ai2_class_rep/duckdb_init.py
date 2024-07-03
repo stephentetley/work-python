@@ -27,6 +27,7 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
     # create table etc. ...
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_create_tables.sql', con=con)
     runner.exec_sql_generating_file(file_rel_path='ai2_class_rep/gen_ai2_class_rep_equiclass_tables.sql', con=con)
+    runner.exec_sql_generating_file(file_rel_path='ai2_class_rep/gen_ai2_class_rep_equisummary_views.sql', con=con)
     # insert data...
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_insert_into.sql', con=con)
     runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_equiclass_insert_into.sql', con=con)
