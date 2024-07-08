@@ -74,13 +74,17 @@ SELECT
     ec.char_precision AS char_precision,
     CASE 
         WHEN ec.char_type = 'CHAR' THEN 'TEXT'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) THEN 'INTEGER'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length < 10 THEN 'INTEGER'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 10 AND ec.char_length < 19 THEN 'BIGINT'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 19 THEN 'HUGEINT'
         WHEN ec.char_type = 'NUM' AND ec.char_precision > 0 THEN 'DECIMAL'
         ELSE ec.char_type
     END AS refined_char_type,
     CASE 
         WHEN ec.char_type = 'CHAR' THEN 'VARCHAR'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) THEN 'INTEGER'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length < 10 THEN 'INTEGER'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 10 AND ec.char_length < 19 THEN 'BIGINT'
+        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 19 THEN 'HUGEINT'
         WHEN ec.char_type = 'NUM' AND ec.char_precision > 0 THEN format('DECIMAL({}, {})', ec.char_length, ec.char_precision)
         ELSE ec.char_type
     END AS ddl_data_type
