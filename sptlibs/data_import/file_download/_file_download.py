@@ -44,7 +44,7 @@ class _FileDownload:
             dtypes = {"column_1": pl.String, "column_16": pl.Float64, "column_17": pl.Float64}
         if column_names:
             body = pl.read_csv(path, new_columns = column_names, dtypes=dtypes, has_header=False, separator='\t', comment_prefix='*')
-            body = body.drop(columns = cs.contains("column_"))
+            body = body.drop(cs.contains("column_"))
             return cls(data_model=headers.get('data_model'), entity_type=headers.get('entity_type'), 
                        date=headers.get('date'), time=headers.get('time'),
                        variant=headers.get('variant'), payload=body)

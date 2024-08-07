@@ -155,7 +155,7 @@ def duckdb_import_cvs_into(csv_path: str, *, df_name: str, insert_stmt: str, con
 
 def duckdb_import_sheet(source: XlsxSource, *, qualified_table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Note drops the table `table_name` before filling it'''
-    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
+    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
     if df_trafo is not None:
         df_clean = df_trafo(df_raw)
     else:
