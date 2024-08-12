@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-from utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def init_s4_class_rep_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()

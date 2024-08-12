@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 from duckdb.typing import *
-from utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 from sptlibs.utils.grid_ref import Osgb36
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 

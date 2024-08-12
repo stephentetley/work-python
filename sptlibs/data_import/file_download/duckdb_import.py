@@ -18,7 +18,7 @@ limitations under the License.
 import os
 import glob
 import duckdb
-from utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 from sptlibs.data_import.file_download._file_download import _FileDownload
 
 def init_s4_fd_raw_data_tables(*, con: duckdb.DuckDBPyConnection) -> None: 

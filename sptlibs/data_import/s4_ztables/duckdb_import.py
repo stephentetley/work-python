@@ -18,7 +18,7 @@ limitations under the License.
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_import.import_utils as import_utils
-from utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
 
