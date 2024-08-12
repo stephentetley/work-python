@@ -42,6 +42,7 @@ def import_outstations_report(rts_report_csv: str, *, con: duckdb.DuckDBPyConnec
     con.execute('CREATE SCHEMA IF NOT EXISTS rts_raw_data;')
     import_utils.duckdb_import_csv(
         rts_report_csv, 
+        separator='\t',
         table_name='rts_raw_data.outstations_report', 
         rename_before_trafo=True, 
         df_trafo=_trafo_dataframe, 

@@ -114,12 +114,14 @@ _copy_tables_template = """
 
 def duckdb_import_csv(
         csv_path: str, 
-        *, table_name: str, 
+        *, 
+        separator: str, 
+        table_name: str, 
         rename_before_trafo: bool, 
         df_trafo: Callable[[pl.DataFrame], pl.DataFrame], 
         con: duckdb.DuckDBPyConnection) -> None:
     '''Note drops the table `table_name` before filling it. Must have headers.'''
-    df_raw = pl.read_csv(source=csv_path, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
+    df_raw = pl.read_csv(source=csv_path, separator=separator, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
     if rename_before_trafo: 
         df1 = df_renamed = normalize_df_column_names(df_raw)
     else: 
@@ -138,9 +140,9 @@ def duckdb_import_csv(
     con.commit()
 
 
-def duckdb_import_cvs_into(csv_path: str, *, df_name: str, insert_stmt: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
+def duckdb_import_cvs_into(csv_path: str, *, separator: str, df_name: str, insert_stmt: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Fill a table with an INSERT INTO statement'''
-    df_raw = pl.read_csv(source=csv_path, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
+    df_raw = pl.read_csv(source=csv_path, separator=separator, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
     if df_trafo is not None:
         df_clean = df_trafo(df_raw)
     else:

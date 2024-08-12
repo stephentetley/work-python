@@ -21,6 +21,7 @@ import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_import.rts_outstations.duckdb_import as duckdb_import
 
+# TODO specify input file at command line...
 def main(): 
     parser = ArgumentParser(description='Generate rts outstation info table from an rts outstations report')
     parser.add_argument("--report_outfile", dest='report_outfile', help="cvs output path, use to optionally generate a csv report")
