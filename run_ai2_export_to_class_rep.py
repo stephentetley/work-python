@@ -55,7 +55,11 @@ def main():
     else:
         dest_directory = source_directory
     
-    output_db_name = args.db_prefix + 'ai2_class_rep.duckdb'
+    if args.db_prefix:
+        output_db_name = args.db_prefix + 'ai2_class_rep_db.duckdb'
+    else:
+        output_db_name = 'ai2_class_rep_db.duckdb'
+
     if source_directory and os.path.exists(source_directory) and os.path.exists(dest_directory):
         sources = _get_downloads(source_dir = source_directory, glob_pattern=glob_pattern)
         for source in sources:

@@ -39,14 +39,14 @@ def read_csv_source(
         df = post_normalize_names_trafo(df)
     return df
 
-# 'xlsx2csv' is the fastest engine
+
 def read_xlsx_source(
         source: XlsxSource, 
         *, 
         pre_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
         post_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
         normalize_column_names = True) -> pl.DataFrame:
-    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
+    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
     if pre_normalize_names_trafo: 
         df = pre_normalize_names_trafo(df)
     if normalize_column_names:
@@ -170,7 +170,7 @@ def duckdb_import_sheet(source: XlsxSource, *, qualified_table_name: str, con: d
 
 def duckdb_import_sheet_into(source: XlsxSource, *, df_name: str, insert_stmt: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Fill a table with an INSERT INTO statement'''
-    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='xlsx2csv', read_csv_options = {'ignore_errors': True, 'null_values': ['NULL', 'Null', 'null']})
+    df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
     if df_trafo is not None:
         df_clean = df_trafo(df_raw)
     else:

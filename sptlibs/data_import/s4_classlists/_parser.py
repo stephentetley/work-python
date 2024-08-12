@@ -175,7 +175,7 @@ def _make_charcteristics_dataframe(classes: list[dict]) -> pl.DataFrame:
         for char1 in class1['characteristics']:
             row = [class_type, class_name, class_desc, char1['name'], char1['description'], char1['type'], char1['length'], char1['precision']]
             values_rows.append(row)
-    return pl.DataFrame(values_rows, schema=['class_type', 'class_name', 'class_description', 'char_name', 'char_description', 'char_type', 'char_length', 'char_precision'])
+    return pl.DataFrame(values_rows, orient='row', schema=['class_type', 'class_name', 'class_description', 'char_name', 'char_description', 'char_type', 'char_length', 'char_precision'])
 
 def _make_enum_values_dataframe(classes: list[dict]) -> pl.DataFrame:
     values_rows = []
@@ -187,5 +187,5 @@ def _make_enum_values_dataframe(classes: list[dict]) -> pl.DataFrame:
             for value1 in char1['values']:
                 row = [class_type, class_name, char_name, value1['value'], value1['description']]
                 values_rows.append(row)
-    return pl.DataFrame(values_rows, schema=['class_type', 'class_name', 'char_name', 'enum_value', 'enum_description'])
+    return pl.DataFrame(values_rows, orient='row', schema=['class_type', 'class_name', 'char_name', 'enum_value', 'enum_description'])
 

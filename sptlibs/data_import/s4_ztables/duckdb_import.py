@@ -42,7 +42,7 @@ def import_eqobjl(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
             df, con=con, 
             qualified_table_name='s4_ztables.eqobjl',
             columns_and_aliases={'object_type': 'parent_objtype', 
-                                 'object_type_duplicated_0': 'child_objtype', 
+                                 'object_type_1': 'child_objtype', 
                                  'equipment_category': 'equipment_category', 
                                  'remarks' : 'remarks'})
 
@@ -62,7 +62,7 @@ def import_floobjl(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
             qualified_table_name='s4_ztables.floobjl',
             columns_and_aliases={'structure_indicator': 'structure_indicator', 
                                  'object_type': 'parent_objtype', 
-                                 'object_type_duplicated_0': 'child_objtype', 
+                                 'object_type_1': 'child_objtype', 
                                  'remarks': 'remarks'})   
 
 

@@ -40,7 +40,7 @@ def _import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> 
         SELECT 
             df.reference AS ai2_reference,
             df.common_name AS common_name,
-            strptime(df.installed_from, '%m/%d/%y %H:%M') AS installed_from,
+            TRY_CAST(df.installed_from AS DATE) AS installed_from,
             df.manufacturer AS manufacturer,
             df.model AS model,
             df.hierarchy_key AS hierarchy_key,
