@@ -34,8 +34,8 @@ def _trafo_dataframe(df: pl.DataFrame) -> pl.DataFrame:
         (pl.col("set_name").str.strip_chars()),
         (pl.col("parent_ou").str.strip_chars()),
         (pl.col("parent_ou_comment").str.strip_chars()),
-        (pl.col("last_polled").str.strip_chars().str.to_datetime("%d/%m/%Y %H:%M", strict=False)),
-        (pl.col("last_power_up").str.strip_chars().str.to_datetime("%d/%m/%Y %H:%M", strict=False)),
+        (pl.col("last_polled").str.strip_chars().str.to_datetime("%H:%M %d-%b-%y", strict=False)),
+        (pl.col("last_power_up").str.strip_chars().str.to_datetime("%H:%M %d-%b-%y", strict=False)),
     ])
 
 def import_outstations_report(rts_report_csv: str, *, con: duckdb.DuckDBPyConnection) -> None:
