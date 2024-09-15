@@ -30,9 +30,11 @@ import sptlibs.class_rep.ai2_class_rep.duckdb_init as ai2_class_duckdb_init
 
 def _get_downloads(*, source_dir: str, glob_pattern: str) -> list[XlsxSource]:
     globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
+    def not_temp(file_name): 
+        return not '~$' in file_name
     def expand(file_name): 
         return XlsxSource(os.path.normpath(os.path.join(source_dir, file_name)), 'Sheet1')
-    return [expand(e) for e in globlist]
+    return [expand(e) for e in globlist if not_temp(e)]
 
 def main():
     parser = ArgumentParser(description='Generate a class_rep database for AI2 exports')

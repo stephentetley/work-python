@@ -67,7 +67,7 @@ _pivot_insert = """
     SELECT 
         pvt.reference AS ai2_reference, 
         pvt.attr_name AS attribute_name, 
-        pvt.attr_value AS attribute_value, 
+        trim(pvt.attr_value) AS attribute_value, 
     FROM (
         UNPIVOT df ON {{headers}} INTO NAME attr_name VALUE attr_value
     ) pvt
