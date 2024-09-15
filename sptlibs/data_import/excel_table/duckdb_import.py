@@ -16,6 +16,7 @@ limitations under the License.
 """
 
 import os
+from pathlib import Path
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.data_import.excel_table._excel_import_config import _ExcelImportConfig
@@ -25,21 +26,21 @@ import sptlibs.data_import.import_utils as import_utils
 
 
 
-def import_excel_sheet(*, xls_path: str, toml_path: str, output_dir: str | None) -> None:
+def import_excel_sheet(*, xls_path: str, toml_path: str, output_db: str | None) -> None:
     config = _ExcelImportConfig(toml_path=toml_path)
     
-    if not output_dir:
+    if not output_db:
         output_dir = os.path.dirname(xls_path)
+        file_name = Path(xls_path).stem + '.duckdb'
+        output_db = os.path.join(output_dir, file_name)
 
-    print(f"output to: {output_dir}")
+    print(f"output to: {output_db}")
 
     sheet_name = config.get_excel_tab_name(alt='Sheet1')
     xls_source = XlsxSource(xls_path, sheet_name)
 
-    duckdb_output_path  = config.get_db_output_path(output_dir=output_dir)
-    print(duckdb_output_path)
-    if duckdb_output_path:
-        con = duckdb.connect(database=duckdb_output_path, read_only=False)
+    if output_db:
+        con = duckdb.connect(database=output_db, read_only=False)
 
         schema_name = config.get_schema_name()
         if schema_name:
@@ -50,6 +51,6 @@ def import_excel_sheet(*, xls_path: str, toml_path: str, output_dir: str | None)
             import_utils.duckdb_import_sheet(xls_source, qualified_table_name=qualified_table_name, con=con, df_trafo=None)
 
         con.close()
-        print(f'wrote {duckdb_output_path}')
+        print(f'wrote {output_db}')
     else:
         print(f'failed, check {toml_path}')

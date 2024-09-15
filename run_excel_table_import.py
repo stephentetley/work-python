@@ -22,7 +22,7 @@ def main():
     parser = ArgumentParser(description='Import an Excel table into a DuckDb database')
     parser.add_argument("--xls_source", dest='xls_source', required=True, help="Excel file to import")
     parser.add_argument("--toml_config", dest='toml_config', help="Location of toml config")
-    parser.add_argument("--output_dir", dest='output_dir', help="Output directory")
+    parser.add_argument("--output_db", dest='output_db', help="Output database")
     args = parser.parse_args()
 
     xls_source    = args.xls_source
@@ -32,6 +32,6 @@ def main():
         else:
             toml_dir = os.path.dirname(xls_source)
             toml_source = os.path.normpath(os.path.join(toml_dir, 'sheet_import.toml'))
-    duckdb_import.import_excel_sheet(xls_path=xls_source, toml_path=toml_source, output_dir=args.output_dir)
+    duckdb_import.import_excel_sheet(xls_path=xls_source, toml_path=toml_source, output_db=args.output_db)
     
 main()

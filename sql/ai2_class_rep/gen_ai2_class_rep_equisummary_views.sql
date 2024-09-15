@@ -29,6 +29,7 @@ SELECT
         '    emd.ai2_reference AS ai2_reference,', 
         '    emd.common_name AS common_name,',
         '    emd.equipment_name AS equipment_name,',
+        '    emd.installed_from AS installed_from,',
         '    emd.manufacturer AS manufacturer,',
         '    emd.model AS model,',
         '    emd.specific_model_frame AS specific_model_frame,',
