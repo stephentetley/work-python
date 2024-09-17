@@ -21,17 +21,14 @@ import sptlibs.data_import.excel_table.duckdb_import as duckdb_import
 def main():
     parser = ArgumentParser(description='Import an Excel table into a DuckDb database')
     parser.add_argument("--xls_source", dest='xls_source', required=True, help="Excel file to import")
-    parser.add_argument("--toml_config", dest='toml_config', help="Location of toml config")
-    parser.add_argument("--output_db", dest='output_db', help="Output database")
+    parser.add_argument("--sheet_name", dest='sheet_name', help="Name of sheet to read")
+    parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
+    parser.add_argument("--table_name", dest='table_name', help="Optionally qualified table_name to write to")
     args = parser.parse_args()
 
-    xls_source    = args.xls_source
-    if xls_source:
-        if args.toml_config: 
-            toml_source = args.toml_config
-        else:
-            toml_dir = os.path.dirname(xls_source)
-            toml_source = os.path.normpath(os.path.join(toml_dir, 'sheet_import.toml'))
-    duckdb_import.import_excel_sheet(xls_path=xls_source, toml_path=toml_source, output_db=args.output_db)
+    duckdb_import.import_excel_sheet(xls_path=args.xls_source, 
+                                     sheet_name=args.sheet_name, 
+                                     output_db=args.output_db,
+                                     table_name=args.table_name)
     
 main()

@@ -19,5 +19,5 @@ from typing import NamedTuple
 
 class XlsxSource(NamedTuple):
     path: str
-    sheet: str
+    sheet: str | None
 
