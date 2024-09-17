@@ -39,9 +39,8 @@ def _get_downloads(*, source_dir: str, glob_pattern: str) -> list[XlsxSource]:
 def main():
     parser = ArgumentParser(description='Generate a class_rep database for AI2 exports')
     parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing AI2 exports")
-    parser.add_argument("--dest_dir", dest='dest_dir', help="Destination directory for the report")
     parser.add_argument("--glob_pattern", dest='glob_pattern', help="Glob pattern to identify *.xlsx files")
-    parser.add_argument("--db_prefix", dest='db_prefix', help="Prefix to be added to the database name")
+    parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
     args = parser.parse_args()
     source_directory    = args.source_dir
 
@@ -51,27 +50,17 @@ def main():
     glob_pattern    = args.glob_pattern
     if not glob_pattern:
         glob_pattern = '*.xlsx'
-
-    if args.dest_dir: 
-        dest_directory = args.dest_dir
-    else:
-        dest_directory = source_directory
+   
+    output_db = args.output_db
     
-    if args.db_prefix:
-        output_db_name = args.db_prefix + 'ai2_class_rep_db.duckdb'
-    else:
-        output_db_name = 'ai2_class_rep_db.duckdb'
-
-    if source_directory and os.path.exists(source_directory) and os.path.exists(dest_directory):
+    if source_directory and os.path.exists(source_directory):
         sources = _get_downloads(source_dir = source_directory, glob_pattern=glob_pattern)
         for source in sources:
             print(source)
 
-        output_path = os.path.join(dest_directory, output_db_name) 
-
         classlists_db = config.get_expanded_path('classlists_db_src')
 
-        conn = duckdb.connect(database=output_path)
+        conn = duckdb.connect(database=output_db)
         classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
 
         ai2_exports_import.init(con=conn)
@@ -81,6 +70,6 @@ def main():
         ai2_class_duckdb_init.init(con=conn)
 
         conn.close()
-        print(f"Created - {output_path}")
+        print(f"Wrote - {output_db}")
 
 main()
