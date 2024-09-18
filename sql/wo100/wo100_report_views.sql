@@ -1,19 +1,19 @@
 
 -- Outstation
-CREATE OR REPLACE VIEW wo100_batch1.vw_outstations_report AS
+CREATE OR REPLACE VIEW wo100_output.vw_outstations_report AS
 WITH cte_existing AS (
     SELECT 
         'ai2_existing' as data_source,
         eo.* EXCLUDE(equipment_key, ai2_reference, memo_line_2, memo_line_3, memo_line_4, memo_line_5), 
-    FROM wo100_batch1.equi_outstation eo
-    INNER JOIN wo100_batch1.worklist_actions wa ON wa.outstation_name = eo.outstation_name 
+    FROM wo100_output.equi_outstation eo
+    INNER JOIN wo100_output.worklist_actions wa ON wa.outstation_name = eo.outstation_name 
     WHERE wa.outstation_replaced <> TRUE 
 ), cte_sweco AS (
     SELECT 
         'outstation_new' AS data_source,
         so.*, 
-    FROM wo100_batch1.sweco_outstation so
-    INNER JOIN wo100_batch1.worklist_actions wa ON wa.outstation_name = so.outstation_name
+    FROM wo100_output.sweco_outstation so
+    INNER JOIN wo100_output.worklist_actions wa ON wa.outstation_name = so.outstation_name
     WHERE wa.outstation_replaced = TRUE
 ), cte_union AS (
     SELECT * FROM cte_existing
@@ -47,7 +47,7 @@ LEFT OUTER JOIN ai2_facts.osname_to_pli ai ON ai.p_and_i_tag_no = cu.outstation_
 ORDER BY outstation_name;
 
 -- Modem
-CREATE OR REPLACE VIEW wo100_batch1.vw_modems_report AS
+CREATE OR REPLACE VIEW wo100_output.vw_modems_report AS
 SELECT 
     'ai2_existing' as 'Data Source',
     em.ai2_reference AS 'Existing Asset Reference',
@@ -64,25 +64,25 @@ SELECT
     '1 - Good' AS 'Condition Grade',
     'New' AS 'Condition Grade Reason',
     datepart('year', em.installed_from) AS 'AGASP Survey Year', 
-FROM wo100_batch1.equi_modem em
+FROM wo100_output.equi_modem em
 LEFT OUTER JOIN sweco_raw_data.worklist w ON w.rtu_name = em.outstation_name
 ORDER BY outstation_name;
     
 -- Controller
-CREATE OR REPLACE VIEW wo100_batch1.vw_controllers_report AS
+CREATE OR REPLACE VIEW wo100_output.vw_controllers_report AS
 WITH cte_existing AS (
     SELECT 
         'ai2_existing' as data_source,
         ec.* EXCLUDE(equipment_key, ai2_reference), 
-    FROM wo100_batch1.equi_controller ec
-    INNER JOIN wo100_batch1.worklist_actions wa ON wa.outstation_name = ec.outstation_name 
+    FROM wo100_output.equi_controller ec
+    INNER JOIN wo100_output.worklist_actions wa ON wa.outstation_name = ec.outstation_name 
     WHERE wa.controller_replaced <> TRUE 
 ), cte_sweco AS (
     SELECT 
         'contoller_new' AS data_source,
         sc.*, 
-    FROM wo100_batch1.sweco_controller sc
-    INNER JOIN wo100_batch1.worklist_actions wa ON wa.outstation_name = sc.outstation_name
+    FROM wo100_output.sweco_controller sc
+    INNER JOIN wo100_output.worklist_actions wa ON wa.outstation_name = sc.outstation_name
     WHERE wa.controller_replaced = TRUE
 ), cte_union AS (
     SELECT * FROM cte_existing
@@ -99,7 +99,9 @@ SELECT
     cu.model AS 'Model',
     cu.specific_model_frame AS 'Specific Model/Frame',
     cu.serial_no AS 'Serial No',
+    cu.outstation_name AS 'P AND I Tag No',
     cu.location_on_site AS 'Location On Site',
+    cu.memo_line_1 AS 'Memo Line 1',
     '1 - Good' AS 'Condition Grade',
     'New' AS 'Condition Grade Reason',
     datepart('year', cu.installed_from) AS 'AGASP Survey Year', 
@@ -108,7 +110,7 @@ LEFT OUTER JOIN ai2_facts.osname_to_pli ai ON ai.p_and_i_tag_no = cu.outstation_
 ORDER BY outstation_name;
 
 -- Power Supply
-CREATE OR REPLACE VIEW wo100_batch1.vw_power_supplies_report AS
+CREATE OR REPLACE VIEW wo100_output.vw_power_supplies_report AS
 SELECT 
     'ai2_existing' as 'Data Source',
     eps.ai2_reference AS 'Existing Asset Reference',
@@ -120,9 +122,10 @@ SELECT
     eps.model AS 'Model',
     eps.specific_model_frame AS 'Specific Model/Frame',
     eps.serial_no AS 'Serial No',
+    eps.outstation_name AS 'P AND I Tag No',
     eps.location_on_site AS 'Location On Site',
     '1 - Good' AS 'Condition Grade',
     'New' AS 'Condition Grade Reason',
     datepart('year', eps.installed_from) AS 'AGASP Survey Year', 
-FROM wo100_batch1.equi_power_supply eps
+FROM wo100_output.equi_power_supply eps
 ORDER BY outstation_name;

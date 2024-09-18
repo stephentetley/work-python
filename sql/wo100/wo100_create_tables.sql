@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS wo100_batch1;
+CREATE SCHEMA IF NOT EXISTS wo100_output;
 
-CREATE OR REPLACE TABLE wo100_batch1.worklist_actions AS
+CREATE OR REPLACE TABLE wo100_output.worklist_actions AS
 WITH 
     cte1 AS (
         SELECT 
@@ -50,7 +50,7 @@ CREATE OR REPLACE MACRO rtu_serial_number(s) AS
 --SELECT rtu_5_6('123255') AS rtu_id1, rtu_5_6('12255') AS rtu_id2;
 
 -- Outstation
-CREATE OR REPLACE TABLE wo100_batch1.equi_outstation AS
+CREATE OR REPLACE TABLE wo100_output.equi_outstation AS
 WITH cte1 AS (
     SELECT DISTINCT ON(emd.ai2_reference)
         hash(emd.ai2_reference) AS equipment_key,
@@ -109,7 +109,7 @@ CREATE OR REPLACE MACRO modem_specific_model(s) AS
 ;
 
 -- Modem
-CREATE OR REPLACE TABLE wo100_batch1.equi_modem AS
+CREATE OR REPLACE TABLE wo100_output.equi_modem AS
 WITH cte1 AS (
     SELECT DISTINCT ON(emd.ai2_reference)
         hash(emd.ai2_reference) AS equipment_key,
@@ -146,7 +146,7 @@ CREATE OR REPLACE MACRO controller_model(s) AS
 ;
 
 -- Network / Controller
-CREATE OR REPLACE TABLE wo100_batch1.equi_controller AS
+CREATE OR REPLACE TABLE wo100_output.equi_controller AS
 WITH cte1 AS (
     SELECT DISTINCT ON(emd.ai2_reference)
         hash(emd.ai2_reference) AS equipment_key,
@@ -156,9 +156,10 @@ WITH cte1 AS (
         emd.asset_status AS asset_status,
         any_value(CASE WHEN eav.attribute_name = 'controller_manufacturer' THEN controller_manufacturer(eav.attribute_value) ELSE NULL END) AS manufacturer,
         any_value(CASE WHEN eav.attribute_name = 'controller_manufacturer' THEN controller_model(eav.attribute_value) ELSE NULL END) AS model,
-        any_value('') AS specific_model_frame,
+        '' AS specific_model_frame,
         any_value(CASE WHEN eav.attribute_name = 'controller_serial_number' THEN eav.attribute_value ELSE NULL END) AS serial_no,
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
+        '' AS memo_line_1,
     FROM ai2_export.equi_master_data emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     WHERE emd.common_name LIKE '%EQUIPMENT:%'
@@ -188,7 +189,7 @@ CREATE OR REPLACE MACRO psu_specific_model(s) AS
 ;
 
 -- Power Supply
-CREATE OR REPLACE TABLE wo100_batch1.equi_power_supply AS
+CREATE OR REPLACE TABLE wo100_output.equi_power_supply AS
 WITH cte1 AS (
     SELECT DISTINCT ON(emd.ai2_reference)
         hash(emd.ai2_reference) AS equipment_key,

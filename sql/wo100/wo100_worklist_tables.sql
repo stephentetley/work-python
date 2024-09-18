@@ -1,5 +1,5 @@
 -- Outstation
-CREATE OR REPLACE TABLE wo100_batch1.sweco_outstation AS
+CREATE OR REPLACE TABLE wo100_output.sweco_outstation AS
 SELECT 
     w.asset_name AS outstation_name,
     w.o_rtu_assest_installed_from_date AS installed_from,
@@ -36,7 +36,7 @@ CREATE OR REPLACE MACRO controller_model(s) AS
 ;
 
 -- Controller
-CREATE OR REPLACE TABLE wo100_batch1.sweco_controller AS
+CREATE OR REPLACE TABLE wo100_output.sweco_controller AS
 SELECT 
     w.asset_name AS outstation_name,
     w.w_controller_install_date AS installed_from,
@@ -46,6 +46,7 @@ SELECT
     '' AS specific_model_frame,
     w.w_controller_serial_number AS serial_no,
     w.o_location_on_site AS location_on_site,
+    'Asset replaced by Sweco on scheme WO100' AS memo_line_1,
 FROM sweco_raw_data.worklist w 
 ORDER BY outstation_name
 ;
