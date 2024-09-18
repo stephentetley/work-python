@@ -4,15 +4,13 @@ CREATE OR REPLACE TABLE wo100_batch1.worklist_actions AS
 WITH 
     cte1 AS (
         SELECT 
-            w.existing_pli AS outstation_pli,
             w.asset_name AS outstation_name,
-            string_split_regex(w.site_work, ',\b+').list_sort() AS actions,
-        FROM sweco_raw_data.sweco_worklist w
-        WHERE w.site_work IS NOT NULL
+            string_split_regex(w.site_work_carried_out, ',\b+').list_sort() AS actions,
+        FROM sweco_raw_data.worklist w
+        WHERE w.site_work_carried_out IS NOT NULL
     ),
     cte2 AS (
     SELECT 
-        outstation_pli AS outstation_pli,
         outstation_name AS outstation_name,
         actions AS __actions,
         TRY_CAST(actions AS VARCHAR) AS actions_list,
@@ -21,7 +19,7 @@ WITH
         list_contains(__actions, 'WAGO_Controller') AS controller_replaced,
         list_contains(__actions, 'VXI_PSU_Batteries_Replaced') AS batteries_replaced,
     FROM cte1
-    GROUP BY outstation_pli, outstation_name, actions
+    GROUP BY ALL
     )
 SELECT 
     COLUMNS(c -> NOT starts_with(c, '__')),
@@ -83,10 +81,22 @@ WITH cte1 AS (
     GROUP BY emd.ai2_reference, emd.installed_from, emd.asset_status, emd.manufacturer, emd.model)
 SELECT * FROM cte1;
 
+
+
+CREATE OR REPLACE MACRO modem_manufacturer(s) AS
+    CASE 
+        WHEN s = 'BT (VIRTUIAL ACCESS)' THEN 'VIRTUAL ACCESS'
+        ELSE s
+    END
+;
+
+
 CREATE OR REPLACE MACRO modem_model(s) AS
     CASE 
         WHEN s = 'AIRLINK LX40 - EE MOBILE' THEN 'AIRLINK ESSENTIAL'
-        WHEN s = 'GW1042M - MOBILE ONLY' THEN s     -- to refine
+        WHEN s = 'WAVECOM FASTRACK XTEND' THEN 'FXT009'
+        WHEN s = 'GW1042M - MOBILE ONLY' THEN 'GW1000M SERIES' 
+        WHEN s = 'GW7314 - ADSL - MOBILE' THEN 'GW7300 SERIES'
         ELSE s
     END
 ;
@@ -94,7 +104,6 @@ CREATE OR REPLACE MACRO modem_model(s) AS
 CREATE OR REPLACE MACRO modem_specific_model(s) AS
     CASE 
         WHEN s = 'AIRLINK LX40 - EE MOBILE' THEN 'LX40'
-        WHEN s = 'GW1042M - MOBILE ONLY' THEN s     -- to refine
         ELSE s
     END
 ;
@@ -108,7 +117,7 @@ WITH cte1 AS (
         any_value(CASE WHEN eav.attribute_name = 'p_and_i_tag_no' THEN eav.attribute_value ELSE NULL END) AS outstation_name,
         any_value(CASE WHEN eav.attribute_name = 'modem_install_date' THEN strptime(eav.attribute_value, '%b %d %Y') ELSE NULL END) AS installed_from,
         emd.asset_status AS asset_status,
-        any_value(CASE WHEN eav.attribute_name = 'modem_manufacturer' THEN eav.attribute_value ELSE NULL END) AS manufacturer,
+        any_value(CASE WHEN eav.attribute_name = 'modem_manufacturer' THEN modem_manufacturer(eav.attribute_value) ELSE NULL END) AS manufacturer,
         any_value(CASE WHEN eav.attribute_name = 'modem_type' THEN modem_model(eav.attribute_value) ELSE NULL END) AS model,
         any_value(CASE WHEN eav.attribute_name = 'modem_type' THEN modem_specific_model(eav.attribute_value) ELSE NULL END) AS specific_model_frame,
         any_value(CASE WHEN eav.attribute_name = 'modem_serial_number' THEN eav.attribute_value ELSE NULL END) AS serial_no,

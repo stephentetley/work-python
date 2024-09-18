@@ -4,7 +4,7 @@ CREATE OR REPLACE VIEW wo100_batch1.vw_outstations_report AS
 WITH cte_existing AS (
     SELECT 
         'ai2_existing' as data_source,
-        eo.* EXCLUDE(memo_line_2, memo_line_3, memo_line_4, memo_line_5), 
+        eo.* EXCLUDE(equipment_key, ai2_reference, memo_line_2, memo_line_3, memo_line_4, memo_line_5), 
     FROM wo100_batch1.equi_outstation eo
     INNER JOIN wo100_batch1.worklist_actions wa ON wa.outstation_name = eo.outstation_name 
     WHERE wa.outstation_replaced <> TRUE 
@@ -21,7 +21,7 @@ WITH cte_existing AS (
     SELECT * FROM cte_sweco)
 SELECT 
     cu.data_source AS 'Data Source',
-    cu.ai2_reference AS 'Existing Asset Reference',
+    ai.existing_outstation_pli AS 'Existing Asset Reference',
     cu.outstation_name AS 'Outstation Name',
     'EQUIPMENT: TELEMETRY OUTSTATION' AS 'Asset Name',
     strftime(cu.installed_from, '%b %d %Y') AS 'Installed From Date',
@@ -43,6 +43,7 @@ SELECT
     'New' AS 'Condition Grade Reason',
     datepart('year', cu.installed_from) AS 'AGASP Survey Year',
 FROM cte_union cu
+LEFT OUTER JOIN ai2_facts.osname_to_pli ai ON ai.p_and_i_tag_no = cu.outstation_name
 ORDER BY outstation_name;
 
 -- Modem
@@ -59,10 +60,12 @@ SELECT
     em.specific_model_frame AS 'Specific Model/Frame',
     em.serial_no AS 'Serial No',
     em.location_on_site AS 'Location On Site',
+    w.m_sim_card_ip_address AS 'IP Address',
     '1 - Good' AS 'Condition Grade',
     'New' AS 'Condition Grade Reason',
     datepart('year', em.installed_from) AS 'AGASP Survey Year', 
 FROM wo100_batch1.equi_modem em
+LEFT OUTER JOIN sweco_raw_data.worklist w ON w.rtu_name = em.outstation_name
 ORDER BY outstation_name;
     
 -- Controller
@@ -70,7 +73,7 @@ CREATE OR REPLACE VIEW wo100_batch1.vw_controllers_report AS
 WITH cte_existing AS (
     SELECT 
         'ai2_existing' as data_source,
-        ec.*, 
+        ec.* EXCLUDE(equipment_key, ai2_reference), 
     FROM wo100_batch1.equi_controller ec
     INNER JOIN wo100_batch1.worklist_actions wa ON wa.outstation_name = ec.outstation_name 
     WHERE wa.controller_replaced <> TRUE 
@@ -87,7 +90,7 @@ WITH cte_existing AS (
     SELECT * FROM cte_sweco)
 SELECT 
     cu.data_source AS 'Data Source',
-    cu.ai2_reference AS 'Existing Asset Reference',
+    ai.existing_outstation_pli AS 'Existing Asset Reference',
     cu.outstation_name AS 'Outstation Name',
     'EQUIPMENT: NETWORK' AS 'Asset Name',
     strftime(cu.installed_from, '%b %d %Y') AS 'Installed From Date',
@@ -101,6 +104,7 @@ SELECT
     'New' AS 'Condition Grade Reason',
     datepart('year', cu.installed_from) AS 'AGASP Survey Year', 
 FROM cte_union cu 
+LEFT OUTER JOIN ai2_facts.osname_to_pli ai ON ai.p_and_i_tag_no = cu.outstation_name
 ORDER BY outstation_name;
 
 -- Power Supply
