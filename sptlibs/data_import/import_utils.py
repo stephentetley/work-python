@@ -39,7 +39,7 @@ def read_csv_source(
         df = post_normalize_names_trafo(df)
     return df
 
-
+# returns a Polars data frame
 def read_xlsx_source(
         source: XlsxSource, 
         *, 
@@ -69,6 +69,7 @@ def duckdb_write_dataframe_to_table(
         df_view_name = f"vw_dataframe_{random.randint(1, 20000)}"
         con.register(view_name=df_view_name, python_object=df)
         sql_stmt = Template(_renaming_insert_stmt).render(qualified_table_name=qualified_table_name, df_view_name=df_view_name, columns=columns)
+        print(sql_stmt)
         con.execute(sql_stmt)
         con.commit()
     else:
@@ -110,6 +111,17 @@ _copy_tables_template = """
     DETACH source_database_xyz;
 """
 
+
+def duckdb_import_polars_dataframe(
+        df: str, 
+        *, 
+        table_name: str, 
+        con: duckdb.DuckDBPyConnection) -> None:
+    '''Note drops the table `table_name` before filling it. Must have headers.'''
+    con.register(view_name='vw_polars_df', python_object=df)
+    sql_stmt = f'CREATE OR REPLACE TABLE {table_name} AS SELECT * FROM vw_polars_df;'
+    con.execute(sql_stmt)
+    con.commit()
 
 
 def duckdb_import_csv(
