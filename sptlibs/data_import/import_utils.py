@@ -40,13 +40,14 @@ def read_csv_source(
     return df
 
 # returns a Polars data frame
+# Note - probably not worth using this as we lose configuring `pl.excel_read`
 def read_xlsx_source(
         source: XlsxSource, 
         *, 
         pre_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
         post_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
         normalize_column_names = True) -> pl.DataFrame:
-    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
+    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine', drop_empty_rows=True)
     if pre_normalize_names_trafo: 
         df = pre_normalize_names_trafo(df)
     if normalize_column_names:
@@ -112,8 +113,8 @@ _copy_tables_template = """
 """
 
 
-def duckdb_import_polars_dataframe(
-        df: str, 
+def duckdb_store_polars_dataframe(
+        df: pl.DataFrame, 
         *, 
         table_name: str, 
         con: duckdb.DuckDBPyConnection) -> None:

@@ -36,7 +36,7 @@ def create_duckdb_ztables(*, source_directory: str, con: duckdb.DuckDBPyConnecti
             info = _get_table_props(df)
             if info:
                 df1 = df.rename(info.column_renames)
-                import_utils.duckdb_import_polars_dataframe(df1, 
+                import_utils.duckdb_store_polars_dataframe(df1, 
                                                             table_name=info.table_name,
                                                             con=con)
 

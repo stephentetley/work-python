@@ -49,7 +49,8 @@ CREATE OR REPLACE TABLE s4_classlists.floc_enums (
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
     enum_value TEXT NOT NULL,
-    enum_description TEXT
+    enum_description TEXT,
+    PRIMARY KEY(class_name, char_name, enum_value)
 );
 
 
@@ -58,7 +59,8 @@ CREATE OR REPLACE TABLE s4_classlists.equi_enums (
     class_name TEXT NOT NULL,
     char_name TEXT NOT NULL,
     enum_value TEXT NOT NULL,
-    enum_description TEXT
+    enum_description TEXT,
+    PRIMARY KEY(class_name, char_name, enum_value)
 );
 
 

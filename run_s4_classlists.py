@@ -15,26 +15,28 @@ limitations under the License.
 
 """
 
+import os
 from argparse import ArgumentParser
 import duckdb
-from sptlibs.utils.asset_data_config import AssetDataConfig
-import sptlibs.data_import.s4_classlists.duckdb_import as duckdb_import
+import data_import.s4_classlists.duckdb_import as duckdb_import
 
 
 
 def main(): 
-    parser = ArgumentParser(description='Generate equi and floc classlist DuckDB tables')
-    _args = parser.parse_args()
-    config = AssetDataConfig()
-    config.set_focus('s4_classlists')
-    equi_src = config.get_expanded_path('equi_classlist_src')
-    floc_src = config.get_expanded_path('floc_classlist_src')
-    output_path = config.get_expanded_path('s4_classlists_outfile')
-    conn = duckdb.connect(database=output_path)
-    duckdb_import.init(con=conn)
-    duckdb_import.import_floc_classes(floc_src, con=conn)
-    duckdb_import.import_equi_classes(equi_src, con=conn)
-    conn.close()
-    print(f"Done - created: {output_path}")
+    parser = ArgumentParser(description='Generate ztable info DuckDB tables')
+    parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing AI2 exports")
+    parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
+    args = parser.parse_args()
+    source_directory    = args.source_dir
+    output_db = args.output_db
+    
+    if source_directory and os.path.exists(source_directory):
+        con = duckdb.connect(database=output_db, read_only=False)
+        duckdb_import.create_duckdb_classlists(source_directory=source_directory, con=con)
+        con.close()
+        print(f"Done - created: {output_db}")
 
 main()
+
+
+
