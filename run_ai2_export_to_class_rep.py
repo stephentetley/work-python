@@ -45,7 +45,6 @@ def main():
     source_directory    = args.source_dir
 
     config = AssetDataConfig()
-    config.set_focus('file_download_summary')
 
     glob_pattern    = args.glob_pattern
     if not glob_pattern:
@@ -58,7 +57,7 @@ def main():
         for source in sources:
             print(source)
 
-        classlists_db = config.get_expanded_path('classlists_db_src')
+        classlists_db = config.get_classlists_db()
 
         conn = duckdb.connect(database=output_db)
         classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)

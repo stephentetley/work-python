@@ -16,37 +16,29 @@ limitations under the License.
 """
 
 import os
-import tomllib
-import typing
 
 
 class AssetDataConfig:
     def __init__(self) -> None:
-        """Defaults to $HOME if $ASSET_DATA_CONFIG_DIR is missing."""
-        self.config = None
-        self.focus = None
-        config_dir = os.environ.get('ASSET_DATA_CONFIG_DIR', '')
-        if not config_dir:
-            config_dir = os.path.expanduser("~")
-        config_path = os.path.normpath(os.path.join(config_dir, 'py_asset_data.toml'))
-        if os.path.exists(config_path): 
-            with open(config_path) as fileObj:
-                txt = fileObj.read()
-                self.config = tomllib.loads(txt)
-        else:
-            print("Cannot find `py_asset_data.toml`")
-            
-    def set_focus(self, group_name: str) -> None:
-            self.focus = self.config.get(group_name, None)
-
-
-    def get(self, field_name: str, alt: typing.Any) -> str | typing.Any:
-        return self.focus.get(field_name, None)
+        """Defaults to $HOME if $ASSET_DATA_FACT_ROOT_DIR is missing."""
+        self.facts_path = os.environ.get('ASSET_DATA_FACT_ROOT_DIR', '')
+        if not self.facts_path:
+            self.facts_path = os.path.expanduser("~")
+        if not os.path.exists(self.facts_path): 
+            print(f"Cannot find facts root directory: `{self.facts_path}`")
+            self.facts_path = None
         
-    def get_expanded_path(self, field_name: str) -> str | None:
-        path = self.focus.get(field_name, None)
-        if path:
-            return os.path.normpath(os.path.expandvars(path))
+    def get_classlists_db(self) -> str | None:
+        path = os.path.join(self.facts_path, '')
+        if self.facts_path:
+            return os.path.normpath(os.path.join(self.facts_path, 's4_classlist_latest.duckdb'))
+        else: 
+            return None
+    
+    def get_ztables_db(self) -> str | None:
+        path = os.path.join(self.facts_path, '')
+        if self.facts_path:
+            return os.path.normpath(os.path.join(self.facts_path, 's4_ztables_latest.duckdb'))
         else: 
             return None
 

@@ -29,16 +29,19 @@ import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 def main():
     parser = ArgumentParser(description='Generate a summary report for equi/floc file downloads')
     parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing file downloads")
+    parser.add_argument("--glob_pattern", dest='glob_pattern', help="Glob to identify file downloads")
     parser.add_argument("--dest_dir", dest='dest_dir', help="Destination directory for the report")
     parser.add_argument("--report_prefix", dest='report_prefix', help="Prefix to be added to report name")
     parser.add_argument("--report_name", dest='report_name', help="Report name, use instead of `report_prefix` to specify full name")
     args = parser.parse_args()
 
-    config = AssetDataConfig()
-    config.set_focus('file_download_summary')
-    classlists_db = config.get_expanded_path('classlists_db_src')
-    glob_pattern        = config.get('glob_pattern', '*download.txt')
     source_directory    = args.source_dir
+    glob_pattern    = args.glob_pattern
+    if not glob_pattern:
+        glob_pattern = '*download.txt'
+
+    config = AssetDataConfig()
+    classlists_db = config.get_classlists_db()
 
     if args.dest_dir: 
         dest_directory = args.dest_dir
