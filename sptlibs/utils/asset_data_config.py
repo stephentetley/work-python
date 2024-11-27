@@ -29,14 +29,12 @@ class AssetDataConfig:
             self.facts_path = None
         
     def get_classlists_db(self) -> str | None:
-        path = os.path.join(self.facts_path, '')
         if self.facts_path:
             return os.path.normpath(os.path.join(self.facts_path, 's4_classlist_latest.duckdb'))
         else: 
             return None
     
     def get_ztables_db(self) -> str | None:
-        path = os.path.join(self.facts_path, '')
         if self.facts_path:
             return os.path.normpath(os.path.join(self.facts_path, 's4_ztables_latest.duckdb'))
         else: 
