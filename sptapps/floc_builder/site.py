@@ -36,7 +36,8 @@ class Site:
         return self
     
     def add_system(self, sys: System) -> Self:
-        self.systems[sys.path] = sys
+        key = sys.path + sys.name
+        self.systems[key] = sys
         return self
 
 
@@ -46,31 +47,4 @@ class Site:
 
 
 
-def telemetry_system() -> System: 
-    return System(name='Telemetry System', 
-                  path='CAA-NET-TEL', 
-                  otype='CTOS', 
-                  ctype='CTOSSY', 
-                  subsystems={})
-
-def fixed_lifting_system() -> System: 
-    return System(name='Fixed Lifting',
-                  path='SMS-LFT-FLT', 
-                  otype='SLFS',
-                  ctype='SLFSSY',
-                  subsystems={})
-
-def portable_lifting_system() -> System: 
-    return System(name='Portable Lifting System',
-                  path='SMS-LFT-PRL',
-                  otype='SLFS',
-                  ctype='SLFSSY',
-                  subsystems={})
-
-def edc_outfall_system() -> System: 
-    return System(name='Outfall System', 
-                  path='EDC-LQD-OUT', 
-                  otype='SOTF', 
-                  ctype='SOTFSY', 
-                  subsystems={})
 

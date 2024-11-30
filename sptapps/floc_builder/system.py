@@ -20,8 +20,10 @@ from typing import Self
 from sptapps.floc_builder.subsystem import Subsystem
 
 class System:
-    def __init__(self, *, name: str, path: str, otype: str, ctype: str, subsystems: dict[str, Self]) -> None:
+    # todo - subsystems should be a list...
+    def __init__(self, *, name: str, path: str, otype: str, ctype: str, subsystems: dict[str, Self] ={}, index: int=1) -> None:
         self.name = name
+        self.index = index
         self.path = path
         self.otype = otype
         self.ctype = ctype
@@ -33,7 +35,7 @@ class System:
         self.name = name
         return self
 
-    def add_subsystem(self, *, ss: Subsystem) -> Self:
+    def add_subsystem(self, *, idx: int, ss: Subsystem) -> Self:
         self.subsystems[ss.name] = ss
         return self
 

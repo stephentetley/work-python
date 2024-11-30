@@ -17,12 +17,13 @@ limitations under the License.
 
 from typing import Self
 
-# Can we have dictionaries for levels making remove easier?
 
 class Subsystem:
-    def __init__(self, *, name: str, ty: str) -> None:
+    def __init__(self, *, name: str, otype: str, prefix: str, index:int=1) -> None:
         self.name = name
-        self.ty = ty
+        self.index = index
+        self.otype = otype
+        self.prefix = prefix
         self.structure_indicator = 'YW-GS'
         self.status = 'OPER'
 

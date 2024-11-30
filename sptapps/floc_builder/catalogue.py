@@ -16,12 +16,45 @@ limitations under the License.
 """
 
 from sptapps.floc_builder.system import System
+from sptapps.floc_builder.subsystem import Subsystem
 
-def telemetry_system() -> System: 
-    return System(name='Telemetry System', 
+# Pre-built systems
+
+# System is not SYSdd - e.g. SIT01-ACH-ACH-ACH-NON01
+def nop_archive_system(*, prefix: str) -> System: 
+    return System(name=f'{prefix} Non Op Equip',
+                  path='ACH-ACH-ACH',
+                  otype='ACH',
+                  ctype='',
+                  subsystems={})
+
+def plc_control_system(name='PLC Control System') -> System: 
+    return System(name=name, 
+                  path='CAA-NET-LOC', 
+                  otype='SCNT', 
+                  ctype='SCNTSY', 
+                  subsystems={})
+
+
+def telemetry_system(*, name='Telemetry System') -> System: 
+    return System(name=name, 
                   path='CAA-NET-TEL', 
                   otype='CTOS', 
                   ctype='CTOSSY', 
+                  subsystems={})
+
+def edc_outfall_system() -> System: 
+    return System(name='Outfall System', 
+                  path='EDC-LQD-OUT', 
+                  otype='SOTF', 
+                  ctype='SOTFSY', 
+                  subsystems={})
+
+def kiosk_system(name='Kiosk System') -> System: 
+    return System(name=name, 
+                  path='SIF-STM-BLG', 
+                  otype='SKIO', 
+                  ctype='SKIOSY', 
                   subsystems={})
 
 def fixed_lifting_system() -> System: 
@@ -38,10 +71,31 @@ def portable_lifting_system() -> System:
                   ctype='SLFSSY',
                   subsystems={})
 
-def edc_outfall_system() -> System: 
-    return System(name='Outfall System', 
-                  path='EDC-LQD-OUT', 
-                  otype='SOTF', 
-                  ctype='SOTFSY', 
+def mobile_plant_storage_area() -> System: 
+    return System(name='Storage Area',
+                  path='SMS-MBP-MBR',
+                  otype='SSTA',
+                  ctype='SSTASY',
                   subsystems={})
 
+def lighting_system(name: str) -> System:
+    return System(name=name,
+                  path='SSS-SLM-LTG',
+                  otype='SELI',
+                  ctype='SELISY',
+                  subsystems={})
+
+def intruder_alarm_system() -> System: 
+    return System(name='Intruder Alarm System',
+                  path='SSS-SEC-ASY',
+                  otype='SINT',
+                  ctype='SINTSY',
+                  subsystems={})
+
+# Pre-built subsystems
+def kiosk(*, name='Kiosk', index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='KISK',
+                     prefix='KIS',
+                     index=index
+                     )
