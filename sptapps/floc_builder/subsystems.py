@@ -19,6 +19,17 @@ from sptapps.floc_builder.subsystem import Subsystem
 
 # Pre-built subsystems
 
+def access_structure(name, *, index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='ACST',
+                     prefix='ACS',
+                     index=index
+                     )
+
+def access_structures(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
+    return [access_structure(n, index=start_index+i) for i, n in enumerate(names)] 
+
+
 def air_dryer(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,
                      otype='AIRD',
@@ -109,6 +120,8 @@ def destructor(name, *, index=1) -> Subsystem:
 def destructors(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
     return [destructor(n, index=start_index+i) for i, n in enumerate(names)] 
 
+# DMON / DNM
+
 def drain(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,
                      otype='DRAN',
@@ -119,6 +132,15 @@ def drain(name, *, index=1) -> Subsystem:
 def drains(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
     return [drain(n, index=start_index+i) for i, n in enumerate(names)] 
 
+def electrolyser(name, *, index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='ETLY',
+                     prefix='ELY',
+                     index=index
+                     )
+
+def electrolysers(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
+    return [electrolyser(n, index=start_index+i) for i, n in enumerate(names)] 
 
 def fan(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,
@@ -201,6 +223,17 @@ def mixer(name, *, index=1) -> Subsystem:
 def mixers(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
     return [mixer(n, index=start_index+i) for i, n in enumerate(names)] 
 
+def overflow_channel(name, *, index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='OVFL',
+                     prefix='OVF',
+                     index=index
+                     )
+
+def overflow_channels(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
+    return [overflow_channel(n, index=start_index+i) for i, n in enumerate(names)] 
+
+
 def pump(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,
                      otype='PUMP',
@@ -211,6 +244,15 @@ def pump(name, *, index=1) -> Subsystem:
 def pumps(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
     return [pump(n, index=start_index+i) for i, n in enumerate(names)] 
 
+def reservoir(name, *, index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='RESV',
+                     prefix='RES',
+                     index=index
+                     )
+
+def reservoirs(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
+    return [reservoir(n, index=start_index+i) for i, n in enumerate(names)] 
 
 def fine_screen(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,
@@ -261,6 +303,16 @@ def vibrator(name, *, index=1) -> Subsystem:
 
 def vibrators(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
     return [vibrator(n, index=start_index+i) for i, n in enumerate(names)] 
+
+def water_softener(name, *, index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='WASF',
+                     prefix='WAF',
+                     index=index
+                     )
+
+def water_softeners(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
+    return [water_softener(n, index=start_index+i) for i, n in enumerate(names)] 
 
 def well(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,

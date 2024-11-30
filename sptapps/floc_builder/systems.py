@@ -21,41 +21,49 @@ from sptapps.floc_builder.subsystem import Subsystem
 # Pre-built systems
 
 # System is not SYSdd - e.g. SIT01-ACH-ACH-ACH-NON01
-def nop_archive(*, prefix: str) -> System: 
+def nop_archive(prefix: str) -> System: 
     return System(name=f'{prefix} Non Op Equip',
                   path='ACH-ACH-ACH',
                   otype='ACH',
                   ctype='',
                   subsystems={}, 
+                  index=1,
                   prefix='NON')
 
-def plc_control(name='PLC Control System') -> System: 
+def plc_control(name='PLC Control System', *, index=1) -> System: 
     return System(name=name, 
                   path='CAA-NET-LOC', 
                   otype='SCNT', 
                   ctype='SCNTSY', 
+                  index=index,
                   subsystems={})
 
 
-def telemetry(*, name='Telemetry System') -> System: 
+def telemetry(name='Telemetry System', *, index=1) -> System: 
     return System(name=name, 
                   path='CAA-NET-TEL', 
                   otype='CTOS', 
                   ctype='CTOSSY', 
+                  index=index,
                   subsystems={})
 
-def edc_outfall() -> System: 
-    return System(name='Outfall System', 
+def edc_outfall(name='Outfall System', *, index=1, subsystems: list[Subsystem]=[]) -> System: 
+    return System(name=name, 
                   path='EDC-LQD-OUT', 
                   otype='SOTF', 
-                  ctype='SOTFSY', 
-                  subsystems={})
+                  ctype='SOTFSY',
+                  index=index, 
+                  subsystems=subsystems)
 
-def kiosk(name='Kiosk System', subsystems: list[Subsystem]=[]) -> System: 
+def kiosk(name='Kiosk System', *, index=1, subsystems: list[Subsystem]=[]) -> System: 
+    return building(name=name, index=index, subsystems=subsystems)
+
+def building(name: str, *, index=1, subsystems: list[Subsystem]=[]) -> System: 
     return System(name=name, 
                   path='SIF-STM-BLG', 
                   otype='SKIO', 
                   ctype='SKIOSY', 
+                  index=index, 
                   subsystems=subsystems)
 
 def fixed_lifting() -> System: 
@@ -63,6 +71,7 @@ def fixed_lifting() -> System:
                   path='SMS-LFT-FLT', 
                   otype='SLFS',
                   ctype='SLFSSY',
+                  index=1,
                   subsystems={})
 
 def portable_lifting() -> System: 
@@ -70,26 +79,31 @@ def portable_lifting() -> System:
                   path='SMS-LFT-PRL',
                   otype='SLFS',
                   ctype='SLFSSY',
+                  index=1,
                   subsystems={})
 
-def mobile_plant_storage_area() -> System: 
+def mobile_plant_storage_area(*, subsystems: list[Subsystem]=[]) -> System: 
     return System(name='Storage Area',
                   path='SMS-MBP-MBR',
                   otype='SSTA',
                   ctype='SSTASY',
-                  subsystems={})
+                  index=1,
+                  subsystems=subsystems)
 
-def lighting(name: str) -> System:
+def site_intruder_alarm(*, name='Intruder Alarm System', index=1, subsystems: list[Subsystem]=[]) -> System: 
+    return System(name=name,
+                  path='SSS-SEC-ASY',
+                  otype='SINT',
+                  ctype='SINTSY',
+                  index=index,
+                  subsystems=subsystems)
+
+def site_lighting(*, name='Site Lighting System', index=1, subsystems: list[Subsystem]=[]) -> System:
     return System(name=name,
                   path='SSS-SLM-LTG',
                   otype='SELI',
                   ctype='SELISY',
-                  subsystems={})
+                  index=index,
+                  subsystems=subsystems)
 
-def intruder_alarm() -> System: 
-    return System(name='Intruder Alarm System',
-                  path='SSS-SEC-ASY',
-                  otype='SINT',
-                  ctype='SINTSY',
-                  subsystems={})
 
