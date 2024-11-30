@@ -26,7 +26,9 @@ class Subsystem:
         self.prefix = prefix
         self.structure_indicator = 'YW-GS'
         self.status = 'OPER'
+        self.key = f'{self.prefix}{self.index:02d}'
 
+    
     def __repr__(self): 
-        return f'Subsystem({self.name}, {self.ty}, {self.status})'
+        return f'Subsystem({self.key} {self.name}, {self.otype}, {self.status})'
 

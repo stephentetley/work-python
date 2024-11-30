@@ -26,7 +26,8 @@ def nop_archive_system(*, prefix: str) -> System:
                   path='ACH-ACH-ACH',
                   otype='ACH',
                   ctype='',
-                  subsystems={})
+                  subsystems={}, 
+                  prefix='NON')
 
 def plc_control_system(name='PLC Control System') -> System: 
     return System(name=name, 
@@ -50,12 +51,12 @@ def edc_outfall_system() -> System:
                   ctype='SOTFSY', 
                   subsystems={})
 
-def kiosk_system(name='Kiosk System') -> System: 
+def kiosk_system(name='Kiosk System', subsystems: list[Subsystem]=[]) -> System: 
     return System(name=name, 
                   path='SIF-STM-BLG', 
                   otype='SKIO', 
                   ctype='SKIOSY', 
-                  subsystems={})
+                  subsystems=subsystems)
 
 def fixed_lifting_system() -> System: 
     return System(name='Fixed Lifting',

@@ -15,7 +15,7 @@ limitations under the License.
 
 """
 
-from typing import Self
+from typing import Self, Sequence
 
 from sptapps.floc_builder.system import System
 
@@ -36,10 +36,13 @@ class Site:
         return self
     
     def add_system(self, sys: System) -> Self:
-        key = sys.path + sys.name
-        self.systems[key] = sys
+        self.systems[sys.key] = sys
         return self
-
+    
+    def add_systems(self, systems: Sequence[System]) -> Self:
+        for x in systems:
+            self.add_system(x)
+        return self
 
     def __repr__(self): 
         s1 = repr(self.systems)

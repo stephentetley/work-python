@@ -21,7 +21,15 @@ from sptapps.floc_builder.subsystem import Subsystem
 
 class System:
     # todo - subsystems should be a list...
-    def __init__(self, *, name: str, path: str, otype: str, ctype: str, subsystems: dict[str, Self] ={}, index: int=1) -> None:
+    def __init__(self, 
+                 *, 
+                 name: str, 
+                 path: str, 
+                 otype: str, 
+                 ctype: str, 
+                 subsystems: dict[str, Self] ={}, 
+                 index: int=1, 
+                 prefix: str='SYS') -> None:
         self.name = name
         self.index = index
         self.path = path
@@ -29,17 +37,19 @@ class System:
         self.ctype = ctype
         self.structure_indicator = 'YW-GS'
         self.status = 'OPER'
-        self.subsystems: dict[str, Subsystem] = subsystems
+        self.subsystems: dict[str, Subsystem] = subsystems,
+        self.prefix = prefix
+        self.key = f'{self.path}-{self.prefix}{self.index:02d}'
 
     def set_name(self, name: str) -> Self:
         self.name = name
         return self
 
-    def add_subsystem(self, *, idx: int, ss: Subsystem) -> Self:
+    def add_subsystem(self, *, ss: Subsystem) -> Self:
         self.subsystems[ss.name] = ss
         return self
 
     def __repr__(self): 
         s1 = repr(self.subsystems)
-        return f'System({self.name}, {s1})'
+        return f'System({self.key}, {self.name}, {s1})'
 
