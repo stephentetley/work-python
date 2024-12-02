@@ -23,21 +23,21 @@ class Floc:
                  function_location: str, 
                  description: str,
                  object_type: str, 
-                 startup_date: date=date.today(),
+                 startup_date: date,
                  structure_indicator: str='YW-GS',
                  status: str='OPER',
-                 properties: list[FlocClassification]= []) -> None:
+                 floc_chars: list[FlocClassification]= []) -> None:
         self.function_location = function_location
         self.description = description
         self.structure_indicator = structure_indicator
         self.otype = object_type
         self.startup_date = startup_date
         self.status = status
-        self.properties = properties
+        self.floc_chars = floc_chars
 
     def __repr__(self): 
-        s1 = self.startup_date.strftime('%d.%m.%Y')
-        return f'Floc({self.function_location}, {self.description}, {self.structure_indicator}, {s1})'
+        s1 = self.startup_date.strftime('%d.%m.%Y') if self.startup_date is not None else "---"
+        return f'Floc({self.function_location}, {self.description}, {self.otype}, {self.structure_indicator}, {s1})'
     
     @property
     def construction_year(self) -> int:
@@ -60,4 +60,3 @@ class Floc:
     def equipment_install(self) -> int:
         return self.category >=5
     
-        

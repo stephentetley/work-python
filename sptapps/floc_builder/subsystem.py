@@ -16,6 +16,9 @@ limitations under the License.
 """
 
 from typing import Self
+from datetime import date
+
+from sptapps.floc_builder.floc import Floc
 
 
 class Subsystem:
@@ -34,4 +37,15 @@ class Subsystem:
     def key(self) -> str:
         return f'{self.prefix}{self.index:02d}'
     
-
+    def set_name(self, name: str) -> Self:
+        self.name = name
+        return self
+    
+    def gen_floc(self, floc_prefix:str, startup_date: date, easting: int, northing: int) -> Floc:
+        floc_chars = []
+        return Floc(function_location=f'{floc_prefix}-{self.key}',
+                    description=self.name,
+                    object_type=self.otype,
+                    startup_date=startup_date,
+                    structure_indicator=self.structure_indicator, 
+                    status=self.status, floc_chars=floc_chars)
