@@ -55,8 +55,14 @@ def edc_outfall(name='Outfall System', *, index=1, subsystems: list[Subsystem]=[
                   index=index, 
                   subsystems=subsystems)
 
-def kiosk(name='Kiosk System', *, index=1, subsystems: list[Subsystem]=[]) -> System: 
-    return building(name=name, index=index, subsystems=subsystems)
+
+def fish_pass(name='Fish Pass System', *, index=1, subsystems: list[Subsystem]=[]) -> System: 
+    return System(name=name, 
+                  path='ENM-STM-CIV', 
+                  otype='SCIV', 
+                  ctype='SCIVSY',
+                  index=index, 
+                  subsystems=subsystems)
 
 def building(name: str, *, index=1, subsystems: list[Subsystem]=[]) -> System: 
     return System(name=name, 
@@ -65,6 +71,9 @@ def building(name: str, *, index=1, subsystems: list[Subsystem]=[]) -> System:
                   ctype='SKIOSY', 
                   index=index, 
                   subsystems=subsystems)
+
+def kiosk(name='Kiosk System', *, index=1, subsystems: list[Subsystem]=[]) -> System: 
+    return building(name=name, index=index, subsystems=subsystems)
 
 def fixed_lifting() -> System: 
     return System(name='Fixed Lifting',

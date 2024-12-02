@@ -26,7 +26,11 @@ class Site:
         self.otype = 'SITE'
         self.structure_indicator = 'YW-GS'
         self.systems: dict[str, System] = {}
-
+    
+    def __repr__(self): 
+        s1 = repr(self.systems)
+        return f'Site({self.sitename}, {self.siteid}, {s1})'
+    
     def site_name(self, s: str) -> Self:
         self.sitename = s
         return self
@@ -44,9 +48,7 @@ class Site:
             self.add_system(x)
         return self
 
-    def __repr__(self): 
-        s1 = repr(self.systems)
-        return f'Site({self.sitename}, {self.siteid}, {s1})'
+
 
 
 

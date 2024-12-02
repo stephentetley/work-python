@@ -314,6 +314,16 @@ def water_softener(name, *, index=1) -> Subsystem:
 def water_softeners(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
     return [water_softener(n, index=start_index+i) for i, n in enumerate(names)] 
 
+def weir(name, *, index=1) -> Subsystem:
+    return Subsystem(name=name,
+                     otype='WEIR',
+                     prefix='WEI',
+                     index=index
+                     )
+
+def weirs(names: list[str], *, start_index:int=1) -> list[Subsystem]: 
+    return [weir(n, index=start_index+i) for i, n in enumerate(names)] 
+
 def well(name, *, index=1) -> Subsystem:
     return Subsystem(name=name,
                      otype='WELL',

@@ -40,6 +40,10 @@ class System:
         self.subsystems: dict[str, Subsystem] = subsystems,
         self.prefix = prefix
 
+    def __repr__(self): 
+        s1 = repr(self.subsystems)
+        return f'System({self.key}, {self.name}, {s1})'
+    
     @property
     def key(self) -> str:
         return f'{self.path}-{self.prefix}{self.index:02d}'
@@ -52,7 +56,4 @@ class System:
         self.subsystems[ss.name] = ss
         return self
 
-    def __repr__(self): 
-        s1 = repr(self.subsystems)
-        return f'System({self.key}, {self.name}, {s1})'
 

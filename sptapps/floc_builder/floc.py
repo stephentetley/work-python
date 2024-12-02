@@ -15,6 +15,7 @@ limitations under the License.
 
 """
 from datetime import date
+from sptapps.floc_builder.floc_classification import FlocClassification
 
 class Floc:
     def __init__(self, 
@@ -24,14 +25,20 @@ class Floc:
                  object_type: str, 
                  startup_date: date=date.today(),
                  structure_indicator: str='YW-GS',
-                 status: str='OPER') -> None:
+                 status: str='OPER',
+                 properties: list[FlocClassification]= []) -> None:
         self.function_location = function_location
         self.description = description
         self.structure_indicator = structure_indicator
         self.otype = object_type
         self.startup_date = startup_date
         self.status = status
+        self.properties = properties
 
+    def __repr__(self): 
+        s1 = self.startup_date.strftime('%d.%m.%Y')
+        return f'Floc({self.function_location}, {self.description}, {self.structure_indicator}, {s1})'
+    
     @property
     def construction_year(self) -> int:
         return self.startup_date.year
@@ -52,3 +59,5 @@ class Floc:
     @property
     def equipment_install(self) -> int:
         return self.category >=5
+    
+        
