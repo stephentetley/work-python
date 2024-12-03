@@ -1,11 +1,13 @@
 # temp_floc_builder.py
 
 from datetime import date
+import polars as pl
 import sptapps.floc_builder.systems as sys
 import sptapps.floc_builder.subsystems as subsys
 from sptapps.floc_builder.site import Site
 from sptapps.floc_builder.floc import Floc
-import itertools
+from sptapps.floc_builder.floc_des import FlocDes
+
 
 # floc_builder3
 boo03 = Site().site_name('Boomtown')
@@ -34,5 +36,9 @@ flocs = boo03.gen_flocs(startup_date=date.today(),
 for floc in flocs: 
     print(floc)
 
-silly = [[1], [2, 3]]
-print(list(itertools.chain(*silly)))
+fd = FlocDes(source_path='g:/work/2024/asset_data_facts/s4_ztables/zte_0343_flocdes.XLSX')
+
+
+print(fd.get_description('CAA'))
+print(fd.get_description('NET'))
+print(fd.get_description('TEL'))
