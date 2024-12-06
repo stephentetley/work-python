@@ -59,23 +59,4 @@ class System:
         self.subsystems.update({ss.name: ss})
         return self
 
-    def _gen_sys_floc(self, site_floc:str, startup_date: date, easting: int, northing: int) -> Floc:
-        floc_chars = []
-        return Floc(function_location=f'{site_floc}-{self.key}',
-                    description=self.name,
-                    startup_date=startup_date,
-                    object_type=self.otype,
-                    structure_indicator=self.structure_indicator, 
-                    status=self.status, floc_chars=floc_chars)
-    
-    def gen_flocs(self, site_floc:str, startup_date: date, easting: int, northing: int) -> list[Floc]:
-        floc1 = self._gen_sys_floc(site_floc=site_floc, 
-                                   startup_date=startup_date,
-                                   easting=easting,
-                                   northing=northing
-                                   )
-        floc_prefix1 = f'{site_floc}-{self.key}'
-        fn1 = lambda subsys: subsys.gen_floc(floc_prefix=floc_prefix1, startup_date=startup_date, easting=easting, northing=northing)
-        sub_flocs = [fn1(ss) for ss in self.subsystems.values()]
-        return [floc1] + sub_flocs
 

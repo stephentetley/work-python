@@ -41,11 +41,3 @@ class Subsystem:
         self.name = name
         return self
     
-    def gen_floc(self, floc_prefix:str, startup_date: date, easting: int, northing: int) -> Floc:
-        floc_chars = []
-        return Floc(function_location=f'{floc_prefix}-{self.key}',
-                    description=self.name,
-                    object_type=self.otype,
-                    startup_date=startup_date,
-                    structure_indicator=self.structure_indicator, 
-                    status=self.status, floc_chars=floc_chars)

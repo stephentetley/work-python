@@ -51,24 +51,7 @@ class Site:
         for x in systems:
             self.add_system(x)
         return self
-    
-    def _gen_site_floc(self, startup_date: date, easting: int, northing: int) -> Floc:
-        floc_chars = []
-        return Floc(function_location=self.siteid,
-                    description=self.sitename,
-                    startup_date=startup_date,
-                    object_type='SITE',
-                    structure_indicator=self.structure_indicator, 
-                    status=self.status, 
-                    floc_chars=floc_chars)
-    
-    def gen_flocs(self, startup_date: date, easting: int, northing: int) -> list[Floc]:
-        floc1 = self._gen_site_floc(startup_date=startup_date,
-                                    easting=easting,
-                                    northing=northing)
-        fn1 = lambda ky, sys: sys.gen_flocs(site_floc=self.siteid, startup_date=startup_date, easting=easting, northing=northing)
-        sub_flocs = [fn1(ky, sys) for ky, sys in self.systems.items()]
-        return list(itertools.chain(*[[floc1]] + sub_flocs))
+
 
 
 

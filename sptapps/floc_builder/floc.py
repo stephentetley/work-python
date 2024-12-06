@@ -33,7 +33,6 @@ class Floc:
         self.otype = object_type
         self.startup_date = startup_date
         self.status = status
-        self.floc_chars = floc_chars
 
     def __repr__(self): 
         s1 = self.startup_date.strftime('%d.%m.%Y') if self.startup_date is not None else "---"
