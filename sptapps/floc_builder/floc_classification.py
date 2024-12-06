@@ -19,18 +19,18 @@ from datetime import date
 class FlocClassification:
     def __init__(self, 
                  *, 
-                 function_location: str, 
+                 functional_location: str, 
                  class_name: str,
                  characteristic_name: str, 
                  characteristic_value: str) -> None:
-        self.function_location = function_location
+        self.functional_location = functional_location
         self.class_name = class_name
         self.characteristic_name = characteristic_name
         self.characteristic_value = characteristic_value
 
     def __repr__(self): 
         s1 = self.startup_date.strftime('%d.%m.%Y')
-        return f'FlocClassification({self.function_location}, {self.class_name}, {self.characteristic_name}, {self.characteristic_value})'
+        return f'FlocClassification({self.functional_location}, {self.class_name}, {self.characteristic_name}, {self.characteristic_value})'
     
     @property
     def class_type(self) -> str:

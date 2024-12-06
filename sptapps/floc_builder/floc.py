@@ -20,14 +20,13 @@ from sptapps.floc_builder.floc_classification import FlocClassification
 class Floc:
     def __init__(self, 
                  *, 
-                 function_location: str, 
+                 functional_location: str, 
                  description: str,
                  object_type: str, 
                  startup_date: date,
                  structure_indicator: str='YW-GS',
-                 status: str='OPER',
-                 floc_chars: list[FlocClassification]= []) -> None:
-        self.function_location = function_location
+                 status: str='OPER') -> None:
+        self.functional_location = functional_location
         self.description = description
         self.structure_indicator = structure_indicator
         self.otype = object_type
@@ -36,7 +35,7 @@ class Floc:
 
     def __repr__(self): 
         s1 = self.startup_date.strftime('%d.%m.%Y') if self.startup_date is not None else "---"
-        return f'Floc({self.function_location}, {self.description}, {self.otype}, {self.structure_indicator}, {s1})'
+        return f'Floc({self.functional_location}, {self.description}, {self.otype}, {self.structure_indicator}, {s1})'
     
     @property
     def construction_year(self) -> int:
@@ -48,12 +47,12 @@ class Floc:
     
     @property
     def category(self) -> int:
-        return 1 + self.function_location.count('-')
+        return 1 + self.functional_location.count('-')
         
     @property
-    def superior_function_location(self) -> int:
-        end = self.function_location.rfind('-')
-        return self.function_location[0:end]
+    def superior_functional_location(self) -> int:
+        end = self.functional_location.rfind('-')
+        return self.functional_location[0:end]
     
     @property
     def equipment_install(self) -> int:
