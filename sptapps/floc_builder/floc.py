@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
+
 from datetime import date
 from sptapps.floc_builder.floc_classification import FlocClassification
 
@@ -25,6 +26,7 @@ class Floc:
                  object_type: str, 
                  startup_date: date,
                  structure_indicator: str='YW-GS',
+                 class_type: str | None = None,
                  status: str='OPER') -> None:
         self.functional_location = functional_location
         self.description = description
@@ -32,6 +34,7 @@ class Floc:
         self.otype = object_type
         self.startup_date = startup_date
         self.status = status
+        self.class_type = class_type
 
     def __repr__(self): 
         s1 = self.startup_date.strftime('%d.%m.%Y') if self.startup_date is not None else "---"

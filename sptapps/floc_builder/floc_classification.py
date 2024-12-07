@@ -29,7 +29,6 @@ class FlocClassification:
         self.characteristic_value = characteristic_value
 
     def __repr__(self): 
-        s1 = self.startup_date.strftime('%d.%m.%Y')
         return f'FlocClassification({self.functional_location}, {self.class_name}, {self.characteristic_name}, {self.characteristic_value})'
     
     @property

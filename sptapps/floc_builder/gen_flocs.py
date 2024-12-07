@@ -98,7 +98,8 @@ class GenFlocs:
                     startup_date=self.startup_date,
                     object_type=sys.otype,
                     structure_indicator='YW-GS', 
-                    status='OPER')
+                    status='OPER', 
+                    class_type=sys.ctype)
         self.flocs.add(floc)
         return self
         

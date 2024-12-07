@@ -1,12 +1,11 @@
 # temp_floc_builder.py
 
 from datetime import date
-import polars as pl
 import sptapps.floc_builder.systems as sys
 import sptapps.floc_builder.subsystems as subsys
 from sptapps.floc_builder.site import Site
-from sptapps.floc_builder.floc import Floc
 from sptapps.floc_builder.gen_flocs import GenFlocs
+from sptapps.floc_builder.gen_floc_classifications import GenFlocClassifications
 
 
 # floc_builder3
@@ -25,7 +24,11 @@ gf = GenFlocs(source_path='g:/work/2024/asset_data_facts/s4_ztables/zte_0343_flo
               startup_date=date.today())
 
 flocs = gf.gen_flocs()
+chars = GenFlocClassifications(flocs=flocs).gen_floc_classifications()
 
 for x in flocs:
+    print(x)
+
+for x in chars:
     print(x)
 
