@@ -16,11 +16,10 @@ limitations under the License.
 """
 
 from typing import Self, Sequence
-from datetime import date
-import itertools
+
 
 from sptapps.floc_builder.system import System
-from sptapps.floc_builder.floc import Floc
+from sptapps.floc_builder.context import Context
 
 class Site:
     def __init__(self) -> None:
@@ -30,6 +29,7 @@ class Site:
         self.structure_indicator = 'YW-GS'
         self.status = 'OPER'
         self.systems: dict[str, System] = dict()
+        self.context = Context()
     
     def __repr__(self): 
         s1 = repr(self.systems)
