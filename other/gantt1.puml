@@ -1,0 +1,14 @@
+@startgantt
+[Screening] as [S1] lasts 10 days
+[Horizontal Flow Sedimentation] as [H1] lasts 10 days
+[S1] -> [H1]
+[River Outfall] as [R1] lasts 20 days
+[H1] -> [R1]
+[Storm Return Pumping] as [S2] lasts 10 days
+[H1] -> [S2]
+-- End Storm Treatment --
+[Preliminary Treatment] as [P1] lasts 10 days
+[S2] -> [P1]
+[R1] is colored in PaleVioletRed/Red
+[P1] is colored in PaleGreen/Green
+@endgantt
