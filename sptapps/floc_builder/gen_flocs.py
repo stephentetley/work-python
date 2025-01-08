@@ -31,7 +31,7 @@ class GenFlocs:
             self.lookups = {}
         self.flocs = set()
         self.site = site
-        self.context = site.context
+        self.context = site.floc_context
     
     def gen_flocs(self) -> list[Floc]:
         self._add_site_floc()

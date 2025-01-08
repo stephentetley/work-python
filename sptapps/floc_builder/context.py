@@ -15,20 +15,37 @@ limitations under the License.
 
 """
 
+from typing import Self
 import datetime
 from datetime import date
-from dataclasses import dataclass
+import dataclasses
 
-@dataclass
+@dataclasses.dataclass(kw_only=True, frozen=True)
 class Context:
     easting: int = 0
     northing: int = 0
     startup_date: date = datetime.date(1970, 1, 1)
-    sai_reference: str = ''
+    solution_id: list[str] = dataclasses.field(default_factory=list)
+    sai_reference: list[str] = dataclasses.field(default_factory=list)
     
-def merge(outer: Context, inner: Context) -> Context:
-    Context(easting= outer.easting if inner.easting == 0 else inner.easting, 
-            northing= outer.northing if inner.northing == 0 else inner.northing, 
-            startup_date= outer.startup_date if inner.startup_date == datetime.date(1970, 1, 1) else inner.startup_date,
-            sai_reference= outer.sai_reference if inner.sai_reference == '' else inner.sai_reference
-            )
+    def with_east_north(self, *, easting: int, northing=int) -> Self:
+        return dataclasses.replace(self, easting=easting, northing=northing)
+        
+    def with_solution_id(self, s: str) -> Self:
+        return dataclasses.replace(self, solution_id=[s])
+    
+    def with_solution_ids(self, ss: list[str]) -> Self:
+        return dataclasses.replace(self, solution_id=ss)
+    
+    def with_sai_reference(self, s: str) -> Self:
+        return dataclasses.replace(self, sai_reference=[s])
+    
+    def with_sai_references(self, ss: list[str]) -> Self:
+        return dataclasses.replace(self, sai_reference=ss)
+    
+# def merge(outer: Context, inner: Context) -> Context:
+#     Context(easting= outer.easting if inner.easting == 0 else inner.easting, 
+#             northing= outer.northing if inner.northing == 0 else inner.northing, 
+#             startup_date= outer.startup_date if inner.startup_date == datetime.date(1970, 1, 1) else inner.startup_date,
+#             sai_reference= outer.sai_reference if inner.sai_reference == '' else inner.sai_reference
+#             )

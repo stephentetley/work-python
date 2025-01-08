@@ -29,7 +29,7 @@ class Site:
         self.structure_indicator = 'YW-GS'
         self.status = 'OPER'
         self.systems: dict[str, System] = dict()
-        self.context = Context()
+        self.floc_context = Context()
     
     def __repr__(self): 
         s1 = repr(self.systems)
@@ -42,7 +42,11 @@ class Site:
     def site_id(self, id: str) -> Self:
         self.siteid = id
         return self
-    
+
+    def context(self, c: Context) -> Self:
+        self.floc_context = c
+        return self
+        
     def add_system(self, sys: System) -> Self:
         self.systems.update({sys.key: sys})
         return self
