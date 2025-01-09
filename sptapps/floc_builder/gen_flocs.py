@@ -31,7 +31,7 @@ class GenFlocs:
             self.lookups = {}
         self.flocs = set()
         self.site = site
-        self.context = site.floc_context
+        self.site_context = site.site_context
     
     def gen_flocs(self) -> list[Floc]:
         self._add_site_floc()
@@ -47,9 +47,9 @@ class GenFlocs:
         return ls
 
     def _add_site_floc(self) -> Self:
-        floc = Floc(functional_location=self.site.siteid,
-                    description=self.site.sitename,
-                    startup_date=self.context.startup_date,
+        floc = Floc(functional_location=self.site_context.siteid,
+                    description=self.site.site_context.sitename,
+                    startup_date=self.site_context.startup_date,
                     object_type='SITE',
                     structure_indicator='YW-GS', 
                     status='OPER')
@@ -59,9 +59,9 @@ class GenFlocs:
     def _add_function_floc(self, sys: System) -> Self:
         otype = sys.path[0:3]
         descr = self.get_description(otype)
-        floc = Floc(functional_location=f'{self.site.siteid}-{otype}',
+        floc = Floc(functional_location=f'{self.site_context.siteid}-{otype}',
                     description=descr,
-                    startup_date=self.context.startup_date,
+                    startup_date=self.site_context.startup_date,
                     object_type=otype,
                     structure_indicator='YW-GS', 
                     status='OPER')
@@ -71,9 +71,9 @@ class GenFlocs:
     def _add_process_group_floc(self, sys: System) -> Self:
         otype = sys.path[4:7]
         descr = self.get_description(otype)
-        floc = Floc(functional_location=f'{self.site.siteid}-{sys.path[0:7]}',
+        floc = Floc(functional_location=f'{self.site_context.siteid}-{sys.path[0:7]}',
                     description=descr,
-                    startup_date=self.context.startup_date,
+                    startup_date=self.site_context.startup_date,
                     object_type=otype,
                     structure_indicator='YW-GS', 
                     status='OPER')
@@ -83,9 +83,9 @@ class GenFlocs:
     def _add_process_floc(self, sys: System) -> Self:
         otype = sys.path[8:11]
         descr = self.get_description(otype)
-        floc = Floc(functional_location=f'{self.site.siteid}-{sys.path}',
+        floc = Floc(functional_location=f'{self.site_context.siteid}-{sys.path}',
                     description=descr,
-                    startup_date=self.context.startup_date,
+                    startup_date=self.site_context.startup_date,
                     object_type=otype,
                     structure_indicator='YW-GS', 
                     status='OPER')
@@ -93,9 +93,9 @@ class GenFlocs:
         return self
     
     def _add_sys_floc(self, sys: System) -> Self:
-        floc = Floc(functional_location=f'{self.site.siteid}-{sys.key}',
+        floc = Floc(functional_location=f'{self.site_context.siteid}-{sys.key}',
                     description=sys.name,
-                    startup_date=self.context.startup_date,
+                    startup_date=self.site_context.startup_date,
                     object_type=sys.otype,
                     structure_indicator='YW-GS', 
                     status='OPER', 
@@ -108,10 +108,10 @@ class GenFlocs:
             self._add_subsystem_floc(ss, sys.key)
 
     def _add_subsystem_floc(self, subsys:Subsystem, path: str) -> Self:
-        floc = Floc(functional_location=f'{self.site.siteid}-{path}-{subsys.key}',
+        floc = Floc(functional_location=f'{self.site_context.siteid}-{path}-{subsys.key}',
                     description=subsys.name,
                     object_type=subsys.otype,
-                    startup_date=self.context.startup_date,
+                    startup_date=self.site_context.startup_date,
                     structure_indicator='YW-GS', 
                     status='OPER')
         self.flocs.add(floc)

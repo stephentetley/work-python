@@ -3,7 +3,7 @@
 import datetime as datetime
 import sptapps.floc_builder.systems as sys
 import sptapps.floc_builder.subsystems as subsys
-from sptapps.floc_builder.site import Site
+from sptapps.floc_builder.site import Site, SiteContext
 from sptapps.floc_builder.context import Context
 from sptapps.floc_builder.gen_flocs import GenFlocs
 from sptapps.floc_builder.gen_floc_classifications import GenFlocClassifications
@@ -17,9 +17,9 @@ cx1 = cx.with_east_north(easting=5, northing=10).with_solution_ids(["001256789"]
 print(cx)
 print(cx1)
 
-boo03 = Site().site_name('Boomtown').context(cx)
+boo03 = Site().context(SiteContext().site_id('BOO01').site_name('Boomtown'))
 
-boo03.site_id('BOO01').add_system(sys.telemetry(index=1))
+boo03.add_system(sys.telemetry(index=1))
 boo03.add_system(sys.portable_lifting())
 boo03.add_system(sys.fixed_lifting())
 boo03.add_system(sys.edc_outfall())

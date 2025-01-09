@@ -16,35 +16,40 @@ limitations under the License.
 """
 
 from typing import Self, Sequence
-
+import dataclasses
 
 from sptapps.floc_builder.system import System
 from sptapps.floc_builder.context import Context
 
+@dataclasses.dataclass(kw_only=True, frozen=True)
+class SiteContext(Context):
+    siteid: str = ''
+    sitename: str = ''
+
+    def site_name(self, name: str) -> Self:
+        return dataclasses.replace(self, sitename=name)
+
+    def site_id(self, id: str) -> Self:
+        return dataclasses.replace(self, siteid=id)
+
+
+
+
 class Site:
     def __init__(self) -> None:
-        self.sitename = ''
-        self.siteid = ''
         self.otype = 'SITE'
         self.structure_indicator = 'YW-GS'
         self.status = 'OPER'
         self.systems: dict[str, System] = dict()
-        self.floc_context = Context()
+        self.site_context = SiteContext()
     
     def __repr__(self): 
         s1 = repr(self.systems)
-        return f'Site({self.sitename}, {self.siteid}, {s1})'
+        return f'Site({self.site_context.sitename}, {self.site_context.siteid}, {s1})'
     
-    def site_name(self, s: str) -> Self:
-        self.sitename = s
-        return self
 
-    def site_id(self, id: str) -> Self:
-        self.siteid = id
-        return self
-
-    def context(self, c: Context) -> Self:
-        self.floc_context = c
+    def context(self, c: SiteContext) -> Self:
+        self.site_context = c
         return self
         
     def add_system(self, sys: System) -> Self:
@@ -55,8 +60,4 @@ class Site:
         for x in systems:
             self.add_system(x)
         return self
-
-
-
-
 
