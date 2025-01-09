@@ -17,7 +17,11 @@ cx1 = cx.with_east_north(easting=5, northing=10).with_solution_ids(["001256789"]
 print(cx)
 print(cx1)
 
-boo03 = Site().context(SiteContext().site_id('BOO01').site_name('Boomtown'))
+boo03 = Site().set_context(SiteContext(siteid='BOO01', sitename='Boomtown').with_solution_id("00034001"))
+
+boo03.caa().net().tel()           # .tel().system(1, "Telemetry System")
+boo03.sif().stm()           # .bld().system(1, SIF-STM-BLG'().net().tel().system(1, "Telemetry System")
+
 
 boo03.add_system(sys.telemetry(index=1))
 boo03.add_system(sys.portable_lifting())

@@ -26,11 +26,40 @@ class SiteContext(Context):
     siteid: str = ''
     sitename: str = ''
 
-    def site_name(self, name: str) -> Self:
+    def with_site_name(self, name: str) -> Self:
         return dataclasses.replace(self, sitename=name)
 
-    def site_id(self, id: str) -> Self:
+    def with_site_id(self, id: str) -> Self:
         return dataclasses.replace(self, siteid=id)
+
+@dataclasses.dataclass(kw_only=True, frozen=True)
+class Process:
+    name: str
+
+@dataclasses.dataclass(kw_only=True, frozen=True)
+class ProcessGroup:
+    name: str
+
+    def tel(self) -> Process:
+        fn = Process(name="tel")
+        print(f"adding proc {fn}")
+        return fn
+
+
+@dataclasses.dataclass(kw_only=True, frozen=True)
+class Function:
+    name: str
+
+    def net(self) -> ProcessGroup:
+        fn = ProcessGroup(name="net")
+        print(f"adding proc-group {fn}")
+        return fn
+    
+    def stm(self) -> ProcessGroup:
+        fn = ProcessGroup(name="stm")
+        print(f"adding proc-group {fn}")
+        return fn
+
 
 
 
@@ -48,7 +77,7 @@ class Site:
         return f'Site({self.site_context.sitename}, {self.site_context.siteid}, {s1})'
     
 
-    def context(self, c: SiteContext) -> Self:
+    def set_context(self, c: SiteContext) -> Self:
         self.site_context = c
         return self
         
@@ -60,4 +89,13 @@ class Site:
         for x in systems:
             self.add_system(x)
         return self
+    
+    def caa(self) -> Function:
+        fn = Function(name="caa")
+        print(f"adding function {fn}")
+        return fn
 
+    def sif(self) -> Function:
+        fn = Function(name="sif")
+        print(f"adding function {fn}")
+        return fn
