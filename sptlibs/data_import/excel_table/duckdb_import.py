@@ -29,7 +29,19 @@ def import_excel_sheet(*, xls_path: str, sheet_name: str | None, output_db: str 
         output_db = os.path.join(output_dir, file_name)
 
     print(f"output to: {output_db}")
+    if output_db:
+        con = duckdb.connect(database=output_db, read_only=False)
+        db_import_excel_sheet(con=con, xls_path=xls_path, sheet_name=sheet_name, table_name=table_name)
+        con.close()
+        print(f'wrote {output_db}')
+    else:
+        print(f'failed, check {output_db}')
 
+def db_import_excel_sheet(xls_path: str, *, 
+                          con: duckdb.DuckDBPyConnection, 
+                          sheet_name: str | None, 
+                          table_name: str | None) -> None:
+    
     xls_source = XlsxSource(xls_path, sheet_name)
     
     if table_name:
@@ -38,16 +50,12 @@ def import_excel_sheet(*, xls_path: str, sheet_name: str | None, output_db: str 
         schema_name = None
         table_name = sheet_name
 
-    if output_db:
-        con = duckdb.connect(database=output_db, read_only=False)
+    print(f'schema_name: {schema_name}, table_name: {table_name}')
+    if schema_name:
+        con.execute(query=f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
 
-        if schema_name:
-            con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
-
-        if table_name:
-            import_utils.duckdb_import_sheet(xls_source, qualified_table_name=table_name, con=con, df_trafo=None)
-
-        con.close()
-        print(f'wrote {output_db}')
+    if table_name:
+        import_utils.duckdb_import_sheet(xls_source, qualified_table_name=table_name, con=con, df_trafo=None)
+        print(f'wrote {table_name}')
     else:
-        print(f'failed, check {output_db}')
+        print(f'fail table name not recognized')
