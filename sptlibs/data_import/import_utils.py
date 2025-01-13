@@ -136,7 +136,7 @@ def duckdb_import_csv(
     '''Note drops the table `table_name` before filling it. Must have headers.'''
     df_raw = pl.read_csv(source=csv_path, separator=separator, ignore_errors=True, has_header=True, null_values = ['NULL', 'Null', 'null'])
     if rename_before_trafo: 
-        df1 = df_renamed = normalize_df_column_names(df_raw)
+        df1 = normalize_df_column_names(df_raw)
     else: 
         df1 = df_raw
     if df_trafo is not None:
@@ -144,7 +144,7 @@ def duckdb_import_csv(
     else:
         df_clean = df1
     if not rename_before_trafo: 
-        df2 = df_renamed = normalize_df_column_names(df_clean)
+        df2 = normalize_df_column_names(df_clean)
     else:
         df2 = df_clean
     con.register(view_name='vw_df_renamed', python_object=df2)

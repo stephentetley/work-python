@@ -25,7 +25,7 @@ ORDER BY funcloc
 ;
     
 
-CREATE OR REPLACE TABLE working.gen_flocs AS  
+CREATE OR REPLACE TABLE working.gen_flocs_all AS  
 WITH 
 cte1 AS (
     SELECT 
@@ -115,8 +115,9 @@ FROM cte2 WHERE cte2.floc_category = 6)
 ORDER BY funcloc
 ;
 
+CREATE OR REPLACE TABLE working.gen_flocs AS  
 SELECT t1.* 
-FROM working.gen_flocs t1
+FROM working.gen_flocs_all t1
 ANTI JOIN working.existing_flocs t2 ON t2.funcloc = t1.funcloc
 ORDER BY funcloc
 ;

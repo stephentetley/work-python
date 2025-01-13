@@ -13,6 +13,7 @@ ih06_path = 'g:/work/2025/floc_builder/har55_source/HAR55_ih06_20250110095604.xl
 con = duckdb.connect(database=duckdb_path, read_only=False)
 duckdb_import_ztables.create_duckdb_ztables(source_directory=ztable_source_directory, con=con)
 duckdb_import_excel.db_import_excel_sheet(xls_path=worklist_path, sheet_name='Flocs', table_name='raw_data.worklist', con=con)
+duckdb_import_excel.db_import_excel_sheet(xls_path=worklist_path, sheet_name='Config', table_name='raw_data.config', con=con)
 duckdb_import_excel.db_import_excel_sheet(xls_path=ih06_path, sheet_name='Sheet1', table_name='raw_data.ih06_export', con=con)
 con.close()
 print(f"Done - added raw data to: {duckdb_path}")
