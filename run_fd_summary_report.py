@@ -19,8 +19,8 @@ from argparse import ArgumentParser
 import os
 import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
-import sptlibs.data_import.s4_classlists.duckdb_import as classlists_duckdb_import
-import sptlibs.data_import.file_download.duckdb_import as file_download_duckdb_import
+import sptlibs.data_access.s4_classlists.duckdb_import as classlists_duckdb_import
+import sptlibs.data_access.file_download.duckdb_import as file_download_duckdb_import
 import sptlibs.class_rep.s4_class_rep.duckdb_init as s4_class_rep_duckdb_setup
 import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 

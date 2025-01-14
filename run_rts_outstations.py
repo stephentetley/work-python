@@ -18,7 +18,7 @@ limitations under the License.
 from argparse import ArgumentParser
 import os
 import duckdb
-import sptlibs.data_import.rts_outstations.duckdb_import as duckdb_import
+import sptlibs.data_access.rts_outstations.duckdb_import as duckdb_import
 
 # TODO specify input file at command line...
 def main(): 

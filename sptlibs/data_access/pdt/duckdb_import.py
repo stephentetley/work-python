@@ -17,7 +17,7 @@ limitations under the License.
 
 import duckdb
 from jinja2 import Template
-import sptlibs.data_import.s4_classlists.duckdb_import as classlist_duckdb_import
+import sptlibs.data_access.s4_classlists.duckdb_import as classlist_duckdb_import
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def init(*, con: duckdb.DuckDBPyConnection) -> None: 

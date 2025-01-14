@@ -23,7 +23,7 @@ import duckdb
 from jinja2 import Template
 from openpyxl import load_workbook
 from sptlibs.utils.xlsx_source import XlsxSource
-import sptlibs.data_import.import_utils as import_utils
+import sptlibs.data_access.import_utils as import_utils
 
 
 class PdtFile:

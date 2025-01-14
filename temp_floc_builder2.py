@@ -2,8 +2,8 @@
 
 
 import duckdb
-import data_import.s4_ztables.duckdb_import as duckdb_import_ztables
-import data_import.excel_table.duckdb_import as duckdb_import_excel
+import data_access.s4_ztables.duckdb_import as duckdb_import_ztables
+import data_access.excel_table.duckdb_import as duckdb_import_excel
 
 duckdb_path = 'E:/coding/work/work-sql/floc_builder/floc_builder.duckdb'
 ztable_source_directory = 'g:/work/2024/asset_data_facts/s4_ztables'

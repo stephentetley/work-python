@@ -19,7 +19,7 @@ import os
 import glob
 import duckdb
 import polars as pl
-import sptlibs.data_import.import_utils as import_utils
+import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 

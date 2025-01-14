@@ -19,7 +19,7 @@ import re
 import duckdb
 import polars as pl
 import polars.selectors as cs
-import sptlibs.data_import.import_utils as import_utils
+import sptlibs.data_access.import_utils as import_utils
 
 
 class _FileDownload:

@@ -19,7 +19,7 @@ import os
 from pathlib import Path
 import duckdb
 from sptlibs.utils.xlsx_source import XlsxSource
-import sptlibs.data_import.import_utils as import_utils
+import sptlibs.data_access.import_utils as import_utils
 
 
 def import_excel_sheet(*, xls_path: str, sheet_name: str | None, output_db: str | None, table_name: str | None) -> None:

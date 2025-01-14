@@ -18,7 +18,7 @@ limitations under the License.
 from argparse import ArgumentParser
 import os
 import duckdb
-import data_import.s4_ztables.duckdb_import as duckdb_import
+import data_access.s4_ztables.duckdb_import as duckdb_import
 
 
 

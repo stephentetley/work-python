@@ -16,7 +16,7 @@ limitations under the License.
 """
 import os
 from argparse import ArgumentParser
-import sptlibs.data_import.excel_table.duckdb_import as duckdb_import
+import sptlibs.data_access.excel_table.duckdb_import as duckdb_import
 
 def main():
     parser = ArgumentParser(description='Import an Excel table into a DuckDb database')

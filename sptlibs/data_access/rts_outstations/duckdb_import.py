@@ -18,7 +18,7 @@ limitations under the License.
 
 import duckdb
 import polars as pl
-import sptlibs.data_import.import_utils as import_utils
+import sptlibs.data_access.import_utils as import_utils
 
 
 def _trafo_dataframe(df: pl.DataFrame) -> pl.DataFrame:

@@ -22,8 +22,8 @@ import duckdb
 import os
 from sptlibs.utils.asset_data_config import AssetDataConfig
 from sptlibs.utils.xlsx_source import XlsxSource
-import sptlibs.data_import.s4_classlists.duckdb_import as classlists_duckdb_import
-import sptlibs.data_import.ai2_export.duckdb_import as ai2_exports_import
+import sptlibs.data_access.s4_classlists.duckdb_import as classlists_duckdb_import
+import sptlibs.data_access.ai2_export.duckdb_import as ai2_exports_import
 import sptlibs.class_rep.ai2_class_rep.duckdb_init as ai2_class_duckdb_init
 
 
