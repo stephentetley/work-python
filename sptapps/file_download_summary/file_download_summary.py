@@ -15,8 +15,12 @@ limitations under the License.
 
 """
 
-# While debugging, run from project root:
-# (base) > python .\sptapps\change_report_summary\change_report.py
+# While debugging, run from work-python root:
+# (base) > python .\sptapps\file_download_summary\file_download_summary.py
+#
+# Point browser to:
+# > http://localhost:5000/file_download_summary
+
 
 import os
 from flask import Flask, render_template, request, redirect, url_for
@@ -27,9 +31,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './data/uploads'
 
 
-@app.route('/change_report')
+@app.route('/file_download_summary')
 def index():
-    return render_template('change_report.html')
+    return render_template('file_download_summary.html')
 
 
 @app.route('/uploader', methods=['POST'])
