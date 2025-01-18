@@ -25,7 +25,7 @@ limitations under the License.
 
 
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, current_app
 import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
@@ -38,7 +38,8 @@ import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = './data/uploads'
+app.config['UPLOAD_FOLDER'] = './sptapps/file_download_summary/runtime/uploads'
+app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
 
 def create_report(fd_files: list[str]) -> None: 
     config = AssetDataConfig()
@@ -46,13 +47,11 @@ def create_report(fd_files: list[str]) -> None:
 
 
     report_name = 'fd-summary-report.xlsx'
-    output_db_name = 'fd_summary_data.duckdb'
 
-    xlsx_output_path = os.path.join(app.config['UPLOAD_FOLDER'], report_name)
-    duckdb_output_path = os.path.join(app.config['UPLOAD_FOLDER'], output_db_name)
+    fullpath = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
+    xlsx_output_path = os.path.join(fullpath, report_name)
 
-
-    conn = duckdb.connect(database=duckdb_output_path)
+    conn = duckdb.connect(read_only=False)
     classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
 
     file_download_duckdb_import.init_s4_fd_raw_data_tables(con=conn)
@@ -69,7 +68,7 @@ def create_report(fd_files: list[str]) -> None:
 
 @app.route('/file_download_summary')
 def index():
-    return render_template('file_download_summary.html')
+    return render_template('upload.html')
 
 def store_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
     save_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_sto.filename))
@@ -82,7 +81,19 @@ def store_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
 def upload_file():
     temp_paths = [store_file(file_sto) for file_sto in request.files.getlist('files')]
     create_report(temp_paths)
-    return redirect(url_for('index'))
+    return redirect(url_for('download', filename='fd-summary-report.xlsx'))
+
+
+@app.route('/downloads/<path:filename>')
+def download(filename):
+    app.logger.info("Downloading from:")
+    app.logger.info(current_app.root_path)
+    app.logger.info(app.config['DOWNLOAD_FOLDER'])
+    app.logger.info(filename)
+    fullpath = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
+    app.logger.info(fullpath)
+    return send_from_directory(directory=fullpath, path=filename, as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
