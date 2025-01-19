@@ -22,6 +22,7 @@ import glob
 import duckdb
 import polars as pl
 from sptlibs.utils.xlsx_source import XlsxSource
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_access.import_utils as import_utils
 
 
@@ -76,3 +77,16 @@ def _get_table_props(df: pl.DataFrame) -> _ZTableInfo | None:
                                 'remarks': 'comments'})
         case _:
             return None
+
+
+def copy_ztable_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyConnection) -> None:
+    """`dest_con` is the desination database."""
+    # copy tables using duckdb builtins
+    import_utils.duckdb_import_tables_from_duckdb(source_db_path=source_db_path, 
+                                                  con=dest_con,
+                                                  schema_name='s4_ztables',
+                                                  source_tables=['s4_ztables.manuf_model',
+                                                                 's4_ztables.objtype_manuf', 
+                                                                 's4_ztables.eqobjlbl',
+                                                                 's4_ztables.flocdes',
+                                                                 's4_ztables.floobjlbjl'])
