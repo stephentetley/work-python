@@ -20,7 +20,7 @@ from duckdb.typing import *
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 from sptlibs.utils.grid_ref import Osgb36
 
-def init(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     con.create_function("udf_get_easting", udf_get_easting, [VARCHAR], INTEGER)
     con.create_function("udf_get_northing", udf_get_northing, [VARCHAR], INTEGER)
     runner = SqlScriptRunner()

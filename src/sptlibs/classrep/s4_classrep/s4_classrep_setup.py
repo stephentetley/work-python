@@ -18,7 +18,7 @@ limitations under the License.
 import duckdb
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
-def init_s4_class_rep_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
     # create tables, views...
     runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_create_tables.sql', con=con)

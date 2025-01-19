@@ -24,7 +24,7 @@ from sptlibs.utils.asset_data_config import AssetDataConfig
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_access.s4_classlists.s4_classlists_import as classlists_duckdb_import
 import sptlibs.data_access.ai2_export.ai2_export_import as ai2_exports_import
-import sptlibs.class_rep.ai2_class_rep.duckdb_init as ai2_class_duckdb_init
+import sptlibs.classrep.ai2_classrep.ai2_classrep_setup as ai2_classrep_setup
 
 
 
@@ -66,7 +66,7 @@ def main():
         ai2_exports_import.duckdb_import(sources, con=conn)
 
         print("translating...")
-        ai2_class_duckdb_init.init(con=conn)
+        ai2_classrep_setup.duckdb_init(con=conn)
 
         conn.close()
         print(f"Wrote - {output_db}")
