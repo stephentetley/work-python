@@ -23,19 +23,17 @@ import polars as pl
 
 class SqlScriptRunner:
     def __init__(self) -> None:
-        """Throws exception if $ASSET_DATA_SQL_DIR is missing."""
-        sql_root_dir = os.environ.get('ASSET_DATA_SQL_DIR', '')
-        if sql_root_dir:
-            if os.path.exists(sql_root_dir):
-                self.sql_root_dir = sql_root_dir
-                loader = jinja2.FileSystemLoader(searchpath=self.sql_root_dir)
-                self.jinja_env = jinja2.Environment(loader=loader)
-            else: 
-                print("Cannot find $ASSET_DATA_SQL_DIR") 
-                raise NotADirectoryError(f"Cannot find $ASSET_DATA_SQL_DIR = `{sql_root_dir}`")
-        else:
-            print("Environment Variable $ASSET_DATA_SQL_DIR not set")
-            raise OSError("Environment Variable $ASSET_DATA_SQL_DIR not set")
+        """Uses __file__ to get path to static `sql` folders."""
+        print(__file__)
+        this_runner_file = __file__
+        sql_root_dir = os.path.normpath(os.path.join(this_runner_file, "..\..\..\sql"))
+        if os.path.exists(sql_root_dir):
+            self.sql_root_dir = sql_root_dir
+            loader = jinja2.FileSystemLoader(searchpath=self.sql_root_dir)
+            self.jinja_env = jinja2.Environment(loader=loader)
+        else: 
+            print("Cannot find `{sql_root_dir}`") 
+            raise NotADirectoryError(f"Cannot find `{sql_root_dir}`")   
 
     def exec_sql_file(self, *, file_rel_path: str, con: duckdb.DuckDBPyConnection) -> None:
         sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, file_rel_path))
@@ -116,4 +114,5 @@ class SqlScriptRunner:
                 print(sql_query)
                 print(exn)
                 raise(exn)
-        con.commit()        
+        con.commit()
+

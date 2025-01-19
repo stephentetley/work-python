@@ -17,8 +17,8 @@ limitations under the License.
 
 # While debugging, set PYTHONPATH and run from work-python root:
 
-# (base) > $env:PYTHONPATH='E:\coding\work\work-python\'
-# (base) > python .\sptapps\file_download_summary\file_download_summary.py
+# (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
+# (base) > python .\src\sptapps\file_download_summary\file_download_summary.py
 #
 # Point browser to:
 # > http://localhost:5000/file_download_summary
@@ -38,7 +38,7 @@ import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = './sptapps/file_download_summary/runtime/uploads'
+app.config['UPLOAD_FOLDER'] = './runtime/uploads'
 app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
 
 def create_report(fd_files: list[str]) -> None: 
@@ -71,7 +71,8 @@ def index():
     return render_template('upload.html')
 
 def store_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
-    save_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file_sto.filename))
+    fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
+    save_path = os.path.join(fullpath, secure_filename(file_sto.filename))
     app.logger.info(save_path)
     file_sto.save(save_path)
     return save_path
@@ -90,7 +91,7 @@ def download(filename):
     app.logger.info(current_app.root_path)
     app.logger.info(app.config['DOWNLOAD_FOLDER'])
     app.logger.info(filename)
-    fullpath = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
+    fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
     app.logger.info(fullpath)
     return send_from_directory(directory=fullpath, path=filename, as_attachment=True)
 
