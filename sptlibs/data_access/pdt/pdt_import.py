@@ -15,12 +15,13 @@ limitations under the License.
 
 """
 
+# This was a quick hack - it is expected to bitrot as the need for it has passed
+
 import duckdb
-from jinja2 import Template
 import sptlibs.data_access.s4_classlists.duckdb_import as classlist_duckdb_import
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
-def init(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     classlist_duckdb_import.copy_standard_classlists_tables(con=con)
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='pdt_raw_data/pdt_raw_data_create_tables.sql', con=con)
@@ -28,11 +29,11 @@ def init(*, con: duckdb.DuckDBPyConnection) -> None:
     runner.exec_sql_generating_file(file_rel_path='pdt_class_rep/gen_pdt_class_rep_tables.sql', con=con)
 
 
-def build_class_rep(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_build_class_rep(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='pdt_class_rep/pdt_class_rep_insert_into.sql', con=con)
 
-def build_equiclass_summary_views(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_build_equiclass_summary_views(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner()
     df = con.execute("""
         SELECT lower(t.class_name) AS class_name FROM s4_classlists.vw_equi_class_defs t WHERE t.is_object_class=true;

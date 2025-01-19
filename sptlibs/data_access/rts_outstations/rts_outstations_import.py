@@ -38,7 +38,7 @@ def _trafo_dataframe(df: pl.DataFrame) -> pl.DataFrame:
         (pl.col("last_power_up").str.strip_chars().str.to_datetime("%H:%M %d-%b-%y", strict=False)),
     ])
 
-def import_outstations_report(rts_report_csv: str, *, con: duckdb.DuckDBPyConnection) -> None:
+def duckdb_import(rts_report_csv: str, *, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS rts_raw_data;')
     import_utils.duckdb_import_csv(
         rts_report_csv, 

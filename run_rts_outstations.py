@@ -18,7 +18,7 @@ limitations under the License.
 from argparse import ArgumentParser
 import os
 import duckdb
-import sptlibs.data_access.rts_outstations.duckdb_import as duckdb_import
+import sptlibs.data_access.rts_outstations.rts_outstations_import as rts_outstations_import
 
 # TODO specify input file at command line...
 def main(): 
@@ -34,7 +34,7 @@ def main():
         duckdb_output_path = os.path.normpath(os.path.join(dest_directory, "outstations_db.duckdb"))
 
         conn = duckdb.connect(database=duckdb_output_path)
-        duckdb_import.import_outstations_report(source_file, con=conn)
+        rts_outstations_import.duckdb_import(source_file, con=conn)
 
         csv_output_path = os.path.normpath(os.path.join(dest_directory, "outstations_tidy.csv"))
         export_stmt = f"COPY rts_raw_data.outstations_report TO '{csv_output_path}' (HEADER, DELIMITER ',');"
