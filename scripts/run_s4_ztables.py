@@ -17,22 +17,31 @@ limitations under the License.
 
 from argparse import ArgumentParser
 import os
+import glob
 import duckdb
 import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
+from sptlibs.utils.xlsx_source import XlsxSource
 
-
+def _get_ztable_files(*, source_dir: str) -> list[XlsxSource]:
+    globlist = glob.glob('*.xlsx', root_dir=source_dir, recursive=False)
+    def not_temp(file_name): 
+        return not '~$' in file_name
+    def expand(file_name): 
+        return XlsxSource(os.path.normpath(os.path.join(source_dir, file_name)), 'Sheet1')
+    return [expand(e) for e in globlist if not_temp(e)]
 
 def main(): 
     parser = ArgumentParser(description='Generate ztable info DuckDB tables')
     parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing Ztable exports")
     parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
     args = parser.parse_args()
-    source_directory    = args.source_dir
+    source_directory = args.source_dir
     output_db = args.output_db
     
     if source_directory and os.path.exists(source_directory):
+        sources = _get_ztable_files(source_dir = source_directory)
         con = duckdb.connect(database=output_db, read_only=False)
-        s4_ztables_import.duckdb_import(source_directory=source_directory, con=con)
+        s4_ztables_import.duckdb_import(sources=sources, con=con)
         con.close()
         print(f"Done - created: {output_db}")
 

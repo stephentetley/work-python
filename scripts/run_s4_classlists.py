@@ -33,7 +33,7 @@ def _get_classlist_files(*, source_dir: str, glob_pattern: str) -> list[XlsxSour
 
 def main(): 
     parser = ArgumentParser(description='Generate ztable info DuckDB tables')
-    parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing AI2 exports")
+    parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing classlist exports")
     parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
     args = parser.parse_args()
     source_directory    = args.source_dir

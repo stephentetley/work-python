@@ -26,19 +26,17 @@ import sptlibs.data_access.import_utils as import_utils
 
 
 
-def duckdb_import(*, source_directory: str, con: duckdb.DuckDBPyConnection) -> None:
-    if source_directory and os.path.exists(source_directory):
-        con.execute('CREATE SCHEMA IF NOT EXISTS s4_ztables;')
-        sources = _get_ztable_files(source_dir = source_directory)
-        for source in sources:
-            print(source)
-            df = import_utils.read_xlsx_source(source, normalize_column_names=True)
-            info = _get_table_props(df)
-            if info:
-                df1 = df.rename(info.column_renames)
-                import_utils.duckdb_store_polars_dataframe(df1, 
-                                                            table_name=info.table_name,
-                                                            con=con)
+def duckdb_import(*, sources: list[XlsxSource], con: duckdb.DuckDBPyConnection) -> None:
+    con.execute('CREATE SCHEMA IF NOT EXISTS s4_ztables;')
+    for source in sources:
+        print(source)
+        df = import_utils.read_xlsx_source(source, normalize_column_names=True)
+        info = _get_table_props(df)
+        if info:
+            df1 = df.rename(info.column_renames)
+            import_utils.duckdb_store_polars_dataframe(df1, 
+                                                        table_name=info.table_name,
+                                                        con=con)
 
 
 @dataclass
@@ -46,13 +44,6 @@ class _ZTableInfo:
     table_name: str
     column_renames: dict[str, str]
 
-def _get_ztable_files(*, source_dir: str) -> list[XlsxSource]:
-    globlist = glob.glob('*.xlsx', root_dir=source_dir, recursive=False)
-    def not_temp(file_name): 
-        return not '~$' in file_name
-    def expand(file_name): 
-        return XlsxSource(os.path.normpath(os.path.join(source_dir, file_name)), 'Sheet1')
-    return [expand(e) for e in globlist if not_temp(e)]
 
 
 
