@@ -24,7 +24,6 @@ import polars as pl
 class SqlScriptRunner:
     def __init__(self) -> None:
         """Uses __file__ to get path to static `sql` folders."""
-        print(__file__)
         this_runner_file = __file__
         sql_root_dir = os.path.normpath(os.path.join(this_runner_file, "..\..\..\sql"))
         if os.path.exists(sql_root_dir):

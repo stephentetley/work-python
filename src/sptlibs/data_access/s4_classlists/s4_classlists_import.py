@@ -25,26 +25,15 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
 # TODO - change source to list[str]
-def duckdb_import(*, source_directory: str, con: duckdb.DuckDBPyConnection) -> None:
-    if source_directory and os.path.exists(source_directory):
-        runner = SqlScriptRunner()
-        runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_create_tables.sql', con=con)
-        sources = _get_classlist_files(source_dir = source_directory)
-        for source in sources:
-            print(source)
-            df = _read_source(source)
-            import_utils.duckdb_store_polars_dataframe(df, table_name='s4_classlists.dataframe_temp', con=con)
-            runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_insert_into.sql', con=con)
+def duckdb_import(*, sources: list[XlsxSource], con: duckdb.DuckDBPyConnection) -> None:
+    runner = SqlScriptRunner()
+    runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_create_tables.sql', con=con)
+    for source in sources:
+        print(source.path)
+        df = _read_source(source)
+        import_utils.duckdb_store_polars_dataframe(df, table_name='s4_classlists.dataframe_temp', con=con)
+        runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_insert_into.sql', con=con)
                 
-
-
-def _get_classlist_files(*, source_dir: str) -> list[XlsxSource]:
-    globlist = glob.glob('*.xlsx', root_dir=source_dir, recursive=False)
-    def not_temp(file_name): 
-        return not '~$' in file_name
-    def expand(file_name): 
-        return XlsxSource(os.path.normpath(os.path.join(source_dir, file_name)), 'Sheet1')
-    return [expand(e) for e in globlist if not_temp(e)]
 
 
 def _read_source(src: XlsxSource) -> pl.DataFrame: 
