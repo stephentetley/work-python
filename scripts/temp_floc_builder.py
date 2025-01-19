@@ -1,45 +1,20 @@
-# temp_floc_builder.py
-
-import datetime as datetime
-import sptapps.floc_builder.systems as sys
-import sptapps.floc_builder.subsystems as subsys
-from sptapps.floc_builder.site import Site, SiteContext
-from sptapps.floc_builder.context import Context
-from sptapps.floc_builder.gen_flocs import GenFlocs
-from sptapps.floc_builder.gen_floc_classifications import GenFlocClassifications
+# temp_floc_builder2.py
 
 
-# floc_builder3
-cx = Context(easting=47600, northing=56400, 
-             startup_date=datetime.date(2023, 11, 1))
+import duckdb
+import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
+import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 
-cx1 = cx.with_east_north(easting=5, northing=10).with_solution_ids(["001256789"])
-print(cx)
-print(cx1)
+duckdb_path = 'E:/coding/work/work-sql/floc_builder/floc_builder.duckdb'
+ztable_source_directory = 'g:/work/2024/asset_data_facts/s4_ztables'
+worklist_path = 'g:/work/2025/floc_builder/har55_source/har55_worklist.with_notes.xlsx'
+ih06_path = 'g:/work/2025/floc_builder/har55_source/HAR55_ih06_20250110095604.xlsx'
 
-boo03 = Site().set_context(SiteContext(siteid='BOO01', sitename='Boomtown').with_solution_id("00034001"))
-
-boo03.caa().net().tel()           # .tel().system(1, "Telemetry System")
-boo03.sif().stm()           # .bld().system(1, SIF-STM-BLG'().net().tel().system(1, "Telemetry System")
-
-
-boo03.add_system(sys.telemetry(index=1))
-boo03.add_system(sys.portable_lifting())
-boo03.add_system(sys.fixed_lifting())
-boo03.add_system(sys.edc_outfall())
-boo03.add_system(sys.kiosk(subsystems=subsys.kiosks(['Kiosk-1', 'Kiosk-2'])))
-print(boo03)
-
-
-gf = GenFlocs(source_path='g:/work/2024/asset_data_facts/s4_ztables/zte_0343_flocdes.XLSX', 
-              site=boo03)
-
-flocs = gf.gen_flocs()
-chars = GenFlocClassifications(flocs=flocs).gen_floc_classifications()
-
-for x in flocs:
-    print(x)
-
-for x in chars:
-    print(x)
+con = duckdb.connect(database=duckdb_path, read_only=False)
+s4_ztables_import.duckdb_import(source_directory=ztable_source_directory, con=con)
+excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Flocs', table_name='raw_data.worklist', con=con)
+excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Config', table_name='raw_data.config', con=con)
+excel_table_import.duckdb_import(xls_path=ih06_path, sheet_name='Sheet1', table_name='raw_data.ih06_export', con=con)
+con.close()
+print(f"Done - added raw data to: {duckdb_path}")
 

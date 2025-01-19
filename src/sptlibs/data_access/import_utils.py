@@ -15,8 +15,10 @@ limitations under the License.
 
 """
 
+import os
 import random
 import re
+import glob
 from typing import Callable
 import polars as pl
 import duckdb
@@ -222,3 +224,12 @@ def _remove_index(s: str) -> str:
     drop_ix = re.sub(pattern=r'_[\d]+$' , repl='', string=s)
     return drop_ix
 
+def get_excel_sources_from_folder(source_folder: str, *, 
+                                  sheet_name: str = 'Sheet1', 
+                                  glob_pattern: str = '*.xlsx') -> list[XlsxSource]:
+    globlist = glob.glob(glob_pattern, root_dir=source_folder, recursive=False)
+    def not_temp(file_name): 
+        return not '~$' in file_name
+    def expand(file_name): 
+        return XlsxSource(os.path.normpath(os.path.join(source_folder, file_name)), sheet_name)
+    return [expand(e) for e in globlist if not_temp(e)]

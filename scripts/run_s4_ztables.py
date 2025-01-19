@@ -17,18 +17,10 @@ limitations under the License.
 
 from argparse import ArgumentParser
 import os
-import glob
 import duckdb
 import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
-from sptlibs.utils.xlsx_source import XlsxSource
+import sptlibs.data_access.import_utils as import_utils
 
-def _get_ztable_files(*, source_dir: str) -> list[XlsxSource]:
-    globlist = glob.glob('*.xlsx', root_dir=source_dir, recursive=False)
-    def not_temp(file_name): 
-        return not '~$' in file_name
-    def expand(file_name): 
-        return XlsxSource(os.path.normpath(os.path.join(source_dir, file_name)), 'Sheet1')
-    return [expand(e) for e in globlist if not_temp(e)]
 
 def main(): 
     parser = ArgumentParser(description='Generate ztable info DuckDB tables')
@@ -39,7 +31,7 @@ def main():
     output_db = args.output_db
     
     if source_directory and os.path.exists(source_directory):
-        sources = _get_ztable_files(source_dir = source_directory)
+        sources = import_utils.get_excel_sources_from_folder(source_folder = source_directory)
         con = duckdb.connect(database=output_db, read_only=False)
         s4_ztables_import.duckdb_import(sources=sources, con=con)
         con.close()
