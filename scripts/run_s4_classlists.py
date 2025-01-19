@@ -16,11 +16,20 @@ limitations under the License.
 """
 
 import os
+import glob
 from argparse import ArgumentParser
 import duckdb
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
+from sptlibs.utils.xlsx_source import XlsxSource
 
 
+def _get_classlist_files(*, source_dir: str, glob_pattern: str) -> list[XlsxSource]:
+    globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
+    def not_temp(file_name): 
+        return not '~$' in file_name
+    def expand(file_name): 
+        return XlsxSource(os.path.normpath(os.path.join(source_dir, file_name)), 'Sheet1')
+    return [expand(e) for e in globlist if not_temp(e)]
 
 def main(): 
     parser = ArgumentParser(description='Generate ztable info DuckDB tables')
@@ -31,8 +40,10 @@ def main():
     output_db = args.output_db
     
     if source_directory and os.path.exists(source_directory):
+        files = _get_classlist_files(source_dir=source_directory, glob_pattern='*class*.xlsx')
         con = duckdb.connect(database=output_db, read_only=False)
-        s4_classlists_import.create_duckdb_classlists(source_directory=source_directory, con=con)
+        
+        s4_classlists_import.duckdb_import(sources=files, con=con)
         con.close()
         print(f"Done - created: {output_db}")
 
