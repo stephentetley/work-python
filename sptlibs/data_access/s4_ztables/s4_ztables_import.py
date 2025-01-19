@@ -26,7 +26,7 @@ import sptlibs.data_access.import_utils as import_utils
 
 
 
-def create_duckdb_ztables(*, source_directory: str, con: duckdb.DuckDBPyConnection) -> None:
+def duckdb_import(*, source_directory: str, con: duckdb.DuckDBPyConnection) -> None:
     if source_directory and os.path.exists(source_directory):
         con.execute('CREATE SCHEMA IF NOT EXISTS s4_ztables;')
         sources = _get_ztable_files(source_dir = source_directory)

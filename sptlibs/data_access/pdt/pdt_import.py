@@ -18,11 +18,11 @@ limitations under the License.
 # This was a quick hack - it is expected to bitrot as the need for it has passed
 
 import duckdb
-import sptlibs.data_access.s4_classlists.duckdb_import as classlist_duckdb_import
+import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    classlist_duckdb_import.copy_standard_classlists_tables(con=con)
+    s4_classlists_import.copy_standard_classlists_tables(con=con)
     runner = SqlScriptRunner()
     runner.exec_sql_file(file_rel_path='pdt_raw_data/pdt_raw_data_create_tables.sql', con=con)
     runner.exec_sql_file(file_rel_path='pdt_class_rep/pdt_class_rep_create_tables.sql', con=con)

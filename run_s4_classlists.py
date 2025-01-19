@@ -18,7 +18,7 @@ limitations under the License.
 import os
 from argparse import ArgumentParser
 import duckdb
-import data_access.s4_classlists.duckdb_import as duckdb_import
+import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 
 
 
@@ -32,7 +32,7 @@ def main():
     
     if source_directory and os.path.exists(source_directory):
         con = duckdb.connect(database=output_db, read_only=False)
-        duckdb_import.create_duckdb_classlists(source_directory=source_directory, con=con)
+        s4_classlists_import.create_duckdb_classlists(source_directory=source_directory, con=con)
         con.close()
         print(f"Done - created: {output_db}")
 

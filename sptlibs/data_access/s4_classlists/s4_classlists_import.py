@@ -24,7 +24,8 @@ from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
-def create_duckdb_classlists(*, source_directory: str, con: duckdb.DuckDBPyConnection) -> None:
+# TODO - change source to list[str]
+def duckdb_import(*, source_directory: str, con: duckdb.DuckDBPyConnection) -> None:
     if source_directory and os.path.exists(source_directory):
         runner = SqlScriptRunner()
         runner.exec_sql_file(file_rel_path='s4_classlists/s4_classlists_create_tables.sql', con=con)
