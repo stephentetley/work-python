@@ -22,7 +22,7 @@ from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_access.import_utils as import_utils
 
 
-def import_excel_sheet(*, xls_path: str, sheet_name: str | None, output_db: str | None, table_name: str | None) -> None:
+def duckdb_import_table(*, xls_path: str, sheet_name: str | None, output_db: str | None, table_name: str | None) -> None:
     if not output_db:
         output_dir = os.path.dirname(xls_path)
         file_name = Path(xls_path).stem + '.duckdb'
@@ -31,16 +31,16 @@ def import_excel_sheet(*, xls_path: str, sheet_name: str | None, output_db: str 
     print(f"output to: {output_db}")
     if output_db:
         con = duckdb.connect(database=output_db, read_only=False)
-        db_import_excel_sheet(con=con, xls_path=xls_path, sheet_name=sheet_name, table_name=table_name)
+        duckdb_import(con=con, xls_path=xls_path, sheet_name=sheet_name, table_name=table_name)
         con.close()
         print(f'wrote {output_db}')
     else:
         print(f'failed, check {output_db}')
 
-def db_import_excel_sheet(xls_path: str, *, 
-                          con: duckdb.DuckDBPyConnection, 
-                          sheet_name: str | None, 
-                          table_name: str | None) -> None:
+def duckdb_import(xls_path: str, *, 
+                  con: duckdb.DuckDBPyConnection, 
+                  sheet_name: str | None, 
+                  table_name: str | None) -> None:
     
     xls_source = XlsxSource(xls_path, sheet_name)
     
