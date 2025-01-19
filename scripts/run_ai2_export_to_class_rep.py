@@ -40,7 +40,7 @@ def main():
     parser = ArgumentParser(description='Generate a class_rep database for AI2 exports')
     parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing AI2 exports")
     parser.add_argument("--glob_pattern", dest='glob_pattern', help="Glob pattern to identify *.xlsx files")
-    parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
+    parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to import into")
     args = parser.parse_args()
     source_directory    = args.source_dir
 

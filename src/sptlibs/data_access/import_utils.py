@@ -89,19 +89,21 @@ _renaming_insert_stmt = """
         {{df_view_name}} df;
 """
 
-# TODO - too complicated, exec statement at a time rather than build a script...
+
 def duckdb_import_tables_from_duckdb(
         *, 
         source_db_path: str, 
         con: duckdb.DuckDBPyConnection,
-        schema_name: str,
-        source_tables: list[str] ) -> None:
-    con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
+        source_tables: list[str],
+        schema_name: str, 
+        create_schama: bool = False) -> None:
+    if create_schama: 
+        con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
     con.execute(f"ATTACH '{source_db_path}' AS table_source;")
     for source_table in source_tables: 
         _, _, dest_name = source_table.partition('.')
         if dest_name: 
-            con.execute(f"CREATE OR REPLACE TABLE {schema_name}.{dest_name} AS SELECT * FROM {source_table};")
+            con.execute(f"CREATE OR REPLACE TABLE {schema_name}.{dest_name} AS SELECT * FROM table_source.{source_table};")
     con.execute(f"DETACH table_source;")
 
 
