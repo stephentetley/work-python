@@ -20,7 +20,7 @@ import os
 import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_access.s4_classlists.duckdb_import as classlists_duckdb_import
-import sptlibs.data_access.file_download.duckdb_import as file_download_duckdb_import
+import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.class_rep.s4_class_rep.duckdb_init as s4_class_rep_duckdb_setup
 import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 
@@ -62,8 +62,8 @@ def main():
         conn = duckdb.connect(database=duckdb_output_path)
         classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
 
-        file_download_duckdb_import.init_s4_fd_raw_data_tables(con=conn)
-        file_download_duckdb_import.store_download_files(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
+        file_download_import.duckdb_table_init(con=conn)
+        file_download_import.duckdb_import_directory(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
 
         s4_class_rep_duckdb_setup.init_s4_class_rep_tables(con=conn)
         gen_report.gen_report(xls_output_path=xlsx_output_path, con=conn)
