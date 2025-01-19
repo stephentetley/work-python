@@ -23,7 +23,7 @@ import os
 from sptlibs.utils.asset_data_config import AssetDataConfig
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_access.s4_classlists.duckdb_import as classlists_duckdb_import
-import sptlibs.data_access.ai2_export.duckdb_import as ai2_exports_import
+import sptlibs.data_access.ai2_export.ai2_export_import as ai2_exports_import
 import sptlibs.class_rep.ai2_class_rep.duckdb_init as ai2_class_duckdb_init
 
 
@@ -62,8 +62,8 @@ def main():
         conn = duckdb.connect(database=output_db)
         classlists_duckdb_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
 
-        ai2_exports_import.init(con=conn)
-        ai2_exports_import.import_ai2_exports(sources, con=conn)
+        ai2_exports_import.duckdb_init(con=conn)
+        ai2_exports_import.duckdb_import(sources, con=conn)
 
         print("translating...")
         ai2_class_duckdb_init.init(con=conn)
