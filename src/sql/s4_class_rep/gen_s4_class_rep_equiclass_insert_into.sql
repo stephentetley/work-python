@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
--- INSERT INTO `equiclass_` tables
+-- # INSERT INTO `equiclass_` tables
 
 
 

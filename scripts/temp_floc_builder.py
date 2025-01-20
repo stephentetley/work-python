@@ -1,9 +1,6 @@
-# temp_floc_builder2.py
+# temp_floc_builder.py
 
 
-import duckdb
-import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
-import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 import sptapps.floc_builder.floc_builder as flocbuilder
 
 duckdb_path = 'E:/coding/work/work-sql/floc_builder/floc_builder.duckdb'
