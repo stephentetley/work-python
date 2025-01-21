@@ -17,25 +17,9 @@
 
 CREATE SCHEMA IF NOT EXISTS ai2_landing;
 CREATE SCHEMA IF NOT EXISTS ai2_eav;
-CREATE SCHEMA IF NOT EXISTS ai2_classrep;
 CREATE SCHEMA IF NOT EXISTS ai2_metadata;
 
-
-CREATE OR REPLACE TABLE ai2_classrep.equi_masterdata (
-    ai2_reference VARCHAR NOT NULL,
-    common_name VARCHAR NOT NULL,
-    item_name VARCHAR,
-    equipment_type VARCHAR NOT NULL,
-    installed_from DATE,
-    manufacturer VARCHAR,
-    model VARCHAR,
-    specific_model_frame VARCHAR,
-    serial_number VARCHAR,    
-    asset_status VARCHAR,
-    grid_ref VARCHAR,
-    PRIMARY KEY (ai2_reference)
-);
-
+-- # `ai2_classrep.equi_masterdata` set up in ai2_equi_classrep
 
 -- Currently can't be invoked for qualified tables names, use `USE <schema>;` before invoking... 
 CREATE OR REPLACE MACRO get_equipment_masterdata(table_name) AS TABLE
