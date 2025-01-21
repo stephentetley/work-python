@@ -18,7 +18,23 @@
 CREATE SCHEMA IF NOT EXISTS ai2_landing;
 CREATE SCHEMA IF NOT EXISTS ai2_eav;
 CREATE SCHEMA IF NOT EXISTS ai2_classrep;
+CREATE SCHEMA IF NOT EXISTS ai2_metadata;
 
+
+CREATE OR REPLACE TABLE ai2_classrep.equi_masterdata (
+    ai2_reference VARCHAR NOT NULL,
+    common_name VARCHAR NOT NULL,
+    item_name VARCHAR,
+    equipment_type VARCHAR NOT NULL,
+    installed_from DATE,
+    manufacturer VARCHAR,
+    model VARCHAR,
+    specific_model_frame VARCHAR,
+    serial_number VARCHAR,    
+    asset_status VARCHAR,
+    grid_ref VARCHAR,
+    PRIMARY KEY (ai2_reference)
+);
 
 
 -- Currently can't be invoked for qualified tables names, use `USE <schema>;` before invoking... 

@@ -16,7 +16,7 @@
 
 
 USE ai2_landing;
- 
+
 
 WITH cte AS (
 SELECT 
