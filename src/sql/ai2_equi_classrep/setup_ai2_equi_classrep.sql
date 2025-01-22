@@ -18,7 +18,7 @@
 CREATE SCHEMA IF NOT EXISTS ai2_classrep;
 
 CREATE OR REPLACE MACRO ai2_classrep.normalize_name(name) AS 
-    '_' || lower(name).regexp_replace('[\W+]', ' ', 'g').trim().regexp_replace('[\W]+', '_', 'g');
+    lower(name).regexp_replace('[\W+]', ' ', 'g').trim().regexp_replace('[\W]+', '_', 'g');
 
 
 CREATE OR REPLACE TABLE ai2_classrep.equi_masterdata (

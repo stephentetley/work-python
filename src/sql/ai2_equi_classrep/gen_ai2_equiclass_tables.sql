@@ -20,20 +20,21 @@
 
 WITH cte1 AS (
     SELECT 
-        t1.assettypecode AS class_name,
+        ai2_classrep.normalize_name(replace(t1.assettypedescription, 'EQUIPMENT:', 'equiclass')) AS class_name,
         list(struct_pack(field_name := ai2_classrep.normalize_name(t1.attributedescription), field_type := 'VARCHAR')) AS field_elements,
     FROM ai2_metadata.equipment_attributes t1
-    GROUP BY t1.assettypecode
+    WHERE t1.assettypedescription LIKE 'EQUIPMENT: %'
+    GROUP BY t1.assettypedescription
 ), cte2 AS (
     SELECT 
         lower(t1.class_name) AS class_name,
-        list_transform(t1.field_elements, st -> format(E'    {} {},', lower(st.field_name), st.field_type)).list_sort() AS field_elements,
+        list_transform(t1.field_elements, st -> format(E'    _{} {},', lower(st.field_name), st.field_type)).list_sort() AS field_elements,
     FROM cte1 t1
 )
 SELECT 
     t.class_name AS class_name,
     concat_ws(E'\n',
-        format(E'CREATE OR REPLACE TABLE ai2_classrep.equiclass_{} (', t.class_name),
+        format(E'CREATE OR REPLACE TABLE ai2_classrep.{} (', t.class_name),
         '    equipment_id VARCHAR NOT NULL, ',
         list_aggregate(t.field_elements, 'string_agg', E'\n'),
         '    PRIMARY KEY(equipment_id)',

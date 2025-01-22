@@ -32,6 +32,7 @@ import_utils.duckdb_import_sheet(source=ai2_equipment_attributes_source,
                                  df_trafo=None)
 
 runner = SqlScriptRunner()
+# This should be encapsulated in a module...
 runner.exec_sql_file(file_rel_path='ai2_equi_classrep/setup_ai2_equi_classrep.sql', con=con)
 runner.exec_sql_generating_file(file_rel_path='ai2_equi_classrep/gen_ai2_equiclass_tables.sql', con=con)
 
