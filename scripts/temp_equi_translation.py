@@ -19,19 +19,20 @@ sources = import_utils.get_excel_sources_from_folder(source_folder=source_folder
                                                      glob_pattern='mal12-ai2*.xlsx',
                                                      sheet_name='Sheet1')
 
+runner = SqlScriptRunner()
 con = duckdb.connect(database=duckdb_output_path, read_only=False)
 
 s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_source, 
                                             setup_tables=True, 
                                             dest_con=con)
-
+# ai2_metadata - to sort out....
 con.execute("CREATE SCHEMA IF NOT EXISTS ai2_metadata;")
 import_utils.duckdb_import_sheet(source=ai2_equipment_attributes_source, 
                                  qualified_table_name=f'ai2_metadata.equipment_attributes', 
                                  con=con, 
                                  df_trafo=None)
+runner.exec_sql_file(file_rel_path='equi_translation/ai2_metadata_create_view.sql', con=con)
 
-runner = SqlScriptRunner()
 # This should be encapsulated in a module...
 runner.exec_sql_file(file_rel_path='ai2_equi_classrep/setup_ai2_equi_classrep.sql', con=con)
 runner.exec_sql_generating_file(file_rel_path='ai2_equi_classrep/gen_ai2_equiclass_tables.sql', con=con)

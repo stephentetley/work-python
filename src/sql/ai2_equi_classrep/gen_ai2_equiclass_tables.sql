@@ -22,7 +22,7 @@ WITH cte1 AS (
     SELECT 
         ai2_classrep.normalize_name(replace(t1.assettypedescription, 'EQUIPMENT:', 'equiclass')) AS class_name,
         list(struct_pack(field_name := ai2_classrep.normalize_name(t1.attributedescription), field_type := 'VARCHAR')) AS field_elements,
-    FROM ai2_metadata.equipment_attributes t1
+    FROM ai2_metadata.vw_specific_equipment_attributes t1
     WHERE t1.assettypedescription LIKE 'EQUIPMENT: %'
     GROUP BY t1.assettypedescription
 ), cte2 AS (
