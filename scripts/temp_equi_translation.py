@@ -49,6 +49,8 @@ for source in sources:
 runner.exec_sql_generating_file(file_rel_path='equi_translation/gen_table_equipment_masterdata.sql', con=con)
 runner.exec_sql_generating_file(file_rel_path='equi_translation/gen_table_equipment_eav.sql', con=con)
 
+runner.exec_sql_file(file_rel_path='equi_translation/ai2_classrep_insert_into.sql', con=con)
+
 con.close()
 print(f'wrote {duckdb_output_path}')
 
