@@ -17,6 +17,8 @@
 -- AI2 metadata is not sorted out yet as we are relying on an old export.
 -- This should go into a specific module in time...
 
+-- TODO move OperationalResponsibility etc. into specific table?
+
 CREATE OR REPLACE VIEW ai2_metadata.vw_specific_equipment_attributes AS
 SELECT t.* 
 FROM ai2_metadata.equipment_attributes t
@@ -24,6 +26,7 @@ WHERE t.attributename NOT LIKE 'AGASP%'
 AND t.attributename NOT IN ['AssetName', 'AssetReference', 'AssetStatus', 
     'AssetType', 'CommonName', 'InstalledFromDate', 'Manufacturer', 
     'MemoLine1', 'MemoLine2', 'MemoLine3', 'MemoLine4', 'MemoLine5', 
-    'ModelName', 'PANDITagNo', 'SAPEquipmentRef',
-    'SerialNo', 'SpecificModel/Frame']
-;
+    'ModelName', 'NationalGridReference', 'OperationalResponsibility', 
+    'PANDITagNo', 'ReplacementCost', 'SAFETY CRITICAL', 'SAPEquipmentRef',
+    'SerialNo', 'SpecificModel/Frame', 'StandbyTeam', 'TransferredToWMS', 
+    'WorkCentre']
