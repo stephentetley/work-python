@@ -1,11 +1,10 @@
 import pathlib
 import duckdb
 import sptlibs.data_access.import_utils as import_utils
-import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
-import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
 import sptlibs.schema_setup.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
+import sptapps.equi_translation.equi_translation_setup as equi_translation_setup
 
 ## (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
 ## (base) > python.exe .\scripts\temp_equi_translation.py
@@ -15,7 +14,7 @@ s4_classlists_source = 'g:/work/2024/asset_data_facts/s4_classlists/classlists_n
 ai2_equipment_attributes_source = XlsxSource('G:/work/2025/equi_translation/ai2_metadata/EquipmentAttributes.xlsx', 'AllData')    
 duckdb_output_path  = 'g:/work/2025/equi_translation/mal12_new_equi_translation.duckdb'
 
-# TODO don't load as separate tables
+
 
 sources = import_utils.get_excel_sources_from_folder(source_folder=source_folder, 
                                                      glob_pattern='mal12-ai2*.xlsx',
@@ -24,12 +23,10 @@ sources = import_utils.get_excel_sources_from_folder(source_folder=source_folder
 runner = SqlScriptRunner()
 con = duckdb.connect(database=duckdb_output_path, read_only=False)
 
-s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_source, 
-                                            setup_tables=True, 
-                                            dest_con=con)
-# ai2_metadata
-ai2_metadata_import.duckdb_import(equipment_attributes_source=ai2_equipment_attributes_source,
-                                  con=con)
+equi_translation_setup.setup_equi_translation(con=con, 
+                                              s4_classlists_db_source=s4_classlists_source,
+                                              ai2_equipment_attributes_source=ai2_equipment_attributes_source)
+
 
 # Schema = ai2_classrep
 setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
