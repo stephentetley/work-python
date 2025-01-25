@@ -14,10 +14,7 @@
 -- limitations under the License.
 -- 
 
-
 CREATE SCHEMA IF NOT EXISTS ai2_landing;
-CREATE SCHEMA IF NOT EXISTS ai2_eav;
-CREATE SCHEMA IF NOT EXISTS ai2_metadata;
 
 -- # `ai2_classrep.equi_masterdata` set up in ai2_equi_classrep
 

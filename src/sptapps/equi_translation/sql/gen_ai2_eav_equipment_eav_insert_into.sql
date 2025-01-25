@@ -14,8 +14,9 @@
 -- limitations under the License.
 -- 
 
+
 USE ai2_landing;
- 
+
 
 WITH cte AS (
 SELECT 
@@ -25,11 +26,10 @@ FROM
 WHERE t1.schema_name = 'ai2_landing'
 )
 SELECT 
-    list_transform(cte.table_names, s -> format('SELECT * FROM get_equipment_masterdata(''{}'')', s)) AS table_qs,
+    list_transform(cte.table_names, s -> format('SELECT * FROM get_equipment_attr_values(''{}'')', s)) AS table_qs,
     concat_ws(E'\n', 
-        'CREATE OR REPLACE TABLE ai2_eav.equipment_masterdata AS',
+        'INSERT INTO ai2_eav.equipment_eav BY NAME (',
         list_aggregate(table_qs, 'string_agg', E'\nUNION BY NAME\n'), 
-        ';'
+        ');'
     ) AS sql_text
 FROM cte;
-
