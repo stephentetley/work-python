@@ -2,6 +2,7 @@ import pathlib
 import duckdb
 import sptlibs.data_access.import_utils as import_utils
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
+import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
 import sptlibs.schema_setup.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
@@ -26,13 +27,9 @@ con = duckdb.connect(database=duckdb_output_path, read_only=False)
 s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_source, 
                                             setup_tables=True, 
                                             dest_con=con)
-# ai2_metadata - to sort out....
-con.execute("CREATE SCHEMA IF NOT EXISTS ai2_metadata;")
-import_utils.duckdb_import_sheet(source=ai2_equipment_attributes_source, 
-                                 qualified_table_name=f'ai2_metadata.equipment_attributes', 
-                                 con=con, 
-                                 df_trafo=None)
-runner.exec_sql_file(file_rel_path='equi_translation/ai2_metadata_create_view.sql', con=con)
+# ai2_metadata
+ai2_metadata_import.duckdb_import(equipment_attributes_source=ai2_equipment_attributes_source,
+                                  con=con)
 
 # Schema = ai2_classrep
 setup_ai2_classrep.setup_ai2_classrep_tables(con=con)

@@ -72,7 +72,6 @@ def duckdb_write_dataframe_to_table(
         df_view_name = f"vw_dataframe_{random.randint(1, 20000)}"
         con.register(view_name=df_view_name, python_object=df)
         sql_stmt = Template(_renaming_insert_stmt).render(qualified_table_name=qualified_table_name, df_view_name=df_view_name, columns=columns)
-        print(sql_stmt)
         con.execute(sql_stmt)
         con.commit()
     else:
