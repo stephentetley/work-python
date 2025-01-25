@@ -2,6 +2,7 @@ import pathlib
 import duckdb
 import sptlibs.data_access.import_utils as import_utils
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
+import sptlibs.schema_setup.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
@@ -33,9 +34,8 @@ import_utils.duckdb_import_sheet(source=ai2_equipment_attributes_source,
                                  df_trafo=None)
 runner.exec_sql_file(file_rel_path='equi_translation/ai2_metadata_create_view.sql', con=con)
 
-# This should be encapsulated in a module...
-runner.exec_sql_file(file_rel_path='ai2_equi_classrep/setup_ai2_equi_classrep.sql', con=con)
-runner.exec_sql_generating_file(file_rel_path='ai2_equi_classrep/gen_ai2_equiclass_tables.sql', con=con)
+# Schema = ai2_classrep
+setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
 
 runner.exec_sql_file(file_rel_path='equi_translation/setup_equi_translation.sql', con=con)
 

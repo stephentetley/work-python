@@ -18,10 +18,7 @@
 
 
 
-WITH cte AS (
-    SELECT list_zip(range(1, 10), ['aa', 'bb', 'cc'], true)
-) 
-SELECT * FROM cte;
+
 WITH cte1 AS (
     SELECT 
         t.assettypedescription AS name,
