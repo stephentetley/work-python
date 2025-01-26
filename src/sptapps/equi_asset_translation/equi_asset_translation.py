@@ -44,18 +44,23 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
 def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
                                       source_folder: str,
                                       glob_pattern: str ='*.xlsx',
-                                      sheet_name: str='Sheet1') -> None:
+                                      sheet_name: str='Sheet1') -> int:
     con.execute('CREATE SCHEMA IF NOT EXISTS ai2_landing;')
     sources = import_utils.get_excel_sources_from_folder(source_folder=source_folder, 
                                                          glob_pattern=glob_pattern,
                                                          sheet_name=sheet_name)
+    added = 0
     for source in sources:
-        table_name = import_utils.normalize_name(pathlib.Path(source.path).stem)
-        import_utils.duckdb_import_sheet(source=source, 
-                                         qualified_table_name=f'ai2_landing.{table_name}', 
-                                         con=con, 
-                                         df_trafo=None)
-    
+        table_name_pre = pathlib.Path(source.path).stem
+        if not table_name_pre.startswith('~$'):
+            table_name = import_utils.normalize_name(table_name_pre)
+            import_utils.duckdb_import_sheet(source=source, 
+                                             qualified_table_name=f'ai2_landing.{table_name}', 
+                                             con=con, 
+                                             df_trafo=None)
+            added = added + 1
+    return added
+
 
 def ai2_landing_data_to_ai2_eav(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner2(__file__, con=con)
@@ -73,5 +78,7 @@ def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> 
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation_macros.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_electrical.sql')
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_ica.sql')
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_mechanical.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/s4_classrep_equi_masterdata_insert_into.sql')
 

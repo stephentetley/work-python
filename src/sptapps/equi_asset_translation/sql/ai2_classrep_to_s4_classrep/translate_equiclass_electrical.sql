@@ -14,7 +14,25 @@
 -- limitations under the License.
 -- 
 
-
+INSERT OR REPLACE INTO s4_classrep.equiclass_emtrin BY NAME
+WITH cte AS (
+SELECT
+    t.equipment_id AS equipment_id,   
+    t._insulation_class AS insulation_class_deg_c, 
+    t._ip_rating AS ip_rating,
+    t._location_on_site AS location_on_site,
+    -- emtr_rated_current
+    TRY_CAST(t._current_in AS DECIMAL) AS emtr_rated_current_a,
+    -- emtr_rated_power_kw
+    TRY_CAST(t._power AS DECIMAL) AS __dec_power,
+    equi_asset_translation.power_to_killowatts(t._power_units, __dec_power) AS emtr_rated_power_kw,
+    -- emtr_rated_voltage / emtr_rated_voltage_units
+    equi_asset_translation.voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS emtr_rated_voltage_units,
+    TRY_CAST(t._voltage_in AS INTEGER) AS emtr_rated_voltage,
+FROM ai2_classrep.equiclass_non_immersible_motor t
+)
+SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
+;
 
 
 INSERT OR REPLACE INTO s4_classrep.equiclass_stardo BY NAME
