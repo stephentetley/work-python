@@ -27,7 +27,7 @@ equi_asset_translation.import_ai2_exports_to_ai2_landing(con=con,
 
 equi_asset_translation.ai2_landing_data_to_ai2_eav(con=con)
 equi_asset_translation.translate_ai2_eav_to_ai2_classrep(con=con)
-
+equi_asset_translation.translate_ai2_classrep_to_s4_classrep(con=con)
 con.close()
 print(f'wrote {duckdb_output_path}')
 

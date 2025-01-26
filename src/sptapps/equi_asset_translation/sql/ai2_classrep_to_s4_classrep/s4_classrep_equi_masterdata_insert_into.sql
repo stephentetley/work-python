@@ -1,0 +1,43 @@
+-- 
+-- Copyright 2025 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
+
+
+
+-- NOTE - translate equiclasses first then we can use use 
+-- equiclass_* to calculate classtype (objecttype and category)
+
+INSERT OR REPLACE INTO s4_classrep.equi_masterdata BY NAME
+SELECT 
+    t.ai2_reference AS equipment_id,
+    t.item_name AS equi_description,
+    regexp_extract(t.common_name, '(.*)/EQUIPMENT:', 1) AS functional_location,
+    null AS superord_id,
+    t1.s4_category AS category,
+    t1.s4_objecttype AS object_type,
+    t2.s4_status AS user_status,
+    user_status AS system_status,
+    TRY_CAST(t.installed_from AS DATE) AS startup_date,
+    year(startup_date) AS construction_year,
+    month(startup_date) AS construction_month,
+    t.manufacturer AS manufacturer,
+    t.model AS model_number,
+    t.specific_model_frame AS manufact_part_number,
+    t.serial_number AS serial_number,
+    t.pandi_tag AS technical_ident_number,
+FROM ai2_classrep.equi_masterdata t
+LEFT JOIN equi_asset_translation.objecttype_lookup t1 ON t1.ai2_equipment_type = t.equipment_type
+LEFT JOIN equi_asset_translation.status_lookup t2 ON t2.ai2_status = t.asset_status
+;

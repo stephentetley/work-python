@@ -59,11 +59,17 @@ def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
 
 def ai2_landing_data_to_ai2_eav(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner2(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='setup_ai2_landing_data_to_ai2_eav_macros.sql')
-    runner.exec_sql_generating_file(rel_file_path='gen_ai2_eav_equipment_masterdata_insert_into.sql')
-    runner.exec_sql_generating_file(rel_file_path='gen_ai2_eav_equipment_eav_insert_into.sql')
+    runner.exec_sql_file(rel_file_path='ai2_landing/setup_ai2_landing_data_to_ai2_eav_macros.sql')
+    runner.exec_sql_generating_file(rel_file_path='ai2_landing/gen_ai2_eav_equipment_masterdata_insert_into.sql')
+    runner.exec_sql_generating_file(rel_file_path='ai2_landing/gen_ai2_eav_equipment_eav_insert_into.sql')
 
 
 def translate_ai2_eav_to_ai2_classrep(*, con: duckdb.DuckDBPyConnection) -> None:
     ai2_eav_to_ai2_classrep.translate_ai2_eav_to_ai2_classrep(con=con)
+
+    
+def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> None:
+    runner = SqlScriptRunner2(__file__, con=con)
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/s4_classrep_equi_masterdata_insert_into.sql')
 
