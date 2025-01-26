@@ -28,10 +28,10 @@ equi_translation_setup.import_ai2_exports_to_ai2_landing(con=con,
                                                          source_folder=source_folder,
                                                          glob_pattern='mal12-ai2*.xlsx')
 
-equi_translation_setup.ai2_landing_data_to_ai2_eav(con=con)
+equi_translation_setup.translate_ai2_eav_to_ai2_classrep(con=con)
 
-runner.exec_sql_file(file_rel_path='equi_translation/ai2_classrep_insert_into.sql', con=con)
-runner.exec_sql_generating_file(file_rel_path='ai2_equi_classrep/gen_ai2_equiclass_insert_into.sql', con=con)
+# runner.exec_sql_file(file_rel_path='equi_translation/ai2_classrep_insert_into.sql', con=con)
+# runner.exec_sql_generating_file(file_rel_path='ai2_equi_classrep/gen_ai2_equiclass_insert_into.sql', con=con)
 con.close()
 print(f'wrote {duckdb_output_path}')
 
