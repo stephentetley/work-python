@@ -15,7 +15,7 @@
 -- 
 
 
-
+-- VEPRPD
 INSERT OR REPLACE INTO s4_classrep.equiclass_veprpd BY NAME
 WITH cte AS (
 SELECT

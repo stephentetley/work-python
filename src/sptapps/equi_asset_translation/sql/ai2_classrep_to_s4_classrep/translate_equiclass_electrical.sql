@@ -14,6 +14,24 @@
 -- limitations under the License.
 -- 
 
+-- CONPNL
+INSERT OR REPLACE INTO s4_classrep.equiclass_conpnl BY NAME
+WITH cte AS (
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    -- conp_rated_current_a
+    TRY_CAST(t._current_in AS DECIMAL) AS conp_rated_current_a,
+    -- conp_rated_voltage / conp_rated_voltage_units
+    equi_asset_translation.voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
+    TRY_CAST(t._voltage_in AS INTEGER) AS conp_rated_voltage,
+FROM ai2_classrep.equiclass_control_panel t
+)
+SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
+;
+
+
+-- EMTRIN
 INSERT OR REPLACE INTO s4_classrep.equiclass_emtrin BY NAME
 WITH cte AS (
 SELECT

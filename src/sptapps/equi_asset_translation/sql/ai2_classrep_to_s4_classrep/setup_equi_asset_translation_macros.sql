@@ -14,6 +14,18 @@
 -- limitations under the License.
 -- 
 
+CREATE OR REPLACE MACRO equi_asset_translation.format_signal(signal_min, signal_max, signal_unit) AS (
+    TRY_CAST(signal_min AS INTEGER) || ' - ' || TRY_CAST(signal_max AS INTEGER) || ' ' || upper(signal_unit)
+);
+
+CREATE OR REPLACE MACRO equi_asset_translation.format_output_type(outtype) AS (
+    CASE 
+        WHEN upper(outtype) = 'DIGITAL' THEN 'DIGITAL'
+        WHEN upper(outtype) = 'MA' THEN 'ANALOGUE'
+        WHEN upper(outtype) = 'MV' THEN 'ANALOGUE' 
+    END
+);
+
 
 CREATE OR REPLACE MACRO equi_asset_translation.voltage_ac_or_dc(ac_or_dc) AS (
     CASE 

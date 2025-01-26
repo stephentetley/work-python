@@ -14,6 +14,7 @@
 -- limitations under the License.
 -- 
 
+-- VALVPE
 INSERT OR REPLACE INTO s4_classrep.equiclass_valvpe BY NAME
 WITH cte AS (
 SELECT
