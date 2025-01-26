@@ -1,5 +1,5 @@
 """
-Copyright 2024 Stephen Tetley
+Copyright 2025 Stephen Tetley
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@ limitations under the License.
 
 """
 
+import pathlib
 import duckdb
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
 import sptlibs.schema_setup.ai2_eav.setup_ai2_eav as setup_ai2_eav
 import sptlibs.schema_setup.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
+import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 
@@ -35,6 +37,22 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
 
+# load ai2 exports into landing area...
+def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
+                                      source_folder: str,
+                                      glob_pattern: str ='*.xlsx',
+                                      sheet_name: str='Sheet1') -> None:
+    con.execute('CREATE SCHEMA IF NOT EXISTS ai2_landing;')
+    sources = import_utils.get_excel_sources_from_folder(source_folder=source_folder, 
+                                                         glob_pattern=glob_pattern,
+                                                         sheet_name=sheet_name)
+    for source in sources:
+        table_name = import_utils.normalize_name(pathlib.Path(source.path).stem)
+        import_utils.duckdb_import_sheet(source=source, 
+                                         qualified_table_name=f'ai2_landing.{table_name}', 
+                                         con=con, 
+                                         df_trafo=None)
+    
 
 def ai2_landing_data_to_ai2_eav(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner2(__file__, con=con)

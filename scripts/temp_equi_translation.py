@@ -1,6 +1,5 @@
-import pathlib
+
 import duckdb
-import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptapps.equi_translation.equi_translation_setup as equi_translation_setup
@@ -25,16 +24,9 @@ equi_translation_setup.setup_equi_translation(con=con,
 runner = SqlScriptRunner()
 
 # load ai2 exports into landing area...
-con.execute('CREATE SCHEMA IF NOT EXISTS ai2_landing;')
-sources = import_utils.get_excel_sources_from_folder(source_folder=source_folder, 
-                                                     glob_pattern='mal12-ai2*.xlsx',
-                                                     sheet_name='Sheet1')
-for source in sources:
-    table_name = import_utils.normalize_name(pathlib.Path(source.path).stem)
-    import_utils.duckdb_import_sheet(source=source, 
-                                     qualified_table_name=f'ai2_landing.{table_name}', 
-                                     con=con, 
-                                     df_trafo=None)
+equi_translation_setup.import_ai2_exports_to_ai2_landing(con=con, 
+                                                         source_folder=source_folder,
+                                                         glob_pattern='mal12-ai2*.xlsx')
 
 equi_translation_setup.ai2_landing_data_to_ai2_eav(con=con)
 
