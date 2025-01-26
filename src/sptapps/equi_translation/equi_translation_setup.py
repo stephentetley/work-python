@@ -19,8 +19,8 @@ import pathlib
 import duckdb
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
-import sptlibs.schema_setup.ai2_eav.setup_ai2_eav as setup_ai2_eav
-import sptlibs.schema_setup.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
+import sptlibs.asset_schema.ai2_eav.setup_ai2_eav as setup_ai2_eav
+import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
@@ -60,4 +60,9 @@ def ai2_landing_data_to_ai2_eav(*, con: duckdb.DuckDBPyConnection) -> None:
     runner.exec_sql_generating_file(rel_file_path='gen_ai2_eav_equipment_masterdata_insert_into.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_ai2_eav_equipment_eav_insert_into.sql')
 
-    
+
+# def ai2_landing_data_to_ai2_eav(*, con: duckdb.DuckDBPyConnection) -> None:
+#     runner = SqlScriptRunner2(__file__, con=con)
+#     runner.exec_sql_file(file_rel_path='equi_translation/ai2_classrep_insert_into.sql', con=con)
+#     runner.exec_sql_generating_file(file_rel_path='ai2_equi_classrep/gen_ai2_equiclass_insert_into.sql', con=con)
+
