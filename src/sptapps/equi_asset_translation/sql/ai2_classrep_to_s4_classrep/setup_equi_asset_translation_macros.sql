@@ -28,6 +28,7 @@ CREATE OR REPLACE MACRO equi_asset_translation.size_to_millimetres(size_units, s
     CASE 
         WHEN upper(size_units) = 'MILLIMETRES' THEN round(size_value, 0)
         WHEN upper(size_units) = 'CENTIMETRES' THEN round(size_value  * 10, 0) 
+        WHEN upper(size_units) = 'METRES' THEN round(size_value  * 1000, 0) 
         WHEN upper(size_units) = 'INCH' THEN round(size_value * 25.4, 0) 
         ELSE NULL
     END
