@@ -17,11 +17,12 @@ limitations under the License.
 
 import pathlib
 import duckdb
-import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
-import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
 import sptlibs.asset_schema.ai2_eav.setup_ai2_eav as setup_ai2_eav
 import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 import sptlibs.asset_schema.ai2_eav_to_classrep.ai2_eav_to_ai2_classrep as ai2_eav_to_ai2_classrep
+import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
+import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
+import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
@@ -37,6 +38,7 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                                       con=con)
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
+    setup_s4_classrep.setup_s4_classrep_tables(con=con)
 
 # load ai2 exports into landing area...
 def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
