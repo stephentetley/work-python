@@ -78,8 +78,10 @@ def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> 
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation_macros.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_buildings.sql')
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_detection.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_electrical.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_ica.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_mechanical.sql')
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_statutory.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/s4_classrep_equi_masterdata_insert_into.sql')
 
