@@ -16,12 +16,8 @@
 
 -- VALVPE
 INSERT OR REPLACE INTO s4_classrep.equiclass_valvpe BY NAME
-WITH cte AS (
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
     t._penstock_width_mm AS valv_inlet_size_mm,
-FROM ai2_classrep.equiclass_penstock t
-)
-SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
-;
+FROM ai2_classrep.equiclass_penstock t;

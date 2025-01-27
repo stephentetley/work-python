@@ -17,13 +17,9 @@
 
 -- VEPRPD
 INSERT OR REPLACE INTO s4_classrep.equiclass_veprpd BY NAME
-WITH cte AS (
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
     t._ywref AS statutory_reference_number,
-FROM ai2_classrep.equiclass_pulsation_damper t
-)
-SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
-;
+FROM ai2_classrep.equiclass_pulsation_damper t;
 

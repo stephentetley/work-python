@@ -16,19 +16,13 @@
 
 -- CONPNL
 INSERT OR REPLACE INTO s4_classrep.equiclass_conpnl BY NAME
-WITH cte AS (
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    -- conp_rated_current_a
     TRY_CAST(t._current_in AS DECIMAL) AS conp_rated_current_a,
-    -- conp_rated_voltage / conp_rated_voltage_units
-    equi_asset_translation.voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
+    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
     TRY_CAST(t._voltage_in AS INTEGER) AS conp_rated_voltage,
-FROM ai2_classrep.equiclass_control_panel t
-)
-SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
-;
+FROM ai2_classrep.equiclass_control_panel t;
 
 
 -- EMTRIN
@@ -38,13 +32,9 @@ SELECT
     t._insulation_class AS insulation_class_deg_c, 
     t._ip_rating AS ip_rating,
     t._location_on_site AS location_on_site,
-    -- emtr_rated_current
     TRY_CAST(t._current_in AS DECIMAL) AS emtr_rated_current_a,
-    -- emtr_rated_power_kw
-    -- TRY_CAST(t._power AS DECIMAL) AS __dec_power,
     udf_power_to_killowatts(t._power_units, t._power) AS emtr_rated_power_kw,
-    -- emtr_rated_voltage / emtr_rated_voltage_units
-    equi_asset_translation.voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS emtr_rated_voltage_units,
+    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS emtr_rated_voltage_units,
     TRY_CAST(t._voltage_in AS INTEGER) AS emtr_rated_voltage,
 FROM ai2_classrep.equiclass_non_immersible_motor t;
 
@@ -54,12 +44,8 @@ SELECT
     t.equipment_id AS equipment_id,  
     t._ip_rating AS ip_rating,
     t._location_on_site AS location_on_site,
-    -- star_rated_current
     TRY_CAST(t._current_in AS DECIMAL) AS star_rated_current_a,
-    -- star_rated_power_kw
-    -- TRY_CAST(t._power AS DECIMAL) AS __dec_power,
     udf_power_to_killowatts(t._power_units, t._power) AS star_rated_power_kw,
-    -- star_rated_voltage / star_rated_voltage_units
-    equi_asset_translation.voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS star_rated_voltage_units,
+    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS star_rated_voltage_units,
     TRY_CAST(t._voltage_in AS INTEGER) AS star_rated_voltage,
 FROM ai2_classrep.equiclass_direct_on_line_starter t;

@@ -16,24 +16,19 @@
 
 -- LSTNCO
 INSERT OR REPLACE INTO s4_classrep.equiclass_lstnco BY NAME
-WITH cte AS (
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    equi_asset_translation.format_output_type(t._signal_unit) AS lstn_output_type,
+    udf_format_output_type(t._signal_unit) AS lstn_output_type,
     t._range_min AS lstn_range_min,
     t._range_max AS lstn_range_max,
     upper(t._range_unit) AS lstn_range_units,
     udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS lstn_signal_type,
-FROM ai2_classrep.equiclass_conductivity_level_instrument t
-)
-SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
-;
+FROM ai2_classrep.equiclass_conductivity_level_instrument t;
 
 
 -- LSTNUT
 INSERT OR REPLACE INTO s4_classrep.equiclass_lstnut BY NAME
-WITH cte AS (
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
@@ -68,18 +63,11 @@ SELECT
     t._range_max AS lstn_range_max,
     upper(t._range_unit) AS lstn_range_units,
     udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS lstn_signal_type,
-FROM ai2_classrep.equiclass_ultrasonic_level_instrument t
-)
-SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
-;
+FROM ai2_classrep.equiclass_ultrasonic_level_instrument t;
 
 -- NETWTL
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwtl BY NAME
-WITH cte AS (
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_telemetry_outstation t
-)
-SELECT COLUMNS(c -> c NOT LIKE '$_$_%' ESCAPE '$') FROM cte
-;
+FROM ai2_classrep.equiclass_telemetry_outstation t;
