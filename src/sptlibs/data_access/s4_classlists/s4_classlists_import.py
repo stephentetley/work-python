@@ -43,8 +43,16 @@ def _read_source(src: XlsxSource) -> pl.DataFrame:
                        columns=['Class', 'Characteristic', 'Value', 
                                 'Char.Value', 'Data Type', 'No. Chars', 
                                 'Dec.places'],
+                       schema_overrides={"Class": pl.String,
+                                         'Characteristic': pl.String,
+                                         'Value': pl.String,
+                                         'Char.Value': pl.String,
+                                         'Data Type': pl.String,
+                                         'No. Chars': pl.Int32, 
+                                         'Dec.places': pl.Int32},                    
                        drop_empty_rows=True)
     df = import_utils.normalize_df_column_names(df) 
+    print(df)
     df = df.with_columns(pl.col(pl.String).replace("", None))
     df = df.filter(pl.any_horizontal(pl.col("*").is_not_null())).with_row_index(name="row_idx")
     return df
