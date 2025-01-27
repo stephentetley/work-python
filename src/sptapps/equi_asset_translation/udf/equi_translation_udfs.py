@@ -17,14 +17,29 @@ limitations under the License.
 
 import duckdb
 from duckdb.typing import *
+import duckdb.typing
+import duckdb.typing
 
 
 def register_functions(con: duckdb.DuckDBPyConnection) -> None:
     con.create_function("udf_format_signal3", udf_format_signal3, [VARCHAR, VARCHAR, VARCHAR], VARCHAR)
+    con.create_function("udf_power_to_killowatts", udf_power_to_killowatts, [VARCHAR, VARCHAR], DOUBLE, exception_handling="return_null")
 
+
+# TODO signal_min and signal_max should be numeric once we have typing in the AI2 eav
 def udf_format_signal3(signal_min: str, signal_max: str, signal_unit: str) -> str:
-    return f'{signal_min} - {signal_max} {signal_unit.upper}'
+    return f'{signal_min} - {signal_max} {signal_unit.upper()}'
 
+# TODO power_value should be a float (DECIMAL) with AI2 typing
+def udf_power_to_killowatts(power_units: str, power_value: str) -> float | None:
+    match power_units.upper():
+        case 'KILOWATTS' | 'KW':
+            return float(power_value)
+        case 'WATTS' | 'W':
+            return float(power_value) * 1000.0
+        case _e :
+            print(_e)
+            raise ValueError("ERROR")
 
 # CREATE OR REPLACE MACRO equi_asset_translation.format_output_type(outtype) AS (
 #     CASE 
@@ -54,10 +69,4 @@ def udf_format_signal3(signal_min: str, signal_max: str, signal_unit: str) -> st
 #     END
 # );
 
-# CREATE OR REPLACE MACRO equi_asset_translation.power_to_killowatts(power_units, power_value) AS (
-#     CASE 
-#         WHEN upper(power_units) = 'KILOWATTS' THEN power_value
-#         WHEN upper(power_units) = 'WATTS' THEN power_value  * 1000.0  
-#         ELSE NULL
-#     END
-# );
+
