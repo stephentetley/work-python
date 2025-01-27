@@ -26,7 +26,11 @@ import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_impo
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+import sptapps.equi_asset_translation.udf.equi_translation_udfs as equi_translation_udfs
 
+
+
+                           
 
 def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                            s4_classlists_db_source: str, 
@@ -39,6 +43,7 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
     setup_s4_classrep.setup_s4_classrep_tables(con=con)
+    equi_translation_udfs.register_functions(con=con)
 
 # load ai2 exports into landing area...
 def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
