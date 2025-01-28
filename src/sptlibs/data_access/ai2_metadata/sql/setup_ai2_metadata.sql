@@ -35,10 +35,12 @@ CREATE OR REPLACE TABLE ai2_metadata.equipment_attributes (
 );
 
 CREATE OR REPLACE VIEW ai2_metadata.vw_live_equipment_attributes AS
-SELECT t.* EXCLUDE (attribute_name_deletion_flag, asset_type_deletion_flag)
+SELECT 
+    t.* EXCLUDE (attribute_name_deletion_flag, asset_type_deletion_flag),
+    regexp_extract(t.asset_type_description, 'EQUIPMENT: (.+)', 1) AS attribute_set_name, 
 FROM ai2_metadata.equipment_attributes t
-WHERE t.asset_type_description LIKE 'EQUIPMENT:%'
-AND t.attribute_set LIKE 'Eq %' -- HERE...
+WHERE t.asset_type_description LIKE 'EQUIPMENT: %'
+AND upper(t.attribute_set) == ('EQ ' || attribute_set_name) -- HERE...
 AND t.attribute_name_deletion_flag = FALSE 
 AND t.asset_type_deletion_flag = FALSE;
 
