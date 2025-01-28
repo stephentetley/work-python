@@ -21,11 +21,11 @@
 
 WITH cte1 AS (
     SELECT 
-        t.assettypedescription AS name,
-        list(t.attributedescription) AS attributes,
+        t.asset_type_description AS name,
+        list(t.attribute_description) AS attributes,
     FROM ai2_metadata.vw_specific_equipment_attributes t
-    WHERE t.assettypedescription LIKE 'EQUIPMENT: %'
-    GROUP BY t.assettypedescription
+    WHERE t.asset_type_description LIKE 'EQUIPMENT: %'
+    GROUP BY t.asset_type_description
 ), 
 cte2 AS (
     SELECT

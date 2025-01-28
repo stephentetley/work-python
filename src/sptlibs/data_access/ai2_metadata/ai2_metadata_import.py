@@ -16,7 +16,6 @@ limitations under the License.
 """
 
 
-from dataclasses import dataclass
 import duckdb
 import polars as pl
 from sptlibs.utils.xlsx_source import XlsxSource
@@ -24,22 +23,61 @@ import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 
 
-# TODO rename colums at some point...
-def duckdb_import(*, equipment_attributes_source: XlsxSource, con: duckdb.DuckDBPyConnection) -> None:
+
+def duckdb_import(*, 
+                  equipment_attributes_source: XlsxSource, 
+                  con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner2(__file__, con=con)
     runner.exec_sql_file(rel_file_path='setup_ai2_metadata.sql')
-    df = import_utils.read_xlsx_source(equipment_attributes_source, normalize_column_names=True)
-    aliases = {'assettypecode': 'assettypecode', 
-               'assettypedescription': 'assettypedescription',
-               'attributename': 'attributename',
-               'attributedescription': 'attributedescription',
-               'datecreated_attribute': 'datecreated_attribute',
-               'category': 'category'}
+    df = _read_source(equipment_attributes_source)
     import_utils.duckdb_write_dataframe_to_table(df,
                                                  qualified_table_name='ai2_metadata.equipment_attributes',
-                                                 con=con, 
-                                                 columns_and_aliases=aliases)
+                                                 con=con)
 
+
+def _read_source(src: XlsxSource) -> pl.DataFrame: 
+    df = pl.read_excel(source=src.path, 
+                       sheet_name=src.sheet, 
+                       engine='calamine', 
+                       columns=['Code',
+                                'Description', 
+                                'AssetTypeDeletionFlag', 
+                                'AttributeSet', 
+                                'AttributeNameId', 
+                                'Attribute Description',
+                                'Attribute Name', 
+                                'AttributeNameDeletionFlag',
+                                'Unit Name', 
+                                'Unit Description',
+                                'Data Type Name', 
+                                'Data Type Description'],
+                       schema_overrides={'Code' : pl.String,
+                                         'Description': pl.String, 
+                                         'AssetTypeDeletionFlag': pl.Boolean,
+                                         'AttributeSet': pl.String, 
+                                         'AttributeNameId': pl.Int32, 
+                                         'Attribute Description': pl.String,
+                                         'Attribute Name': pl.String, 
+                                         'AttributeNameDeletionFlag': pl.Boolean,
+                                         'Unit Name': pl.String, 
+                                         'Unit Description': pl.String,
+                                         'Data Type Name': pl.String, 
+                                         'Data Type Description': pl.String},
+                       drop_empty_rows=True)
+    df = df.rename({'Code' : 'asset_type_code',
+                    'Description': 'asset_type_description', 
+                    'AssetTypeDeletionFlag': 'asset_type_deletion_flag',
+                    'AttributeSet': 'attribute_set', 
+                    'AttributeNameId': 'attribute_name_id', 
+                    'Attribute Description': 'attribute_description',
+                    'Attribute Name': 'attribute_name', 
+                    'AttributeNameDeletionFlag': 'attribute_name_deletion_flag',
+                    'Unit Name': 'unit_name', 
+                    'Unit Description': 'unit_description',
+                    'Data Type Name': 'data_type_name', 
+                    'Data Type Description': 'data_type_description'},
+                    strict=True)
+    return df
 
 
 

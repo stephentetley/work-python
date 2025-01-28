@@ -20,26 +20,33 @@
 CREATE SCHEMA IF NOT EXISTS ai2_metadata;
 
 CREATE OR REPLACE TABLE ai2_metadata.equipment_attributes (
-    assettypeid BIGINT,
-    assettypecode VARCHAR,
-    assettypedescription VARCHAR,
-    datecreated_assettype TIMESTAMP_MS,
-    createdby_assettype VARCHAR,
-    attributenameid BIGINT,
-    attributename VARCHAR,
-    attributedescription VARCHAR,
-    datecreated_attribute TIMESTAMP_MS,
-    createdby_attribute VARCHAR,
-    category VARCHAR
+    asset_type_code VARCHAR,
+    asset_type_description VARCHAR, 
+    asset_type_deletion_flag BOOLEAN,
+    attribute_set VARCHAR, 
+    attribute_name_id INTEGER, 
+    attribute_description VARCHAR,
+    attribute_name VARCHAR, 
+    attribute_name_deletion_flag BOOLEAN,
+    unit_name VARCHAR, 
+    unit_description VARCHAR,
+    data_type_name VARCHAR, 
+    data_type_description VARCHAR,
 );
 
-
+CREATE OR REPLACE VIEW ai2_metadata.vw_live_equipment_attributes AS
+SELECT t.* EXCLUDE (attribute_name_deletion_flag, asset_type_deletion_flag)
+FROM ai2_metadata.equipment_attributes t
+WHERE t.asset_type_description LIKE 'EQUIPMENT:%'
+AND t.attribute_set LIKE 'Eq %' -- HERE...
+AND t.attribute_name_deletion_flag = FALSE 
+AND t.asset_type_deletion_flag = FALSE;
 
 CREATE OR REPLACE VIEW ai2_metadata.vw_specific_equipment_attributes AS
 SELECT t.* 
-FROM ai2_metadata.equipment_attributes t
-WHERE t.attributename NOT LIKE 'AGASP%'
-AND t.attributename NOT IN ['AssetName', 'AssetReference', 'AssetStatus', 
+FROM ai2_metadata.vw_live_equipment_attributes t
+WHERE t.attribute_name NOT LIKE 'AGASP%'
+AND t.attribute_name NOT IN ['AssetName', 'AssetReference', 'AssetStatus', 
     'AssetType', 'CommonName', 'InstalledFromDate', 'Manufacturer', 
     'MemoLine1', 'MemoLine2', 'MemoLine3', 'MemoLine4', 'MemoLine5', 
     'ModelName', 'NationalGridReference', 'OperationalResponsibility', 
