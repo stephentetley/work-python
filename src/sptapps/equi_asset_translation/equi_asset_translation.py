@@ -22,11 +22,11 @@ import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classre
 import sptlibs.asset_schema.ai2_eav_to_classrep.ai2_eav_to_ai2_classrep as ai2_eav_to_ai2_classrep
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
-import sptlibs.data_access.ai2_metadata.ai2_metadata_import as ai2_metadata_import
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 import sptapps.equi_asset_translation.udf.equi_translation_udfs as equi_translation_udfs
+import sptapps.equi_asset_translation.ai2_metadata_import as ai2_metadata_import
 
 
 

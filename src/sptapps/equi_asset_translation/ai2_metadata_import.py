@@ -28,7 +28,7 @@ def duckdb_import(*,
                   equipment_attributes_source: XlsxSource, 
                   con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner2(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='setup_ai2_metadata.sql')
+    runner.exec_sql_file(rel_file_path='ai2_metadata/setup_ai2_metadata.sql')
     df = _read_source(equipment_attributes_source)
     import_utils.duckdb_write_dataframe_to_table(df,
                                                  qualified_table_name='ai2_metadata.equipment_attributes',
