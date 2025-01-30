@@ -53,6 +53,20 @@ WITH cte AS (
 SELECT 
     t.* EXCLUDE (attribute_name_deletion_flag, asset_type_deletion_flag),
     t1.attribute_set AS attribute_set_name, 
+    CASE 
+        WHEN t.data_type_name = 'AIYEAR4'       THEN 'INTEGER'
+        WHEN t.data_type_name = 'BOOL'          THEN 'BOOLEAN'
+        WHEN t.data_type_name LIKE 'CHAR%'      THEN 'VARCHAR'
+        WHEN t.data_type_name LIKE 'DATETIME%'  THEN 'TIMESTAMP_MS'
+        WHEN t.data_type_name LIKE 'DECIMAL%'   THEN 'DECIMAL(28, 6)'
+        WHEN t.data_type_name LIKE 'FLOAT53'    THEN 'VARCHAR'
+        WHEN t.data_type_name = 'NUMERIC29'     THEN 'VARCHAR'
+        WHEN t.data_type_name LIKE 'NUMERIC%'   THEN 'DECIMAL(28, 6)'
+        WHEN t.data_type_name LIKE 'INT%'       THEN 'INTEGER'
+        WHEN t.data_type_name LIKE 'SMALLINT%'  THEN 'INTEGER'
+        WHEN t.data_type_name LIKE 'TINYINT%'   THEN 'INTEGER'
+        ELSE 'VARCHAR'
+    END AS duck_type, 
 FROM ai2_metadata.equipment_attributes t
 JOIN cte t1 ON t1.attribute_description = t.asset_type_description AND t1.attribute_set = t.attribute_set 
 WHERE t.asset_type_description LIKE 'EQUIPMENT: %'

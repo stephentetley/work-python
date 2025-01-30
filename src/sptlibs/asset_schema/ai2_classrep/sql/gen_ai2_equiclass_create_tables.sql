@@ -21,7 +21,7 @@
 WITH cte1 AS (
     SELECT 
         ai2_classrep.make_equiclass_name(t.asset_type_description) AS class_name,
-        list(struct_pack(field_name := ai2_classrep.normalize_name(t.attribute_description), field_type := 'VARCHAR')) AS field_elements,
+        list(struct_pack(field_name := ai2_classrep.normalize_name(t.attribute_description), field_type := t.duck_type)) AS field_elements,
     FROM ai2_metadata.vw_specific_equipment_attributes t
     WHERE t.asset_type_description LIKE 'EQUIPMENT: %'
     GROUP BY t.asset_type_description

@@ -28,6 +28,7 @@ WITH cte1 AS (
     GROUP BY t.asset_type_description
 ), 
 cte2 AS (
+    -- TODO select_fields is expected to need casting...
     SELECT
         ai2_classrep.make_equiclass_name(t.name) AS class_name,
         t.name AS equipment_name,
