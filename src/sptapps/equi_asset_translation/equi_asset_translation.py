@@ -34,11 +34,13 @@ import sptapps.equi_asset_translation.ai2_metadata_import as ai2_metadata_import
 
 def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                            s4_classlists_db_source: str, 
-                           ai2_equipment_attributes_source: XlsxSource) -> None:
+                           ai2_equipment_attributes_source: XlsxSource, 
+                           ai2_equipment_attribute_sets: XlsxSource) -> None:
     s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_db_source, 
                                             setup_tables=True, 
                                             dest_con=con)
     ai2_metadata_import.duckdb_import(equipment_attributes_source=ai2_equipment_attributes_source,
+                                      attribute_sets_source=ai2_equipment_attribute_sets,
                                       con=con)
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)

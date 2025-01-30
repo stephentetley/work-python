@@ -34,15 +34,31 @@ CREATE OR REPLACE TABLE ai2_metadata.equipment_attributes (
     data_type_description VARCHAR,
 );
 
+CREATE OR REPLACE TABLE ai2_metadata.attribute_sets (
+    attribute_description VARCHAR, 
+    attribute_set VARCHAR,
+    class_derivation VARCHAR,
+    comment VARCHAR
+);
+
+
 CREATE OR REPLACE VIEW ai2_metadata.vw_live_equipment_attributes AS
+WITH cte AS (
+    SELECT 
+        t.attribute_description AS attribute_description,
+        t.attribute_set AS attribute_set
+    FROM ai2_metadata.attribute_sets t
+    WHERE t.class_derivation = 'Equiclass'
+)
 SELECT 
     t.* EXCLUDE (attribute_name_deletion_flag, asset_type_deletion_flag),
-    regexp_extract(t.asset_type_description, 'EQUIPMENT: (.+)', 1) AS attribute_set_name, 
+    t1.attribute_set AS attribute_set_name, 
 FROM ai2_metadata.equipment_attributes t
+JOIN cte t1 ON t1.attribute_description = t.asset_type_description AND t1.attribute_set = t.attribute_set 
 WHERE t.asset_type_description LIKE 'EQUIPMENT: %'
-AND upper(t.attribute_set) == ('EQ ' || attribute_set_name) -- HERE...
 AND t.attribute_name_deletion_flag = FALSE 
-AND t.asset_type_deletion_flag = FALSE;
+AND t.asset_type_deletion_flag = FALSE
+ORDER BY t.asset_type_code ;
 
 CREATE OR REPLACE VIEW ai2_metadata.vw_specific_equipment_attributes AS
 SELECT t.* 

@@ -31,7 +31,7 @@ cte2 AS (
     SELECT
         ai2_classrep.make_equiclass_name(t.name) AS class_name,
         t.name AS equipment_name,
-        list_transform(t.attributes, s -> ai2_classrep.normalize_name(s)) AS normed_attributes,
+        list_transform(t.attributes, s -> ai2_classrep.normalize_name(s)).list_distinct() AS normed_attributes,
         list_zip(range(1, 100), normed_attributes, true) AS numbered_attributes,
         list_transform(numbered_attributes, pair -> format('    eav{}.attr_value AS _{},', pair[1], pair[2])) AS select_fields,
         list_transform(numbered_attributes, pair -> format('    LEFT JOIN ai2_eav.equipment_eav eav{} ON t.ai2_reference = eav{}.ai2_reference AND eav{}.attr_name = ''{}''', pair[1], pair[1], pair[1], pair[2])) AS left_joins,

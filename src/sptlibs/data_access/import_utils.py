@@ -161,7 +161,10 @@ def duckdb_import_cvs_into(csv_path: str, *, separator: str, df_name: str, inser
 
 
 
-def duckdb_import_sheet(source: XlsxSource, *, qualified_table_name: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
+def duckdb_import_sheet(source: XlsxSource, *, 
+                        qualified_table_name: str, 
+                        con: duckdb.DuckDBPyConnection, 
+                        df_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None) -> None:
     '''Note drops the table `table_name` before filling it'''
     if source.sheet:
         df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
@@ -177,7 +180,11 @@ def duckdb_import_sheet(source: XlsxSource, *, qualified_table_name: str, con: d
     con.execute(sql_stmt)
     con.commit()
 
-def duckdb_import_sheet_into(source: XlsxSource, *, df_name: str, insert_stmt: str, con: duckdb.DuckDBPyConnection, df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
+def duckdb_import_sheet_into(source: XlsxSource, *, 
+                             df_name: str, 
+                             insert_stmt: str, 
+                             con: duckdb.DuckDBPyConnection, 
+                             df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
     '''Fill a table with an INSERT INTO statement'''
     df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
     if df_trafo is not None:

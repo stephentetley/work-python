@@ -25,17 +25,24 @@ from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 
 
 def duckdb_import(*, 
-                  equipment_attributes_source: XlsxSource, 
+                  equipment_attributes_source: XlsxSource,
+                  attribute_sets_source: XlsxSource,
                   con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner2(__file__, con=con)
     runner.exec_sql_file(rel_file_path='ai2_metadata/setup_ai2_metadata.sql')
-    df = _read_source(equipment_attributes_source)
-    import_utils.duckdb_write_dataframe_to_table(df,
+    df1 = _read_equipment_attributes_source(equipment_attributes_source)
+    import_utils.duckdb_write_dataframe_to_table(df1,
                                                  qualified_table_name='ai2_metadata.equipment_attributes',
                                                  con=con)
+    df2 = import_utils.read_xlsx_source(source=attribute_sets_source, 
+                                        normalize_column_names=True)
+    import_utils.duckdb_write_dataframe_to_table(df2,
+                                                 qualified_table_name='ai2_metadata.attribute_sets',
+                                                 con=con)
+    
 
 
-def _read_source(src: XlsxSource) -> pl.DataFrame: 
+def _read_equipment_attributes_source(src: XlsxSource) -> pl.DataFrame: 
     df = pl.read_excel(source=src.path, 
                        sheet_name=src.sheet, 
                        engine='calamine', 
@@ -87,4 +94,4 @@ def copy_ai2_metadata_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyCo
     import_utils.duckdb_import_tables_from_duckdb(source_db_path=source_db_path, 
                                                   con=dest_con,
                                                   schema_name='ai2_metadata',
-                                                  source_tables=['ai2_metadata.equipment_attributes'])
+                                                  source_tables=['ai2_metadata.equipment_attributes', 'ai2_metadata.attribute_sets'])

@@ -28,7 +28,7 @@ WITH cte1 AS (
 ), cte2 AS (
     SELECT 
         lower(t.class_name) AS class_name,
-        list_transform(t.field_elements, st -> format(E'    _{} {},', lower(st.field_name), st.field_type)).list_sort() AS field_elements,
+        list_transform(t.field_elements, st -> format(E'    _{} {},', lower(st.field_name), st.field_type)).list_sort().list_distinct() AS field_elements,
     FROM cte1 t
 )
 SELECT 
