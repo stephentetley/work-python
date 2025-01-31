@@ -14,10 +14,21 @@
 -- limitations under the License.
 -- 
 
--- VALVPE
-INSERT OR REPLACE INTO s4_classrep.equiclass_valvpe BY NAME
+-- # ANALDO
+INSERT OR REPLACE INTO s4_classrep.equiclass_analdo BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    t._penstock_width_mm AS valv_inlet_size_mm,
-FROM ai2_classrep.equiclass_penstock t;
+FROM ai2_classrep.equiclass_dissolved_oxygen_instrument t;
+
+
+
+-- # CONPNL
+INSERT OR REPLACE INTO s4_classrep.equiclass_conpnl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    TRY_CAST(t._current_in AS DECIMAL) AS conp_rated_current_a,
+    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
+    TRY_CAST(t._voltage_in AS INTEGER) AS conp_rated_voltage,
+FROM ai2_classrep.equiclass_control_panel t;

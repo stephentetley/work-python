@@ -14,16 +14,6 @@
 -- limitations under the License.
 -- 
 
--- CONPNL
-INSERT OR REPLACE INTO s4_classrep.equiclass_conpnl BY NAME
-SELECT
-    t.equipment_id AS equipment_id,  
-    t._location_on_site AS location_on_site,
-    TRY_CAST(t._current_in AS DECIMAL) AS conp_rated_current_a,
-    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
-    TRY_CAST(t._voltage_in AS INTEGER) AS conp_rated_voltage,
-FROM ai2_classrep.equiclass_control_panel t;
-
 
 -- EMTRIN
 INSERT OR REPLACE INTO s4_classrep.equiclass_emtrin BY NAME
@@ -37,15 +27,3 @@ SELECT
     udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS emtr_rated_voltage_units,
     TRY_CAST(t._voltage_in AS INTEGER) AS emtr_rated_voltage,
 FROM ai2_classrep.equiclass_non_immersible_motor t;
-
-
-INSERT OR REPLACE INTO s4_classrep.equiclass_stardo BY NAME
-SELECT
-    t.equipment_id AS equipment_id,  
-    udf_format_as_integer_string(t._ip_rating) AS ip_rating,
-    t._location_on_site AS location_on_site,
-    t._current_in AS star_rated_current_a,
-    udf_power_to_killowatts(t._power_units, t._power) AS star_rated_power_kw,
-    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS star_rated_voltage_units,
-    t._voltage_in AS star_rated_voltage,
-FROM ai2_classrep.equiclass_direct_on_line_starter t;

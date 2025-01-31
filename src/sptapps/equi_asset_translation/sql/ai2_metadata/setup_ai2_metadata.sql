@@ -41,7 +41,7 @@ CREATE OR REPLACE TABLE ai2_metadata.attribute_sets (
     comment VARCHAR
 );
 
-
+-- For simplicity DATIMES become VARCHAR...
 CREATE OR REPLACE VIEW ai2_metadata.vw_live_equipment_attributes AS
 WITH cte AS (
     SELECT 
@@ -57,7 +57,7 @@ SELECT
         WHEN t.data_type_name = 'AIYEAR4'       THEN 'INTEGER'
         WHEN t.data_type_name = 'BOOL'          THEN 'BOOLEAN'
         WHEN t.data_type_name LIKE 'CHAR%'      THEN 'VARCHAR'
-        WHEN t.data_type_name LIKE 'DATETIME%'  THEN 'TIMESTAMP_MS'
+        WHEN t.data_type_name LIKE 'DATETIME%'  THEN 'VARCHAR'
         WHEN t.data_type_name LIKE 'DECIMAL%'   THEN 'DECIMAL(28, 6)'
         WHEN t.data_type_name LIKE 'FLOAT53'    THEN 'VARCHAR'
         WHEN t.data_type_name = 'NUMERIC29'     THEN 'VARCHAR'
