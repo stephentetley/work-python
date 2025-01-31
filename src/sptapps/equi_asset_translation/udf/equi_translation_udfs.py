@@ -26,11 +26,15 @@ import duckdb.typing
 
 def register_functions(con: duckdb.DuckDBPyConnection) -> None:
     con.create_function("udf_format_signal3", udf_format_signal3, [DOUBLE, DOUBLE, VARCHAR], VARCHAR)
+    
+    con.create_function("udf_format_as_integer_string", udf_format_as_integer_string, [DOUBLE], VARCHAR, exception_handling="return_null")
     con.create_function("udf_power_to_killowatts", udf_power_to_killowatts, [VARCHAR, DOUBLE], DOUBLE, exception_handling="return_null")
     con.create_function("udf_format_output_type", udf_format_output_type, [VARCHAR], VARCHAR, exception_handling="return_null")
     con.create_function("udf_voltage_ac_or_dc", udf_voltage_ac_or_dc, [VARCHAR], VARCHAR, exception_handling="return_null")
     con.create_function("udf_size_to_millimetres", udf_size_to_millimetres, [VARCHAR, DOUBLE], INTEGER, exception_handling="return_null")
 
+def udf_format_as_integer_string(num_val: Number) -> str:
+    return f'{round(num_val)}'
 
 def udf_format_signal3(signal_min: Number, signal_max: Number, signal_unit: str) -> str:
     return f'{round(signal_min)} - {round(signal_max)} {signal_unit.upper()}'
