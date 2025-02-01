@@ -214,8 +214,109 @@ SELECT
     t._location_on_site AS location_on_site,
 FROM ai2_classrep.equiclass_water_hardness_instrument t;
 
--- # ...
+-- # ANALMN Manganese (Ion) Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analmn BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_manganese_analyser t;
 
+-- # ANALNO Nitrate (Ion) Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analno BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_nitrate_instrument t;
+
+-- # ANALO2 Oxygen Gas Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analo2 BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_oxygen_instrument t;
+
+-- # ANALO3 Ozone Gas Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analo3 BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ozone_instrument t;
+
+-- # ANALOZ Dissolved Ozone in Water Analyser (no ai2 match)
+
+-- # ANALPA Particle Count Analyser (no ai2 match)
+
+-- # ANALPB Lead (Ion) Analyser (no ai2 match)
+
+-- # ANALPH pH (Proportion Hydrogen) Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analph BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ph_instrument t;
+
+-- # ANALPO Water Pollution Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analpo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_pollution_instrument t;
+
+-- # ANALPP Phosphate (Ion) Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analpp BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_phosphate_instrument t;
+
+-- # ANALRO Reduction - Oxidation (REDOX) Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analro BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_redox_instrument t;
+
+-- # ANALSI Siloxane in Gas Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analsi BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_siloxane_in_gas_instrument t;
+
+-- # ANALSS Suspended and Dry Solids Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analss BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_suspended_solid_instrument t;
+
+-- # ANALTB Turbidity in Fluid Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analtb BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_turbidity_instrument t;
+
+-- # ANALUT UV Transmittance Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analut BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_uv_transmittance_instrument t;
+
+-- # ANALUV UV Absorbtion (254) Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analuv BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_uv_equipment t;
+
+-- # ANALWC Water Colour Analyser
+INSERT OR REPLACE INTO s4_classrep.equiclass_analwc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_colour_instrument t;
 
 -- # BARREP Edge Protection
 INSERT OR REPLACE INTO s4_classrep.equiclass_barrep BY NAME
@@ -359,13 +460,34 @@ SELECT
     t._location_on_site AS location_on_site,
 FROM ai2_classrep.equiclass_hv_vacuum_circuit_breaker t;
 
+-- # CENGDE Diesel Engine (no ai2 match)
 
--- # CENGGE Gas Engine
-INSERT OR REPLACE INTO s4_classrep.equiclass_cengge BY NAME
+-- # CENGGE Gas Engine (no ai2 match)
+
+-- # CFUGCE Centrifuge
+INSERT OR REPLACE INTO s4_classrep.equiclass_cfugce BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_gas_powered_generators t;
+FROM ai2_classrep.equiclass_centrifuge t;
+
+-- # CHAMBR Chamber
+INSERT OR REPLACE INTO s4_classrep.equiclass_chambr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_chamber t;
+
+-- # CHILWA Water Chiller (no ai2 match)
+
+-- # COMPCO Centrifugal Compressor (no ai2 match)
+
+-- # COMPRC Rotary Claw Compressor (no ai2 match)
+
+-- # COMPRE Reciprocating Compressor (no ai2 match)
+
+-- # COMPRV Rotary Vane Compressor (no ai2 match)
+
+-- # COMPSC Screw Compressor (no ai2 match)
 
 
 -- # CONPNL Control Panel
@@ -384,3 +506,85 @@ SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
 FROM ai2_classrep.equiclass_pneumatic_control_panel t;
+
+-- # CONTBA PLC Base Unit (no ai2 match)
+
+-- # CONTBU Burner Controller (no ai2 match)
+
+-- # CONTEN CHP Engine Controller (no ai2 match)
+
+-- # CONTFL Dedicated Flow Controller (no ai2 match)
+
+-- # CONTIP Industrial PC Controller (no ai2 match)
+
+-- # CONTPI PID Controller (no ai2 match)
+
+-- # CONTPL Programmable Logic Controller 
+INSERT OR REPLACE INTO s4_classrep.equiclass_contpl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_plc t;
+
+-- # CONTPO Valve Position Controller 
+INSERT OR REPLACE INTO s4_classrep.equiclass_contpo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_valve_positioner t;
+
+-- # CONTPR PSU Redundancy Controller (no ai2 match)
+
+-- # CONTRE Automatic Supply Restoration (no ai2 match)
+
+-- # CONTRL Relay Logic Controller (no ai2 match)
+
+-- # CONTTM Dedicated Temperature Controller (no ai2 match)
+
+-- # CONTTR Transmitter
+INSERT OR REPLACE INTO s4_classrep.equiclass_conttr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_transmitter t;
+
+-- # COOLRA Radiator 
+INSERT OR REPLACE INTO s4_classrep.equiclass_coolra BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_radiator_dry_air_cooled t;
+
+-- # COSPCS Cyclone Separator (no ai2 match)
+
+-- # COSPOS Oil Separator (no ai2 match)
+
+-- # COTRCT Condensate Trap 
+INSERT OR REPLACE INTO s4_classrep.equiclass_cotrct BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_condensate_trap t;
+
+-- # COUNCP Compactor 
+INSERT OR REPLACE INTO s4_classrep.equiclass_councp BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_compactor t;
+
+-- # COUNWP Washpactor (no ai2 match)
+
+-- # CPOTCA Catchpot (no ai2 match)
+
+-- # CTORCO Comminutor 
+INSERT OR REPLACE INTO s4_classrep.equiclass_ctorco BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_mutrators_and_comminutors t;
+
+-- # CVYRBC Belt Conveyor (no ai2 match)
+-- # CVYRCC Chain Conveyor (no ai2 match)
+-- # CVYRMF Moving Floor Conveyor (no ai2 match)
+-- # CVYRSC Screw Conveyor (no ai2 match)
