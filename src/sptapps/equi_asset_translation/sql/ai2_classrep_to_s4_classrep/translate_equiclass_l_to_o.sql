@@ -14,6 +14,117 @@
 -- limitations under the License.
 -- 
 
+-- # LIACBC Beam Clamp
+-- # LIACBR Blue Rope Assembly
+-- # LIACBS Bow Shackle
+-- # LIACDS D Shackle
+-- # LIACEB Eye Bolt
+-- # LIACHL Lifting Hook
+-- # LIACLB Lifting Bracket
+-- # LIACLF Lifting Frame
+-- # LIACLT Lifting Tackle
+-- # LIACMISC Miscellaneous Lifting Accessories
+-- # LIACPL Plate Lift Clamp
+-- # LIACTW Threaded Wire Rope Loop
+-- # LICHPU Pump Lifting Chain
+-- # LIDEEM Emergency Lighting
+-- # LIDEEX Exterior Lighting
+-- # LIDEHM High Mast Lighting Column
+-- # LIDEIN Interior Lighting
+-- # LIDEMISC Miscellaneous Lighting Device
+-- # LIFRHY Hydraulic Lifter
+-- # LIFRMISC Miscellaneous Lifter
+-- # LIFTPA Passenger Lift
+-- # LIPOCO Lightning Conductor
+-- # LISLBS Belt Sling
+-- # LISLCS Chain Sling
+-- # LISLMISC Miscellaneous Lifting Sling
+-- # LISLRS Round Sling
+-- # LISLWR Lifting Wire Rope
+-- # LLAPAP Anchor Point
+-- # LLBCBC Beam Clamp
+-- # LLBFLI Lifting Beams / Frames
+-- # LLBFSP Spreader Beam
+-- # LLCCFL Floor Crane
+-- # LLCCGA Gantry Crane
+-- # LLCCGO Goliath Crane
+-- # LLCCOE Overhead Crane - electric
+-- # LLCCOM Overhead Crane - manual
+-- # LLCSCS Chain Sling
+-- # LLDDDA Davit Jib
+-- # LLDDEP Extension Post
+-- # LLDSDS Davit Socket
+-- # LLEBBO Eye Bolt
+-- # LLEBNU Eye Nut
+-- # LLFSRP Ropes (of Ropes / Slings)
+-- # LLGGAF A-frame
+-- # LLGGFX Fixed Gantry
+-- # LLGGPT Portable Gantry
+-- # LLJCJI Jib Crane
+-- # LLJCPI Pillar Crane
+-- # LLJCPJ Pillar Jib Crane
+-- # LLJCSW Swing Jib Crane
+-- # LLJCWA Wall Jib Crane
+-- # LLJJCK Jack
+-- # LLJJHM Hydraulic Manhole Lifters
+-- # LLLCLO Load Cell
+-- # LLLHHO Hooks
+-- # LLLSPU Passenger / Utility Lift
+-- # LLMHCH Chain Hoist
+-- # LLMHCO Combined Hoist
+-- # LLMHEH Engine Hoist
+-- # LLMHLE Lever Block / Lever Hoist / Pull Lift
+-- # LLMHRP Rope Hoist
+-- # LLMLMA Magnet
+-- # LLMLMH Manhole Lifter
+-- # LLPCSS Stainless Steel Sub Pump Lifting Chain
+-- # LLPHEL Electric Hoist
+-- # LLPLCL Clamp
+-- # LLPLPL Plate
+-- # LLPTPA Pallet Truck
+-- # LLRRSP Specialist Beams
+-- # LLRRTB Runway Tracks and Beams
+-- # LLRTRI Rigging Screw
+-- # LLRTTU Turnbuckle
+-- # LLSBGI Gin Wheel
+-- # LLSBSH Sheave Block
+-- # LLSSAB Safety Pin Bow Shackle
+-- # LLSSAD Safety Pin Dee shackle
+-- # LLSSCB Screw Pin Bow Shackle
+-- # LLSSCD Screw Pin Dee shackle
+-- # LLTTTR Trolley
+-- # LLUABL Bolt On Lug
+-- # LLUABR Bracket
+-- # LLUACA Carrier
+-- # LLUACO Collar
+-- # LLUAGI Girder Clip
+-- # LLUALI Link
+-- # LLUEFA Fork Lift Attachment
+-- # LLUEFT Fork Lift Truck
+-- # LLUEHI Hiab
+-- # LLUESC Scissor Lift
+-- # LLUETA Telehandler Attachment
+-- # LLUETL Telescopic Load Ladder
+-- # LLWAAB Fall Arrest Block
+-- # LLWAAL Anchor Line
+-- # LLWAAW Fall Arrest Winch
+-- # LLWABC Bosins Chair
+-- # LLWAIN Inertia Reel
+-- # LLWAKA Karabiner
+-- # LLWALY Lanyard
+-- # LLWAMA Man Riding Winch
+-- # LLWARK Rescue Kit
+-- # LLWASH Safety Harness
+-- # LLWASK Shock Absorber
+-- # LLWASL Safety Line
+-- # LLWATR Tripod
+-- # LLWRWI Wire Rope Slings
+-- # LLWSPS Polyester Round Slings
+-- # LLWSWS Webbing Slings (belt)
+-- # LLWWLO Load Lifting Winch
+    
+-- # LSTNUT Ultrasonic Time of Flight Level Device
+    
 -- LSTNCO
 INSERT OR REPLACE INTO s4_classrep.equiclass_lstnco BY NAME
 SELECT
@@ -26,6 +137,19 @@ SELECT
     udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS lstn_signal_type,
 FROM ai2_classrep.equiclass_conductivity_level_instrument t;
 
+-- # LSTNCP Capacitive Level Device
+-- # LSTNFL Level Float Device
+-- # LSTNME Mechanical Level Device
+-- # LSTNMG Magnetic Level Device
+-- # LSTNMISC Miscellaneous Level Transmitter
+-- # LSTNNU Radioactive Source Level Device
+-- # LSTNOP Optical Light Level Device
+-- # LSTNPR Pressure converted for Level Device
+-- # LSTNPU Ultrasonic Doppler Device
+-- # LSTNRD Radar Level Device
+-- # LSTNTF Vibrating Tuning Fork Level Device
+-- # LSTNTP Tipping Bucket Type Rain Gauge Device
+-- # LSTNUS Sludge Blanket Level Device
 
 -- LSTNUT
 INSERT OR REPLACE INTO s4_classrep.equiclass_lstnut BY NAME
@@ -65,9 +189,42 @@ SELECT
     udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS lstn_signal_type,
 FROM ai2_classrep.equiclass_ultrasonic_level_instrument t;
 
+-- # MACTOR Macerator
+-- # MAGNCD Magnetic Capture Device
+-- # MCCEPA Motor Control Centre Panel
+-- # METREL Electricity Meter
+-- # MIXRMISC Miscellaneous Mixer
+-- # MIXRRO Rotary Mixer
+-- # MIXRST Static Mixer
+-- # MIXRSU Submersible Mixer
+-- # MOLPAP Access Platform
+-- # MOLPMISC Miscellaneous Mobile Lifting Plant
+-- # MOLPPT Pallet Truck
+-- # MOLPSL Scissor Lift Platform
+-- # MOSWHM Humidity measuring Moisture Switch
+-- # NAVBBY Navigation Buoy
+-- # NETWCM Condition Monitoring Comms Network
+-- # NETWCO Network Node converting Signals
+-- # NETWEN Ethernet Network Hub
+-- # NETWMB MODBUS Network Hub
+-- # NETWMISC Miscellaneous Network
+-- # NETWMO Modem
+-- # NETWPB PROFIBUS Network Hub
+-- # NETWRA Network Device connecting via Radio
+
 -- NETWTL
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwtl BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
 FROM ai2_classrep.equiclass_telemetry_outstation t;
+
+-- # ODCOIO Ionisation Unit
+-- # ODSYAD Odour Adsorber
+-- # ODSYFI Odour Filter
+-- # ODSYMISC Miscellaneous Odour Filter
+-- # ODSYSC Odour Scrubber
+-- # OVFLMISC Miscellaneous Overflow
+-- # OVFLSH Overflow Shaft
+-- # OVFLSP Spillway Channel Overflow
+-- # OVFLWE Overflow

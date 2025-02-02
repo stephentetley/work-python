@@ -15,9 +15,170 @@
 -- 
 
 
+-- # PEIZHY Hydraulic Type Piezometer
+-- # PEIZMISC Miscellaneous Piezometer
+-- # PEIZPN Pneumatic Type Piezometer
+-- # PEIZVB Vibrating Wire Piezometer
+-- # PELTER Pelletiser
+-- # PIPEMISC Miscellaneous Pipework
+-- # PIPERM Rising Main
+-- # PM_PLANNING_ATTRIB PM: Planning Attibutes
+-- # PM_RPN PM: Risk Priority Number
+-- # POCPPA Power Changeover Panel
+-- # PODEBA Battery Storage
+-- # PODEBC Battery Charger
+-- # PODEDL DC Power Supply for ELV Circuits
+-- # PODEMISC Miscellaneous Power Device
+-- # PODEPC Phase Converter
+-- # PODEPF Power Supply Filter
+-- # PODETU Telemetry Uninterruptable Power Supply
+-- # PODEUP Uninterruptable Power Supply
+-- # POFCCP Power Factor Capacitor
+-- # POFCMISC Miscellaneous Power Factor Correct
+-- # POGEAC Alternator
+-- # POGEMISC Miscellaneous Power Generator
+-- # POGESP Solar Photovoltaic Panel
+-- # PROFAC Activated Carbon Filter
+-- # PROFBA Biological Aeration Filter
+-- # PROFCF Continuous Flow Filter
+-- # PROFCT Contact Filter
+-- # PROFCW Constructed Wetland
+-- # PROFDM Drum Filter
+-- # PROFHR High Rate Filter
+-- # PROFME Membrane Filter
+-- # PROFMISC Miscellaneous Process Filter
+-- # PROFNI Nitrifying Filter
+-- # PROFPA Particle Filter
+-- # PROFPC Percolating Filter
+-- # PROFPR Pressure Filter
+-- # PROFRB WW RBC(Bio Disc)
+-- # PROFRG Rapid Gravity Filter
+-- # PROFSA Submerged Aerated Process Filter
+-- # PROFSN Sand Filter
+-- # PROFSS Slow Sand Filter
+-- # PSTNDI Diaphragm Type Pressure Device
+-- # PTDESP Surge Protection Unit
+-- # PUMPAX Axial Pump
+-- # PUMPCE Centrifugal Pump
+-- # PUMPDI Diaphragm Pump
+-- # PUMPEJ Ejector Pump
+-- # PUMPGE Gear Pump
+-- # PUMPHR Helical Rotor Pump
+-- # PUMPLO Lobe Pump
+-- # PUMPLU Lubrication Pump
+-- # PUMPMA Maceration Pump
+-- # PUMPMISC Miscellaneous Pump
+-- # PUMPPB Peristaltic Buffer Pump
+-- # PUMPPE Peristaltic Pump
+-- # PUMPPG Plunger Pump
+-- # PUMPRA Ram Pump
+-- # PUMPSC Screw Pump
+-- # PUMPVA Vacuum Pump
+-- # PUMSBH Borehole Pump
+-- # PUMSMISC Miscellaneous Submersible Pump
+-- # PUMSMO Submersible Pump with Integral Motor
+-- # PUMSSU Submersible Pump
+-- # REATRE Reactor
+-- # RELYMISC Miscellaneous Relay
+-- # RELYPF Phase Failure Relay
+-- # RESVMISC Miscellaneous Reservoir
+-- # RESVOW Open Water Reservoir
+-- # SAFETY_CRIT_EQ Safety Critical Equipment
+-- # SALTSA Salt Saturator
+-- # SAMPCH Refrigerated Unit for Liquid Samples
+-- # SAMPCY Unit to store Cryptosporidium Samples
+-- # SAMPMISC Miscellaneous Sampler
+-- # SAMPPB Plumbosolvency Sampler Unit
+-- # SCPRLS Linear Scraper
+-- # SCPRMISC Miscellaneous Scraper Bridge
+-- # SCPRRO Rotary Scraper
+-- # SCRCBA Bar
+-- # SCRCMISC Miscellaneous Coarse Screen
+-- # SCRFBA Band
+-- # SCRFBM Brush Screen with Macerator
+-- # SCRFBR Brush Screen
+-- # SCRFDC Rotating Drum or Cup
+-- # SCRFES Escalator or Fine Screen
+-- # SCRFHS Horizontal Spiral Brush
+-- # SCRFMISC Miscellaneous Fine Screen
+-- # SCRFRB Raked Bar
+-- # SCRFRC Rotating Drum or Cup with Compactor
+-- # SCRFRS Replaceable Screening Sack
+-- # SCRFSC Spiral Brush with Compactor
+-- # SCRFSE Stepped Bar
+-- # SCRFST Static Screen
+-- # SCRFVS Vertical Spiral Brush
+-- # SCUMSY Scum Removal System
+-- # SECDGR Grill
+-- # SECDMISC Miscellaneous Security Device
+-- # SECDRD Roller Shutter Door
+-- # SECDSG Security Gate
+-- # SFERBA Breathing Apparatus Cylinder
+-- # SFEREB Emergency Breathing Device
+-- # SFERFA Fall Arrester
+-- # SFERFH Fall Arrester Harness
+-- # SFERFT Fall Arrester Traveller
+-- # SFERLB Life Buoy
+-- # SFERLS Safety Lanyard
+-- # SFERMISC Miscellaneous Safety and Rescue
+-- # SFERPB Portable Breathing Apparatus
+-- # SFERPL Anchor Plate
+-- # SFERPO Anchor Point
+-- # SFERTR Tripod
+-- # SGERBP Bypass Switch
+-- # SGERCF Contactor Feeder
+-- # SGERCO Changeover Switch
+-- # SGEREI Electrical Isolation Unit
+-- # SGERFC Fuse Connection Unit
+-- # SGERFS Fused Switch
+-- # SGERIS Isolator Switch
+-- # SGERMISC Miscellaneous Switchgear
+-- # SGERNE Neutral Earth Contactor
+-- # SGEROS Oil Switch
+-- # SGERRM Ring Main Unit
+-- # SGERSF SF6 Switch
+-- # SHCFBM Shape Circular Flat Bottom
+-- # SHCOBM Shape Circular Conical Bottom
+-- # SHECYL Shape Elliptical Cyl (Horiz)
+-- # SHEWIN Inlet
+-- # SHEWOT Outlet
+-- # SHHCYL Shape Horizontal Cylinder
+-- # SHMIIR Shape Miscellaneous Irregular
+-- # SHRFBM Shape Rectangular Flat Bottom
+-- # SHRPBM Shape Rect Pyramid Bottom
+-- # SHRSBM Shape Rect Sloping Bottom
+-- # SHSCYL Shape Semi-cylinder
+-- # SHWRDE Domestic Electrical Shower
+-- # SIGNSA Safety Sign
+-- # SILOXX Silo
+-- # SKIMDE Decanter Skimmer
+-- # SKIMLN Linear Skimmer
+-- # SLABSL Slab
+-- # SLIPLN Linear Slide Assembly
+-- # SLIPRA Slip Ring Assembly
+-- # SLPRBE Belt Press
+-- # SLPRMISC Miscellaneous Sludge Press
+-- # SLPRPL Plate Press
+-- # SOCKET Panel Socket
+-- # SOCKGE Generator Connection
+-- # SOLEEM Solenoid Electromagnetic
+-- # SOLUTION_ID Solution ID
+-- # SPTNAC Accelerometer
+-- # SPTNMISC Miscellaneous Movement Sensor
+-- # SPTNRO Rotation Monitor
+-- # SPTNVI Vibration Monitor
+-- # SSUDBA Basin
+-- # SSUDBP Balancing Pond
+-- # SSUDGC SUD Geocellular
+-- # SSUDSW Swale
+-- # STAKFA Flare Stack
+-- # STAKFL Flue Stack
+-- # STAKMISC Miscellaneous Stacks
+-- # STAKVS Vent Stack
+-- # STARAT Auto Transformer Starter
 
 
-
+-- # STARDO Direct On Line Starter
 INSERT OR REPLACE INTO s4_classrep.equiclass_stardo BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
@@ -28,3 +189,46 @@ SELECT
     udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS star_rated_voltage_units,
     t._voltage_in AS star_rated_voltage,
 FROM ai2_classrep.equiclass_direct_on_line_starter t;
+
+-- # STARDT Star-Delta Starter
+-- # STARLQ Liquid Resistance Starter
+-- # STARMISC Miscellaneous Motor Starter
+-- # STARRE Resistance Starter
+-- # STARRV Reversing Starter
+-- # STARSS Soft Starter
+-- # STARVF Variable Frequency Starter
+-- # STRNBF Strainer with Bag Filter
+-- # STRNER Strainer
+-- # STRNMISC Miscellaneous Strainer
+-- # SWPANL Switch Panel
+-- # TANKCC Clean Water Compartment
+-- # TANKMISC Miscellaneous Tank
+-- # TANKPR Process Tank
+-- # TANKST Storage Tank
+-- # TBINMISC Miscellaneous Turbine
+-- # TBINWA Water Turbine
+-- # TBINWI Wind Turbine
+-- # THIKBT Belt Thickener
+-- # THIKDR Drum Thickener
+-- # THIKMISC Miscellaneous Thickening Plant
+-- # THIKPF Picket Fence Thickener
+-- # THLIIN Threaded Lifting Insert
+-- # TNNLIN Tunnel Inlet
+-- # TNNLMISC Miscellaneous Tunnel
+-- # TNNLOL Tunnel Outlet
+-- # TRFMAC Air Cooled Transformer
+-- # TRFMLV LV Air Cooled Transformer
+-- # TRFMMISC Miscellaneous Transformer
+-- # TRFMOC Oil Cooled Transformer
+-- # TRFMRT Rectifier Transformer
+-- # TRIPBU Tripping Battery Unit
+-- # TRUTBG Bevel Gearbox
+-- # TRUTCY Cycloidal Gearbox
+-- # TRUTHB Helical Bevel Gearbox
+-- # TRUTHG Helical Gearbox
+-- # TRUTMISC Miscellaneous Transmission Unit
+-- # TRUTPG Planetary Gearbox
+-- # TRUTSG Spur Gearbox
+-- # TRUTVA Variator Gearbox
+-- # TRUTWG Worm Gearbox
+-- # TSTNTT Temperature Monitoring Device

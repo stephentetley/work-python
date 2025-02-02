@@ -14,8 +14,30 @@
 -- limitations under the License.
 -- 
 
+-- # UVUNIT Ultraviolet Unit
+-- # VALVAS Angle Seat Valve
+-- # VALVAV Air Release Valve
+-- # VALVBA Ball Valve
+-- # VALVBE Bellmouth Valve
+-- # VALVBP Butterfly Valve
+-- # VALVDC Disc Valve
+-- # VALVDE Decant Valve
+-- # VALVDI Diaphragm Valve
+-- # VALVDO Dome Valve
+-- # VALVDR Directional Control Valve
+-- # VALVFL Flap Valve
+-- # VALVFT Float Operated Valve
+-- # VALVFU Flush Valve
+-- # VALVGA Gate Valve
+-- # VALVGL Globe Valve
+-- # VALVLO Loading Valve
+-- # VALVMISC Miscellaneous Valve
+-- # VALVMW Multi Way Valve
+-- # VALVNE Needle Valve
+-- # VALVNR Non Return Valve
+-- # VALVPB Pressure Intensifier Booster
 
--- VALVPE
+-- # VALVPE Penstock Valve
 INSERT OR REPLACE INTO s4_classrep.equiclass_valvpe BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
@@ -23,7 +45,33 @@ SELECT
     t._penstock_width_mm AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_penstock t;
 
--- VEPRPD
+
+-- # VALVPG Plug Valve
+-- # VALVPI Pinch Valve
+-- # VALVPR Pressure Reducing Valve
+-- # VALVPV Pressure and Vacuum Relief Valve
+-- # VALVRA Ram Valve
+-- # VALVRE Pressure Regulating Valve
+-- # VALVSC Pressure Sustaining Valve
+-- # VALVSF Safety Pressure Relief Valve
+-- # VALVSL Solenoid Valve
+-- # VALVVI Vacuum Interface Valve
+-- # VALVVR Vacuum Regulator Valve
+-- # VEGRAG Air Grate
+-- # VEPRAC Autoclave
+-- # VEPRAO Air and Oil Receiver Vessel
+-- # VEPRAR Air Receiver Vessel
+-- # VEPRAW Air and Water Receiver Vessel
+-- # VEPRFI Pressurised Filter
+-- # VEPRGH Gas Holder
+-- # VEPRMISC Miscellaneous Pressure Vessel
+-- # VEPRNW Nitrogen and Water Receiver Vessel
+-- # VEPROZ Ozone Generator
+-- # VEPRPA Pasteurisation Vessel
+	
+
+
+-- # VEPRPD Pulsation Damper
 INSERT OR REPLACE INTO s4_classrep.equiclass_veprpd BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
@@ -31,3 +79,25 @@ SELECT
     t._ywref AS statutory_reference_number,
 FROM ai2_classrep.equiclass_pulsation_damper t;
 
+
+-- # VEPRPR Pressure Vessel
+-- # VEPRSB Steam Boiler
+-- # VEPRSS Steam System
+-- # VEPRVA Vacuum Vessel
+-- # VESLBB Biogas Bag
+-- # VESLBH Biogas Holder
+-- # VESLMISC Miscellaneous Vessel
+-- # VIBRUN Vibration Unit
+-- # WACAPC Pressure Wash Carriage
+-- # WASFTN Water Softener
+-- # WASHMISC Miscellaneous Pressure Washer
+-- # WASHPR Pressure Washer
+-- # WASHWH Wheel Washer
+-- # WBRDGE Weighbridge
+-- # WEIRMISC Miscellaneous Weir
+-- # WEIROF Weir Overflow
+-- # WELLDR Dry Well
+-- # WELLMISC Miscellaneous Well
+-- # WELLWT Wet Well
+-- # WETNSG Strain Gauge Load Cell Device
+-- # WWC Waste Water Crossing

@@ -14,6 +14,60 @@
 -- limitations under the License.
 -- 
 
+-- # GASWCP Capacitive Effect Proximity Switch
+-- # GASWIP Inductive Effect Proximity Switch
+-- # GASWME Mechanical Interlock Position Switch
+-- # GASWMG Magnetic Interlock Position Switch
+-- # GASWMISC Miscellaneous Position Sensor
+-- # GASWOP Light Reflection Position Switch
+-- # GASWUS Ultrasonic Position Switch
+-- # GATNMISC Miscellaneous Linear Move Sensor
+-- # GATNOD Gauge Transmitter with Optical Detector
+-- # GATNPO Potentiometer Based Gauge Transmitter
+-- # GATNPS Gauge Transmitter for Pulse Sequences
+-- # GATNUS Ultrasonic Motion Transmitter
+-- # GCHPNL Gas Changeover Panel
+-- # GMTRGM Geared Motor
+-- # GMTRMISC Miscellaneous Geared Motor
+-- # GRICMISC Miscellaneous Grit Cyclon Separator
+-- # GRICRA Rake Classifier
+-- # GRICSC Screw Classifier
+-- # GRISCF Cross Flow Grit Separator
+-- # GRISMISC Miscellaneous Grit Separator
+-- # GRISVF Vortex Flow Grit Separator
+-- # GRNDER Grinder
+-- # GSDOVS Vacuum Gas Feed System
+-- # HEATAI Air Heater
+-- # HEATBO Boiler
+-- # HEATEV Heater Evaporator
+-- # HEATFA Fan Heater
+-- # HEATGS Gas Heater
+-- # HEATIM Immersion Heater
+-- # HEATMISC Miscellaneous Heating Unit
+-- # HEATOI Oil Heater
+-- # HEATRA Heating Radiator
+-- # HEATSH Storage Heater
+-- # HEATTR Trace Heating
+-- # HEATTU Tubular Heater
+-- # HEEXCH Heat Exchanger
+-- # HEPLBH Borehole Head Plate
+-- # HIWYBP Bridle Path
+-- # HIWYMISC Miscellaneous Highways and roads
+-- # HIWYPP Path
+-- # HIWYRD Road
+-- # HSYSPP Hydraulic Power Pack
+-- # INTCFG Fat Oil and Grease Interceptor
+-- # INTFCH Chart Recorder Based Interface
+-- # INTFCO Interface Device converting Signals
+-- # INTFDI Interface Device with Digital Readout
+-- # INTFLO Local Operator Interface for PLCs
+-- # INTFMISC Miscellaneous Interface
+-- # INTFSC Interface Display Node for SCADA System X
+-- # INTJLA Injector lance
+-- # JACKHY Hydraulic Jack
+-- # JACKMISC Miscellaneous Jack
+-- # JACKRA Ratchet Jack
+
 INSERT OR REPLACE INTO s4_classrep.equiclass_kiskki BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
