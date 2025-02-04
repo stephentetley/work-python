@@ -203,14 +203,47 @@ FROM ai2_classrep.equiclass_ultrasonic_level_instrument t;
 -- # MOLPSL Scissor Lift Platform
 -- # MOSWHM Humidity measuring Moisture Switch
 -- # NAVBBY Navigation Buoy
--- # NETWCM Condition Monitoring Comms Network
--- # NETWCO Network Node converting Signals
+
+-- # NETWCM Condition Monitoring Comms Network (no ai2 match)
+
+-- # NETWCO Network Node converting Signals (no ai2 match)
+
 -- # NETWEN Ethernet Network Hub
--- # NETWMB MODBUS Network Hub
--- # NETWMISC Miscellaneous Network
+INSERT OR REPLACE INTO s4_classrep.equiclass_netwen BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ethernet t;
+
+-- # NETWMB MODBUS Network Hub (no ai2 match)
+
 -- # NETWMO Modem
+INSERT OR REPLACE INTO s4_classrep.equiclass_netwmo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_modem t;
+
+
 -- # NETWPB PROFIBUS Network Hub
--- # NETWRA Network Device connecting via Radio
+INSERT OR REPLACE INTO s4_classrep.equiclass_netwpb BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_profibus t;
+
+
+-- # NETWRA Network Device connecting via Radio (two)
+INSERT OR REPLACE INTO s4_classrep.equiclass_netwra BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_misc_radio_com_equipment t;
+
+INSERT OR REPLACE INTO s4_classrep.equiclass_netwra BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_radio_tx_rx_control_equipment t;
 
 -- NETWTL
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwtl BY NAME
