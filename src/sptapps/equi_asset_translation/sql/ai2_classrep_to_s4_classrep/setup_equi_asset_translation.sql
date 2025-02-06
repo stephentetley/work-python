@@ -16,11 +16,6 @@
 
 CREATE SCHEMA IF NOT EXISTS equi_asset_translation;
 
-CREATE OR REPLACE TABLE equi_asset_translation.status_lookup (
-    ai2_status VARCHAR NOT NULL,
-    s4_status VARCHAR NOT NULL,
-    PRIMARY KEY (ai2_status)
-);
 
 
 CREATE OR REPLACE TABLE equi_asset_translation.tt_equipment_classtypes (
@@ -31,34 +26,6 @@ CREATE OR REPLACE TABLE equi_asset_translation.tt_equipment_classtypes (
 );
 
 
--- TODO Python udf...
-INSERT INTO equi_asset_translation.status_lookup
-    VALUES ('OPERATIONAL', 'OPER'), ('DISPOSED OF', 'DISP')
-    ;
     
 
--- Note - don't try to discriminate class type here, need more context 
--- than ai2_equipment_type ...
-CREATE OR REPLACE TABLE equi_asset_translation.objecttype_lookup (
-    ai2_equipment_type VARCHAR NOT NULL,
-    s4_category VARCHAR NOT NULL,
-    s4_objecttype VARCHAR NOT NULL,
-    PRIMARY KEY (ai2_equipment_type)
-);
-
-INSERT INTO equi_asset_translation.objecttype_lookup
-    VALUES 
-        ('EQUIPMENT: BURGLAR ALARM', 'I', 'ALAM'),
-        ('EQUIPMENT: CONDUCTIVITY INSTRUMENT', 'I', 'ANAL'),
-        ('EQUIPMENT: CONDUCTIVITY LEVEL INSTRUMENT', 'I', 'LSTN'), 
-        ('EQUIPMENT: DIRECT ON LINE STARTER', 'E', 'STAR'), 
-        ('EQUIPMENT: FIRE ALARM', 'I', 'ALAM'), 
-        ('EQUIPMENT: GEARBOX', 'M', 'TRUT'), 
-        ('EQUIPMENT: ISOLATING VALVES', 'M', 'VALV'),
-        ('EQUIPMENT: NON-IMMERSIBLE MOTOR', 'E', 'EMTR'),
-        ('EQUIPMENT: PENSTOCK', 'M', 'VALV'),
-        ('EQUIPMENT: SCREW PUMP', 'M', 'PUMP'), 
-        ('EQUIPMENT: SPEED/RPM INSTRUMENT', 'I', 'SPTN'), 
-        ('EQUIPMENT: ULTRASONIC LEVEL INSTRUMENT', 'I', 'LSTN'),
-    ;
 

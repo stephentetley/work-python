@@ -27,7 +27,7 @@ SELECT
     null AS superord_id,
     'Z' AS category,
     t1.objtype AS object_type,
-    t2.s4_status AS user_status,
+    udf_asset_status_translation(t.asset_status) AS user_status,
     user_status AS system_status,
     TRY_CAST(t.installed_from AS DATE) AS startup_date,
     year(startup_date) AS construction_year,
@@ -39,5 +39,4 @@ SELECT
     t.pandi_tag AS technical_ident_number,
 FROM ai2_classrep.equi_masterdata t
 LEFT JOIN equi_asset_translation.tt_equipment_classtypes t1 ON t1.equipment_id = t.ai2_reference
-LEFT JOIN equi_asset_translation.status_lookup t2 ON t2.ai2_status = t.asset_status
 ;

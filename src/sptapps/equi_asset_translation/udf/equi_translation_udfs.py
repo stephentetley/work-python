@@ -32,6 +32,8 @@ def register_functions(con: duckdb.DuckDBPyConnection) -> None:
     con.create_function("udf_format_output_type", udf_format_output_type, [VARCHAR], VARCHAR, exception_handling="return_null")
     con.create_function("udf_voltage_ac_or_dc", udf_voltage_ac_or_dc, [VARCHAR], VARCHAR, exception_handling="return_null")
     con.create_function("udf_size_to_millimetres", udf_size_to_millimetres, [VARCHAR, DOUBLE], INTEGER, exception_handling="return_null")
+    con.create_function("udf_asset_status_translation", udf_asset_status_translation, [VARCHAR], VARCHAR, exception_handling="return_null")
+
 
 def udf_format_as_integer_string(num_val: Number) -> str:
     return f'{round(num_val)}'
@@ -85,4 +87,12 @@ def udf_size_to_millimetres(size_units: str, size_value: Number) -> int:
             raise ValueError("ERROR")
 
 
+def udf_asset_status_translation(src: str) -> str:
+    match src.upper():
+        case 'OPERATIONAL':
+            return 'OPER'
+        case 'DISPOSED OF': 
+            return 'DISP'
+        case e: 
+            return f'##{e}'
 
