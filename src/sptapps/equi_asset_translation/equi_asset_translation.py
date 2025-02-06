@@ -89,5 +89,6 @@ def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> 
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_l_to_o.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_p_to_t.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_u_to_z.sql')
+    runner.exec_sql_generating_file(rel_file_path='ai2_classrep_to_s4_classrep/gen_tt_equipment_classtypes_insert_into.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/s4_classrep_equi_masterdata_insert_into.sql')
 

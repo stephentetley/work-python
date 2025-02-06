@@ -22,7 +22,16 @@ CREATE OR REPLACE TABLE equi_asset_translation.status_lookup (
     PRIMARY KEY (ai2_status)
 );
 
--- TODO - store this in a data file (spreadsheet or whatever...)
+
+CREATE OR REPLACE TABLE equi_asset_translation.tt_equipment_classtypes (
+    equipment_id VARCHAR NOT NULL,
+    objtype VARCHAR NOT NULL,
+    classtype VARCHAR NOT NULL,
+    PRIMARY KEY(equipment_id)
+);
+
+
+-- TODO Python udf...
 INSERT INTO equi_asset_translation.status_lookup
     VALUES ('OPERATIONAL', 'OPER'), ('DISPOSED OF', 'DISP')
     ;
@@ -51,6 +60,5 @@ INSERT INTO equi_asset_translation.objecttype_lookup
         ('EQUIPMENT: SCREW PUMP', 'M', 'PUMP'), 
         ('EQUIPMENT: SPEED/RPM INSTRUMENT', 'I', 'SPTN'), 
         ('EQUIPMENT: ULTRASONIC LEVEL INSTRUMENT', 'I', 'LSTN'),
-        
     ;
 

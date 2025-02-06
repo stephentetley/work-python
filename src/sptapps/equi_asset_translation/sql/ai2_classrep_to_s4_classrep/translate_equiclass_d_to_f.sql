@@ -175,7 +175,23 @@ FROM ai2_classrep.equiclass_non_immersible_motor t;
 -- # FLSTVN V Notch Weir
 -- # FLYWHE Flywheel
 -- # FSTNCF Coriolis Effect Flow Device
+
 -- # FSTNEM Electromagnetic Flow Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnem BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS fstn_signal_type,
+    t._range_min AS fstn_range_min,
+    t._range_max AS fstn_range_max,
+    upper(t._range_unit) AS fstn_range_units,
+    t._pipe_diameter_mm AS fstn_pipe_diameter_mm,
+    t._sensor_calibration_factor_1 AS fstn_sens_calibration_factor_1,
+    t._sensor_calibration_factor_2 AS fstn_sens_calibration_factor_2,
+    t._sensor_calibration_factor_3 AS fstn_sens_calibration_factor_3,
+    t._sensor_calibration_factor_4 AS fstn_sens_calibration_factor_4,
+FROM ai2_classrep.equiclass_magnetic_flow_instrument t;
+
 -- # FSTNIP Emag Insertion Probe Flow Device
 -- # FSTNLS Laser Surface Effect Flow Device
 -- # FSTNME Mechanically Actuated Flow Switch

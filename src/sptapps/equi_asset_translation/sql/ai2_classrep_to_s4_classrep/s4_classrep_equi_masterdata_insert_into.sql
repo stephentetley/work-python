@@ -25,8 +25,8 @@ SELECT
     t.item_name AS equi_description,
     regexp_extract(t.common_name, '(.*)/EQUIPMENT:', 1) AS functional_location,
     null AS superord_id,
-    t1.s4_category AS category,
-    t1.s4_objecttype AS object_type,
+    'Z' AS category,
+    t1.objtype AS object_type,
     t2.s4_status AS user_status,
     user_status AS system_status,
     TRY_CAST(t.installed_from AS DATE) AS startup_date,
@@ -38,6 +38,6 @@ SELECT
     t.serial_number AS serial_number,
     t.pandi_tag AS technical_ident_number,
 FROM ai2_classrep.equi_masterdata t
-LEFT JOIN equi_asset_translation.objecttype_lookup t1 ON t1.ai2_equipment_type = t.equipment_type
+LEFT JOIN equi_asset_translation.tt_equipment_classtypes t1 ON t1.equipment_id = t.ai2_reference
 LEFT JOIN equi_asset_translation.status_lookup t2 ON t2.ai2_status = t.asset_status
 ;
