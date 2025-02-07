@@ -52,3 +52,12 @@ FROM ai2_classrep.equi_masterdata t
 )
 SELECT equipment_id, easting, northing FROM cte
 ;
+
+INSERT OR REPLACE INTO s4_classrep.equi_asset_condition BY NAME
+SELECT 
+    t.ai2_reference AS equipment_id,
+    upper(t1.condition_grade) AS condition_grade,
+    upper(t1.condition_grade_reason) AS condition_grade_reason,
+    t1.survey_year AS survey_date,
+FROM ai2_classrep.equi_masterdata t
+LEFT JOIN ai2_classrep.equi_agasp t1 ON t1.ai2_reference = t.ai2_reference
