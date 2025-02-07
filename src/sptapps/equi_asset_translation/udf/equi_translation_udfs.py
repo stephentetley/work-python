@@ -14,14 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 """
+
 from numbers import Number
 
 import duckdb
 from duckdb.typing import *
 import duckdb.typing
-import duckdb.typing
-import duckdb.typing
-import duckdb.typing
+import sptlibs.utils.grid_ref as grid_ref
+
+
+ty_east_north = duckdb.struct_type({'easting': INTEGER, 'northing': INTEGER})
 
 
 def register_functions(con: duckdb.DuckDBPyConnection) -> None:
@@ -33,7 +35,7 @@ def register_functions(con: duckdb.DuckDBPyConnection) -> None:
     con.create_function("udf_voltage_ac_or_dc", udf_voltage_ac_or_dc, [VARCHAR], VARCHAR, exception_handling="return_null")
     con.create_function("udf_size_to_millimetres", udf_size_to_millimetres, [VARCHAR, DOUBLE], INTEGER, exception_handling="return_null")
     con.create_function("udf_asset_status_translation", udf_asset_status_translation, [VARCHAR], VARCHAR, exception_handling="return_null")
-
+    con.create_function("udf_gridref_to_east_north", udf_gridref_to_east_north, [VARCHAR], ty_east_north, exception_handling="return_null")
 
 def udf_format_as_integer_string(num_val: Number) -> str:
     return f'{round(num_val)}'
@@ -96,3 +98,8 @@ def udf_asset_status_translation(src: str) -> str:
         case e: 
             return f'##{e}'
 
+
+def udf_gridref_to_east_north(src: str) -> dict:
+    osgb36 = grid_ref.Osgb36(grid_ref=src)
+    en = osgb36.to_east_north()
+    return {'easting': en.easting, 'northing': en.northing}

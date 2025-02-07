@@ -104,7 +104,7 @@ def _find_minor(e: int, n: int) -> str:
 
 
 class Osgb36():
-    regex = re.compile(r'[ST][A-Z]\d{10}')
+    regex = re.compile(r'[HJNOST][A-Z]\d{10}')
 
     def __init__(self, grid_ref: str):
         if Osgb36.regex.match(grid_ref):

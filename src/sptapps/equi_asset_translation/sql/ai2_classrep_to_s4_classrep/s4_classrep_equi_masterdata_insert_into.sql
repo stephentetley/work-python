@@ -40,3 +40,15 @@ SELECT
 FROM ai2_classrep.equi_masterdata t
 LEFT JOIN equi_asset_translation.tt_equipment_classtypes t1 ON t1.equipment_id = t.ai2_reference
 ;
+
+INSERT OR REPLACE INTO s4_classrep.equi_east_north BY NAME
+WITH cte AS (
+SELECT 
+    t.ai2_reference AS equipment_id,
+    udf_gridref_to_east_north(t.grid_ref) AS _east_north,
+    struct_extract(_east_north,  'easting') AS easting,
+    struct_extract(_east_north, 'northing') AS northing,
+FROM ai2_classrep.equi_masterdata t
+)
+SELECT equipment_id, easting, northing FROM cte
+;
