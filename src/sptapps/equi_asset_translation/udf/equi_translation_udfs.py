@@ -91,10 +91,34 @@ def udf_size_to_millimetres(size_units: str, size_value: Number) -> int:
 
 def udf_asset_status_translation(src: str) -> str:
     match src.upper():
-        case 'OPERATIONAL':
-            return 'OPER'
+        case 'ABANDONED': 
+            return 'ABND'
+        case 'ADOPTABLE':
+            return '####'
+        case 'AWAITING DISPOSAL':
+            return 'ADIS'
+        case 'CLOSED':
+            return '####'
+        case 'DECOMMISSIONED':
+            return 'DCOM'
         case 'DISPOSED OF': 
             return 'DISP'
+        case 'NON OPERATIONAL':
+            return 'NOP'
+        case 'OPERATIONAL':
+            return 'OPER'
+        case 'PLANNED': 
+            return '####'
+        case 'SOLD':
+            return 'SOLD'
+        case 'TO BE COMMISSIONED':
+            return 'TBCM'
+        case 'TO BE CONSTRUCTED':
+            return '####'
+        case 'TRANSFERRED':
+            return 'TRAN'
+        case 'UNDER CONSTRUCTION':
+            return 'UCON'
         case e: 
             return f'##{e}'
 
