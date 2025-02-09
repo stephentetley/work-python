@@ -404,16 +404,16 @@ FROM ai2_classrep.equiclass_cathodic_protection t;
 
 -- # CCBKAC Air Circuit Breaker (two ai2 tables)
 INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkac BY NAME
-SELECT
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_air_circuit_breaker t;
-
-INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkac BY NAME
-SELECT
+FROM ai2_classrep.equiclass_air_circuit_breaker t)
+UNION
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_hv_air_circuit_breaker t;
+FROM ai2_classrep.equiclass_hv_air_circuit_breaker t)
+;
 
 -- # CCBKMC Moulded Case Circuit Breaker
 INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkmc BY NAME
@@ -426,16 +426,16 @@ FROM ai2_classrep.equiclass_moulded_case_circuit_breaker_mccb t;
 
 -- # CCBKOC Oil Circuit Breaker (two ai2 tables)
 INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkoc BY NAME
-SELECT
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_oil_circuit_breaker t;
-
-INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkoc BY NAME
-SELECT
+FROM ai2_classrep.equiclass_oil_circuit_breaker t)
+UNION
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_hv_oil_circuit_breaker t;
+FROM ai2_classrep.equiclass_hv_oil_circuit_breaker t)
+;
 
 -- # CCBKRC Residual Current Circuit Breaker (no ai2 match)
 
@@ -449,16 +449,16 @@ FROM ai2_classrep.equiclass_hv_sf6_circuit_breaker t;
 
 -- # CCBKVC Vacuum Circuit Breaker (two ai2 tables)
 INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkvc BY NAME
-SELECT
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_vacuum_circuit_breaker t;
-
-INSERT OR REPLACE INTO s4_classrep.equiclass_ccbkvc BY NAME
-SELECT
+FROM ai2_classrep.equiclass_vacuum_circuit_breaker t)
+UNION 
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_hv_vacuum_circuit_breaker t;
+FROM ai2_classrep.equiclass_hv_vacuum_circuit_breaker t)
+;
 
 -- # CENGDE Diesel Engine (no ai2 match)
 

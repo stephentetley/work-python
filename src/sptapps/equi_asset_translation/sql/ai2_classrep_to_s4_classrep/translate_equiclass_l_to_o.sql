@@ -15,34 +15,109 @@
 -- 
 
 -- # LIACBC Beam Clamp
+INSERT OR REPLACE INTO s4_classrep.equiclass_liacbc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_beam_clamp t;
+
 -- # LIACBR Blue Rope Assembly
 -- # LIACBS Bow Shackle
+INSERT OR REPLACE INTO s4_classrep.equiclass_liacbs BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_bow_shackles t;
+
 -- # LIACDS D Shackle
+INSERT OR REPLACE INTO s4_classrep.equiclass_liacds BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_dee_shackles t;
+
 -- # LIACEB Eye Bolt
+INSERT OR REPLACE INTO s4_classrep.equiclass_liaceb BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_eye_bolts t;
+
 -- # LIACHL Lifting Hook
+INSERT OR REPLACE INTO s4_classrep.equiclass_liachl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_lifting_hooks t;
+
+
 -- # LIACLB Lifting Bracket
 -- # LIACLF Lifting Frame
 -- # LIACLT Lifting Tackle
+INSERT OR REPLACE INTO s4_classrep.equiclass_liaclt BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_unclassified_lifting_tackle t;
+
 -- # LIACMISC Miscellaneous Lifting Accessories
+
 -- # LIACPL Plate Lift Clamp
+INSERT OR REPLACE INTO s4_classrep.equiclass_liacpl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_plate_lift_clamps t;
+
 -- # LIACTW Threaded Wire Rope Loop
 -- # LICHPU Pump Lifting Chain
+INSERT OR REPLACE INTO s4_classrep.equiclass_lichpu BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_pump_lifting_chain t;
+
 -- # LIDEEM Emergency Lighting
 -- # LIDEEX Exterior Lighting
 -- # LIDEHM High Mast Lighting Column
 -- # LIDEIN Interior Lighting
+
 -- # LIDEMISC Miscellaneous Lighting Device
 -- # LIFRHY Hydraulic Lifter
 -- # LIFRMISC Miscellaneous Lifter
 -- # LIFTPA Passenger Lift
 -- # LIPOCO Lightning Conductor
 -- # LISLBS Belt Sling
+INSERT OR REPLACE INTO s4_classrep.equiclass_lislbs BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_belt_slings t;
+
 -- # LISLCS Chain Sling
+INSERT OR REPLACE INTO s4_classrep.equiclass_lislcs BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_chain_slings t;
+
 -- # LISLMISC Miscellaneous Lifting Sling
 -- # LISLRS Round Sling
 -- # LISLWR Lifting Wire Rope
 -- # LLAPAP Anchor Point
+INSERT OR REPLACE INTO s4_classrep.equiclass_llapap BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_anchor_point t;
+
 -- # LLBCBC Beam Clamp
+INSERT OR REPLACE INTO s4_classrep.equiclass_llbcbc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_beam_clamp t;
+
 -- # LLBFLI Lifting Beams / Frames
 -- # LLBFSP Spreader Beam
 -- # LLCCFL Floor Crane
@@ -52,15 +127,39 @@
 -- # LLCCOM Overhead Crane - manual
 -- # LLCSCS Chain Sling
 -- # LLDDDA Davit Jib
+INSERT OR REPLACE INTO s4_classrep.equiclass_llddda BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_davit t;
+
 -- # LLDDEP Extension Post
 -- # LLDSDS Davit Socket
+INSERT OR REPLACE INTO s4_classrep.equiclass_lldsds BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_davit_sockets t;
+
 -- # LLEBBO Eye Bolt
+INSERT OR REPLACE INTO s4_classrep.equiclass_llebbo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_eye_bolts t;
+
 -- # LLEBNU Eye Nut
 -- # LLFSRP Ropes (of Ropes / Slings)
 -- # LLGGAF A-frame
 -- # LLGGFX Fixed Gantry
 -- # LLGGPT Portable Gantry
 -- # LLJCJI Jib Crane
+INSERT OR REPLACE INTO s4_classrep.equiclass_lljcji BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_jib_crane t;
+
 -- # LLJCPI Pillar Crane
 -- # LLJCPJ Pillar Jib Crane
 -- # LLJCSW Swing Jib Crane
@@ -88,6 +187,12 @@
 -- # LLRTTU Turnbuckle
 -- # LLSBGI Gin Wheel
 -- # LLSBSH Sheave Block
+INSERT OR REPLACE INTO s4_classrep.equiclass_llsbsh BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_sheave_blocks t;
+
 -- # LLSSAB Safety Pin Bow Shackle
 -- # LLSSAD Safety Pin Dee shackle
 -- # LLSSCB Screw Pin Bow Shackle
@@ -293,16 +398,15 @@ FROM ai2_classrep.equiclass_profibus t;
 
 -- # NETWRA Network Device connecting via Radio (two)
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwra BY NAME
-SELECT
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_misc_radio_com_equipment t;
-
-INSERT OR REPLACE INTO s4_classrep.equiclass_netwra BY NAME
-SELECT
+FROM ai2_classrep.equiclass_misc_radio_com_equipment t)
+UNION
+(SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-FROM ai2_classrep.equiclass_radio_tx_rx_control_equipment t;
+FROM ai2_classrep.equiclass_radio_tx_rx_control_equipment t);
 
 -- NETWTL
 INSERT OR REPLACE INTO s4_classrep.equiclass_netwtl BY NAME
