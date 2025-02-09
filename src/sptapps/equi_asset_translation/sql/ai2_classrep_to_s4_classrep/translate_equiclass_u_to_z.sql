@@ -21,19 +21,43 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvav BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_air_relief_valve t;
 
 -- # VALVBA Ball Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvba BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+FROM ai2_classrep.equiclass_isolating_valves t
+WHERE upper(t._valve_type) = 'BALL';
 
 -- # VALVBE Bellmouth Valve
 INSERT OR REPLACE INTO s4_classrep.equiclass_valvbe BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_bellmouth_valve t;
 
 -- # VALVBP Butterfly Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvbp BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+FROM ai2_classrep.equiclass_isolating_valves t
+WHERE upper(t._valve_type) = 'BUTTERFLY';
+
 -- # VALVDC Disc Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvdc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+FROM ai2_classrep.equiclass_disc_valve t;
+
 -- # VALVDE Decant Valve
 -- # VALVDI Diaphragm Valve
 -- # VALVDO Dome Valve
@@ -44,6 +68,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvfl BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_flap_valve t;
 
 -- # VALVFT Float Operated Valve
@@ -53,6 +78,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvfu BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_auto_flushing_valve t;
 
 -- # VALVGA Gate Valve
@@ -60,14 +86,16 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvga BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_isolating_valves t
-WHERE upper(t._valve_type) = 'WEDGE GATE';
+WHERE upper(t._valve_type) IN ('KNIFE GATE', 'WEDGE GATE');
 
 -- # VALVGL Globe Valve
 INSERT OR REPLACE INTO s4_classrep.equiclass_valvgl BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_globe_valve t;
 
 -- # VALVLO Loading Valve
@@ -78,6 +106,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvmw BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_multi_way_valve t;
 
 -- # VALVNE Needle Valve
@@ -86,16 +115,19 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvnr BY NAME
 (SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve t)
 UNION
 (SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve_clean t)
 UNION
 (SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve_waste t)
 ;
 
@@ -120,6 +152,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvre BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_bore_diameter_mm,
 FROM ai2_classrep.equiclass_pressure_regulating_valve t;
 
 
@@ -128,6 +161,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvsc BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
+    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_press_sustaining_valve t;
 
 -- # VALVSF Safety Pressure Relief Valve
@@ -137,17 +171,44 @@ FROM ai2_classrep.equiclass_press_sustaining_valve t;
 -- # VALVVR Vacuum Regulator Valve
 -- # VEGRAG Air Grate
 -- # VEPRAC Autoclave
+
 -- # VEPRAO Air and Oil Receiver Vessel
+INSERT OR REPLACE INTO s4_classrep.equiclass_veprao BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    t._ywref AS statutory_reference_number,
+FROM ai2_classrep.equiclass_oil_air_receiver t;
+
 -- # VEPRAR Air Receiver Vessel
+INSERT OR REPLACE INTO s4_classrep.equiclass_veprar BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    t._ywref AS statutory_reference_number,
+FROM ai2_classrep.equiclass_air_receiver t;
+
 -- # VEPRAW Air and Water Receiver Vessel
+INSERT OR REPLACE INTO s4_classrep.equiclass_vepraw BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    t._ywref AS statutory_reference_number,
+FROM ai2_classrep.equiclass_water_air_receiver t;
+
 -- # VEPRFI Pressurised Filter
 -- # VEPRGH Gas Holder
 -- # VEPRMISC Miscellaneous Pressure Vessel
 -- # VEPRNW Nitrogen and Water Receiver Vessel
 -- # VEPROZ Ozone Generator
--- # VEPRPA Pasteurisation Vessel
-	
+INSERT OR REPLACE INTO s4_classrep.equiclass_veproz BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    t._ywref AS statutory_reference_number,
+FROM ai2_classrep.equiclass_ozone_generator t;
 
+-- # VEPRPA Pasteurisation Vessel
 
 -- # VEPRPD Pulsation Damper
 INSERT OR REPLACE INTO s4_classrep.equiclass_veprpd BY NAME
@@ -175,7 +236,20 @@ FROM ai2_classrep.equiclass_pulsation_damper t;
 -- # WEIRMISC Miscellaneous Weir
 -- # WEIROF Weir Overflow
 -- # WELLDR Dry Well
+INSERT OR REPLACE INTO s4_classrep.equiclass_welldr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_dry_well t;
+
 -- # WELLMISC Miscellaneous Well
+
 -- # WELLWT Wet Well
+INSERT OR REPLACE INTO s4_classrep.equiclass_wellwt BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_wet_well t;
+
 -- # WETNSG Strain Gauge Load Cell Device
 -- # WWC Waste Water Crossing

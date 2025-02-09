@@ -22,11 +22,27 @@
 -- # PELTER Pelletiser
 -- # PIPEMISC Miscellaneous Pipework
 -- # PIPERM Rising Main
+INSERT OR REPLACE INTO s4_classrep.equiclass_piperm BY NAME
+(SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_borehole_rising_main t)
+UNION
+(SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_sewerage_rising_main t)
+;
+
 -- # PM_PLANNING_ATTRIB PM: Planning Attibutes
 -- # PM_RPN PM: Risk Priority Number
 -- # POCPPA Power Changeover Panel
 -- # PODEBA Battery Storage
 -- # PODEBC Battery Charger
+INSERT OR REPLACE INTO s4_classrep.equiclass_podebc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_battery_charger t;
+
 -- # PODEDL DC Power Supply for ELV Circuits
 -- # PODEMISC Miscellaneous Power Device
 -- # PODEPC Phase Converter
@@ -38,24 +54,118 @@
 -- # POGEAC Alternator
 -- # POGEMISC Miscellaneous Power Generator
 -- # POGESP Solar Photovoltaic Panel
+
 -- # PROFAC Activated Carbon Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profac BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_cw_activated_carbon_filter t;
+
 -- # PROFBA Biological Aeration Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profba BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_biological_aeration_filter t;
+
 -- # PROFCF Continuous Flow Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profcf BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_continuous_flow_filter t;
+
 -- # PROFCT Contact Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profct BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_cw_contact_filter t;
+
 -- # PROFCW Constructed Wetland
+
 -- # PROFDM Drum Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profdm BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_drum_filter t;
+
 -- # PROFHR High Rate Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profhr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_high_rate_filter t;
+
 -- # PROFME Membrane Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profme BY NAME
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_cw_membrane_filter t)
+UNION
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_membrane_filter t)
+;
+
 -- # PROFMISC Miscellaneous Process Filter
+
 -- # PROFNI Nitrifying Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profni BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_nitrifying_filter t;
+
 -- # PROFPA Particle Filter
 -- # PROFPC Percolating Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profpc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_percolating_filter t;
+
 -- # PROFPR Pressure Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profpr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_cw_pressure_filter t;
+
 -- # PROFRB WW RBC(Bio Disc)
+
 -- # PROFRG Rapid Gravity Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profrg BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_cw_rapid_gravity_filter t;
+
 -- # PROFSA Submerged Aerated Process Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profsa BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_submerged_aerated_filter t;
+
 -- # PROFSN Sand Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profsn BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ww_sand_filter t;
+
 -- # PROFSS Slow Sand Filter
+INSERT OR REPLACE INTO s4_classrep.equiclass_profss BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_cw_slow_sand_filter t;
+
 -- # PSTNDI Diaphragm Type Pressure Device
 -- # PTDESP Surge Protection Unit
 -- # PUMPAX Axial Pump
