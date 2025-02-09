@@ -169,25 +169,99 @@ FROM ai2_classrep.equiclass_cw_slow_sand_filter t;
 -- # PSTNDI Diaphragm Type Pressure Device
 -- # PTDESP Surge Protection Unit
 -- # PUMPAX Axial Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpax BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_axial_pump t;
+
 -- # PUMPCE Centrifugal Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpce BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_centrifugal_pump t;
+
 -- # PUMPDI Diaphragm Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpdi BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_diaphragm_pump t;
+
 -- # PUMPEJ Ejector Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpej BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ejector_pump t;
+
 -- # PUMPGE Gear Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpge BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_gear_pump t;
+
 -- # PUMPHR Helical Rotor Pump
 -- # PUMPLO Lobe Pump
 -- # PUMPLU Lubrication Pump
 -- # PUMPMA Maceration Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpma BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_macipump t;
+
 -- # PUMPMISC Miscellaneous Pump
 -- # PUMPPB Peristaltic Buffer Pump
 -- # PUMPPE Peristaltic Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumppe BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_peristaltic_pump t;
+
 -- # PUMPPG Plunger Pump
 -- # PUMPRA Ram Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpra BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ram_pump t;
+
 -- # PUMPSC Screw Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumpsc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_screw_pump t;
+
 -- # PUMPVA Vacuum Pump
 -- # PUMSBH Borehole Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumsbh BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_borehole_pump t;
+
 -- # PUMSMISC Miscellaneous Submersible Pump
 -- # PUMSMO Submersible Pump with Integral Motor
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumsmo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
+WHERE t._integral_motor_y_n = 'YES';
+
 -- # PUMSSU Submersible Pump
+INSERT OR REPLACE INTO s4_classrep.equiclass_pumssu BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_submersible_centrifugal_pump t
+WHERE t._integral_motor_y_n = 'NO';
+
 -- # REATRE Reactor
 -- # RELYMISC Miscellaneous Relay
 -- # RELYPF Phase Failure Relay
@@ -241,12 +315,43 @@ FROM ai2_classrep.equiclass_cw_slow_sand_filter t;
 -- # SGEREI Electrical Isolation Unit
 -- # SGERFC Fuse Connection Unit
 -- # SGERFS Fused Switch
+INSERT OR REPLACE INTO s4_classrep.equiclass_sgerfs BY NAME
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_fuse_switch t)
+UNION
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_hv_switch_fuse t);
+
 -- # SGERIS Isolator Switch
+INSERT OR REPLACE INTO s4_classrep.equiclass_sgeris BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_isolators_switches t;
+
 -- # SGERMISC Miscellaneous Switchgear
 -- # SGERNE Neutral Earth Contactor
+
 -- # SGEROS Oil Switch
+INSERT OR REPLACE INTO s4_classrep.equiclass_sgeros BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_hv_oil_switch t;
+
 -- # SGERRM Ring Main Unit
+
 -- # SGERSF SF6 Switch
+INSERT OR REPLACE INTO s4_classrep.equiclass_sgersf BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_hv_sf6_switch t;
+
 -- # SHCFBM Shape Circular Flat Bottom
 -- # SHCOBM Shape Circular Conical Bottom
 -- # SHECYL Shape Elliptical Cyl (Horiz)
@@ -267,6 +372,12 @@ FROM ai2_classrep.equiclass_cw_slow_sand_filter t;
 -- # SLIPLN Linear Slide Assembly
 -- # SLIPRA Slip Ring Assembly
 -- # SLPRBE Belt Press
+INSERT OR REPLACE INTO s4_classrep.equiclass_slprbe BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_belt_press t;
+
 -- # SLPRMISC Miscellaneous Sludge Press
 -- # SLPRPL Plate Press
 -- # SOCKET Panel Socket
@@ -342,3 +453,9 @@ FROM ai2_classrep.equiclass_direct_on_line_starter t;
 -- # TRUTVA Variator Gearbox
 -- # TRUTWG Worm Gearbox
 -- # TSTNTT Temperature Monitoring Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_tstntt BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_temperature_instrument t;
+

@@ -138,18 +138,64 @@ SELECT
 FROM ai2_classrep.equiclass_conductivity_level_instrument t;
 
 -- # LSTNCP Capacitive Level Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_lstncp BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_capacitance_level_instrument t;
+
 -- # LSTNFL Level Float Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_lstnfl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_float_level_instrument t;
+
 -- # LSTNME Mechanical Level Device
 -- # LSTNMG Magnetic Level Device
 -- # LSTNMISC Miscellaneous Level Transmitter
 -- # LSTNNU Radioactive Source Level Device
+
 -- # LSTNOP Optical Light Level Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_lstnop BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    t._range_min AS lstn_range_min,
+    t._range_max AS lstn_range_max,
+    upper(t._range_unit) AS lstn_range_units,
+    udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS lstn_signal_type,
+FROM ai2_classrep.equiclass_optical_level_instrument t;
+
 -- # LSTNPR Pressure converted for Level Device
 -- # LSTNPU Ultrasonic Doppler Device
+
 -- # LSTNRD Radar Level Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_lstnrd BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+    t._range_min AS lstn_range_min,
+    t._range_max AS lstn_range_max,
+    upper(t._range_unit) AS lstn_range_units,
+    udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS lstn_signal_type,
+FROM ai2_classrep.equiclass_radar_level_instrument t;
+
 -- # LSTNTF Vibrating Tuning Fork Level Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_lstntf BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_tuning_fork_level_instrument t;
+
 -- # LSTNTP Tipping Bucket Type Rain Gauge Device
+
 -- # LSTNUS Sludge Blanket Level Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_lstnus BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_sludge_blanket_level_instrument t;
 
 -- LSTNUT
 INSERT OR REPLACE INTO s4_classrep.equiclass_lstnut BY NAME
@@ -191,8 +237,21 @@ FROM ai2_classrep.equiclass_ultrasonic_level_instrument t;
 
 -- # MACTOR Macerator
 -- # MAGNCD Magnetic Capture Device
+
 -- # MCCEPA Motor Control Centre Panel
+INSERT OR REPLACE INTO s4_classrep.equiclass_mccepa BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_mcc_unit t;
+
 -- # METREL Electricity Meter
+INSERT OR REPLACE INTO s4_classrep.equiclass_metrel BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_electric_meter t;
+
 -- # MIXRMISC Miscellaneous Mixer
 -- # MIXRRO Rotary Mixer
 -- # MIXRST Static Mixer
@@ -253,6 +312,12 @@ SELECT
 FROM ai2_classrep.equiclass_telemetry_outstation t;
 
 -- # ODCOIO Ionisation Unit
+INSERT OR REPLACE INTO s4_classrep.equiclass_odcoio BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ionization_unit t;
+
 -- # ODSYAD Odour Adsorber
 -- # ODSYFI Odour Filter
 -- # ODSYMISC Miscellaneous Odour Filter
@@ -261,3 +326,7 @@ FROM ai2_classrep.equiclass_telemetry_outstation t;
 -- # OVFLSH Overflow Shaft
 -- # OVFLSP Spillway Channel Overflow
 -- # OVFLWE Overflow
+INSERT OR REPLACE INTO s4_classrep.equiclass_ovflwe BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_overflow t;

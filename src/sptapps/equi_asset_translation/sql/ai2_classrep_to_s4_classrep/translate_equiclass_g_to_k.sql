@@ -28,6 +28,12 @@
 -- # GATNUS Ultrasonic Motion Transmitter
 -- # GCHPNL Gas Changeover Panel
 -- # GMTRGM Geared Motor
+INSERT OR REPLACE INTO s4_classrep.equiclass_gmtrgm BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_geared_motor t;
+
 -- # GMTRMISC Miscellaneous Geared Motor
 -- # GRICMISC Miscellaneous Grit Cyclon Separator
 -- # GRICRA Rake Classifier
@@ -40,15 +46,42 @@
 -- # HEATAI Air Heater
 -- # HEATBO Boiler
 -- # HEATEV Heater Evaporator
+
 -- # HEATFA Fan Heater
+INSERT OR REPLACE INTO s4_classrep.equiclass_heatfa BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_fan_heater t;
+
 -- # HEATGS Gas Heater
+
 -- # HEATIM Immersion Heater
+INSERT OR REPLACE INTO s4_classrep.equiclass_heatim BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_immersion_heater t;
+
 -- # HEATMISC Miscellaneous Heating Unit
 -- # HEATOI Oil Heater
 -- # HEATRA Heating Radiator
 -- # HEATSH Storage Heater
+
 -- # HEATTR Trace Heating
+INSERT OR REPLACE INTO s4_classrep.equiclass_heattr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_trace_heaters t;
+
 -- # HEATTU Tubular Heater
+INSERT OR REPLACE INTO s4_classrep.equiclass_heattu BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_tubular_heater t;
+
 -- # HEEXCH Heat Exchanger
 -- # HEPLBH Borehole Head Plate
 -- # HIWYBP Bridle Path
@@ -68,17 +101,40 @@ SELECT
 FROM ai2_classrep.equiclass_hydraulic_power_pack t;
 
 -- # INTCFG Fat Oil and Grease Interceptor
+INSERT OR REPLACE INTO s4_classrep.equiclass_intcfg BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_interceptor t;
+
 -- # INTFCH Chart Recorder Based Interface
 -- # INTFCO Interface Device converting Signals
 -- # INTFDI Interface Device with Digital Readout
 -- # INTFLO Local Operator Interface for PLCs
+INSERT OR REPLACE INTO s4_classrep.equiclass_intflo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_l_o_i t;
+
 -- # INTFMISC Miscellaneous Interface
 -- # INTFSC Interface Display Node for SCADA System X
 -- # INTJLA Injector lance
 -- # JACKHY Hydraulic Jack
--- # JACKMISC Miscellaneous Jack
--- # JACKRA Ratchet Jack
+INSERT OR REPLACE INTO s4_classrep.equiclass_jackhy BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_jack_hydraulic t;
 
+-- # JACKRA Ratchet Jack
+INSERT OR REPLACE INTO s4_classrep.equiclass_jackra BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_jack_ratchet t;
+
+-- # KISKKI Kiosk
 INSERT OR REPLACE INTO s4_classrep.equiclass_kiskki BY NAME
 SELECT
     t.equipment_id AS equipment_id,  

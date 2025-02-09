@@ -195,9 +195,20 @@ FROM ai2_classrep.equiclass_vortex_fcd t;
 -- # FLSTCL Channel
 -- # FLSTFL Flow Weir
 -- # FLSTFM Flume
+INSERT OR REPLACE INTO s4_classrep.equiclass_flstfm BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_flume t;
+
 -- # FLSTMISC Miscellaneous Flow Structure
 -- # FLSTVN V Notch Weir
 -- # FLYWHE Flywheel
+INSERT OR REPLACE INTO s4_classrep.equiclass_flywhe BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_flywheel t;
+
 -- # FSTNCF Coriolis Effect Flow Device
 
 -- # FSTNEM Electromagnetic Flow Device
