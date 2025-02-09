@@ -55,7 +55,18 @@
 -- # HIWYMISC Miscellaneous Highways and roads
 -- # HIWYPP Path
 -- # HIWYRD Road
+INSERT OR REPLACE INTO s4_classrep.equiclass_hiwyrd BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+FROM ai2_classrep.equiclass_road t;
+
 -- # HSYSPP Hydraulic Power Pack
+INSERT OR REPLACE INTO s4_classrep.equiclass_hsyspp BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_hydraulic_power_pack t;
+
 -- # INTCFG Fat Oil and Grease Interceptor
 -- # INTFCH Chart Recorder Based Interface
 -- # INTFCO Interface Device converting Signals

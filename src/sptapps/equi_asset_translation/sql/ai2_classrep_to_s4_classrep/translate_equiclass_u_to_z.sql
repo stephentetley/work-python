@@ -17,24 +17,88 @@
 -- # UVUNIT Ultraviolet Unit
 -- # VALVAS Angle Seat Valve
 -- # VALVAV Air Release Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvav BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_air_relief_valve t;
+
 -- # VALVBA Ball Valve
+
 -- # VALVBE Bellmouth Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvbe BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_bellmouth_valve t;
+
 -- # VALVBP Butterfly Valve
 -- # VALVDC Disc Valve
 -- # VALVDE Decant Valve
 -- # VALVDI Diaphragm Valve
 -- # VALVDO Dome Valve
 -- # VALVDR Directional Control Valve
+
 -- # VALVFL Flap Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvfl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_flap_valve t;
+
 -- # VALVFT Float Operated Valve
+
 -- # VALVFU Flush Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvfu BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_auto_flushing_valve t;
+
 -- # VALVGA Gate Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvga BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_isolating_valves t
+WHERE upper(t._valve_type) = 'WEDGE GATE';
+
 -- # VALVGL Globe Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvgl BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_globe_valve t;
+
 -- # VALVLO Loading Valve
 -- # VALVMISC Miscellaneous Valve
+
 -- # VALVMW Multi Way Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvmw BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_multi_way_valve t;
+
 -- # VALVNE Needle Valve
 -- # VALVNR Non Return Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvnr BY NAME
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_non_return_valve t)
+UNION
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_non_return_valve_clean t)
+UNION
+(SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_non_return_valve_waste t)
+;
+
 -- # VALVPB Pressure Intensifier Booster
 
 -- # VALVPE Penstock Valve
@@ -52,8 +116,22 @@ FROM ai2_classrep.equiclass_penstock t;
 -- # VALVPV Pressure and Vacuum Relief Valve
 -- # VALVRA Ram Valve
 -- # VALVRE Pressure Regulating Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvre BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_pressure_regulating_valve t;
+
+
 -- # VALVSC Pressure Sustaining Valve
+INSERT OR REPLACE INTO s4_classrep.equiclass_valvsc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_press_sustaining_valve t;
+
 -- # VALVSF Safety Pressure Relief Valve
+
 -- # VALVSL Solenoid Valve
 -- # VALVVI Vacuum Interface Valve
 -- # VALVVR Vacuum Regulator Valve

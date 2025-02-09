@@ -138,6 +138,11 @@ FROM ai2_classrep.equiclass_drain t;
 -- # DRANTO Toe Drain
 -- # EMTRBK Brake Motor
 -- # EMTRDC Direct Current Motor
+INSERT OR REPLACE INTO s4_classrep.equiclass_emtrdc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_d_c_motor t;
 
 -- EMTRIN
 INSERT OR REPLACE INTO s4_classrep.equiclass_emtrin BY NAME
@@ -155,7 +160,19 @@ FROM ai2_classrep.equiclass_non_immersible_motor t;
 
 -- # EMTRMISC Miscellaneous Electric Motor
 -- # EMTRSR Slip Ring Motor
+INSERT OR REPLACE INTO s4_classrep.equiclass_emtrsr BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_slip_ring_motor t;
+
 -- # EMTRSU Submersible Motor
+INSERT OR REPLACE INTO s4_classrep.equiclass_emtrsu BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_submersible_motor t;
+
 -- # ETLYOS OSEC Electrolyser 
 -- # FANSAX Axial Fan
 -- # FANSCE Centrifugal Fan
@@ -163,7 +180,14 @@ FROM ai2_classrep.equiclass_non_immersible_motor t;
 -- # FCDE Flow Control Device
 -- # FCDEMISC Miscellaneous Flow Control Device
 -- # FCDEOF Orifice Flow Control Device
+
 -- # FCDEVX Vortex Flow Control Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fcdevx BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_vortex_fcd t;
+
 -- # FIDAMP Fire Damper
 -- # FIDANR Non Return Damper
 -- # FIDASO Shut Off Damper
@@ -193,18 +217,63 @@ SELECT
 FROM ai2_classrep.equiclass_magnetic_flow_instrument t;
 
 -- # FSTNIP Emag Insertion Probe Flow Device
+
 -- # FSTNLS Laser Surface Effect Flow Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnls BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_laser_surface_effect_flow_instrument t;
+
 -- # FSTNME Mechanically Actuated Flow Switch
--- # FSTNMISC Miscellaneous Flow Transmitter
 -- # FSTNOC Open Channel (usonic) Flow Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnoc BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_ultrasonic_flow_instrument t;
+
 -- # FSTNOP Orifice plate (DP) Flow Device
+
 -- # FSTNTH Thermal Flow Transmitter
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnth BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_thermal_flow_instrument t;
+
 -- # FSTNTM Thermal Mass Flow Transmitter
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstntm BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_thermal_mass_flow_instrument t;
+
 -- # FSTNTU Rotating Turbine Flow Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstntu BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_turbine_flow_instrument t;
+
 -- # FSTNUS Closed Pipe Doppler Flow Device
+
 -- # FSTNVA Variable Area Flow Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnva BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_variable_area_flow_instrument t;
+
 -- # FSTNVE Venturi Effect Flow Device
+
 -- # FSTNVO Vortex Effect Flow Device
+INSERT OR REPLACE INTO s4_classrep.equiclass_fstnvo BY NAME
+SELECT
+    t.equipment_id AS equipment_id,  
+    t._location_on_site AS location_on_site,
+FROM ai2_classrep.equiclass_vortex_flow_instrument t;
+
 -- # FSTNWS Wind Speed Device
 -- # FTUNFC Filter Element
 -- # FTUNMISC Miscellaneous Filter Unit
