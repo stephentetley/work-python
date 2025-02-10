@@ -2,12 +2,13 @@
 <html>
   <head>
     <title>File Download Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
   </head>
   <body>
-    <h1>Create File Download Summary</h1>
+    <h4>Create File Download Summary</h4>
     <form method="POST" action="http://localhost:5000/uploader" enctype="multipart/form-data">
       <p><input type="file" name="files" accept=".txt" multiple></p>
-      <p><input type="submit" value="Submit"></p>
+      <p><input type="submit" value="Submit" class="button button-primary"></p>
     </form>
   </body>
 </html>
