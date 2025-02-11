@@ -30,7 +30,6 @@ import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 import duckdb
-from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
@@ -38,18 +37,19 @@ import sptapps.reports.s4_class_rep_report.gen_report as gen_report
 
 
 app = Flask(__name__)
+app.config['RESOURCE_FOLDER'] = './runtime/config'
 app.config['UPLOAD_FOLDER'] = './runtime/uploads'
 app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
 
 def create_report(fd_files: list[str]) -> None: 
-    config = AssetDataConfig()
-    classlists_db = config.get_classlists_db()
-
+    
+    config_folder = os.path.join(current_app.root_path, app.config['RESOURCE_FOLDER'])
+    classlists_db = os.path.normpath(os.path.join(config_folder, 's4_classlists_latest.duckdb'))
 
     report_name = 'fd-summary-report.xlsx'
 
-    fullpath = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
-    xlsx_output_path = os.path.join(fullpath, report_name)
+    output_folder = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
+    xlsx_output_path = os.path.join(output_folder, report_name)
 
     conn = duckdb.connect(read_only=False)
     s4_classlists_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
@@ -70,8 +70,8 @@ def create_report(fd_files: list[str]) -> None:
 def index():
     return render_template('upload.html')
 
-def store_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
-    fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
+def store_upload_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
+    fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER']))
     save_path = os.path.join(fullpath, secure_filename(file_sto.filename))
     app.logger.info(save_path)
     file_sto.save(save_path)
@@ -80,7 +80,7 @@ def store_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
 
 @app.route('/uploader', methods=['POST'])
 def upload_file():
-    temp_paths = [store_file(file_sto) for file_sto in request.files.getlist('files')]
+    temp_paths = [store_upload_file(file_sto) for file_sto in request.files.getlist('files')]
     create_report(temp_paths)
     return redirect(url_for('download', filename='fd-summary-report.xlsx'))
 
