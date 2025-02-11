@@ -95,8 +95,8 @@ def duckdb_import_tables_from_duckdb(
         con: duckdb.DuckDBPyConnection,
         source_tables: list[str],
         schema_name: str, 
-        create_schama: bool = False) -> None:
-    if create_schama: 
+        create_schema: bool = False) -> None:
+    if create_schema: 
         con.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name};")
     con.execute(f"ATTACH '{source_db_path}' AS table_source;")
     for source_table in source_tables: 

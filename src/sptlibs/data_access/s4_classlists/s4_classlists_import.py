@@ -67,6 +67,7 @@ def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool
         source_db_path=classlists_source_db_path, 
         con=dest_con,
         schema_name='s4_classlists',
+        create_schema=True,
         source_tables= ['s4_classlists.floc_characteristics',
                         's4_classlists.floc_enums', 
                         's4_classlists.equi_characteristics',

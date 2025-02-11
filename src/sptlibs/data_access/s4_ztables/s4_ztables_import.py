@@ -82,6 +82,7 @@ def copy_ztable_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyConnecti
     import_utils.duckdb_import_tables_from_duckdb(source_db_path=source_db_path, 
                                                   con=dest_con,
                                                   schema_name='s4_ztables',
+                                                  create_schema=True,
                                                   source_tables=['s4_ztables.manuf_model',
                                                                  's4_ztables.objtype_manuf', 
                                                                  's4_ztables.eqobjlbl',
