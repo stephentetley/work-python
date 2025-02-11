@@ -20,17 +20,13 @@ import duckdb
 import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
+import sptapps.floc_builder.generate_flocs as generate_flocs
 
 def duckdb_init(*, duckdb_path: str, 
                 worklist_path: str, 
                 ih06_path: str, 
                 ztable_source_db: str) -> None: 
-    con = duckdb.connect(database=duckdb_path, read_only=False)
-    s4_ztables_import.copy_ztable_tables(source_db_path=ztable_source_db, dest_con=con)
-    excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Flocs', table_name='raw_data.worklist', con=con)
-    excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Config', table_name='raw_data.config', con=con)
-    excel_table_import.duckdb_import(xls_path=ih06_path, sheet_name='Sheet1', table_name='raw_data.ih06_export', con=con)
-    runner = SqlScriptRunner()
-    runner.exec_sql_file(file_rel_path='floc_builder/floc_builder.sql', con=con)
-
-    con.close()
+    generate_flocs.generate_flocs(duckdb_path=duckdb_path,
+                                  worklist_path=worklist_path,
+                                  ih06_path=ih06_path,
+                                  ztable_source_db=ztable_source_db)

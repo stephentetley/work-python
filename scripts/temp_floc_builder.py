@@ -3,8 +3,8 @@
 
 import sptapps.floc_builder.floc_builder as flocbuilder
 
-duckdb_path = 'E:/coding/work/work-sql/floc_builder/floc_builder.duckdb'
-ztable_source = 'g:/work/2024/asset_data_facts/s4_ztables/s4_ztables_tables.duckdb'
+duckdb_path = 'E:/coding/work/work-python/src/sptapps/floc_builder/runtime/downloads/floc_builder.duckdb'
+ztable_source = 'E:/coding/work/work-python/src/sptapps/floc_builder/runtime/config/s4_ztables_latest.duckdb'
 worklist_path = 'g:/work/2025/floc_builder/har55_source/har55_worklist.with_notes.xlsx'
 ih06_path = 'g:/work/2025/floc_builder/har55_source/HAR55_ih06_20250110095604.xlsx'
 

@@ -94,4 +94,5 @@ def copy_ai2_metadata_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyCo
     import_utils.duckdb_import_tables_from_duckdb(source_db_path=source_db_path, 
                                                   con=dest_con,
                                                   schema_name='ai2_metadata',
+                                                  create_schema=True,
                                                   source_tables=['ai2_metadata.equipment_attributes', 'ai2_metadata.attribute_sets'])
