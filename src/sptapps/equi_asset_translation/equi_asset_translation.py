@@ -24,7 +24,7 @@ import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptapps.equi_asset_translation.udf.equi_translation_udfs as equi_translation_udfs
 import sptapps.equi_asset_translation.ai2_metadata_import as ai2_metadata_import
 
@@ -69,7 +69,7 @@ def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
 
 
 def ai2_landing_data_to_ai2_eav(*, con: duckdb.DuckDBPyConnection) -> None:
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='ai2_landing/setup_ai2_landing_data_to_ai2_eav_macros.sql')
     runner.exec_sql_generating_file(rel_file_path='ai2_landing/gen_ai2_eav_equipment_masterdata_insert_into.sql')
     runner.exec_sql_generating_file(rel_file_path='ai2_landing/gen_ai2_eav_equipment_eav_insert_into.sql')
@@ -80,7 +80,7 @@ def translate_ai2_eav_to_ai2_classrep(*, con: duckdb.DuckDBPyConnection) -> None
 
     
 def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> None:
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     equi_translation_udfs.register_functions(con=con)
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_a_to_c.sql')

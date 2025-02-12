@@ -20,7 +20,7 @@ import duckdb
 import polars as pl
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_access.import_utils as import_utils
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
 
@@ -28,7 +28,7 @@ def duckdb_import(*,
                   equipment_attributes_source: XlsxSource,
                   attribute_sets_source: XlsxSource,
                   con: duckdb.DuckDBPyConnection) -> None:
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='ai2_metadata/setup_ai2_metadata.sql')
     df1 = _read_equipment_attributes_source(equipment_attributes_source)
     import_utils.duckdb_write_dataframe_to_table(df1,

@@ -16,10 +16,10 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner2 import SqlScriptRunner
 
 
 def translate_ai2_eav_to_ai2_classrep(con: duckdb.DuckDBPyConnection) -> None:
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='insert_into_master_tables_from_eav.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_insert_into_classrep_tables_from_eav.sql')

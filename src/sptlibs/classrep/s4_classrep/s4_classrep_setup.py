@@ -16,10 +16,10 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner2 import SqlScriptRunner
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     # create tables, views...
     runner.exec_sql_file(rel_file_path='s4_class_rep_create_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_flocclass_tables.sql')

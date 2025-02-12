@@ -17,13 +17,13 @@ limitations under the License.
 
 import duckdb
 from duckdb.typing import *
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 from sptlibs.utils.grid_ref import Osgb36
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     con.create_function("udf_get_easting", udf_get_easting, [VARCHAR], INTEGER)
     con.create_function("udf_get_northing", udf_get_northing, [VARCHAR], INTEGER)
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     # create table etc. ...
     runner.exec_sql_file(rel_file_path='ai2_class_rep_create_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_ai2_class_rep_equiclass_tables.sql')

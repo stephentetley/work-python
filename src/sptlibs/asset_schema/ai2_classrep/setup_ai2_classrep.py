@@ -16,9 +16,9 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner2 import SqlScriptRunner
 
 def setup_ai2_classrep_tables(con: duckdb.DuckDBPyConnection) -> None:
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='setup_ai2_equi_classrep.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_ai2_equiclass_create_tables.sql')

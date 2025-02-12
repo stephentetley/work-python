@@ -21,12 +21,12 @@ import duckdb
 import polars as pl
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
 # TODO - change source to list[str]
 def duckdb_import(*, sources: list[XlsxSource], con: duckdb.DuckDBPyConnection) -> None:
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql', con=con)
     for source in sources:
         print(source.path)
@@ -61,7 +61,7 @@ def _read_source(src: XlsxSource) -> pl.DataFrame:
 def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool, dest_con: duckdb.DuckDBPyConnection) -> None:
     """`dest_con` is the desination database."""
     # classlists includes views that we need to create
-    runner = SqlScriptRunner2(__file__, con=dest_con)
+    runner = SqlScriptRunner(__file__, con=dest_con)
     runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql')
     import_utils.duckdb_import_tables_from_duckdb(
         source_db_path=classlists_source_db_path, 

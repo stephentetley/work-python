@@ -18,11 +18,11 @@ limitations under the License.
 import os
 import glob
 import duckdb
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 from sptlibs.data_access.file_download._file_download import _FileDownload
 
 def duckdb_table_init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    runner = SqlScriptRunner2(__file__, con=con)
+    runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_fd_raw_data_create_tables.sql')
 
 
