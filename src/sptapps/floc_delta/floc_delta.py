@@ -15,6 +15,15 @@ limitations under the License.
 
 """
 
+# For development, set PYTHONPATH and run from work-python root:
+
+# (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
+# (base) > python .\src\sptapps\floc_delta\floc_delta.py
+#
+# Point browser to:
+# > http://localhost:5000/floc_delta
+
+
 import os
 import duckdb
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, current_app
@@ -22,7 +31,7 @@ import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 
-import sptapps.floc_builder.generate_flocs as generate_flocs
+import sptapps.floc_delta.generate_flocs as generate_flocs
 
 
 app = Flask(__name__)
@@ -63,7 +72,7 @@ def store_upload_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
     file_sto.save(save_path)
     return save_path
 
-@app.route('/floc_builder')
+@app.route('/floc_delta')
 def index():
     return render_template('upload.html')
 
