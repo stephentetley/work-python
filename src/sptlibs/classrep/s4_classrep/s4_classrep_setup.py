@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)

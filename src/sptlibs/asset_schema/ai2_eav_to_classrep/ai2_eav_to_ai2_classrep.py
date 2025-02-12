@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.utils.sql_script_runner2 import SqlScriptRunner
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
 def translate_ai2_eav_to_ai2_classrep(con: duckdb.DuckDBPyConnection) -> None:
