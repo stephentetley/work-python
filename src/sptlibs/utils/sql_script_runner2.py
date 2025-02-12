@@ -20,17 +20,23 @@ from typing import Callable, Any
 import duckdb
 import polars as pl
 
+
+# TODO SqlStatementRunner class?
 class SqlScriptRunner2:
-    def __init__(self, filepath: str, con: duckdb.DuckDBPyConnection) -> None:
+    def __init__(self, filepath: str | None, con: duckdb.DuckDBPyConnection) -> None:
         """Uses __file__ to get path to static `sql` folders."""
         self.con = con
-        pymodule_dir = os.path.dirname(os.path.realpath(filepath))
-        _sql_dir = os.path.normpath(os.path.join(pymodule_dir, "./sql"))
-        if os.path.exists(_sql_dir):
-            self.sql_root_dir = _sql_dir
-        else: 
-            print("Cannot find `{_sql_dir}`") 
-            raise NotADirectoryError(f"Cannot find `{_sql_dir}`")   
+        if filepath:
+            pymodule_dir = os.path.dirname(os.path.realpath(filepath))
+            _sql_dir = os.path.normpath(os.path.join(pymodule_dir, "./sql"))
+            if os.path.exists(_sql_dir):
+                self.sql_root_dir = _sql_dir
+            else: 
+                print("Cannot find `{_sql_dir}`") 
+                raise NotADirectoryError(f"Cannot find `{_sql_dir}`")   
+        else:
+            self.sql_root_dir = None
+
 
     def exec_sql_file(self, *, rel_file_path: str) -> None:
         sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, rel_file_path))
