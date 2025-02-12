@@ -18,12 +18,12 @@ limitations under the License.
 import duckdb
 from jinja2 import Template
 from sptlibs.utils.xlsx_source import XlsxSource
-from sptlibs.utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 import sptlibs.data_access.import_utils as import_utils
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    runner = SqlScriptRunner()
-    runner.exec_sql_file(file_rel_path='ai2_export/ai2_export_create_tables.sql', con=con)
+    runner = SqlScriptRunner2(__file__, con=con)
+    runner.exec_sql_file(rel_file_path='ai2_export_create_tables.sql', con=con)
 
 def duckdb_import(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnection) -> None:
     for src in sources:

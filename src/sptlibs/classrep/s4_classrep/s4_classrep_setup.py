@@ -16,18 +16,18 @@ limitations under the License.
 """
 
 import duckdb
-from sptlibs.utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
-    runner = SqlScriptRunner()
+    runner = SqlScriptRunner2(__file__, con=con)
     # create tables, views...
-    runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_create_tables.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_flocclass_tables.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_equiclass_tables.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_flocsummary_views.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_equisummary_views.sql', con=con)
+    runner.exec_sql_file(rel_file_path='s4_class_rep_create_tables.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_flocclass_tables.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_equiclass_tables.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_flocsummary_views.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_equisummary_views.sql')
     # insert data...
-    runner.exec_sql_file(file_rel_path='s4_class_rep/s4_class_rep_insert_into.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_flocclass_insert_into.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='s4_class_rep/gen_s4_class_rep_equiclass_insert_into.sql', con=con)
+    runner.exec_sql_file(rel_file_path='s4_class_rep_insert_into.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_flocclass_insert_into.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_equiclass_insert_into.sql')
     

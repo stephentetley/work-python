@@ -1,4 +1,4 @@
-# temp_floc_builder.py
+# temp_floc_delta.py
 
 import duckdb
 import sptapps.floc_builder.generate_flocs as generate_flocs

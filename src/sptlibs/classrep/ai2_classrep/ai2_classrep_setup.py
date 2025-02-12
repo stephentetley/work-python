@@ -17,21 +17,21 @@ limitations under the License.
 
 import duckdb
 from duckdb.typing import *
-from sptlibs.utils.sql_script_runner import SqlScriptRunner
+from sptlibs.utils.sql_script_runner2 import SqlScriptRunner2
 from sptlibs.utils.grid_ref import Osgb36
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     con.create_function("udf_get_easting", udf_get_easting, [VARCHAR], INTEGER)
     con.create_function("udf_get_northing", udf_get_northing, [VARCHAR], INTEGER)
-    runner = SqlScriptRunner()
+    runner = SqlScriptRunner2(__file__, con=con)
     # create table etc. ...
-    runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_create_tables.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='ai2_class_rep/gen_ai2_class_rep_equiclass_tables.sql', con=con)
-    runner.exec_sql_generating_file(file_rel_path='ai2_class_rep/gen_ai2_class_rep_equisummary_views.sql', con=con)
+    runner.exec_sql_file(rel_file_path='ai2_class_rep_create_tables.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_ai2_class_rep_equiclass_tables.sql')
+    runner.exec_sql_generating_file(rel_file_path='gen_ai2_class_rep_equisummary_views.sql')
     # insert data...
-    runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_insert_into.sql', con=con)
-    runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_equiclass_insert_into.sql', con=con)
-    runner.exec_sql_file(file_rel_path='ai2_class_rep/ai2_class_rep_secondary_insert_into.sql', con=con)
+    runner.exec_sql_file(rel_file_path='ai2_class_rep_insert_into.sql')
+    runner.exec_sql_file(rel_file_path='ai2_class_rep_equiclass_insert_into.sql')
+    runner.exec_sql_file(rel_file_path='ai2_class_rep_secondary_insert_into.sql')
 
 # Note - sometimes osgb is '0' rather than valid or null
 
