@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Loading</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  </head>
+  <body>
+    <h4>Results</h4>
+    <form method="POST" action="http://localhost:5000/download" enctype="multipart/form-data">
+      <p><input type="submit" value="Download" class="button button-primary"></p>
+    </form>
+  </body>
+</html>

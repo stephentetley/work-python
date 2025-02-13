@@ -18,15 +18,16 @@ limitations under the License.
 # For development, set PYTHONPATH and run from work-python root:
 
 # (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
-# (base) > python .\src\sptapps\floc_delta\floc_delta.py
+# (base) > python .\src\sptapps\floc_delta\main.py
 #
 # Point browser to:
-# > http://localhost:5000/floc_delta
+# > http://localhost:5000/
 
 
 import os
 import duckdb
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, current_app
+from flask import Flask, render_template, session, request, redirect, url_for, send_from_directory, current_app
+from flask import after_this_request
 import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
@@ -35,6 +36,7 @@ import sptapps.floc_delta.generate_flocs as generate_flocs
 
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "no-way-jose0987654321"
 app.config['RESOURCE_FOLDER'] = './runtime/config'
 app.config['UPLOAD_FOLDER'] = './runtime/uploads'
 app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
@@ -72,32 +74,48 @@ def store_upload_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
     file_sto.save(save_path)
     return save_path
 
-@app.route('/floc_delta')
+@app.route('/')
 def index():
     return render_template('upload.html')
 
 
-@app.route('/uploader', methods=['POST'])
-def upload_files():
-    ih06_sto = request.files.get('ih06')
-    ih06_file = store_upload_file(ih06_sto)
-    worklist_sto = request.files.get('worklist')
-    worklist_path = store_upload_file(worklist_sto)
+@app.route('/upload', methods=['POST'])
+def upload():
+    if request.method == "POST":
+        ih06_sto = request.files.get('ih06')
+        ih06_file = store_upload_file(ih06_sto)
+        worklist_sto = request.files.get('worklist')
+        worklist_path = store_upload_file(worklist_sto)
+        session["ih06_file"] = ih06_file
+        session["worklist_path"] = worklist_path
+        return render_template('loading.html')
+
+
+@app.route('/results')
+def results():
+    @after_this_request
+    def show_results(response):
+        return response
+    
+    ih06_file = session["ih06_file"]
+    worklist_path = session["worklist_path"]
     outfile_name = create_report(worklist_path=worklist_path,
-                                 ih06_path=ih06_file)
+                                     ih06_path=ih06_file)
+    session["outfile_name"] = outfile_name
     app.logger.info(f'outfile_name: {outfile_name}')
-    return redirect(url_for('download', filename=outfile_name))
+    return render_template('results.html')
 
+@app.route('/download', methods=['POST'])
+def download():
+    if request.method == "POST":
+        outfile_name = session["outfile_name"]
+        fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
+        app.logger.info("Downloading from:")
+        app.logger.info(current_app.root_path)
+        app.logger.info(app.config['DOWNLOAD_FOLDER'])
+        app.logger.info(fullpath)
+        return send_from_directory(directory=fullpath, path=outfile_name, as_attachment=True)
 
-@app.route('/downloads/<path:filename>')
-def download(filename):
-    app.logger.info("Downloading from:")
-    app.logger.info(current_app.root_path)
-    app.logger.info(app.config['DOWNLOAD_FOLDER'])
-    app.logger.info(filename)
-    fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
-    app.logger.info(fullpath)
-    return send_from_directory(directory=fullpath, path=filename, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
