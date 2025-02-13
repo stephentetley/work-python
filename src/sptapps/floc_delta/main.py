@@ -90,15 +90,15 @@ def upload():
         return render_template('loading.html')
 
 
-@app.route('/results')
-def results():
+@app.route('/result')
+def result():
     ih06_file = session["ih06_file"]
     worklist_path = session["worklist_path"]
     outfile_name = create_report(worklist_path=worklist_path,
                                      ih06_path=ih06_file)
     session["outfile_name"] = outfile_name
     app.logger.info(f'outfile_name: {outfile_name}')
-    return render_template('results.html')
+    return render_template('result.html')
 
 @app.route('/download', methods=['POST'])
 def download():
