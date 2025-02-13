@@ -27,7 +27,6 @@ limitations under the License.
 import os
 import duckdb
 from flask import Flask, render_template, session, request, redirect, url_for, send_from_directory, current_app
-from flask import after_this_request
 import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
@@ -93,10 +92,6 @@ def upload():
 
 @app.route('/results')
 def results():
-    @after_this_request
-    def show_results(response):
-        return response
-    
     ih06_file = session["ih06_file"]
     worklist_path = session["worklist_path"]
     outfile_name = create_report(worklist_path=worklist_path,
