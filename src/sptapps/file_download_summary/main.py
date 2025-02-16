@@ -52,6 +52,7 @@ def create_report(fd_files: list[str]) -> None:
     output_folder = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
     xlsx_output_path = os.path.join(output_folder, report_name)
 
+    # Use an in-memory connection
     conn = duckdb.connect(read_only=False)
     s4_classlists_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
 

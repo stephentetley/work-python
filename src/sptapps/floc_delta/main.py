@@ -56,6 +56,12 @@ def create_report(worklist_path: str, ih06_path: str) -> str:
     
     duckdb_path = os.path.join(output_path, report_name)
 
+
+    # Use an file connection for the time being until we start to generate an xlsx file...
+    # Delete it first   
+    if os.path.exists(duckdb_path):
+        os.remove(duckdb_path)
+
     con = duckdb.connect(database=duckdb_path, read_only=False)
     app.logger.info(f"before: <generate_flocs>")
     generate_flocs.generate_flocs(worklist_path=worklist_path, 

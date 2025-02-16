@@ -14,9 +14,9 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS working;
+CREATE SCHEMA IF NOT EXISTS floc_delta;
 
-CREATE OR REPLACE TABLE working.existing_flocs AS
+CREATE OR REPLACE TABLE floc_delta.existing_flocs AS
 SELECT 
     t.functional_location AS funcloc,
     t.description_of_functional_location AS floc_name,
@@ -25,7 +25,7 @@ ORDER BY funcloc
 ;
     
 
-CREATE OR REPLACE TABLE working.gen_flocs_all AS  
+CREATE OR REPLACE TABLE floc_delta.existing_and_new_flocs AS  
 WITH 
 cte1 AS (
     SELECT 
@@ -115,9 +115,9 @@ FROM cte2 WHERE cte2.floc_category = 6)
 ORDER BY funcloc
 ;
 
-CREATE OR REPLACE TABLE working.gen_flocs AS  
+CREATE OR REPLACE TABLE floc_delta.new_generated_flocs AS  
 SELECT t1.* 
-FROM working.gen_flocs_all t1
-ANTI JOIN working.existing_flocs t2 ON t2.funcloc = t1.funcloc
+FROM floc_delta.existing_and_new_flocs t1
+ANTI JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.funcloc
 ORDER BY funcloc
 ;
