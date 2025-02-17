@@ -18,14 +18,14 @@ limitations under the License.
 # While debugging, set PYTHONPATH and run from work-python root:
 
 # (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
-# (base) > python .\src\sptapps\file_download_summary\file_download_summary.py
+# (base) > python .\src\sptapps\file_download_summary\main.py
 #
 # Point browser to:
 # > http://localhost:5000/
 
 
 import os
-from flask import Flask, render_template, session, request, redirect, url_for, send_from_directory, current_app
+from flask import Flask, render_template, session, request, send_from_directory, current_app
 import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
@@ -33,14 +33,17 @@ import duckdb
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
-import sptapps.reports.s4_class_rep_report.gen_report as gen_report
+import sptapps.file_download_summary.gen_report as gen_report
 
 
 app = Flask(__name__)
+# TODO "SECRET_KEY" should be an envvar
 app.config["SECRET_KEY"] = "no-way-jose0987654321"
 app.config['RESOURCE_FOLDER'] = './runtime/config'
 app.config['UPLOAD_FOLDER'] = './runtime/uploads'
 app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
+
+
 
 def create_report(fd_files: list[str]) -> None: 
     
@@ -87,8 +90,8 @@ def upload_file():
     session['upload_paths'] = uploads_cat
     return render_template('loading.html')
 
-@app.route('/results')
-def results():
+@app.route('/result')
+def result():
     uploads_cat = session['upload_paths'] 
     upload_paths = uploads_cat.split('>>>')
     create_report(upload_paths)
