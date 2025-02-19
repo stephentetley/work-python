@@ -16,6 +16,8 @@
 
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 
+-- TODO change to explicit DDL and INSERT INTO statements?
+
 CREATE OR REPLACE TABLE floc_delta.existing_flocs AS
 SELECT 
     t.functional_location AS funcloc,

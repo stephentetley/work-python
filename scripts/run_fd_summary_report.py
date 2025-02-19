@@ -22,7 +22,7 @@ from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
-import sptapps.reports.s4_class_rep_report.gen_report as gen_report
+import sptapps.file_download_summary.gen_report as gen_report
 
 
 

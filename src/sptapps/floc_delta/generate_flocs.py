@@ -19,6 +19,7 @@ limitations under the License.
 import duckdb
 import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
+import sptlibs.data_access.s4_uploader.s4_uploader_export as s4_uploader_export
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def generate_flocs(*, worklist_path: str, 
@@ -29,5 +30,6 @@ def generate_flocs(*, worklist_path: str,
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Flocs', table_name='raw_data.worklist', con=con)
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Config', table_name='raw_data.config', con=con)
     excel_table_import.duckdb_import(xls_path=ih06_path, sheet_name='Sheet1', table_name='raw_data.ih06_export', con=con)
+    s4_uploader_export.setup_tables(con=con)
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='floc_delta.sql')
+    runner.exec_sql_file(rel_file_path='floc_delta_init_tables.sql')

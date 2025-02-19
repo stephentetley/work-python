@@ -3,7 +3,6 @@ import shutil
 import polars as pl
 import pandas as pd
 
-from xlsxwriter import Workbook
 
 # looks like we have to use `openpyxl` to overwrite a template and go via Pandas...
 
