@@ -30,7 +30,7 @@ def write_excel(*,
                 con: duckdb.DuckDBPyConnection) -> None: 
     shutil.copy(upload_template_path, dest)
     with pd.ExcelWriter(dest, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-        header_pandas = con.execute("SELECT * s4_uploader.vw_change_request_details").df()
+        header_pandas = con.sql("SELECT * FROM s4_uploader.vw_change_request_details;").df()
         header_pandas.to_excel(
             writer,
             sheet_name='Change Request Details',
@@ -39,7 +39,7 @@ def write_excel(*,
             index=False,
             header=False,
         )
-        flocs_pandas = con.execute("SELECT * s4_uploader.vw_function_location_data").df()
+        flocs_pandas = con.sql("SELECT * FROM s4_uploader.vw_function_location_data;").df()
         flocs_pandas.to_excel(
             writer,
             sheet_name='Functional Location Data',
@@ -48,7 +48,7 @@ def write_excel(*,
             index=False,
             header=False,
         )
-        flocs_chars_pandas = con.execute("SELECT * s4_uploader.vw_fl_classification").df()
+        flocs_chars_pandas = con.sql("SELECT * FROM s4_uploader.vw_fl_classification;").df()
         flocs_chars_pandas.to_excel(
             writer,
             sheet_name='FL-Classification',

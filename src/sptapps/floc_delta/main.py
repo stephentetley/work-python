@@ -50,26 +50,29 @@ def create_report(worklist_path: str, ih06_path: str) -> str:
 
     config_folder = os.path.join(current_app.root_path, app.config['RESOURCE_FOLDER'])
     ztables_db = os.path.normpath(os.path.join(config_folder, 's4_ztables_latest.duckdb'))
+    uploader_template = os.path.normpath(os.path.join(config_folder, 'Uploader_Template.xlsx'))
    
-    report_name = 'new_flocs.duckdb'
-    output_path = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
+    report_name = 'flocs_delta_upload.xlsx'
+    output_folder = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
     
-    duckdb_path = os.path.join(output_path, report_name)
-
+    temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'new_flocs.duckdb'))
+    report_path = os.path.normpath(os.path.join(output_folder, report_name))
 
     # Use an file connection for the time being until we start to generate an xlsx file...
     # Delete it first   
-    if os.path.exists(duckdb_path):
-        os.remove(duckdb_path)
+    if os.path.exists(temp_duckdb_path):
+        os.remove(temp_duckdb_path)
 
-    con = duckdb.connect(database=duckdb_path, read_only=False)
+    con = duckdb.connect(database=temp_duckdb_path, read_only=False)
     app.logger.info(f"before: <generate_flocs>")
     generate_flocs.generate_flocs(worklist_path=worklist_path, 
                                   ih06_path=ih06_path, 
-                                  ztable_source_db=ztables_db, 
+                                  ztable_source_db=ztables_db,
+                                  uploader_template=uploader_template,
+                                  uploader_outfile=report_path,
                                   con=con)
     con.close()
-    app.logger.info(f"Created - {duckdb_path}")
+    app.logger.info(f"Created - {report_path}")
     return report_name
 
 def store_upload_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
