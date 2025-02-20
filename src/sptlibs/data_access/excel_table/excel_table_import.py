@@ -38,17 +38,20 @@ def duckdb_import_table(*, xls_path: str, sheet_name: str | None, output_db: str
         print(f'failed, check {output_db}')
 
 def duckdb_import(xls_path: str, *, 
-                  con: duckdb.DuckDBPyConnection, 
-                  sheet_name: str | None, 
-                  table_name: str | None) -> None:
+                  con: duckdb.DuckDBPyConnection,
+                  table_name: str | None =None,
+                  sheet_name : str | None =None,) -> None:
     
+    if not sheet_name:
+        sheet_name = 'Sheet1'
+
     xls_source = XlsxSource(xls_path, sheet_name)
     
     if table_name:
         (schema_name, _, _) = table_name.partition('.')
     else:
         schema_name = None
-        table_name = sheet_name
+        table_name = import_utils.normalize_name(sheet_name)
 
     print(f'schema_name: {schema_name}, table_name: {table_name}')
     if schema_name:
