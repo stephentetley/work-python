@@ -86,7 +86,11 @@ SELECT
     t.reference AS ai2_ref,
     t2.change AS aide_change,
     t.equi_name AS equi_name,
-    t.equi_type AS equi_type,
+    t.equi_type AS ai2_equi_type,
+    IF(t3.is_translated = 'Not Translated', FALSE, TRUE) AS to_be_translated,
+    t3.s4_category AS s4_category,
+    t3.s4_obj_type AS s4_object_type,
+    t3.s4_class AS s4_class,
     t.common_name AS common_name,
     t1.installed_from AS installed_from,
     t1.manufacturer AS manufacturer,
@@ -100,4 +104,5 @@ SELECT
 FROM aide_triage.vw_ai2_site_export_equi_names t 
 LEFT JOIN raw_data.ai2_site_export t1 ON t1.reference = t.reference 
 LEFT JOIN raw_data.aide_changelist t2 ON t2.reference = t.reference 
+LEFT JOIN equi_translation.equi_type_translation t3 ON t3.ai2_equi_type = t.equi_type 
 ;
