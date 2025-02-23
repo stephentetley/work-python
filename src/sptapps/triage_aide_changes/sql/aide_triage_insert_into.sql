@@ -51,6 +51,29 @@ SELECT t.reference, t.common_name, t.equi_name, t.equi_type FROM cte3 t
 ORDER BY common_name
 ;
 
+CREATE OR REPLACE VIEW aide_triage.vw_ai2_parent_sai_nums AS
+WITH cte1 AS (
+SELECT 
+    t.reference AS pli_num, 
+    t.common_name,
+    regexp_extract(t.common_name, '(.*)/(EQUIPMENT:.*)', ['prefix', 'equitype']) AS name_struct,
+    struct_extract(name_struct, 'prefix') AS prefix,
+    struct_extract(name_struct, 'equitype') AS equi_type,
+    length(prefix) AS prefix_len,
+FROM raw_data.ai2_site_export t
+WHERE t.common_name LIKE '%/EQUIPMENT:%'
+), cte2 AS (
+SELECT 
+    t.pli_num AS pli_num, 
+    t1.reference AS sai_num,
+    t.common_name AS common_name,
+FROM cte1 t
+JOIN raw_data.ai2_site_export t1 ON t1.common_name = t.prefix
+) 
+SELECT t.* FROM cte2 t
+ORDER BY common_name
+;
+
 
 CREATE OR REPLACE TABLE aide_triage.ih08_equi AS
 WITH cte AS (
