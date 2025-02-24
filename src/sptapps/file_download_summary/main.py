@@ -33,7 +33,7 @@ import duckdb
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
-import sptapps.file_download_summary.gen_report as gen_report
+import sptapps.file_download_summary.generate_report as generate_report
 
 
 app = Flask(__name__)
@@ -64,7 +64,7 @@ def create_report(fd_files: list[str]) -> None:
         file_download_import.duckdb_import(path=file_path, con=conn)
 
     s4_classrep_setup.duckdb_init(con=conn)
-    gen_report.gen_report(xls_output_path=xlsx_output_path, con=conn)
+    generate_report.gen_report(xls_output_path=xlsx_output_path, con=conn)
     conn.close()
     app.logger.info(f"Created - {xlsx_output_path}")
 
