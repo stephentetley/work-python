@@ -52,7 +52,8 @@ def create_report(ih06_path: str,
     config_folder = os.path.join(current_app.root_path, app.config['RESOURCE_FOLDER'])
     type_translations_xlsx = os.path.normpath(os.path.join(config_folder, 'equi_type_translation.xlsx'))
    
-    report_name = 'triage_aide_changes.xlsx'
+    # report_name = 'triage_aide_changes.xlsx'
+    report_name = 'triage_changes.duckdb'
     output_folder = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
     
     temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'triage_changes.duckdb'))
