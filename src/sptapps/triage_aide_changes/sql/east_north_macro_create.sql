@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-CREATE OR REPLACE MACRO osgb36_decode_major(cu) AS
+CREATE OR REPLACE MACRO _osgb36_decode_major(cu) AS
 (CASE 
     WHEN cu = 'S' THEN row(0,       0)
     WHEN cu = 'T' THEN row(500_000, 0)
@@ -25,7 +25,7 @@ CREATE OR REPLACE MACRO osgb36_decode_major(cu) AS
 END
 );
     
-CREATE OR REPLACE MACRO osgb36_decode_minor(cu) AS
+CREATE OR REPLACE MACRO _osgb36_decode_minor(cu) AS
 (CASE 
     WHEN cu = 'A' THEN row(0,         400_000)
     WHEN cu = 'B' THEN row(100_000,   400_000)
@@ -62,8 +62,8 @@ CREATE OR REPLACE MACRO get_easting(str) AS
         upper(str1) AS ustr,
         ustr[1] AS major_letter,
         ustr[2] AS minor_letter,
-        osgb36_decode_major(major_letter) AS major_struct,
-        osgb36_decode_minor(minor_letter) AS minor_struct,
+        _osgb36_decode_major(major_letter) AS major_struct,
+        _osgb36_decode_minor(minor_letter) AS minor_struct,
         try_cast(ustr[3:7] AS INTEGER) AS east1,
         struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1 AS answer
     FROM (SELECT str str1)
@@ -78,8 +78,8 @@ CREATE OR REPLACE MACRO get_northing(str) AS
         upper(str1) AS ustr,
         ustr[1] AS major_letter,
         ustr[2] AS minor_letter,
-        osgb36_decode_major(major_letter) AS major_struct,
-        osgb36_decode_minor(minor_letter) AS minor_struct,
+        _osgb36_decode_major(major_letter) AS major_struct,
+        _osgb36_decode_minor(minor_letter) AS minor_struct,
         try_cast(ustr[8:12] AS INTEGER) AS north1,
         struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) +  north1 AS answer
     FROM (SELECT str str1)
@@ -95,8 +95,8 @@ CREATE OR REPLACE MACRO get_northing(str) AS
 --        upper(str1) AS ustr,
 --        ustr[1] AS major_letter,
 --        ustr[2] AS minor_letter,
---        osgb36_decode_major(major_letter) AS major_struct,
---        osgb36_decode_minor(minor_letter) AS minor_struct,
+--        _osgb36_decode_major(major_letter) AS major_struct,
+--        _osgb36_decode_minor(minor_letter) AS minor_struct,
 --        try_cast(ustr[3:7] AS INTEGER) AS east1,
 --        try_cast(ustr[8:12] AS INTEGER) AS north1,
 --        row(struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1, 

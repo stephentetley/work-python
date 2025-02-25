@@ -33,5 +33,7 @@ def setup_db(*,
     excel_table_import.duckdb_import(ai2_site_export, table_name='raw_data.ai2_site_export', con=con)
     excel_table_import.duckdb_import(aide_changelist, table_name='raw_data.aide_changelist', con=con)
     runner = SqlScriptRunner(__file__, con=con)
+    runner.exec_sql_file(rel_file_path='east_north_macro_create.sql')
     runner.exec_sql_file(rel_file_path='aide_triage_insert_into.sql')
+    runner.exec_sql_file(rel_file_path='setup_aide_changes_views.sql')
     
