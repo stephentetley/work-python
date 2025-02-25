@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <head>
+    <title>File Download Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loader.css') }}">
+  </head>
+  <body>
+    <h4>Processing</h4>
+    <p>Change report is being generated</p>
+    <span class="loader">Loading...</span>
+  </body>
+<script>window.location.href = "{{ url_for('result') }}";</script>
+</html>
