@@ -57,52 +57,60 @@ END
 );
 
 CREATE OR REPLACE MACRO get_easting(str) AS 
-(WITH cte AS (
+(WITH cte1 AS (
     SELECT 
-        upper(str1) AS ustr,
-        ustr[1] AS major_letter,
-        ustr[2] AS minor_letter,
-        _osgb36_decode_major(major_letter) AS major_struct,
-        _osgb36_decode_minor(minor_letter) AS minor_struct,
-        try_cast(ustr[3:7] AS INTEGER) AS east1,
-        struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1 AS answer
-    FROM (SELECT str str1)
+        upper(str) AS ustr
+        ),
+    cte2 AS (
+        SELECT         
+            ustr[1] AS major_letter,
+            ustr[2] AS minor_letter,
+            _osgb36_decode_major(major_letter) AS major_struct,
+            _osgb36_decode_minor(minor_letter) AS minor_struct,
+            try_cast(ustr[3:7] AS INTEGER) AS east1,
+            struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1 AS answer
+        FROM cte1
     )
-    SELECT struct_extract(cte, 'answer') FROM cte
+    SELECT answer FROM cte2
 );
 
 
 CREATE OR REPLACE MACRO get_northing(str) AS 
-(WITH cte AS (
-    SELECT 
-        upper(str1) AS ustr,
-        ustr[1] AS major_letter,
-        ustr[2] AS minor_letter,
-        _osgb36_decode_major(major_letter) AS major_struct,
-        _osgb36_decode_minor(minor_letter) AS minor_struct,
-        try_cast(ustr[8:12] AS INTEGER) AS north1,
-        struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) +  north1 AS answer
-    FROM (SELECT str str1)
+(WITH 
+    cte1 AS (
+        SELECT upper(str) AS ustr
+        ),
+    cte2 AS (
+        SELECT 
+            ustr[1] AS major_letter,
+            ustr[2] AS minor_letter,
+            _osgb36_decode_major(major_letter) AS major_struct,
+            _osgb36_decode_minor(minor_letter) AS minor_struct,
+            try_cast(ustr[8:12] AS INTEGER) AS north1,
+            struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) +  north1 AS answer
+        FROM cte1    
     )
-    SELECT struct_extract(cte, 'answer') FROM cte
+    SELECT answer FROM cte2
 );
 
 
 -- Get easting and northing separately this macro induces subquery error/limitation 
 --CREATE OR REPLACE MACRO get_east_north(str) AS 
---(WITH cte AS (
---    SELECT 
---        upper(str1) AS ustr,
---        ustr[1] AS major_letter,
---        ustr[2] AS minor_letter,
---        _osgb36_decode_major(major_letter) AS major_struct,
---        _osgb36_decode_minor(minor_letter) AS minor_struct,
---        try_cast(ustr[3:7] AS INTEGER) AS east1,
---        try_cast(ustr[8:12] AS INTEGER) AS north1,
---        row(struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1, 
---            struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) + north1) AS answer
---    FROM (SELECT str str1)
+--(WITH 
+--    cte1 AS (
+--        SELECT upper(str) AS ustr
+--        ),
+--    cte2 AS (
+--        SELECT 
+--          ustr[1] AS major_letter,
+--            ustr[2] AS minor_letter,
+--            _osgb36_decode_major(major_letter) AS major_struct,
+--            _osgb36_decode_minor(minor_letter) AS minor_struct,
+--            try_cast(ustr[3:7] AS INTEGER) AS east1,
+--            try_cast(ustr[8:12] AS INTEGER) AS north1,
+--            row(struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1, 
+--                struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) + north1) AS answer
+--        FROM cte1
 --    )
---    SELECT struct_extract(cte, 'answer') FROM cte
---)
---;
+--    SELECT answer FROM cte2
+--);
