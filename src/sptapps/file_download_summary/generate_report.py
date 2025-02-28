@@ -25,20 +25,38 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
     with xlsxwriter.Workbook(xls_output_path) as workbook:
-        export_utils.write_sql_query_to_excel(select_query=_floc_master_data, 
-                                              con=con,
-                                              workbook=workbook,
-                                              sheet_name='functional_location',
-                                              column_formats={'construction_year': 'General', 
-                                                                'company_code': 'General', 
-                                                                'cost_center': 'General', 
-                                                                'controlling_area': 'General', 
-                                                                'maintenance_plant': 'General', 
-                                                                'planning_plant': 'General', 
-                                                                'address_ref': 'General'})
-        
         export_utils.write_sql_query_to_excel(
-            select_query=_equi_master_data, 
+            select_query="""
+                SELECT 
+                    t.* REPLACE (
+                        format('{:02d}', construction_month) AS construction_month, 
+                        format('{:04d}', display_position) AS display_position,
+                        strftime(startup_date, '%d.%m.%Y') AS startup_date),
+                FROM s4_class_rep.floc_master_data t
+                ORDER BY t.functional_location;
+                """,
+            con=con,
+            workbook=workbook,
+            sheet_name='functional_location',
+            column_formats={'construction_year': 'General', 
+                            'company_code': 'General', 
+                            'cost_center': 'General', 
+                            'controlling_area': 'General', 
+                            'maintenance_plant': 'General', 
+                            'planning_plant': 'General', 
+                            'address_ref': 'General'})
+
+        export_utils.write_sql_query_to_excel(
+            select_query="""
+                SELECT 
+                    t.* REPLACE (
+                        format('{:02d}', construction_month) AS construction_month, 
+                        format('{:04d}', display_position) AS display_position,
+                        strftime(startup_date, '%d.%m.%Y') AS startup_date, 
+                        strftime(valid_from, '%d.%m.%Y') AS valid_from),
+                FROM s4_class_rep.equi_master_data t
+                ORDER BY t.equipment_id;
+                """,
             sheet_name='equipment',
             column_formats={'construction_year': 'General', 
                             'company_code': 'General', 
@@ -81,7 +99,12 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
             con=con, workbook=workbook)
 
         export_utils.write_sql_query_to_excel(
-            select_query=_equisummary_asset_condition,
+            select_query="""
+                SELECT 
+                    t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
+                FROM s4_class_rep.vw_equisummary_asset_condition t
+                ORDER BY t.equipment_id;
+                """,
             sheet_name='e.asset_condition', 
             column_formats = _general_columns(['survey_date']),
             con=con, workbook=workbook)
@@ -105,37 +128,6 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
 
 def _general_columns(ls: list[str]) -> dict[str, str]:
     return {key: 'General' for key in ls}
-
-
-
-_floc_master_data = """
-SELECT 
-    t.* REPLACE (
-        format('{:02d}', construction_month) AS construction_month, 
-        format('{:04d}', display_position) AS display_position,
-        strftime(startup_date, '%d.%m.%Y') AS startup_date),
-FROM s4_class_rep.floc_master_data t
-ORDER BY t.functional_location;
-"""
-
-_equi_master_data = """
-SELECT 
-    t.* REPLACE (
-        format('{:02d}', construction_month) AS construction_month, 
-        format('{:04d}', display_position) AS display_position,
-        strftime(startup_date, '%d.%m.%Y') AS startup_date, 
-        strftime(valid_from, '%d.%m.%Y') AS valid_from),
-FROM s4_class_rep.equi_master_data t
-ORDER BY t.equipment_id;
-"""
-
-
-_equisummary_asset_condition = """
-SELECT 
-    t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
-FROM s4_class_rep.vw_equisummary_asset_condition t
-ORDER BY t.equipment_id;
-"""
 
 
 def _add_flocclass_tables(
