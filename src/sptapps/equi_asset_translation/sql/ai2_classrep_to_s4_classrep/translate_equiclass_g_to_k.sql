@@ -139,9 +139,9 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_kiskki BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     null AS location_on_site,
-    udf_size_to_millimetres('METRES', t._kiosk_base_height_m) AS kisk_base_height_mm,
-    udf_size_to_millimetres('METRES', t._kiosk_depth_m) AS kisk_depth_mm,
-    udf_size_to_millimetres('METRES', t._kiosk_height_m) AS kisk_height_mm,
-    udf_size_to_millimetres('METRES', t._kiosk_width_m) AS kisk_width_mm,
+    udfx.size_to_millimetres('METRES', t._kiosk_base_height_m) AS kisk_base_height_mm,
+    udfx.size_to_millimetres('METRES', t._kiosk_depth_m) AS kisk_depth_mm,
+    udfx.size_to_millimetres('METRES', t._kiosk_height_m) AS kisk_height_mm,
+    udfx.size_to_millimetres('METRES', t._kiosk_width_m) AS kisk_width_mm,
     t._kiosk_material AS kisk_material,
 FROM ai2_classrep.equiclass_kiosk t;

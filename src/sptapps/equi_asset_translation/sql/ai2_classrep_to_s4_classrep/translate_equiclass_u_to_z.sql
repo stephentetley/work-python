@@ -21,7 +21,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvav BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_air_relief_valve t;
 
 -- # VALVBA Ball Valve
@@ -29,7 +29,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvba BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_isolating_valves t
 WHERE upper(t._valve_type) = 'BALL';
 
@@ -38,7 +38,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvbe BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_bellmouth_valve t;
 
 -- # VALVBP Butterfly Valve
@@ -46,7 +46,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvbp BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_isolating_valves t
 WHERE upper(t._valve_type) = 'BUTTERFLY';
 
@@ -55,7 +55,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvdc BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_disc_valve t;
 
 -- # VALVDE Decant Valve
@@ -68,7 +68,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvfl BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_flap_valve t;
 
 -- # VALVFT Float Operated Valve
@@ -78,7 +78,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvfu BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_auto_flushing_valve t;
 
 -- # VALVGA Gate Valve
@@ -86,7 +86,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvga BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_isolating_valves t
 WHERE upper(t._valve_type) IN ('KNIFE GATE', 'WEDGE GATE');
 
@@ -95,7 +95,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvgl BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_globe_valve t;
 
 -- # VALVLO Loading Valve
@@ -106,7 +106,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvmw BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_multi_way_valve t;
 
 -- # VALVNE Needle Valve
@@ -115,19 +115,19 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvnr BY NAME
 (SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve t)
 UNION
 (SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve_clean t)
 UNION
 (SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_non_return_valve_waste t)
 ;
 
@@ -152,7 +152,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvre BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_bore_diameter_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_bore_diameter_mm,
 FROM ai2_classrep.equiclass_pressure_regulating_valve t;
 
 
@@ -161,7 +161,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_valvsc BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
+    udfx.size_to_millimetres(t._size_units, t._size) AS valv_inlet_size_mm,
 FROM ai2_classrep.equiclass_press_sustaining_valve t;
 
 -- # VALVSF Safety Pressure Relief Valve

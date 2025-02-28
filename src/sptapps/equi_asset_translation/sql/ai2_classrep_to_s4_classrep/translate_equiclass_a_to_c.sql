@@ -496,7 +496,7 @@ SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
     TRY_CAST(t._current_in AS DECIMAL) AS conp_rated_current_a,
-    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
+    udfx.get_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS conp_rated_voltage_units,
     TRY_CAST(t._voltage_in AS INTEGER) AS conp_rated_voltage,
 FROM ai2_classrep.equiclass_control_panel t;
 

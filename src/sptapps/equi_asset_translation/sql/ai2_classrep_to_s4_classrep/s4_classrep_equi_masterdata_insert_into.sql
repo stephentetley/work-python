@@ -27,8 +27,8 @@ SELECT
     null AS superord_id,
     'Z' AS category,
     t1.objtype AS object_type,
-    udf_asset_status_translation(t.asset_status) AS user_status,
-    user_status AS system_status,
+    udfx.get_s4_asset_status(t.asset_status) AS user_status,
+    udfx.get_s4_asset_status(t.asset_status) AS system_status,
     TRY_CAST(t.installed_from AS DATE) AS startup_date,
     year(startup_date) AS construction_year,
     month(startup_date) AS construction_month,
@@ -42,15 +42,11 @@ LEFT JOIN equi_asset_translation.tt_equipment_classtypes t1 ON t1.equipment_id =
 ;
 
 INSERT OR REPLACE INTO s4_classrep.equi_east_north BY NAME
-WITH cte AS (
 SELECT 
     t.ai2_reference AS equipment_id,
-    udf_gridref_to_east_north(t.grid_ref) AS _east_north,
-    struct_extract(_east_north,  'easting') AS easting,
-    struct_extract(_east_north, 'northing') AS northing,
+    udfx.get_easting(t.grid_ref) AS easting,
+    udfx.get_northing(t.grid_ref) AS northing,
 FROM ai2_classrep.equi_masterdata t
-)
-SELECT equipment_id, easting, northing FROM cte
 ;
 
 INSERT OR REPLACE INTO s4_classrep.equi_asset_condition BY NAME

@@ -14,7 +14,9 @@
 -- limitations under the License.
 -- 
 
-CREATE OR REPLACE MACRO _osgb36_decode_major(cu) AS
+CREATE SCHEMA IF NOT EXISTS udfx;
+
+CREATE OR REPLACE MACRO udfx._osgb36_decode_major(cu) AS
 (CASE 
     WHEN cu = 'S' THEN row(0,       0)
     WHEN cu = 'T' THEN row(500_000, 0)
@@ -25,7 +27,7 @@ CREATE OR REPLACE MACRO _osgb36_decode_major(cu) AS
 END
 );
     
-CREATE OR REPLACE MACRO _osgb36_decode_minor(cu) AS
+CREATE OR REPLACE MACRO udfx._osgb36_decode_minor(cu) AS
 (CASE 
     WHEN cu = 'A' THEN row(0,         400_000)
     WHEN cu = 'B' THEN row(100_000,   400_000)
@@ -56,7 +58,7 @@ CREATE OR REPLACE MACRO _osgb36_decode_minor(cu) AS
 END
 );
 
-CREATE OR REPLACE MACRO get_easting(str) AS 
+CREATE OR REPLACE MACRO udfx.get_easting(str) AS 
 (WITH cte1 AS (
     SELECT 
         upper(str) AS ustr
@@ -65,8 +67,8 @@ CREATE OR REPLACE MACRO get_easting(str) AS
         SELECT         
             ustr[1] AS major_letter,
             ustr[2] AS minor_letter,
-            _osgb36_decode_major(major_letter) AS major_struct,
-            _osgb36_decode_minor(minor_letter) AS minor_struct,
+            udfx._osgb36_decode_major(major_letter) AS major_struct,
+            udfx._osgb36_decode_minor(minor_letter) AS minor_struct,
             try_cast(ustr[3:7] AS INTEGER) AS east1,
             struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1 AS answer
         FROM cte1
@@ -75,7 +77,7 @@ CREATE OR REPLACE MACRO get_easting(str) AS
 );
 
 
-CREATE OR REPLACE MACRO get_northing(str) AS 
+CREATE OR REPLACE MACRO udfx.get_northing(str) AS 
 (WITH 
     cte1 AS (
         SELECT upper(str) AS ustr
@@ -84,8 +86,8 @@ CREATE OR REPLACE MACRO get_northing(str) AS
         SELECT 
             ustr[1] AS major_letter,
             ustr[2] AS minor_letter,
-            _osgb36_decode_major(major_letter) AS major_struct,
-            _osgb36_decode_minor(minor_letter) AS minor_struct,
+            udfx._osgb36_decode_major(major_letter) AS major_struct,
+            udfx._osgb36_decode_minor(minor_letter) AS minor_struct,
             try_cast(ustr[8:12] AS INTEGER) AS north1,
             struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) +  north1 AS answer
         FROM cte1    
@@ -95,7 +97,7 @@ CREATE OR REPLACE MACRO get_northing(str) AS
 
 
 -- Get easting and northing separately this macro induces subquery error/limitation 
---CREATE OR REPLACE MACRO get_east_north(str) AS 
+--CREATE OR REPLACE MACRO udfx.get_east_north(str) AS 
 --(WITH 
 --    cte1 AS (
 --        SELECT upper(str) AS ustr
@@ -104,8 +106,8 @@ CREATE OR REPLACE MACRO get_northing(str) AS
 --        SELECT 
 --          ustr[1] AS major_letter,
 --            ustr[2] AS minor_letter,
---            _osgb36_decode_major(major_letter) AS major_struct,
---            _osgb36_decode_minor(minor_letter) AS minor_struct,
+--            udfx._osgb36_decode_major(major_letter) AS major_struct,
+--            udfx._osgb36_decode_minor(minor_letter) AS minor_struct,
 --            try_cast(ustr[3:7] AS INTEGER) AS east1,
 --            try_cast(ustr[8:12] AS INTEGER) AS north1,
 --            row(struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1, 

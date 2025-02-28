@@ -21,11 +21,11 @@ import sptlibs.asset_schema.ai2_eav.setup_ai2_eav as setup_ai2_eav
 import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 import sptlibs.asset_schema.ai2_eav_to_classrep.ai2_eav_to_ai2_classrep as ai2_eav_to_ai2_classrep
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
+import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
-import sptapps.equi_asset_translation.udf.equi_translation_udfs as equi_translation_udfs
 import sptapps.equi_asset_translation.ai2_metadata_import as ai2_metadata_import
 
 
@@ -45,6 +45,7 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
     setup_s4_classrep.setup_s4_classrep_tables(con=con)
+    setup_sql_udfs.setup_macros(con=con)
 
 # load ai2 exports into landing area...
 def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
@@ -81,7 +82,6 @@ def translate_ai2_eav_to_ai2_classrep(*, con: duckdb.DuckDBPyConnection) -> None
     
 def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
-    equi_translation_udfs.register_functions(con=con)
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_a_to_c.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_d_to_f.sql')

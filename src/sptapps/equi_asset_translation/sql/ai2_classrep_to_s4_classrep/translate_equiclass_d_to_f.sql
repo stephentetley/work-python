@@ -152,8 +152,8 @@ SELECT
     t._ip_rating AS ip_rating,
     t._location_on_site AS location_on_site,
     TRY_CAST(t._current_in AS DECIMAL) AS emtr_rated_current_a,
-    udf_power_to_killowatts(t._power_units, t._power) AS emtr_rated_power_kw,
-    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS emtr_rated_voltage_units,
+    udfx.power_to_killowatts(t._power_units, t._power) AS emtr_rated_power_kw,
+    udfx.get_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS emtr_rated_voltage_units,
     TRY_CAST(t._voltage_in AS INTEGER) AS emtr_rated_voltage,
 FROM ai2_classrep.equiclass_non_immersible_motor t;
 
@@ -216,7 +216,7 @@ INSERT OR REPLACE INTO s4_classrep.equiclass_fstnem BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
     t._location_on_site AS location_on_site,
-    udf_format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS fstn_signal_type,
+    udfx.format_signal3(t._signal_min, t._signal_max, t._signal_unit) AS fstn_signal_type,
     t._range_min AS fstn_range_min,
     t._range_max AS fstn_range_max,
     upper(t._range_unit) AS fstn_range_units,

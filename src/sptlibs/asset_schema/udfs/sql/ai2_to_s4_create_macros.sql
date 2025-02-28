@@ -14,7 +14,9 @@
 -- limitations under the License.
 -- 
 
-CREATE OR REPLACE MACRO format_signal3(smin, smax, units) AS 
+CREATE SCHEMA IF NOT EXISTS udfx;
+
+CREATE OR REPLACE MACRO udfx.format_signal3(smin, smax, units) AS 
 (WITH 
     cte1 AS (
         SELECT 
@@ -26,7 +28,7 @@ SELECT smini || ' - ' || smaxi || ' ' || unitsu FROM cte1
 );
 
 
-CREATE OR REPLACE MACRO get_voltage_ac_or_dc(str) AS
+CREATE OR REPLACE MACRO udfx.get_voltage_ac_or_dc(str) AS
 (WITH 
     cte1 AS (
         SELECT upper(str) AS stru
@@ -44,7 +46,7 @@ SELECT answer FROM cte2
 );
  
 
-CREATE OR REPLACE MACRO get_s4_asset_status(str) AS
+CREATE OR REPLACE MACRO udfx.get_s4_asset_status(str) AS
 (WITH 
     cte1 AS (
         SELECT upper(str) AS stru
@@ -73,7 +75,7 @@ CREATE OR REPLACE MACRO get_s4_asset_status(str) AS
 SELECT answer FROM cte2
 );
 
-CREATE OR REPLACE MACRO size_to_millimetres(units, value) AS
+CREATE OR REPLACE MACRO udfx.size_to_millimetres(units, value) AS
 (WITH 
     cte1 AS (
         SELECT upper(units) AS unitsu
@@ -93,7 +95,7 @@ SELECT TRY_CAST(answer AS INTEGER) FROM cte2
 );
 
 -- For kVA use a power factor of 80.0
-CREATE OR REPLACE MACRO power_to_killowatts(units, value) AS 
+CREATE OR REPLACE MACRO udfx.power_to_killowatts(units, value) AS 
 (WITH 
     cte1 AS (
         SELECT 
@@ -113,7 +115,7 @@ CREATE OR REPLACE MACRO power_to_killowatts(units, value) AS
 SELECT answer FROM cte2
 );
             
-CREATE OR REPLACE MACRO format_output_type(str) AS
+CREATE OR REPLACE MACRO udfx.format_output_type(str) AS
 (WITH 
     cte1 AS (
         SELECT upper(str) AS stru

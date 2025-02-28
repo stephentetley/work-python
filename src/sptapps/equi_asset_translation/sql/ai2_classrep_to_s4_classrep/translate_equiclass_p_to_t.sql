@@ -403,11 +403,11 @@ FROM ai2_classrep.equiclass_belt_press t;
 INSERT OR REPLACE INTO s4_classrep.equiclass_stardo BY NAME
 SELECT
     t.equipment_id AS equipment_id,  
-    udf_format_as_integer_string(t._ip_rating) AS ip_rating,
+    TRY_CAST(t._ip_rating AS VARCHAR) AS ip_rating,
     t._location_on_site AS location_on_site,
     t._current_in AS star_rated_current_a,
-    udf_power_to_killowatts(t._power_units, t._power) AS star_rated_power_kw,
-    udf_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS star_rated_voltage_units,
+    udfx.power_to_killowatts(t._power_units, t._power) AS star_rated_power_kw,
+    udfx.get_voltage_ac_or_dc(t._voltage_in_ac_or_dc) AS star_rated_voltage_units,
     t._voltage_in AS star_rated_voltage,
 FROM ai2_classrep.equiclass_direct_on_line_starter t;
 
