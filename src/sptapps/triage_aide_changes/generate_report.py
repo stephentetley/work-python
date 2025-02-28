@@ -17,6 +17,7 @@ limitations under the License.
 
 
 import duckdb
+import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
@@ -32,8 +33,8 @@ def setup_db(*,
     excel_table_import.duckdb_import(ih06_source, table_name='raw_data.ih06_flocs', con=con)
     excel_table_import.duckdb_import(ai2_site_export, table_name='raw_data.ai2_site_export', con=con)
     excel_table_import.duckdb_import(aide_changelist, table_name='raw_data.aide_changelist', con=con)
+    setup_sql_udfs.setup_macros(con=con)
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='east_north_macro_create.sql')
     runner.exec_sql_file(rel_file_path='aide_triage_insert_into.sql')
     runner.exec_sql_file(rel_file_path='setup_aide_changes_views.sql')
     

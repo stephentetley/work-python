@@ -40,8 +40,8 @@ SELECT
     t.grid_ref AS osgb,
     t.ai2_ref AS ai2_pli_reference,
     t1.sai_num AS ai2_sai_reference,
-    get_easting(osgb) AS easting,
-    get_northing(osgb) AS northing,
+    udfx.get_easting(osgb) AS easting,
+    udfx.get_northing(osgb) AS northing,
 FROM aide_triage.ai2_equipment_changes t
 LEFT JOIN aide_triage.vw_ai2_parent_sai_nums t1 ON t1.pli_num = t.ai2_ref 
 WHERE t.aide_change = 'Child New'
@@ -54,8 +54,8 @@ SELECT
     t1.equi_id AS equi_id,
     t.* EXCLUDE (in_aide, grid_ref, to_be_translated),
     t.grid_ref AS osgb,
-    get_easting(osgb) AS easting,
-    get_northing(osgb) AS northing,
+    udfx.get_easting(osgb) AS easting,
+    udfx.get_northing(osgb) AS northing,
 FROM aide_triage.ai2_equipment_changes t
 LEFT JOIN aide_triage.ih08_equi t1 ON t1.pli_number = t.ai2_ref
 WHERE t.aide_change IN('Edit Relationship', 'Child Deleted')
