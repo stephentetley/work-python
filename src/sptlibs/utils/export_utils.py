@@ -43,7 +43,37 @@ yellow_bold_header_format={
     'fg_color': '#FFFF00',
     'border': None}, 
 
+
+_equisummary_aib_reference = """
+SELECT 
+    t.*,
+FROM s4_class_rep.vw_equisummary_aib_reference t
+ORDER BY t.equipment_id;
+"""
+
 def write_sql_table_to_excel(*, 
+                             qualified_table_name: str,
+                             con: duckdb.DuckDBPyConnection,
+                             workbook: xlsxwriter.Workbook, 
+                             sheet_name: str, 
+                             column_formats: dict = None, 
+                             header_format: dict = None,
+                             order_by_columns: list = []) -> None:
+    orderby_clause = "" if not order_by_columns else "ORDER BY " + ", ".join(order_by_columns)
+    query = f"""
+        SELECT 
+            *,
+        FROM {qualified_table_name}
+        {orderby_clause};
+    """
+    write_sql_query_to_excel(select_query=query, 
+                             con=con, 
+                             workbook=workbook,
+                             sheet_name=sheet_name,
+                             column_formats=column_formats,
+                             header_format=header_format)
+
+def write_sql_query_to_excel(*, 
                              select_query: str,
                              con: duckdb.DuckDBPyConnection,
                              workbook: xlsxwriter.Workbook, 
