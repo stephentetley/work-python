@@ -20,24 +20,24 @@ import duckdb
 import polars as pl
 import xlsxwriter
 from xlsxwriter import Workbook
-from sptlibs.utils.polars_xlsx_table import PolarsXlsxTable
+import sptlibs.utils.export_utils as export_utils
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
     with xlsxwriter.Workbook(xls_output_path) as workbook:
-        _add_table(
-            select_query=_floc_master_data, 
-            sheet_name='functional_location',
-            column_formats={'construction_year': 'General', 
-                            'company_code': 'General', 
-                            'cost_center': 'General', 
-                            'controlling_area': 'General', 
-                            'maintenance_plant': 'General', 
-                            'planning_plant': 'General', 
-                            'address_ref': 'General'},
-            con=con, workbook=workbook)
+        export_utils.write_sql_table_to_excel(select_query=_floc_master_data, 
+                                              con=con,
+                                              workbook=workbook,
+                                              sheet_name='functional_location',
+                                              column_formats={'construction_year': 'General', 
+                                                                'company_code': 'General', 
+                                                                'cost_center': 'General', 
+                                                                'controlling_area': 'General', 
+                                                                'maintenance_plant': 'General', 
+                                                                'planning_plant': 'General', 
+                                                                'address_ref': 'General'})
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_equi_master_data, 
             sheet_name='equipment',
             column_formats={'construction_year': 'General', 
@@ -49,19 +49,19 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
                             'address_ref': 'General'},
             con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_flocsummary_aib_reference,
             sheet_name='f.aib_reference', 
             column_formats = {},
             con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_flocsummary_east_north,
             sheet_name='f.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
             con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_flocsummary_solution_id,
             sheet_name='f.solution_id', 
             column_formats = {},
@@ -69,25 +69,25 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
         
         _add_flocclass_tables(con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_equisummary_aib_reference,
             sheet_name='e.aib_reference', 
             column_formats = {},
             con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_equisummary_asset_condition,
             sheet_name='e.asset_condition', 
             column_formats = _general_columns(['survey_date']),
             con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_equisummary_east_north,
             sheet_name='e.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
             con=con, workbook=workbook)
         
-        _add_table(
+        export_utils.write_sql_table_to_excel(
             select_query=_equisummary_solution_id,
             sheet_name='e.solution_id', 
             column_formats = {},
@@ -99,17 +99,17 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
 def _general_columns(ls: list[str]) -> dict[str, str]:
     return {key: 'General' for key in ls}
 
-def _add_table(
-        *, 
-        select_query: str, 
-        workbook: Workbook, 
-        sheet_name: str,
-        column_formats: dict[str, str],
-        con: duckdb.DuckDBPyConnection) -> None:
-    df = con.execute(query=select_query).pl()
-    PolarsXlsxTable(df=df).write_excel(
-            workbook=workbook, sheet_name=sheet_name, 
-            column_formats = column_formats)
+# def _add_table(
+#         *, 
+#         select_query: str, 
+#         workbook: Workbook, 
+#         sheet_name: str,
+#         column_formats: dict[str, str],
+#         con: duckdb.DuckDBPyConnection) -> None:
+#     df = con.execute(query=select_query).pl()
+#     PolarsXlsxTable(df=df).write_excel(
+#             workbook=workbook, sheet_name=sheet_name, 
+#             column_formats = column_formats)
 
 _floc_master_data = """
 SELECT 
@@ -192,9 +192,10 @@ def _add_flocclass_tables(
         con: duckdb.DuckDBPyConnection) -> None:
     def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
         sheet_name = "f.{}".format(row.get('class_name', "unknown"))
-        PolarsXlsxTable(df=df).write_excel(
-            workbook=workbook, sheet_name=sheet_name, 
-            column_formats = {})
+        export_utils.write_pl_dataframe_to_excel(df=df,
+                                                 workbook=workbook,
+                                                 sheet_name=sheet_name, 
+                                                 column_formats = {})
     runner = SqlScriptRunner(None, con=con)
     runner.eval_sql_generating_stmt(sql_query=_get_flocclass_tables, action=action)
 
@@ -219,9 +220,10 @@ def _add_equiclass_tables(
         con: duckdb.DuckDBPyConnection) -> None:
     def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
         sheet_name = "e.{}".format(row.get('class_name', "unknown"))
-        PolarsXlsxTable(df=df).write_excel(
-            workbook=workbook, sheet_name=sheet_name, 
-            column_formats = {})
+        export_utils.write_pl_dataframe_to_excel(df=df,
+                                                 workbook=workbook, 
+                                                 sheet_name=sheet_name, 
+                                                 column_formats = {})
     runner = SqlScriptRunner(None, con=con)
     runner.eval_sql_generating_stmt(sql_query=_get_equiclass_tables, action=action)
     

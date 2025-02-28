@@ -16,7 +16,8 @@ limitations under the License.
 """
 
 import duckdb
-
+import polars as pl
+import xlsxwriter
 
 def output_csv_report(*, duckdb_path: str, select_stmt: str, csv_outpath: str) -> str:
     '''`select_stmt` should not be terminated with a semicolon'''
@@ -35,3 +36,44 @@ def output_csv_report(*, duckdb_path: str, select_stmt: str, csv_outpath: str) -
     
 
 
+yellow_bold_header_format={
+    'bold': True,
+    'text_wrap': False,
+    'align': 'left',
+    'fg_color': '#FFFF00',
+    'border': None}, 
+
+def write_sql_table_to_excel(*, 
+                             select_query: str,
+                             con: duckdb.DuckDBPyConnection,
+                             workbook: xlsxwriter.Workbook, 
+                             sheet_name: str, 
+                             column_formats: dict = None, 
+                             header_format: dict = None) -> None:
+    df = con.execute(query=select_query).pl()
+    write_pl_dataframe_to_excel(df=df,
+                                workbook= workbook,
+                                sheet_name=sheet_name, 
+                                column_formats = column_formats)
+
+def write_pl_dataframe_to_excel(*, 
+                                df: pl.DataFrame, 
+                                workbook: xlsxwriter.Workbook, 
+                                sheet_name: str, 
+                                column_formats: dict = None, 
+                                header_format: dict = None) -> None:
+    if not header_format:
+        header_format = yellow_bold_header_format
+    if not column_formats:
+        column_formats = {}
+    df.write_excel(
+        workbook, sheet_name,
+        header_format={
+            'bold': True,
+            'text_wrap': False,
+            'align': 'left',
+            'fg_color': '#FFFF00',
+            'border': None}, 
+        freeze_panes=(1, 0),
+        autofit=True, 
+        column_formats = column_formats)
