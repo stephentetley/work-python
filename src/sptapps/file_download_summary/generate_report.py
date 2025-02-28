@@ -56,40 +56,46 @@ def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
             column_formats = {},
             con=con, workbook=workbook)
         
-        export_utils.write_sql_query_to_excel(
-            select_query=_flocsummary_east_north,
+        export_utils.write_sql_table_to_excel(
+            qualified_table_name='s4_class_rep.vw_flocsummary_east_north',
+            order_by_columns=['functional_location'],
             sheet_name='f.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
             con=con, workbook=workbook)
         
-        export_utils.write_sql_query_to_excel(
-            select_query=_flocsummary_solution_id,
+
+        export_utils.write_sql_table_to_excel(
+            qualified_table_name='s4_class_rep.vw_flocsummary_solution_id',
+            order_by_columns=['functional_location'],
             sheet_name='f.solution_id', 
             column_formats = {},
             con=con, workbook=workbook)
         
         _add_flocclass_tables(con=con, workbook=workbook)
         
-        export_utils.write_sql_query_to_excel(
-            select_query=_equisummary_aib_reference,
+        export_utils.write_sql_table_to_excel(
+            qualified_table_name='s4_class_rep.vw_equisummary_aib_reference',
+            order_by_columns=['equipment_id'],
             sheet_name='e.aib_reference', 
             column_formats = {},
             con=con, workbook=workbook)
-        
+
         export_utils.write_sql_query_to_excel(
             select_query=_equisummary_asset_condition,
             sheet_name='e.asset_condition', 
             column_formats = _general_columns(['survey_date']),
             con=con, workbook=workbook)
         
-        export_utils.write_sql_query_to_excel(
-            select_query=_equisummary_east_north,
+        export_utils.write_sql_table_to_excel(
+            qualified_table_name='s4_class_rep.vw_equisummary_east_north',
+            order_by_columns=['equipment_id'],
             sheet_name='e.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
             con=con, workbook=workbook)
         
-        export_utils.write_sql_query_to_excel(
-            select_query=_equisummary_solution_id,
+        export_utils.write_sql_table_to_excel(
+            qualified_table_name='s4_class_rep.vw_equisummary_solution_id',
+            order_by_columns=['equipment_id'],
             sheet_name='e.solution_id', 
             column_formats = {},
             con=con, workbook=workbook)
@@ -124,16 +130,6 @@ ORDER BY t.equipment_id;
 """
 
 
-
-
-_equisummary_aib_reference = """
-SELECT 
-    t.*,
-FROM s4_class_rep.vw_equisummary_aib_reference t
-ORDER BY t.equipment_id;
-"""
-
-
 _equisummary_asset_condition = """
 SELECT 
     t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
@@ -141,35 +137,6 @@ FROM s4_class_rep.vw_equisummary_asset_condition t
 ORDER BY t.equipment_id;
 """
 
-
-
-_flocsummary_east_north = """
-SELECT 
-    t.*,
-FROM s4_class_rep.vw_flocsummary_east_north t
-ORDER BY t.functional_location;
-"""
-
-_equisummary_east_north = """
-SELECT 
-    t.*,
-FROM s4_class_rep.vw_equisummary_east_north t
-ORDER BY t.equipment_id;
-"""
-
-_flocsummary_solution_id = """
-SELECT 
-    t.*,
-FROM s4_class_rep.vw_flocsummary_solution_id t
-ORDER BY t.functional_location;
-"""
-
-_equisummary_solution_id = """
-SELECT 
-    t.*,
-FROM s4_class_rep.vw_equisummary_solution_id t
-ORDER BY t.equipment_id;
-"""
 
 def _add_flocclass_tables(
         *, 
