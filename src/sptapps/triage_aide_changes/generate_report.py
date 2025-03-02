@@ -35,6 +35,7 @@ def setup_db(*,
     excel_table_import.duckdb_import(aide_changelist, table_name='raw_data.aide_changelist', con=con)
     setup_sql_udfs.setup_macros(con=con)
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='aide_triage_insert_into.sql')
-    runner.exec_sql_file(rel_file_path='setup_aide_changes_views.sql')
+    runner.exec_sql_file(rel_file_path='raw_data_create_views.sql')
+    runner.exec_sql_file(rel_file_path='aide_changes_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='aide_changes_insert_into.sql')
     

@@ -14,68 +14,10 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS aide_triage;
-
-CREATE OR REPLACE VIEW aide_triage.vw_ai2_site_export_equi_names AS
-WITH cte1 AS (
-SELECT 
-    t.reference, 
-    t.common_name,
-    regexp_extract(t.common_name, '(.*)/(EQUIPMENT:.*)', ['prefix', 'equitype']) AS name_struct,
-    struct_extract(name_struct, 'prefix') AS prefix,
-    struct_extract(name_struct, 'equitype') AS equi_type,
-    length(prefix) AS prefix_len,
-FROM raw_data.ai2_site_export t
-WHERE t.common_name LIKE '%/EQUIPMENT:%'
-), cte2 AS (
-SELECT 
-    t.reference, 
-    t.common_name,
-    t.prefix,
-    t.equi_type,
-    t1.common_name AS candidate,
-FROM cte1 t
-JOIN raw_data.ai2_site_export t1 ON starts_with(t.common_name, t1.common_name) AND length(t1.common_name) < t.prefix_len
-), cte3 AS (
-SELECT     
-    t.reference, 
-    t.common_name,
-    max(t.candidate) AS longest_prefix,
-    length(longest_prefix) AS pos,
-    t.prefix[pos+2:] AS equi_name,
-    t.equi_type AS equi_type,
-FROM cte2 t
-GROUP BY t.reference, t.common_name, t.prefix, t.equi_type
-)
-SELECT t.reference, t.common_name, t.equi_name, t.equi_type FROM cte3 t
-ORDER BY common_name
-;
-
-CREATE OR REPLACE VIEW aide_triage.vw_ai2_parent_sai_nums AS
-WITH cte1 AS (
-SELECT 
-    t.reference AS pli_num, 
-    t.common_name,
-    regexp_extract(t.common_name, '(.*)/(EQUIPMENT:.*)', ['prefix', 'equitype']) AS name_struct,
-    struct_extract(name_struct, 'prefix') AS prefix,
-    struct_extract(name_struct, 'equitype') AS equi_type,
-    length(prefix) AS prefix_len,
-FROM raw_data.ai2_site_export t
-WHERE t.common_name LIKE '%/EQUIPMENT:%'
-), cte2 AS (
-SELECT 
-    t.pli_num AS pli_num, 
-    t1.reference AS sai_num,
-    t.common_name AS common_name,
-FROM cte1 t
-JOIN raw_data.ai2_site_export t1 ON t1.common_name = t.prefix
-) 
-SELECT t.* FROM cte2 t
-ORDER BY common_name
-;
 
 
-CREATE OR REPLACE TABLE aide_triage.ih08_equi AS
+
+INSERT INTO aide_changes.ih08_equi BY NAME
 WITH cte AS (
     SELECT DISTINCT 
         t.equipment AS equi_id,
@@ -104,7 +46,7 @@ LEFT JOIN raw_data.aide_changelist t2 ON t2.reference = t1.pli_number
 ;
 
 
-CREATE OR REPLACE TABLE aide_triage.ai2_equipment_changes AS
+INSERT INTO aide_changes.ai2_equipment_changes BY NAME
 SELECT 
     t.reference AS ai2_ref,
     t2.change AS aide_change,
@@ -124,7 +66,7 @@ SELECT
     t1.loc_ref AS grid_ref,
     t1.asset_in_aide AS in_aide,
     t1.p_and_i_tag_no AS pandi_tag,
-FROM aide_triage.vw_ai2_site_export_equi_names t 
+FROM raw_data.vw_ai2_site_export_equi_names t 
 LEFT JOIN raw_data.ai2_site_export t1 ON t1.reference = t.reference 
 LEFT JOIN raw_data.aide_changelist t2 ON t2.reference = t.reference 
 LEFT JOIN equi_translation.equi_type_translation t3 ON t3.ai2_equi_type = t.equi_type 
