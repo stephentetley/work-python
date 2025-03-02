@@ -15,11 +15,10 @@ limitations under the License.
 
 """
 
-from typing import Callable, Any
+from typing import Any
 import duckdb
 import polars as pl
 import xlsxwriter
-from xlsxwriter import Workbook
 import sptlibs.utils.export_utils as export_utils
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
@@ -132,7 +131,7 @@ def _general_columns(ls: list[str]) -> dict[str, str]:
 
 def _add_flocclass_tables(
         *, 
-        workbook: Workbook, 
+        workbook: xlsxwriter.Workbook, 
         con: duckdb.DuckDBPyConnection) -> None:
     def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
         sheet_name = "f.{}".format(row.get('class_name', "unknown"))
@@ -160,7 +159,7 @@ ORDER BY t.class_name ASC;
 
 def _add_equiclass_tables(
         *, 
-        workbook: Workbook, 
+        workbook: xlsxwriter.Workbook, 
         con: duckdb.DuckDBPyConnection) -> None:
     def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
         sheet_name = "e.{}".format(row.get('class_name', "unknown"))

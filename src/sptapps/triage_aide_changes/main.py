@@ -52,12 +52,12 @@ def create_report(ih06_path: str,
     config_folder = os.path.join(current_app.root_path, app.config['RESOURCE_FOLDER'])
     type_translations_xlsx = os.path.normpath(os.path.join(config_folder, 'equi_type_translation.xlsx'))
    
-    # report_name = 'triage_aide_changes.xlsx'
-    report_name = 'triage_changes.duckdb'
     output_folder = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
     
     temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'triage_changes.duckdb'))
-    report_path = os.path.normpath(os.path.join(output_folder, report_name))
+    
+    report_name = 'triage_aide_changes.xlsx'
+    xlsx_output_path = os.path.normpath(os.path.join(output_folder, report_name))
 
     # Use an file connection for the time being until we start to generate an xlsx file...
     # Delete it first   
@@ -66,14 +66,15 @@ def create_report(ih06_path: str,
 
     con = duckdb.connect(database=temp_duckdb_path, read_only=False)
     app.logger.info(f"before: <generate_flocs>")
-    generate_report.setup_db(equi_type_translation=type_translations_xlsx,
-                             ih06_source=ih06_path,
-                             ih08_source=ih08_path,
-                             ai2_site_export=ai2_site_export,
-                             aide_changelist=aide_changes,
-                             con=con)
+    generate_report.duckdb_init(equi_type_translation=type_translations_xlsx,
+                                ih06_source=ih06_path,
+                                ih08_source=ih08_path,
+                                ai2_site_export=ai2_site_export,
+                                aide_changelist=aide_changes,
+                                con=con)
+    generate_report.gen_report(xls_output_path=xlsx_output_path, con=con)
     con.close()
-    app.logger.info(f"Created - {report_path}")
+    app.logger.info(f"Created - {report_name}")
     return report_name
 
 def store_upload_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
