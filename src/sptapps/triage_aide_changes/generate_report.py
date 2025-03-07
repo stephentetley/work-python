@@ -43,7 +43,7 @@ def duckdb_init(*,
     
 
 
-def gen_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
+def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
     with xlsxwriter.Workbook(xls_output_path) as workbook:
         export_utils.write_sql_table_to_excel(
             qualified_table_name='aide_changes.vw_ai2_not_synced',

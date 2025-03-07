@@ -72,7 +72,7 @@ def create_report(ih06_path: str,
                                 ai2_site_export=ai2_site_export,
                                 aide_changelist=aide_changes,
                                 con=con)
-    generate_report.gen_report(xls_output_path=xlsx_output_path, con=con)
+    generate_report.gen_xls_report(xls_output_path=xlsx_output_path, con=con)
     con.close()
     app.logger.info(f"Created - {report_name}")
     return report_name

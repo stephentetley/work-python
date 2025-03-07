@@ -30,9 +30,6 @@ import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 import duckdb
-import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
-import sptlibs.data_access.file_download.file_download_import as file_download_import
-import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
 import sptapps.file_download_summary.generate_report as generate_report
 
 
@@ -56,16 +53,12 @@ def create_report(fd_files: list[str]) -> None:
     xlsx_output_path = os.path.join(output_folder, report_name)
 
     # Use an in-memory connection
-    conn = duckdb.connect(read_only=False)
-    s4_classlists_import.copy_classlists_tables(classlists_source_db_path=classlists_db, setup_tables=True, dest_con=conn)
-
-    file_download_import.duckdb_table_init(con=conn)
-    for file_path in fd_files:
-        file_download_import.duckdb_import(path=file_path, con=conn)
-
-    s4_classrep_setup.duckdb_init(con=conn)
-    generate_report.gen_report(xls_output_path=xlsx_output_path, con=conn)
-    conn.close()
+    con = duckdb.connect(read_only=False)
+    generate_report.duckdb_init(file_download_files=fd_files,
+                                classlists_db_path=classlists_db, 
+                                con=con)
+    generate_report.gen_xls_report(xls_output_path=xlsx_output_path, con=con)
+    con.close()
     app.logger.info(f"Created - {xlsx_output_path}")
 
 
