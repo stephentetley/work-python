@@ -68,7 +68,8 @@ def create_report(worklist_path: str, ih06_path: str) -> str:
     generate_flocs.generate_flocs(worklist_path=worklist_path, 
                                   ih06_path=ih06_path, 
                                   ztable_source_db=ztables_db,
-                                  uploader_template=uploader_template,
+                                  con=con)
+    generate_flocs.gen_xls_upload(uploader_template=uploader_template,
                                   uploader_outfile=report_path,
                                   con=con)
     con.close()

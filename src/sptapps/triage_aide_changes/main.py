@@ -59,7 +59,7 @@ def create_report(ih06_path: str,
     report_name = 'triage_aide_changes.xlsx'
     xlsx_output_path = os.path.normpath(os.path.join(output_folder, report_name))
 
-    # Use an file connection for the time being until we start to generate an xlsx file...
+    # Use an file connection for the time being (we want to inspect the database)...
     # Delete it first   
     if os.path.exists(temp_duckdb_path):
         os.remove(temp_duckdb_path)

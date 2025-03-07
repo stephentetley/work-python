@@ -15,6 +15,8 @@
 -- 
 
 
+-- TODO
+-- This is file_download specific and should in a file_download specific package
 
 --- source table has _duplicates_ which cause an error without the row_number interior table 
 INSERT OR REPLACE INTO s4_class_rep.floc_master_data BY NAME
