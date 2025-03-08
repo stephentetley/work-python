@@ -65,10 +65,10 @@ def create_report(worklist_path: str, ih06_path: str) -> str:
 
     con = duckdb.connect(database=temp_duckdb_path, read_only=False)
     app.logger.info(f"before: <generate_flocs>")
-    generate_flocs.generate_flocs(worklist_path=worklist_path, 
-                                  ih06_path=ih06_path, 
-                                  ztable_source_db=ztables_db,
-                                  con=con)
+    generate_flocs.duckdb_init(worklist_path=worklist_path, 
+                               ih06_path=ih06_path, 
+                               ztable_source_db=ztables_db,
+                               con=con)
     generate_flocs.gen_xls_upload(uploader_template=uploader_template,
                                   uploader_outfile=report_path,
                                   con=con)
