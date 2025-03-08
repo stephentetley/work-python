@@ -25,3 +25,4 @@ def setup_s4_classrep_tables(gen_flocclasses: bool, con: duckdb.DuckDBPyConnecti
     runner.exec_sql_generating_file(rel_file_path='gen_create_equiclass_tables.sql')
     if gen_flocclasses:
         runner.exec_sql_generating_file(rel_file_path='gen_create_equiclass_tables.sql')
+    runner.exec_sql_generating_file(rel_file_path='s4_classrep_create_views.sql')
