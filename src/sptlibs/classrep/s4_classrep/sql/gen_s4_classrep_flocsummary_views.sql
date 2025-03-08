@@ -24,16 +24,16 @@ WITH cte AS (
 SELECT
     t.class_name AS class_name,
     concat_ws(E'\n',
-        format('CREATE OR REPLACE VIEW s4_class_rep.vw_flocsummary_{} AS', t.class_name),
+        format('CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_{} AS', t.class_name),
         'SELECT', 
-        '        fmd.floc_id AS floc_id,',
+        '        fmd.funcloc_id AS funcloc_id,',
         '        fmd.functional_location AS functional_location,', 
         '        fmd.floc_description AS floc_description,',
         '        fmd.startup_date AS startup_date,',
         '        fmd.object_type AS object_type,',
         '        fmd.user_status AS user_status,',
-        '    fc.* EXCLUDE (floc_id),',
-        format('FROM s4_class_rep.flocclass_{} fc', t.class_name), 
-        'JOIN s4_class_rep.floc_master_data fmd ON fmd.floc_id = fc.floc_id;' ) AS sql_text,
+        '    fc.* EXCLUDE (funcloc_id),',
+        format('FROM s4_classrep.flocclass_{} fc', t.class_name), 
+        'JOIN s4_classrep.floc_masterdata fmd ON fmd.funcloc_id = fc.funcloc_id;' ) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;

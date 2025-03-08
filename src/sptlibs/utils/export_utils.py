@@ -47,7 +47,7 @@ yellow_bold_header_format={
 _equisummary_aib_reference = """
 SELECT 
     t.*,
-FROM s4_class_rep.vw_equisummary_aib_reference t
+FROM s4_classrep.vw_equisummary_aib_reference t
 ORDER BY t.equipment_id;
 """
 

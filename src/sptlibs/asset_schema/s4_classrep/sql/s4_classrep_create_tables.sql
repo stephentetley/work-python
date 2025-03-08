@@ -18,7 +18,7 @@ CREATE SCHEMA IF NOT EXISTS s4_classrep;
 
 
 CREATE OR REPLACE TABLE s4_classrep.floc_masterdata (
-    floc_id VARCHAR NOT NULL,
+    funcloc_id VARCHAR NOT NULL,
     functional_location VARCHAR NOT NULL,
     floc_description VARCHAR,
     internal_floc_ref VARCHAR,
@@ -45,7 +45,7 @@ CREATE OR REPLACE TABLE s4_classrep.floc_masterdata (
     object_number VARCHAR,
     floc_location VARCHAR,
     address_ref INTEGER,
-    PRIMARY KEY(floc_id)
+    PRIMARY KEY(funcloc_id)
 );
 
 CREATE OR REPLACE TABLE s4_classrep.equi_masterdata (
@@ -97,18 +97,30 @@ CREATE OR REPLACE TABLE s4_classrep.equi_longtext(
 
 
 CREATE OR REPLACE TABLE s4_classrep.floc_aib_reference (
-    floc_id VARCHAR NOT NULL,
+    funcloc_id VARCHAR NOT NULL,
     ai2_aib_references VARCHAR[],
     s4_aib_reference VARCHAR,
-    PRIMARY KEY(floc_id)
+    PRIMARY KEY(funcloc_id)
 );
 
 
 -- ## AIB_REFERENCE (equi)
 
+-- CREATE OR REPLACE TABLE s4_classrep.equi_aib_reference (
+--     equipment_id VARCHAR NOT NULL,
+--     ai2_aib_reference VARCHAR[],
+--     s4_aib_reference VARCHAR,
+--     PRIMARY KEY(equipment_id)
+-- );
+
+
 CREATE OR REPLACE TABLE s4_classrep.equi_aib_reference (
     equipment_id VARCHAR NOT NULL,
-    ai2_aib_reference VARCHAR[],
+    sai_value_index INTEGER,
+    ai2_sai_reference VARCHAR,
+    pli_value_index INTEGER,
+    ai2_pli_reference VARCHAR,
+    ai2_extra_references VARCHAR[],
     s4_aib_reference VARCHAR,
     PRIMARY KEY(equipment_id)
 );
@@ -130,10 +142,10 @@ CREATE OR REPLACE TABLE s4_classrep.equi_asset_condition (
 -- ## EAST_NORTH
 
 CREATE OR REPLACE TABLE s4_classrep.floc_east_north (
-    floc_id VARCHAR NOT NULL,
+    funcloc_id VARCHAR NOT NULL,
     easting INTEGER,
     northing INTEGER,
-    PRIMARY KEY(floc_id)
+    PRIMARY KEY(funcloc_id)
 );
 
 
@@ -149,9 +161,9 @@ CREATE OR REPLACE TABLE s4_classrep.equi_east_north (
 -- ## SOLUTION_ID
 
 CREATE OR REPLACE TABLE s4_classrep.floc_solution_id (
-    floc_id VARCHAR NOT NULL,
+    funcloc_id VARCHAR NOT NULL,
     solution_ids VARCHAR[],
-    PRIMARY KEY(floc_id)
+    PRIMARY KEY(funcloc_id)
 );
 
 

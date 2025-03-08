@@ -41,15 +41,15 @@ AND t.table_name LIKE 'equiclass_%';
 
 CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_aib_reference AS
 SELECT 
-    fmd.floc_id AS floc_id, 
+    fmd.funcloc_id AS funcloc_id, 
     fmd.functional_location AS functional_location,
     fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
-    fa.* EXCLUDE (floc_id),
+    fa.* EXCLUDE (funcloc_id),
 FROM s4_classrep.floc_masterdata fmd
-LEFT OUTER JOIN s4_classrep.floc_aib_reference fa ON fa.floc_id = fmd.floc_id;
+LEFT OUTER JOIN s4_classrep.floc_aib_reference fa ON fa.funcloc_id = fmd.funcloc_id;
 
 
 CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_aib_reference AS
@@ -83,15 +83,15 @@ LEFT OUTER JOIN s4_classrep.equi_asset_condition ea ON ea.equipment_id = emd.equ
 
 CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_east_north AS
 SELECT 
-    fmd.floc_id AS floc_id, 
+    fmd.funcloc_id AS funcloc_id, 
     fmd.functional_location AS functional_location,
     fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
-    fa.* EXCLUDE (floc_id),
+    fa.* EXCLUDE (funcloc_id),
 FROM s4_classrep.floc_masterdata fmd
-LEFT OUTER JOIN s4_classrep.floc_east_north fa ON fa.floc_id = fmd.floc_id;
+LEFT OUTER JOIN s4_classrep.floc_east_north fa ON fa.funcloc_id = fmd.funcloc_id;
 
 CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_east_north AS
 SELECT 
@@ -110,15 +110,15 @@ LEFT OUTER JOIN s4_classrep.equi_east_north ea ON ea.equipment_id = emd.equipmen
 
 CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_solution_id AS
 SELECT 
-    fmd.floc_id AS floc_id, 
+    fmd.funcloc_id AS funcloc_id, 
     fmd.functional_location AS functional_location,
     fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
-    fa.* EXCLUDE (floc_id),
+    fa.* EXCLUDE (funcloc_id),
 FROM s4_classrep.floc_masterdata fmd
-LEFT OUTER JOIN s4_classrep.floc_solution_id fa ON fa.floc_id = fmd.floc_id;
+LEFT OUTER JOIN s4_classrep.floc_solution_id fa ON fa.funcloc_id = fmd.funcloc_id;
 
 
 CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_solution_id AS

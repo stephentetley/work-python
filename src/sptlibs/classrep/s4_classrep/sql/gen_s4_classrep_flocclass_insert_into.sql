@@ -39,14 +39,14 @@ WITH cte AS (
 SELECT 
     t.class_name AS class_name,
     concat_ws(E'\n',
-        format('INSERT OR REPLACE INTO s4_class_rep.flocclass_{} BY NAME', lower(t.class_name)),
-        'SELECT DISTINCT ON(f.floc_id)', 
-        '    f.floc_id AS floc_id,',
+        format('INSERT OR REPLACE INTO s4_classrep.flocclass_{} BY NAME', lower(t.class_name)),
+        'SELECT DISTINCT ON(f.funcloc_id)', 
+        '    f.funcloc_id AS funcloc_id,',
         list_sort(t.field_elements).list_aggregate('string_agg', E'\n'),
-        'FROM s4_class_rep.floc_master_data f',
-        'JOIN s4_fd_raw_data.classfloc_classfloc1 clz ON clz.funcloc = f.floc_id',
-        'JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.floc_id',
+        'FROM s4_classrep.floc_masterdata f',
+        'JOIN s4_fd_raw_data.classfloc_classfloc1 clz ON clz.funcloc = f.funcloc_id',
+        'JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id',
         format('WHERE clz.class = ''{}''', t.class_name),
-        'GROUP BY f.floc_id;') AS sql_text,
+        'GROUP BY f.funcloc_id;') AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;

@@ -38,11 +38,11 @@ WITH cte AS (
 SELECT 
     t.class_name AS class_name,
     concat_ws(E'\n',
-        format('INSERT OR REPLACE INTO s4_class_rep.equiclass_{} BY NAME', lower(t.class_name)),
+        format('INSERT OR REPLACE INTO s4_classrep.equiclass_{} BY NAME', lower(t.class_name)),
         'SELECT DISTINCT ON(e.equipment_id)', 
         '    e.equipment_id AS equipment_id,',
         list_sort(t.field_elements).list_aggregate('string_agg', E'\n'),
-        'FROM s4_class_rep.equi_master_data e',
+        'FROM s4_classrep.equi_masterdata e',
         'JOIN s4_fd_raw_data.classequi_classequi1 clz ON clz.equi = e.equipment_id',
         'JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id',
         format('WHERE clz.class = ''{}''', t.class_name),

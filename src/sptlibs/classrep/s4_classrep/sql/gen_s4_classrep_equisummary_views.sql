@@ -23,7 +23,7 @@ WITH cte AS (
 SELECT
     t.class_name AS class_name,
     concat_ws(E'\n',
-        format('CREATE OR REPLACE VIEW s4_class_rep.vw_equisummary_{} AS', t.class_name),
+        format('CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_{} AS', t.class_name),
         'SELECT', 
         '    emd.equipment_id AS equipment_id,', 
         '    emd.equi_description AS equi_description,',
@@ -33,7 +33,7 @@ SELECT
         '    emd.manufact_part_number AS manufact_part_number,',
         '    emd.serial_number AS serial_number,',
         '    ec.* EXCLUDE (equipment_id),',
-        format('FROM s4_class_rep.equiclass_{} ec', t.class_name), 
-        'JOIN s4_class_rep.equi_master_data emd ON emd.equipment_id = ec.equipment_id;' ) AS sql_text,
+        format('FROM s4_classrep.equiclass_{} ec', t.class_name), 
+        'JOIN s4_classrep.equi_masterdata emd ON emd.equipment_id = ec.equipment_id;' ) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;

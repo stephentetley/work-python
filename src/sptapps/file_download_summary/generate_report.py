@@ -48,7 +48,7 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
                         format('{:02d}', construction_month) AS construction_month, 
                         format('{:04d}', display_position) AS display_position,
                         strftime(startup_date, '%d.%m.%Y') AS startup_date),
-                FROM s4_class_rep.floc_master_data t
+                FROM s4_classrep.floc_masterdata t
                 ORDER BY t.functional_location;
                 """,
             con=con,
@@ -70,7 +70,7 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
                         format('{:04d}', display_position) AS display_position,
                         strftime(startup_date, '%d.%m.%Y') AS startup_date, 
                         strftime(valid_from, '%d.%m.%Y') AS valid_from),
-                FROM s4_class_rep.equi_master_data t
+                FROM s4_classrep.equi_masterdata t
                 ORDER BY t.equipment_id;
                 """,
             sheet_name='equipment',
@@ -84,14 +84,14 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
             con=con, workbook=workbook)
         
         export_utils.write_sql_table_to_excel(
-            qualified_table_name='s4_class_rep.vw_flocsummary_aib_reference',
+            qualified_table_name='s4_classrep.vw_flocsummary_aib_reference',
             order_by_columns=['functional_location'],
             sheet_name='f.aib_reference', 
             column_formats = {},
             con=con, workbook=workbook)
         
         export_utils.write_sql_table_to_excel(
-            qualified_table_name='s4_class_rep.vw_flocsummary_east_north',
+            qualified_table_name='s4_classrep.vw_flocsummary_east_north',
             order_by_columns=['functional_location'],
             sheet_name='f.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
@@ -99,7 +99,7 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
         
 
         export_utils.write_sql_table_to_excel(
-            qualified_table_name='s4_class_rep.vw_flocsummary_solution_id',
+            qualified_table_name='s4_classrep.vw_flocsummary_solution_id',
             order_by_columns=['functional_location'],
             sheet_name='f.solution_id', 
             column_formats = {},
@@ -108,7 +108,7 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
         _add_flocclass_tables(con=con, workbook=workbook)
         
         export_utils.write_sql_table_to_excel(
-            qualified_table_name='s4_class_rep.vw_equisummary_aib_reference',
+            qualified_table_name='s4_classrep.vw_equisummary_aib_reference',
             order_by_columns=['equipment_id'],
             sheet_name='e.aib_reference', 
             column_formats = {},
@@ -118,7 +118,7 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
             select_query="""
                 SELECT 
                     t.* REPLACE (strftime(last_refurbished_date, '%d.%m.%Y') AS last_refurbished_date),
-                FROM s4_class_rep.vw_equisummary_asset_condition t
+                FROM s4_classrep.vw_equisummary_asset_condition t
                 ORDER BY t.equipment_id;
                 """,
             sheet_name='e.asset_condition', 
@@ -126,14 +126,14 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
             con=con, workbook=workbook)
         
         export_utils.write_sql_table_to_excel(
-            qualified_table_name='s4_class_rep.vw_equisummary_east_north',
+            qualified_table_name='s4_classrep.vw_equisummary_east_north',
             order_by_columns=['equipment_id'],
             sheet_name='e.east_north', 
             column_formats = _general_columns(['easting', 'northing']),
             con=con, workbook=workbook)
         
         export_utils.write_sql_table_to_excel(
-            qualified_table_name='s4_class_rep.vw_equisummary_solution_id',
+            qualified_table_name='s4_classrep.vw_equisummary_solution_id',
             order_by_columns=['equipment_id'],
             sheet_name='e.solution_id', 
             column_formats = {},
@@ -164,12 +164,12 @@ _get_flocclass_tables = """
 WITH cte AS (
     SELECT 
         t.class_name,
-    FROM s4_class_rep.vw_flocclass_stats t 
+    FROM s4_classrep.vw_flocclass_stats t 
     WHERE t.estimated_size > 0
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'SELECT t.* FROM s4_class_rep.vw_flocsummary_{} t ORDER BY t.functional_location;', t.class_name) AS sql_text,
+    format(E'SELECT t.* FROM s4_classrep.vw_flocsummary_{} t ORDER BY t.functional_location;', t.class_name) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
 """
@@ -192,12 +192,12 @@ _get_equiclass_tables = """
 WITH cte AS (
     SELECT 
         t.class_name,
-    FROM s4_class_rep.vw_equiclass_stats t 
+    FROM s4_classrep.vw_equiclass_stats t 
     WHERE t.estimated_size > 0
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'SELECT t.* FROM s4_class_rep.vw_equisummary_{} t ORDER BY t.equipment_id;', t.class_name) AS sql_text,
+    format(E'SELECT t.* FROM s4_classrep.vw_equisummary_{} t ORDER BY t.equipment_id;', t.class_name) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
 """
