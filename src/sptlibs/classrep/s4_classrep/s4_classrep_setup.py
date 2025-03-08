@@ -23,6 +23,7 @@ def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None:
     # create tables, views...
     runner.exec_sql_file(rel_file_path='s4_class_rep_create_tables.sql')
     runner.exec_sql_file(rel_file_path='s4_class_rep_create_views.sql')
+    runner.exec_sql_file(rel_file_path='s4_class_rep_create_staging_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_flocclass_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_equiclass_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_class_rep_flocsummary_views.sql')
