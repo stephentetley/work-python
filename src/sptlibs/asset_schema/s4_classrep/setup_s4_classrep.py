@@ -19,7 +19,9 @@ import duckdb
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
-def setup_s4_classrep_tables(con: duckdb.DuckDBPyConnection) -> None:
+def setup_s4_classrep_tables(gen_flocclasses: bool, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_classrep_create_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_create_equiclass_tables.sql')
+    if gen_flocclasses:
+        runner.exec_sql_generating_file(rel_file_path='gen_create_equiclass_tables.sql')
