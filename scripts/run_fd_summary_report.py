@@ -21,7 +21,7 @@ import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
-import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
+import sptlibs.classrep.file_download_to_s4_classrep.s4_classrep_setup as s4_classrep_setup
 import sptapps.file_download_summary.generate_report as generate_report
 
 

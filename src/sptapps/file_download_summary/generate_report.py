@@ -22,7 +22,7 @@ import xlsxwriter
 import sptlibs.utils.export_utils as export_utils
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
-import sptlibs.classrep.s4_classrep.s4_classrep_setup as s4_classrep_setup
+import sptlibs.asset_schema.file_download_to_s4_classrep.file_download_to_s4_classrep as file_download_to_s4_classrep
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def duckdb_init(*, 
@@ -35,7 +35,7 @@ def duckdb_init(*,
     for file_path in file_download_files:
         file_download_import.duckdb_import(path=file_path, con=con)
 
-    s4_classrep_setup.duckdb_init(con=con)
+    file_download_to_s4_classrep.translate_file_download_to_s4_classrep(con=con)
 
 
 
