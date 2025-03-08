@@ -44,7 +44,7 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                                       con=con)
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
-    setup_s4_classrep.setup_s4_classrep_tables(gen_flocclasses=False, con=con)
+    setup_s4_classrep.duckdb_init(gen_flocclasses=False, con=con)
     setup_sql_udfs.setup_macros(con=con)
 
 # load ai2 exports into landing area...
