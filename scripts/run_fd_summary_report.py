@@ -21,7 +21,7 @@ import duckdb
 from sptlibs.utils.asset_data_config import AssetDataConfig
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
-import sptlibs.classrep.file_download_to_s4_classrep.s4_classrep_setup as s4_classrep_setup
+import sptlibs.asset_schema.file_download_to_s4_classrep.file_download_to_s4_classrep as file_download_to_s4_classrep
 import sptapps.file_download_summary.generate_report as generate_report
 
 
@@ -65,7 +65,7 @@ def main():
         file_download_import.duckdb_table_init(con=conn)
         file_download_import.duckdb_import_directory(source_dir=source_directory, glob_pattern=glob_pattern, con=conn)
 
-        s4_classrep_setup.duckdb_init(con=conn)
+        file_download_to_s4_classrep.translate_file_download_to_s4_classrep(con=conn)
         generate_report.gen_report(xls_output_path=xlsx_output_path, con=conn)
         conn.close()
         print(f"Created - {xlsx_output_path}")
