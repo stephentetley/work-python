@@ -56,7 +56,7 @@ class SqlScriptRunner:
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 
 
-    def exec_sql_generating_file(self, *, rel_file_path: str) -> None:
+    def exec_sql_generating_file(self, *, rel_file_path: str, parameters: object = None) -> None:
         """The SQL file should have a single query and contain a column called `sql_text`"""
         sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, rel_file_path))
         if os.path.exists(sql_file_path):
@@ -66,7 +66,7 @@ class SqlScriptRunner:
                 for row in df.rows(named=True):
                     sql_stmt = row['sql_text']
                     try:
-                        self.con.execute(sql_stmt)
+                        self.con.execute(sql_stmt, parameters=parameters)
                     except Exception as exn: 
                         print(f"SQL script failed:")
                         print(sql_stmt)
