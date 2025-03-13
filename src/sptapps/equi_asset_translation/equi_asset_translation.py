@@ -26,7 +26,7 @@ import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_i
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
-import sptapps.equi_asset_translation.ai2_metadata_import as ai2_metadata_import
+import sptlibs.data_access.ai2_metadata.equipment_attributes_import as equipment_attributes_import
 
 
 
@@ -39,7 +39,7 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
     s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_db_source, 
                                             setup_tables=True, 
                                             dest_con=con)
-    ai2_metadata_import.duckdb_import(equipment_attributes_source=ai2_equipment_attributes_source,
+    equipment_attributes_import.duckdb_import(equipment_attributes_source=ai2_equipment_attributes_source,
                                       attribute_sets_source=ai2_equipment_attribute_sets,
                                       con=con)
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
