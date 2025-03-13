@@ -37,10 +37,14 @@ def create_table_xlsx(*,
                       qualified_table_name: str,
                       file_path: str, 
                       sheet_name: str,
-                      con: duckdb.DuckDBPyConnection) -> None:
+                      con: duckdb.DuckDBPyConnection,
+                      select_spec: str | None = None,
+                      where_spec: str | None = None) -> None:
+    select_spec = select_spec if select_spec else "*"
+    where_spec = f'WHERE {where_spec}' if where_spec else ""
     df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
     con.register(view_name='vw_df1', python_object=df1)
-    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT * FROM vw_df1;'
+    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM vw_df1 {where_spec};'
     con.execute(sql_stmt)
     con.commit()
 
@@ -52,10 +56,12 @@ def insert_into_by_name_xlsx(*,
                              file_path: str, 
                              sheet_name: str,
                              con: duckdb.DuckDBPyConnection, 
-                             select_spec: str | None = None) -> None:
-    df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
+                             select_spec: str | None = None, 
+                             where_spec: str | None = None) -> None:
     select_spec = select_spec if select_spec else "*"
+    where_spec = f'WHERE {where_spec}' if where_spec else ""
+    df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
     con.register(view_name='vw_df1', python_object=df1)
-    sql_stmt = f'INSERT INTO {qualified_table_name} BY NAME SELECT {select_spec} FROM vw_df1;'
+    sql_stmt = f'INSERT INTO {qualified_table_name} BY NAME SELECT {select_spec} FROM vw_df1 {where_spec};'
     con.execute(sql_stmt)
     con.commit()
