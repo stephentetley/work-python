@@ -87,8 +87,7 @@ SELECT
 FROM cte3
 ;
 
--- Example of how to call....
-
+-- -- Example of how to call....
 -- SELECT
 --     t.* EXCLUDE("Loc.Ref."),
 --     t."Loc.Ref.",

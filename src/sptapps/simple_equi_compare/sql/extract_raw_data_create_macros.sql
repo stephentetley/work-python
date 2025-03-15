@@ -38,17 +38,17 @@ LEFT JOIN query_table(table_name::VARCHAR) t2 ON t2."Equipment" = t."Equipment" 
 ORDER BY functional_location
 ;
 
-SELECT * FROM extract_s4_equi_data_from_raw(equi_raw_data.s4_export1)
-UNION
-SELECT * FROM extract_s4_equi_data_from_raw(equi_raw_data.s4_export2)
-;
+-- -- Calling example...
+-- SELECT * FROM extract_s4_equi_data_from_raw(equi_raw_data.s4_export1)
+-- UNION
+-- SELECT * FROM extract_s4_equi_data_from_raw(equi_raw_data.s4_export2)
+-- ;
 
 CREATE OR REPLACE MACRO extract_ai2_equi_data_from_raw(table_name) AS TABLE 
 WITH cte AS (
 SELECT
     t."Reference" AS pli_num,
     t."Common Name" AS common_name,
-    regexp_extract(t."Common Name", '.*EQUIPMENT: (.*)$', 1) AS equipment_type,
     t."Installed From" AS startup_date,
     t."Manufacturer" AS manufacturer,
     t."Model" AS model,
@@ -60,16 +60,19 @@ FROM query_table(table_name::VARCHAR) t
 )
 SELECT 
     t.*,
-    t1.site AS site,
-    t1.item_name AS item_name, 
+    t1.site AS installation_name,
+    t2.s4_site_code AS s4_site_code,
+    t1.item_name AS equi_name, 
     t1.equipment_type AS equipment_type,
 FROM cte t
-JOIN split_common_name(table_name::VARCHAR, 'Common Name') t1 ON t1.common_name = t.common_name;
+JOIN split_common_name(table_name::VARCHAR, 'Common Name') t1 ON t1.common_name = t.common_name
+LEFT OUTER JOIN ai2_metadata.site_mapping t2 ON t2.installation_name = t1.site
 ;
 
-SELECT * FROM extract_ai2_equi_data_from_raw(equi_raw_data.ai2_export1)
-UNION
-SELECT * FROM extract_ai2_equi_data_from_raw(equi_raw_data.ai2_export2)
-UNION
-SELECT * FROM extract_ai2_equi_data_from_raw(equi_raw_data.ai2_export3)
-;
+-- -- Calling example...
+-- SELECT * FROM extract_ai2_equi_data_from_raw(equi_raw_data.ai2_export1)
+-- UNION
+-- SELECT * FROM extract_ai2_equi_data_from_raw(equi_raw_data.ai2_export2)
+-- UNION
+-- SELECT * FROM extract_ai2_equi_data_from_raw(equi_raw_data.ai2_export3)
+-- ;

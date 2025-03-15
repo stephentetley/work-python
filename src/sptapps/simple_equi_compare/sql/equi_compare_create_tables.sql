@@ -23,6 +23,7 @@ CREATE OR REPLACE TABLE equi_compare.ai2_equipment (
     pli_num VARCHAR NOT NULL,
     common_name VARCHAR,
     installation_name VARCHAR,
+    s4_site_code VARCHAR,
     equi_name VARCHAR,
     equipment_type VARCHAR,
     startup_date TIMESTAMP,

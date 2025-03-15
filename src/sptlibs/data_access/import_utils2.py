@@ -16,7 +16,7 @@ limitations under the License.
 """
 
 
-
+import glob
 import polars as pl
 import duckdb
 
@@ -40,13 +40,58 @@ def create_table_xlsx(*,
                       con: duckdb.DuckDBPyConnection,
                       select_spec: str | None = None,
                       where_spec: str | None = None) -> None:
+    name1 = qualified_table_name.replace('.', '_')
+    view_name = f'vw_df_{name1}'
+    print(view_name)
     select_spec = select_spec if select_spec else "*"
     where_spec = f'WHERE {where_spec}' if where_spec else ""
     df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
-    con.register(view_name='vw_df1', python_object=df1)
-    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM vw_df1 {where_spec};'
+    con.register(view_name=view_name, python_object=df1)
+    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM {view_name} {where_spec};'
     con.execute(sql_stmt)
     con.commit()
+
+# Version of `create_table_xlsx` that creates multiple tables from the files 
+# matching the glob. Table name is suffixed with the running count and a 
+# list of the created tablenames is returned.
+#
+def create_tables_xlsx(*, 
+                      qualified_table_name: str,
+                      pathname: str, 
+                      sheet_name: str,
+                      con: duckdb.DuckDBPyConnection,
+                      select_spec: str | None = None,
+                      where_spec: str | None = None) -> list[str]:
+
+    def not_temp(file_name): 
+        return not '~$' in file_name
+    globlist = filter(not_temp, glob.glob(pathname=pathname))
+    def create_table(ix, file_path): 
+        table_name = f'{qualified_table_name}{ix}'
+        create_table_xlsx(qualified_table_name=table_name,
+                          file_path=file_path,
+                          sheet_name=sheet_name,
+                          con=con,
+                          select_spec=select_spec,
+                          where_spec=where_spec)
+        return table_name
+    return [create_table(ix+1, file) for ix, file in enumerate(globlist)]
+
+# Needs duckdb >= 1.2.0 to use qualified table names in table macros...
+def insert_union_by_name_into(*, 
+                             or_replace: bool = False,
+                             qualified_table_name: str,
+                             extractor_table_function: str, 
+                             source_tables: list[str],
+                             con: duckdb.DuckDBPyConnection,) -> None:
+    or_replace_spec = "OR REPLACE" if or_replace else ""
+    select_statements = [f"(SELECT * FROM {extractor_table_function}('{table_name}'))" for table_name in source_tables]
+    sql_body = '\nUNION\n'.join(select_statements)
+    sql_stmt = f'INSERT {or_replace_spec} INTO {qualified_table_name} BY NAME\n{sql_body}\n;'
+    # print(sql_stmt)
+    con.execute(sql_stmt)
+    con.commit()
+
 
 # Analogue of
 # INSERT INTO <qual_table_name> BY NAME AS SELECT <select_spec> FROM read_xlsx(<file_path>, <sheet_name>);
