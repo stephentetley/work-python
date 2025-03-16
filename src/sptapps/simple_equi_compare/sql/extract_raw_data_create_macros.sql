@@ -21,7 +21,7 @@ SELECT DISTINCT ON (t."Equipment")
     t."Functional Location" AS functional_location,
     t."Functional Location"[1:5] AS s4_site,
     t."Technical identification no." AS techn_id_num,
-    t."Equipment category" AS category,
+    t."Equipment category" AS equi_category,
     t."Start-up date" AS startup_date,
     t."Manufacturer of Asset" AS manufacturer,
     t."Model number" AS model,
