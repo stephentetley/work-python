@@ -41,7 +41,7 @@ def duckdb_import(*, xlsx_path: str, con: duckdb.DuckDBPyConnection) -> None:
     import_utils2.insert_into_by_name_xlsx(qualified_table_name='ai2_metadata.site_mapping',
                                            select_spec=select_spec,
                                            where_spec=where_spec,
-                                           file_path=xlsx_path,
+                                           pathname=xlsx_path,
                                            sheet_name='inst to SAP migration',
                                            con=con
                                            )

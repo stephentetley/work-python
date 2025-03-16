@@ -26,12 +26,12 @@ def duckdb_import(*, xlsx_path: str, con: duckdb.DuckDBPyConnection) -> None:
     runner.exec_sql_file(rel_file_path='process_processgroup_names_create_tables.sql')
     import_utils2.insert_into_by_name_xlsx(qualified_table_name='ai2_metadata.process_group_names',
                                            select_spec='"ProcessGroupAssetTypeDescription" AS process_group_name,',
-                                           file_path=xlsx_path,
+                                           pathname=xlsx_path,
                                            sheet_name='process_group',
                                            con=con
                                            )
     import_utils2.insert_into_by_name_xlsx(qualified_table_name='ai2_metadata.process_names',
-                                           file_path=xlsx_path,
+                                           pathname=xlsx_path,
                                            select_spec='"ProcessAssetTypeDescription" as process_name,',
                                            sheet_name='process',
                                            con=con

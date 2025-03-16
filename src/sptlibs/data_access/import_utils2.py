@@ -33,11 +33,11 @@ from typing import Callable
 
 
 # Analogue of
-# CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<file_path>, <sheet_name>);
+# CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<pathname>, <sheet_name>);
 # Use Polars for reading
 def df_create_table_xlsx(*, 
                       qualified_table_name: str,
-                      file_path: str, 
+                      pathname: str, 
                       sheet_name: str,
                       con: duckdb.DuckDBPyConnection,
                       select_spec: str | None = None,
@@ -47,17 +47,19 @@ def df_create_table_xlsx(*,
     view_name = f'vw_df_{name1}'
     select_spec = select_spec if select_spec else "*"
     where_spec = f'WHERE {where_spec}' if where_spec else ""
-    dfall = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
-    print(dfall.height)
+    dfall = pl.read_excel(source=pathname, sheet_name=sheet_name, engine='calamine')
     slice_size = dfall.height if slice_size <= 0 else slice_size
     df1 = dfall.slice(0, slice_size)
     con.register(view_name=view_name, python_object=df1)
     sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM {view_name} {where_spec};'
     con.execute(sql_stmt)
+    con.unregister(view_name=view_name)
     con.commit()
+    start = slice_size
+    batch = 1
     while start < dfall.height:
         print(start)
-        view_name = f'vw_df_{name1}{start}'
+        view_name = f'vw_df_{batch}'
         df1 = dfall.slice(start, slice_size)
         con.register(view_name=view_name, python_object=df1)
         sql_stmt = f"""
@@ -65,17 +67,19 @@ def df_create_table_xlsx(*,
             SELECT {select_spec} FROM {view_name} {where_spec};
         """
         con.execute(sql_stmt)
+        con.unregister(view_name=view_name)
         con.commit()
         start = start + slice_size
+        batch = batch + 1
 
 
 
 # Warpper over
-# CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<file_path>, <sheet_name>);
+# CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<pathname>, <sheet_name>);
 # Must use DuckDB > 1.20 and excel extension must be loaded
 def create_table_xlsx(*, 
                       qualified_table_name: str,
-                      file_path: str, 
+                      pathname: str, 
                       sheet_name: str,
                       con: duckdb.DuckDBPyConnection,
                       select_spec: str | None = None,
@@ -84,7 +88,7 @@ def create_table_xlsx(*,
     where_spec = f'WHERE {where_spec}' if where_spec else ""
     sql_stmt = f"""
         CREATE OR REPLACE TABLE {qualified_table_name} AS 
-        SELECT {select_spec} FROM read_xlsx('{file_path}', sheet='{sheet_name}') {where_spec};
+        SELECT {select_spec} FROM read_xlsx('{pathname}', sheet='{sheet_name}') {where_spec};
     """
     print(sql_stmt)
     con.execute(sql_stmt)
@@ -107,10 +111,10 @@ def df_create_tables_xlsx(*,
     def not_temp(file_name): 
         return not '~$' in file_name
     globlist = filter(not_temp, glob.glob(pathname=pathname))
-    def create_table(ix, file_path): 
+    def create_table(ix, pathname): 
         table_name = f'{qualified_table_name}{ix}'
         df_create_table_xlsx(qualified_table_name=table_name,
-                             file_path=file_path,
+                             pathname=pathname,
                              sheet_name=sheet_name,
                              con=con,
                              select_spec=select_spec,
@@ -136,11 +140,11 @@ def insert_union_by_name_into(*,
 
 
 # Analogue of
-# INSERT INTO <qual_table_name> BY NAME AS SELECT <select_spec> FROM read_xlsx(<file_path>, <sheet_name>);
+# INSERT INTO <qual_table_name> BY NAME AS SELECT <select_spec> FROM read_xlsx(<pathname>, <sheet_name>);
 #
 def insert_into_by_name_xlsx(*, 
                              qualified_table_name: str,
-                             file_path: str, 
+                             pathname: str, 
                              sheet_name: str,
                              con: duckdb.DuckDBPyConnection, 
                              select_spec: str | None = None, 
@@ -149,7 +153,7 @@ def insert_into_by_name_xlsx(*,
     view_name = f'vw_df_{name1}'
     select_spec = select_spec if select_spec else "*"
     where_spec = f'WHERE {where_spec}' if where_spec else ""
-    df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
+    df1 = pl.read_excel(source=pathname, sheet_name=sheet_name, engine='calamine')
     con.register(view_name=view_name, python_object=df1)
     sql_stmt = f'INSERT INTO {qualified_table_name} BY NAME SELECT {select_spec} FROM {view_name} {where_spec};'
     con.execute(sql_stmt)
