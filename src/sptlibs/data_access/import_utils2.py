@@ -31,6 +31,10 @@ from typing import Callable
 # Hopefully DuckDB's Excel extension will be expanded to make this
 # module redundant
 
+# Warning
+# Inserting (>32,768) rows appears to cause a memory corruption issue
+# Potentially sidestepped by closing and reopening the connection...
+
 
 # Analogue of
 # CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<pathname>, <sheet_name>);
@@ -58,7 +62,6 @@ def df_create_table_xlsx(*,
     start = slice_size
     batch = 1
     while start < dfall.height:
-        print(start)
         view_name = f'vw_df_{batch}'
         df1 = dfall.slice(start, slice_size)
         con.register(view_name=view_name, python_object=df1)
@@ -90,7 +93,6 @@ def create_table_xlsx(*,
         CREATE OR REPLACE TABLE {qualified_table_name} AS 
         SELECT {select_spec} FROM read_xlsx('{pathname}', sheet='{sheet_name}') {where_spec};
     """
-    print(sql_stmt)
     con.execute(sql_stmt)
     con.commit()
 
