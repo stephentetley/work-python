@@ -16,6 +16,8 @@ ai2_soev_glob_path = 'G:/work/2025/storm_overflow_reconcile/ai2_export*.xlsx'
 s4_soev_path1 = 'G:/work/2025/storm_overflow_reconcile/ih08_lstn_export1.with_aib_reference.xlsx'
 s4_soev_path2 = 'G:/work/2025/storm_overflow_reconcile/ih08_fstn_export1.with_aib_reference.xlsx'
 
+output_report = 'G:/work/2025/storm_overflow_reconcile/flow_level_analysis2.xlsx'
+
 
 # Delete duckdb_path first   
 if os.path.exists(duckdb_path):
@@ -47,7 +49,7 @@ s4_names = import_utils2.df_create_table_xlsx(pathname=s4_soev_path1,
 con.close()
 con = duckdb.connect(database=duckdb_path, read_only=False)
 
-s4_names = import_utils2.df_create_table_xlsx(pathname=s4_soev_path2, 
+import_utils2.df_create_table_xlsx(pathname=s4_soev_path2, 
                                                   sheet_name='Sheet1',
                                                   qualified_table_name='equi_raw_data.s4_export2',
                                                   slice_size = 2000,
@@ -60,12 +62,17 @@ import_utils2.insert_union_by_name_into(qualified_table_name='equi_compare.s4_eq
                                         source_tables=['equi_raw_data.s4_export1', 'equi_raw_data.s4_export2'],
                                         con=con)
 
+
+con.execute("LOAD excel;")
+
+output_sql = f"""
+    COPY (SELECT * FROM equi_compare.vw_compare_equi ORDER BY s4_site, pli_num) 
+    TO '{output_report}' WITH (FORMAT xlsx, HEADER true);
+"""
+con.execute(output_sql)
+
 con.close()
 
-print(f"Done - created: {duckdb_path}")
-
 print(ai2_names)
-print(s4_names)
+print(f"Done - created: {output_report}")
 
-
-# Need to expose DuckDB EXCEL loading for large tables.

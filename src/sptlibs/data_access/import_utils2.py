@@ -34,6 +34,7 @@ from typing import Callable
 # Warning
 # Inserting (>32,768) rows appears to cause a memory corruption issue
 # Potentially sidestepped by closing and reopening the connection...
+# Slicing doesn't seem to help...
 
 
 # Analogue of
