@@ -19,6 +19,8 @@ limitations under the License.
 import glob
 import polars as pl
 import duckdb
+from typing import Callable
+
 
 # import_utils is now too complicated
 
@@ -32,7 +34,45 @@ import duckdb
 
 # Analogue of
 # CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<file_path>, <sheet_name>);
-#
+# Use Polars for reading
+def df_create_table_xlsx(*, 
+                      qualified_table_name: str,
+                      file_path: str, 
+                      sheet_name: str,
+                      con: duckdb.DuckDBPyConnection,
+                      select_spec: str | None = None,
+                      where_spec: str | None = None,
+                      slice_size: int = 0) -> None:
+    name1 = qualified_table_name.replace('.', '_')
+    view_name = f'vw_df_{name1}'
+    select_spec = select_spec if select_spec else "*"
+    where_spec = f'WHERE {where_spec}' if where_spec else ""
+    dfall = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
+    print(dfall.height)
+    slice_size = dfall.height if slice_size <= 0 else slice_size
+    df1 = dfall.slice(0, slice_size)
+    con.register(view_name=view_name, python_object=df1)
+    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM {view_name} {where_spec};'
+    con.execute(sql_stmt)
+    con.commit()
+    while start < dfall.height:
+        print(start)
+        view_name = f'vw_df_{name1}{start}'
+        df1 = dfall.slice(start, slice_size)
+        con.register(view_name=view_name, python_object=df1)
+        sql_stmt = f"""
+            INSERT INTO {qualified_table_name} BY NAME 
+            SELECT {select_spec} FROM {view_name} {where_spec};
+        """
+        con.execute(sql_stmt)
+        con.commit()
+        start = start + slice_size
+
+
+
+# Warpper over
+# CREATE TABLE <qual_table_name> AS SELECT * FROM read_xlsx(<file_path>, <sheet_name>);
+# Must use DuckDB > 1.20 and excel extension must be loaded
 def create_table_xlsx(*, 
                       qualified_table_name: str,
                       file_path: str, 
@@ -40,40 +80,42 @@ def create_table_xlsx(*,
                       con: duckdb.DuckDBPyConnection,
                       select_spec: str | None = None,
                       where_spec: str | None = None) -> None:
-    name1 = qualified_table_name.replace('.', '_')
-    view_name = f'vw_df_{name1}'
-    print(view_name)
     select_spec = select_spec if select_spec else "*"
     where_spec = f'WHERE {where_spec}' if where_spec else ""
-    df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
-    con.register(view_name=view_name, python_object=df1)
-    sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM {view_name} {where_spec};'
+    sql_stmt = f"""
+        CREATE OR REPLACE TABLE {qualified_table_name} AS 
+        SELECT {select_spec} FROM read_xlsx('{file_path}', sheet='{sheet_name}') {where_spec};
+    """
+    print(sql_stmt)
     con.execute(sql_stmt)
     con.commit()
+
 
 # Version of `create_table_xlsx` that creates multiple tables from the files 
 # matching the glob. Table name is suffixed with the running count and a 
 # list of the created tablenames is returned.
 #
-def create_tables_xlsx(*, 
-                      qualified_table_name: str,
-                      pathname: str, 
-                      sheet_name: str,
-                      con: duckdb.DuckDBPyConnection,
-                      select_spec: str | None = None,
-                      where_spec: str | None = None) -> list[str]:
+def df_create_tables_xlsx(*, 
+                          qualified_table_name: str,
+                          pathname: str, 
+                          sheet_name: str,
+                          con: duckdb.DuckDBPyConnection,
+                          select_spec: str | None = None,
+                          where_spec: str | None = None,
+                          slice_size: int = 0) -> list[str]:
 
     def not_temp(file_name): 
         return not '~$' in file_name
     globlist = filter(not_temp, glob.glob(pathname=pathname))
     def create_table(ix, file_path): 
         table_name = f'{qualified_table_name}{ix}'
-        create_table_xlsx(qualified_table_name=table_name,
-                          file_path=file_path,
-                          sheet_name=sheet_name,
-                          con=con,
-                          select_spec=select_spec,
-                          where_spec=where_spec)
+        df_create_table_xlsx(qualified_table_name=table_name,
+                             file_path=file_path,
+                             sheet_name=sheet_name,
+                             con=con,
+                             select_spec=select_spec,
+                             where_spec=where_spec,
+                             slice_size=slice_size)
         return table_name
     return [create_table(ix+1, file) for ix, file in enumerate(globlist)]
 
@@ -103,10 +145,12 @@ def insert_into_by_name_xlsx(*,
                              con: duckdb.DuckDBPyConnection, 
                              select_spec: str | None = None, 
                              where_spec: str | None = None) -> None:
+    name1 = qualified_table_name.replace('.', '_')
+    view_name = f'vw_df_{name1}'
     select_spec = select_spec if select_spec else "*"
     where_spec = f'WHERE {where_spec}' if where_spec else ""
     df1 = pl.read_excel(source=file_path, sheet_name=sheet_name, engine='calamine')
-    con.register(view_name='vw_df1', python_object=df1)
-    sql_stmt = f'INSERT INTO {qualified_table_name} BY NAME SELECT {select_spec} FROM vw_df1 {where_spec};'
+    con.register(view_name=view_name, python_object=df1)
+    sql_stmt = f'INSERT INTO {qualified_table_name} BY NAME SELECT {select_spec} FROM {view_name} {where_spec};'
     con.execute(sql_stmt)
     con.commit()
