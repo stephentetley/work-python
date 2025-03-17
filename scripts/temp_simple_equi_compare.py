@@ -13,8 +13,9 @@ ppg_names_path = 'G:/work/2025/asset_data_facts/all_process_processgroup_names.x
 site_mapping_path = 'G:/work/2025/asset_data_facts/SiteMapping.xlsx'
 
 ai2_soev_glob_path = 'G:/work/2025/storm_overflow_reconcile/ai2_export*.xlsx'
-s4_soev_path1 = 'G:/work/2025/storm_overflow_reconcile/ih08_lstn_export1.with_aib_reference.xlsx'
-s4_soev_path2 = 'G:/work/2025/storm_overflow_reconcile/ih08_fstn_export1.with_aib_reference.xlsx'
+s4_soev_path1 = 'G:/work/2025/storm_overflow_reconcile/ih08_lstnut_export1.with_aib_reference.xlsx'
+s4_soev_path2 = 'G:/work/2025/storm_overflow_reconcile/ih08_fstnoc_export1.with_aib_reference.xlsx'
+s4_soev_path3 = 'G:/work/2025/storm_overflow_reconcile/ih08_fstnem_export1.with_aib_reference.xlsx'
 
 output_report = 'G:/work/2025/storm_overflow_reconcile/flow_level_analysis2.xlsx'
 
@@ -56,10 +57,17 @@ import_utils2.df_create_table_xlsx(pathname=s4_soev_path2,
                                                   select_spec='* EXCLUDE("Selected Line", "Superord. Equipment", "Function class", "Class AIB_REFERENCE is assigned")',
                                                   con=con)
 
+import_utils2.df_create_table_xlsx(pathname=s4_soev_path3, 
+                                                  sheet_name='Sheet1',
+                                                  qualified_table_name='equi_raw_data.s4_export3',
+                                                  slice_size = 2000,
+                                                  select_spec='* EXCLUDE("Selected Line", "Superord. Equipment", "Function class", "Class AIB_REFERENCE is assigned")',
+                                                  con=con)
+
 import_utils2.insert_union_by_name_into(qualified_table_name='equi_compare.s4_equipment',
                                         or_replace=True,
                                         extractor_table_function='extract_s4_equi_data_from_raw',
-                                        source_tables=['equi_raw_data.s4_export1', 'equi_raw_data.s4_export2'],
+                                        source_tables=['equi_raw_data.s4_export1', 'equi_raw_data.s4_export2', 'equi_raw_data.s4_export2'],
                                         con=con)
 
 
