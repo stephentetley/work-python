@@ -11,6 +11,7 @@ import sptlibs.utils.export_utils as export_utils
 
 duckdb_path = 'E:/coding/work/soev_equi_compare.duckdb'
 ppg_names_path = 'G:/work/2025/asset_data_facts/all_process_processgroup_names.xlsx'
+manuf_model_norm_path = 'G:/work/2025/asset_data_facts/normalize_manuf_model.xlsx'
 site_mapping_path = 'G:/work/2025/asset_data_facts/SiteMapping.xlsx'
 
 ai2_soev_glob_path = 'G:/work/2025/storm_overflow_reconcile/ai2_export*.xlsx'
@@ -29,7 +30,7 @@ if os.path.exists(duckdb_path):
 con = duckdb.connect(database=duckdb_path, read_only=False)
 con.execute('INSTALL excel;')
 con.execute('LOAD excel;')
-generate_report.duckdb_init(con=con)
+generate_report.duckdb_init(manuf_model_norm_path=manuf_model_norm_path, con=con)
 process_processgroup_names_import.duckdb_import(xlsx_path=ppg_names_path, con=con)
 site_mapping_import.duckdb_import(xlsx_path=site_mapping_path, con=con)
 ai2_names = import_utils2.df_create_tables_xlsx(pathname=ai2_soev_glob_path, 

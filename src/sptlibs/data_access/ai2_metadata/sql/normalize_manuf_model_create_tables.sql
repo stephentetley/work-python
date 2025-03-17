@@ -28,21 +28,12 @@ CREATE OR REPLACE TABLE ai2_metadata.normalize_model (
    PRIMARY KEY (model_name)
 );
 
-
 INSERT INTO ai2_metadata.normalize_manuf VALUES 
-   ('NOT APPLICABLE', '#UNKNOWN'),
-   ('TO BE DETERMINED', '#UNKNOWN'),
-   ('UNKNOWN MANUFACTURER', '#UNKNOWN'),
-   ('', '#UNKNOWN'),
-   ('MILLTRONICS', 'SIEMENS'),
-   ('ABB KENT TAYLOR', 'ABB')
+   ('', '#UNKNOWN')
 ;
 
 INSERT INTO ai2_metadata.normalize_model VALUES 
-   ('NOT APPLICABLE', '#UNKNOWN'),
-   ('TO BE DETERMINED', '#UNKNOWN'),
-   ('UNSPECIFIED', '#UNKNOWN'),
-   ('SITRAN PROBE', 'SITRANS PROBE LU')
+   ('', '#UNKNOWN')
 ;
 
 CREATE OR REPLACE MACRO get_normalize_manuf_model(table_name, id_col, manuf_col, model_col) AS TABLE (
