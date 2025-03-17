@@ -122,7 +122,7 @@ WITH worklist AS
         norm_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_s4_equi t
-    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_s4_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
 ) 
 SELECT 
     t.s4_site AS s4_site,
@@ -166,7 +166,7 @@ WITH worklist AS
         norm_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_s4_equi t
-    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_s4_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
 )
 SELECT 
     t.s4_site AS s4_site,
