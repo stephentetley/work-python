@@ -2,11 +2,12 @@
 
 import os
 import duckdb
+import xlsxwriter
 import sptapps.simple_equi_compare.generate_report as generate_report
 import sptlibs.data_access.ai2_metadata.process_processgroup_names_import as process_processgroup_names_import
 import sptlibs.data_access.ai2_metadata.site_mapping_import as site_mapping_import
 import sptlibs.data_access.import_utils2 as import_utils2
-
+import sptlibs.utils.export_utils as export_utils
 
 duckdb_path = 'E:/coding/work/soev_equi_compare.duckdb'
 ppg_names_path = 'G:/work/2025/asset_data_facts/all_process_processgroup_names.xlsx'
@@ -71,14 +72,14 @@ import_utils2.insert_union_by_name_into(qualified_table_name='equi_compare.s4_eq
                                         con=con)
 
 
-con.execute("LOAD excel;")
 
-output_sql = f"""
-    COPY (SELECT * FROM equi_compare.vw_compare_equi ORDER BY s4_site, pli_num) 
-    TO '{output_report}' WITH (FORMAT xlsx, HEADER true);
-"""
-con.execute(output_sql)
-
+with xlsxwriter.Workbook(output_report) as workbook:
+    export_utils.write_sql_query_to_excel(
+        select_query="SELECT * FROM equi_compare.vw_compare_equi ORDER BY s4_site, pli_num",
+        workbook=workbook,
+        sheet_name='equi_compare',
+        con=con)
+    
 con.close()
 
 print(ai2_names)

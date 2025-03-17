@@ -105,22 +105,24 @@ WITH worklist AS
 (
     -- IN BOTH
     (SELECT
-        s4_site, 
-        pli_num,
-        manufacturer,
-        model AS norm_model,
-        norm_serial_number(serial_number) as norm_serial_number,
-        install_date,
-    FROM equi_compare.skeleton_ai2_equi)
+        t.s4_site, 
+        t.pli_num,
+        t1.manufacturer,
+        t1.model AS norm_model,
+        norm_serial_number(t.serial_number) as norm_serial_number,
+        t.install_date,
+    FROM equi_compare.skeleton_ai2_equi t
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
     INTERSECT
     (SELECT
-        s4_site,
-        pli_num,
-        manufacturer,
-        model AS norm_model,
-        norm_serial_number(serial_number) as norm_serial_number,
-        install_date,
-    FROM equi_compare.skeleton_s4_equi)
+        t.s4_site,
+        t.pli_num,
+        t1.manufacturer,
+        t1.model AS norm_model,
+        norm_serial_number(t.serial_number) as norm_serial_number,
+        t.install_date,
+    FROM equi_compare.skeleton_s4_equi t
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
 ) 
 SELECT 
     t.s4_site AS s4_site,
@@ -147,22 +149,24 @@ WITH worklist AS
 (
     -- In AI2, missing from S4
     (SELECT
-        s4_site, 
-        pli_num,
-        manufacturer,
-        model,
-        norm_serial_number(serial_number) as norm_serial_number,
-        install_date,
-    FROM equi_compare.skeleton_ai2_equi)
+        t.s4_site, 
+        t.pli_num,
+        t1.manufacturer,
+        t1.model,
+        norm_serial_number(t.serial_number) as norm_serial_number,
+        t.install_date,
+    FROM equi_compare.skeleton_ai2_equi t
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
     EXCEPT
     (SELECT
-        s4_site,
-        pli_num,
-        manufacturer,
-        model,
-        norm_serial_number(serial_number) as norm_serial_number,
-        install_date,
-    FROM equi_compare.skeleton_s4_equi)
+        t.s4_site,
+        t.pli_num,
+        t1.manufacturer,
+        t1.model,
+        norm_serial_number(t.serial_number) as norm_serial_number,
+        t.install_date,
+    FROM equi_compare.skeleton_s4_equi t
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
 )
 SELECT 
     t.s4_site AS s4_site,
@@ -187,22 +191,24 @@ WITH worklist AS
     
     -- In s4, missing from ai2 (probably ai2 is DISP)
     (SELECT
-        s4_site,
-        pli_num,
-        manufacturer,
-        model,
-        norm_serial_number(serial_number) as norm_serial_number,
-        install_date,
-    FROM equi_compare.skeleton_s4_equi)
+        t.s4_site,
+        t.pli_num,
+        t1.manufacturer,
+        t1.model,
+        norm_serial_number(t.serial_number) as norm_serial_number,
+        t.install_date,
+    FROM equi_compare.skeleton_s4_equi t
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_s4_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
     EXCEPT
     (SELECT
-        s4_site, 
-        pli_num,
-        manufacturer,
-        model,
-        norm_serial_number(serial_number) as norm_serial_number,
-        install_date,
-    FROM equi_compare.skeleton_ai2_equi)
+        t.s4_site, 
+        t.pli_num,
+        t1.manufacturer,
+        t1.model,
+        norm_serial_number(t.serial_number) as norm_serial_number,
+        t.install_date,
+    FROM equi_compare.skeleton_ai2_equi t
+    JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
 )
 SELECT 
     t.s4_site AS s4_site,
