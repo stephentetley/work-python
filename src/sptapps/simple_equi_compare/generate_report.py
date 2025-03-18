@@ -29,9 +29,11 @@ def duckdb_init(*,
                 metadata_manuf_model_norm_path: str,
                 metadata_ppg_names_path: str,
                 metadata_site_mapping_path: str,
-                s4_soev_glob_path: str,
-                ai2_soev_glob_path: str,
+                s4_ih08_paths: list[str],
+                ai2_export_paths: list[str],
                 con: duckdb.DuckDBPyConnection) -> None: 
+    con.execute('INSTALL excel;')
+    con.execute('LOAD excel;')
     normalize_manuf_model_import.duckdb_import(xlsx_path=metadata_manuf_model_norm_path, con=con)
     process_processgroup_names_import.duckdb_import(xlsx_path=metadata_ppg_names_path, con=con)
     site_mapping_import.duckdb_import(xlsx_path=metadata_site_mapping_path, con=con)
@@ -39,11 +41,11 @@ def duckdb_init(*,
     runner.exec_sql_file(rel_file_path='equi_compare_create_tables.sql')
     runner.exec_sql_file(rel_file_path='split_common_name_create_macro.sql')
     runner.exec_sql_file(rel_file_path='extract_raw_data_create_macros.sql')
-    s4_names = import_utils2.df_create_tables_xlsx(pathname=s4_soev_glob_path, 
-                                                    sheet_name='Sheet1',
-                                                    qualified_table_name='equi_raw_data.s4_export',
-                                                    select_spec='* EXCLUDE("Selected Line", "Superord. Equipment", "Function class", "Class AIB_REFERENCE is assigned")',
-                                                    con=con)
+    s4_names = import_utils2.df_create_tables_list_xlsx(paths=s4_ih08_paths, 
+                                                        sheet_name='Sheet1',
+                                                        qualified_table_name='equi_raw_data.s4_export',
+                                                        select_spec='* EXCLUDE("Selected Line", "Superord. Equipment", "Function class", "Class AIB_REFERENCE is assigned")',
+                                                        con=con)
 
     import_utils2.insert_union_by_name_into(qualified_table_name='equi_compare.s4_equipment',
                                             or_replace=True,
@@ -52,10 +54,10 @@ def duckdb_init(*,
                                             con=con)
 
 
-    ai2_names = import_utils2.df_create_tables_xlsx(pathname=ai2_soev_glob_path, 
-                                                    sheet_name='Sheet1',
-                                                    qualified_table_name='equi_raw_data.ai2_export',
-                                                    con=con)
+    ai2_names = import_utils2.df_create_tables_list_xlsx(paths=ai2_export_paths, 
+                                                         sheet_name='Sheet1',
+                                                         qualified_table_name='equi_raw_data.ai2_export',
+                                                         con=con)
     import_utils2.insert_union_by_name_into(qualified_table_name='equi_compare.ai2_equipment',
                                             or_replace=True,
                                             extractor_table_function='extract_ai2_equi_data_from_raw',

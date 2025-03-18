@@ -109,6 +109,30 @@ def df_create_tables_xlsx(*,
         return table_name
     return [create_table(ix+1, file) for ix, file in enumerate(globlist)]
 
+
+# Version of `create_table_xlsx` that creates multiple tables from the files 
+# matching the glob. Table name is suffixed with the running count and a 
+# list of the created tablenames is returned.
+#
+def df_create_tables_list_xlsx(*, 
+                               qualified_table_name: str,
+                               paths: list[str], 
+                               sheet_name: str,
+                               con: duckdb.DuckDBPyConnection,
+                               select_spec: str | None = None,
+                               where_spec: str | None = None) -> list[str]:
+    def create_table(ix, pathname): 
+        table_name = f'{qualified_table_name}{ix}'
+        df_create_table_xlsx(qualified_table_name=table_name,
+                             pathname=pathname,
+                             sheet_name=sheet_name,
+                             con=con,
+                             select_spec=select_spec,
+                             where_spec=where_spec)
+        return table_name
+    return [create_table(ix+1, file) for ix, file in enumerate(paths)]
+
+
 # Needs duckdb >= 1.2.0 to use qualified table names in table macros...
 def insert_union_by_name_into(*, 
                              or_replace: bool = False,
