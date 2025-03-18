@@ -77,7 +77,7 @@ def index():
 
 
 @app.route('/upload', methods=['POST'])
-def upload_file():
+def upload_files():
     upload_paths = [store_upload_file(file_sto) for file_sto in request.files.getlist('files')]
     uploads_cat = '>>>'.join(upload_paths)
     session['upload_paths'] = uploads_cat
