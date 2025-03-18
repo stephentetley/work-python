@@ -40,8 +40,8 @@ CREATE OR REPLACE MACRO get_normalize_manuf_model(table_name, id_col, manuf_col,
 WITH cte1 AS (
         SELECT 
             COLUMNS(id_col::VARCHAR) AS equi_id,
-            COLUMNS(manuf_col::VARCHAR) AS original_manuf,
-            COLUMNS(model_col::VARCHAR) AS original_model,
+            upper(COLUMNS(manuf_col::VARCHAR)) AS original_manuf,
+            upper(COLUMNS(model_col::VARCHAR)) AS original_model,
         FROM query_table(table_name::VARCHAR)
 ), cte2 AS (
     SELECT 

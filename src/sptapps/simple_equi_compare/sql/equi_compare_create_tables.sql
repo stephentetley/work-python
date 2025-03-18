@@ -24,8 +24,8 @@ CREATE TYPE inclusion_status AS ENUM ('in-both', 'missing-in-s4', 'missing-in-ai
 CREATE OR REPLACE MACRO norm_serial_number(serialnum) AS (
     CASE 
         WHEN serialnum IS NULL THEN '#UNKNOWN'
-        WHEN serialnum IN ('TO BE DETERMINED', 'NOT APPLICABLE', 'UNSPECIFIED', '') THEN '#UNKNOWN'
-        ELSE regexp_replace(serialnum, '[[:punct:]]', '').regexp_replace('0*', '')
+        WHEN upper(serialnum) IN ('TO BE DETERMINED', 'NOT APPLICABLE', 'UNSPECIFIED', 'UNKNOWN', '') THEN '#UNKNOWN'
+        ELSE regexp_replace(upper(serialnum), '[^[:alnum:]]+', '', 'g').regexp_replace('^0*', '')
     END
 );
 

@@ -46,35 +46,20 @@ def df_create_table_xlsx(*,
                       sheet_name: str,
                       con: duckdb.DuckDBPyConnection,
                       select_spec: str | None = None,
-                      where_spec: str | None = None,
-                      slice_size: int = 0) -> None:
+                      where_spec: str | None = None) -> None:
     name1 = qualified_table_name.replace('.', '_')
     view_name = f'vw_df_{name1}'
     select_spec = select_spec if select_spec else "*"
     where_spec = f'WHERE {where_spec}' if where_spec else ""
-    dfall = pl.read_excel(source=pathname, sheet_name=sheet_name, engine='calamine')
-    slice_size = dfall.height if slice_size <= 0 else slice_size
-    df1 = dfall.slice(0, slice_size)
+    df1 = pl.read_excel(source=pathname, sheet_name=sheet_name, engine='calamine')
+    # print(f"w:{df1.width} x h:{df1.height}")
     con.register(view_name=view_name, python_object=df1)
     sql_stmt = f'CREATE OR REPLACE TABLE {qualified_table_name} AS SELECT {select_spec} FROM {view_name} {where_spec};'
     con.execute(sql_stmt)
-    con.unregister(view_name=view_name)
     con.commit()
-    start = slice_size
-    batch = 1
-    while start < dfall.height:
-        view_name = f'vw_df_{batch}'
-        df1 = dfall.slice(start, slice_size)
-        con.register(view_name=view_name, python_object=df1)
-        sql_stmt = f"""
-            INSERT INTO {qualified_table_name} BY NAME 
-            SELECT {select_spec} FROM {view_name} {where_spec};
-        """
-        con.execute(sql_stmt)
-        con.unregister(view_name=view_name)
-        con.commit()
-        start = start + slice_size
-        batch = batch + 1
+    con.unregister(view_name=view_name)
+ 
+ 
 
 
 
@@ -108,8 +93,7 @@ def df_create_tables_xlsx(*,
                           sheet_name: str,
                           con: duckdb.DuckDBPyConnection,
                           select_spec: str | None = None,
-                          where_spec: str | None = None,
-                          slice_size: int = 0) -> list[str]:
+                          where_spec: str | None = None) -> list[str]:
 
     def not_temp(file_name): 
         return not '~$' in file_name
@@ -121,8 +105,7 @@ def df_create_tables_xlsx(*,
                              sheet_name=sheet_name,
                              con=con,
                              select_spec=select_spec,
-                             where_spec=where_spec,
-                             slice_size=slice_size)
+                             where_spec=where_spec)
         return table_name
     return [create_table(ix+1, file) for ix, file in enumerate(globlist)]
 
