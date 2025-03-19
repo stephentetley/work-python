@@ -133,25 +133,27 @@ CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
 WITH cte1 AS (
     (SELECT 
         t.funcloc AS functloc,
-        repeat('+', t.floc_category) || ' ' || t.funcloc || ' | ' || t.floc_name AS plant_uml1, 
+        ' ' || repeat('+', t.floc_category) || ' ' || t.funcloc || ' | ' || t.floc_name AS plant_uml1, 
     FROM floc_delta.existing_flocs t)
     UNION
     (SELECT 
         t.funcloc AS functloc,
-        repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.name AS plant_uml1,  
+        ' ' || repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.name AS plant_uml1,  
     FROM floc_delta.new_generated_flocs t)
-    ORDER BY t.funcloc
-) 
+), cte2 AS (
+    SELECT * FROM cte1 ORDER BY functloc 
+)
 SELECT 
     concat_ws(E'\n',
         '@startsalt',
         '{',
         '{T',
-        ' +Key | Name',
+        ' +Functional Location | Description',
         list(plant_uml1).list_aggregate('string_agg', E'\n'), 
         '}',
         '}',
         '@endsalt'
         ) AS plant_uml,
-FROM cte1
+FROM cte2
 ;
+
