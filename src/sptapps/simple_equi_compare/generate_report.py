@@ -65,10 +65,28 @@ def duckdb_init(*,
                                             con=con)
 
 
+output_query = '''
+    SELECT 
+        s4_site AS "S4 Site",
+        pli_num AS "AI2 EquiId",
+        s4_equi_id AS "S4 EuiId",
+        record_status AS "Compare status",
+        equipment_name AS "Equipment Name",
+        functional_location AS "Functional Location", 
+        techn_id_num AS "P and I Num",
+        manfacturer AS "Manufacturer",
+        model AS "Model",
+        specific_model_frame AS "Specific Model/Frame",
+        serial_number AS "Serial Number",
+        install_date AS "Install date",
+    FROM equi_compare.vw_compare_equi 
+    ORDER BY s4_site, pli_num, record_status
+'''
+
 def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> None:
     with xlsxwriter.Workbook(xls_output_path) as workbook:
         export_utils.write_sql_query_to_excel(
-            select_query="SELECT * FROM equi_compare.vw_compare_equi ORDER BY s4_site, pli_num",
+            select_query=output_query,
             workbook=workbook,
             sheet_name='equi_compare',
             con=con)
