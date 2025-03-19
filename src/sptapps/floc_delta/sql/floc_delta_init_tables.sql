@@ -19,11 +19,16 @@ CREATE SCHEMA IF NOT EXISTS floc_delta;
 -- TODO change to explicit DDL and INSERT INTO statements?
 
 CREATE OR REPLACE TABLE floc_delta.existing_flocs AS
-SELECT 
-    t.functional_location AS funcloc,
-    t.description_of_functional_location AS floc_name,
-FROM raw_data.ih06_export t
-ORDER BY funcloc
+WITH 
+cte1 AS (
+    SELECT 
+        t.functional_location AS funcloc,
+        t.description_of_functional_location AS floc_name,
+        regexp_split_to_array(funcloc, '-') AS arr,
+        len(arr) as floc_category,
+    FROM raw_data.ih06_export t
+) 
+SELECT * EXCLUDE(arr) FROM cte1 ORDER BY funcloc
 ;
     
 
@@ -122,4 +127,31 @@ SELECT t1.*
 FROM floc_delta.existing_and_new_flocs t1
 ANTI JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.funcloc
 ORDER BY funcloc
+;
+
+CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
+WITH cte1 AS (
+    (SELECT 
+        t.funcloc AS functloc,
+        repeat('+', t.floc_category) || ' ' || t.funcloc || ' | ' || t.floc_name AS plant_uml1, 
+    FROM floc_delta.existing_flocs t)
+    UNION
+    (SELECT 
+        t.funcloc AS functloc,
+        repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.name AS plant_uml1,  
+    FROM floc_delta.new_generated_flocs t)
+    ORDER BY t.funcloc
+) 
+SELECT 
+    concat_ws(E'\n',
+        '@startsalt',
+        '{',
+        '{T',
+        ' +Key | Name',
+        list(plant_uml1).list_aggregate('string_agg', E'\n'), 
+        '}',
+        '}',
+        '@endsalt'
+        ) AS plant_uml,
+FROM cte1
 ;
