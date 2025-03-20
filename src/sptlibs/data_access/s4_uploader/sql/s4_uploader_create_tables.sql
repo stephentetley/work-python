@@ -27,7 +27,12 @@ CREATE OR REPLACE MACRO get_superior_floc(floc, cat) AS
         ELSE '' 
     END;
 
+-- The tables and views follow a pattern - the table contains just the fields 
+-- a client needs to fill out, the view corresponds to a sheet in the uploader
+-- xlsx file
 
+
+-- functional_location is just the fields client code needs to fill out...
 CREATE OR REPLACE TABLE s4_uploader.functional_location (
     functional_location VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
@@ -67,7 +72,33 @@ SELECT
 FROM s4_uploader.functional_location t
 ORDER BY functional_location;
 
+-- equipment is just the fields client code needs to fill out...
+CREATE OR REPLACE TABLE s4_uploader.equipment (
+    equipment_id VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    category INTEGER NOT NULL,
+    object_type VARCHAR NOT NULL,
+    start_up_date DATETIME,
+    manufacturer VARCHAR,
+    model VARCHAR,
+    manuf_part_number VARCHAR,
+    serial_number VARCHAR,
+    functional_location VARCHAR NOT NULL,
+    superord_equip VARCHAR,
+    position VARCHAR,
+    tech_ident_no VARCHAR,
+    status_of_an_object VARCHAR,
+    maint_plant INTEGER,
+    user_status VARCHAR,
+);
 
+-- TODO - fill out...
+CREATE OR REPLACE VIEW s4_uploader.vw_equipment_data AS
+SELECT 
+    t.equipment_id AS equipment_id,
+    t.functional_location AS functional_location,
+FROM s4_uploader.equipment t
+ORDER BY functional_location, equipment_id;
 
 
 -- No Primary Key - multiples allowed
@@ -89,6 +120,27 @@ SELECT
     null AS ch_deletion_ind,
 FROM s4_uploader.fl_classification t
 ORDER BY functional_location, class, characteristics;
+
+
+CREATE OR REPLACE TABLE s4_uploader.eq_classification (
+    equipment_id VARCHAR NOT NULL,
+    class VARCHAR NOT NULL,
+    characteristics VARCHAR NOT NULL,
+    char_value VARCHAR,
+);
+
+CREATE OR REPLACE VIEW s4_uploader.vw_eq_classification AS
+SELECT 
+    t.equipment_id AS equipment_id,
+    null AS deletion_ind,
+   '002' AS class_type,
+    t.class AS class,
+    t.characteristics AS characteristics,
+    t.char_value AS char_value,
+    null AS ch_deletion_ind,
+FROM s4_uploader.eq_classification t
+ORDER BY equipment_id, class, characteristics;
+
 
 
 CREATE OR REPLACE VIEW s4_uploader.vw_change_request_details AS

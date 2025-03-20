@@ -20,6 +20,11 @@ import duckdb
 import pandas as pd
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
+# Pandas (rather than polars) is necessary so we can use `openpyxl` and 
+# be able to write into existing Excel files which have formatting we
+# need to follow.
+
+
 def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_uploader_create_tables.sql')
