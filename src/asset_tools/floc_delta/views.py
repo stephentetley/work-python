@@ -16,8 +16,8 @@ limitations under the License.
 """
 
 from flask import render_template, redirect, request, url_for, flash
-from . import flocdelta
+from . import floc_delta
 
-@flocdelta.route('/upload')
+@floc_delta.route('/upload')
 def upload():
-    return render_template('flocdelta/upload.html')
+    return render_template('floc_delta/upload.html')

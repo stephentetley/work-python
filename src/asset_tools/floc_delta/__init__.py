@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-flocdelta = Blueprint('flocdelta', __name__)
+floc_delta = Blueprint('floc_delta', __name__)
 
 from . import views
