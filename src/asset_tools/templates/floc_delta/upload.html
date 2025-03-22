@@ -6,6 +6,15 @@
   </head>
   <body>
     <h4>Build Flocs</h4>
-    todo
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      {{ form.ih06_export.label }}
+      {{ form.ih06_export }}
+      {{ form.worklist.label }}
+      {{ form.worklist }}
+      <br>
+      <br>
+      {{ form.submit }}
+  </form>
   </body>
 </html>

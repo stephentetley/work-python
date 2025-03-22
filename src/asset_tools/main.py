@@ -31,16 +31,13 @@ import werkzeug
 import werkzeug.datastructures
 
 
-app = Flask(__name__)
-app.config["SECRET_KEY"] = "no-way-jose0987654321"
-app.config['RESOURCE_FOLDER'] = './runtime/config'
-app.config['UPLOAD_FOLDER'] = './runtime/uploads'
-app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
-
 
 def create_app(config_name):
     app = Flask(__name__)
-
+    app.config["SECRET_KEY"] = "no-way-jose0987654321"
+    app.config['RESOURCE_FOLDER'] = './runtime/config'
+    app.config['UPLOAD_FOLDER'] = './runtime/uploads'
+    app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
     from .floc_delta import floc_delta as floc_delta_blueprint
     app.register_blueprint(floc_delta_blueprint, url_prefix='/floc_delta')
 
