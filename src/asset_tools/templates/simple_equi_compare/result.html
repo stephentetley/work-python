@@ -9,5 +9,7 @@
     <form method="POST" action="http://localhost:5000/simple_equi_compare/download" enctype="multipart/form-data">
       <p><input type="submit" value="Download" class="button button-primary"></p>
     </form>
+    <p><a href="{{ url_for('simple_equi_compare.upload') }}">Simple Equi Compare</a></p>
+    <p><a href="{{ url_for('index') }}">Asset Tools</a></p>
   </body>
 </html>
