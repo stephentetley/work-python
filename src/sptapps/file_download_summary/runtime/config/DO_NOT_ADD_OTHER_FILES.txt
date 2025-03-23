@@ -1,5 +1,0 @@
-Do not add other files to work-python repo on Github
-
-This folder contains the following files which need to be copied to the server:
-
-- classlists_latest.duckdb

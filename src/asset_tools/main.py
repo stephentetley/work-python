@@ -38,6 +38,9 @@ def create_app(config_name):
     app.config['RESOURCE_FOLDER'] = './runtime/config'
     app.config['UPLOAD_FOLDER'] = './runtime/uploads'
     app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
+    from .file_download_summary import file_download_summary as file_download_summary_blueprint
+    app.register_blueprint(file_download_summary_blueprint, url_prefix='/file_download_summary')
+
     from .floc_delta import floc_delta as floc_delta_blueprint
     app.register_blueprint(floc_delta_blueprint, url_prefix='/floc_delta')
     

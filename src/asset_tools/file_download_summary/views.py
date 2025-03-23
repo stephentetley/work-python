@@ -15,41 +15,26 @@ limitations under the License.
 
 """
 
-# While debugging, set PYTHONPATH and run from work-python root:
-
-# (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
-# (base) > python .\src\sptapps\file_download_summary\main.py
-#
-# Point browser to:
-# > http://localhost:5000/
-
-
 import os
 from flask import Flask, render_template, session, request, send_from_directory, current_app
 import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 import duckdb
-import sptapps.file_download_summary.generate_report as generate_report
 
-
-app = Flask(__name__)
-# TODO "SECRET_KEY" should be an envvar
-app.config["SECRET_KEY"] = "no-way-jose0987654321"
-app.config['RESOURCE_FOLDER'] = './runtime/config'
-app.config['UPLOAD_FOLDER'] = './runtime/uploads'
-app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
-
+from asset_tools.file_download_summary.forms import FileDownloadSummaryForm
+import asset_tools.file_download_summary.generate_report as generate_report
+from . import file_download_summary
 
 
 def create_report(fd_files: list[str]) -> None: 
     
-    config_folder = os.path.join(current_app.root_path, app.config['RESOURCE_FOLDER'])
+    config_folder = os.path.join(current_app.root_path, current_app.config['RESOURCE_FOLDER'])
     classlists_db = os.path.normpath(os.path.join(config_folder, 's4_classlists_latest.duckdb'))
 
     report_name = 'fd-summary-report.xlsx'
 
-    output_folder = os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'])
+    output_folder = os.path.join(current_app.root_path, current_app.config['DOWNLOAD_FOLDER'])
     xlsx_output_path = os.path.join(output_folder, report_name)
 
     # Use an in-memory connection
@@ -59,49 +44,45 @@ def create_report(fd_files: list[str]) -> None:
                                 con=con)
     generate_report.gen_xls_report(xls_output_path=xlsx_output_path, con=con)
     con.close()
-    app.logger.info(f"Created - {xlsx_output_path}")
+    current_app.logger.info(f"Created - {xlsx_output_path}")
 
 
 def store_upload_file(file_sto: werkzeug.datastructures.FileStorage) -> str:
-    fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER']))
+    fullpath = os.path.normpath(os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER']))
     save_path = os.path.join(fullpath, secure_filename(file_sto.filename))
-    app.logger.info(save_path)
+    current_app.logger.info(save_path)
     file_sto.save(save_path)
     return save_path
 
 
-@app.route('/')
-def index():
-    return render_template('upload.html')
+@file_download_summary.route('/upload', methods=['POST', 'GET'])
+def upload():
+    form = FileDownloadSummaryForm()
+    if form.validate_on_submit():
+        current_app.logger.info("form.validate_on_submit():")
+        upload_paths = [store_upload_file(file_sto) for file_sto in form.aiw_file_downloads.data]
+        uploads_cat = '>>>'.join(upload_paths)
+        session['upload_paths'] = uploads_cat
+        return render_template('file_download_summary/loading.html')
+    return render_template('file_download_summary/upload.html', form = form)
 
 
-
-@app.route('/upload', methods=['POST'])
-def upload_files():
-    upload_paths = [store_upload_file(file_sto) for file_sto in request.files.getlist('files')]
-    uploads_cat = '>>>'.join(upload_paths)
-    session['upload_paths'] = uploads_cat
-    return render_template('loading.html')
-
-@app.route('/result')
+@file_download_summary.route('/result')
 def result():
     uploads_cat = session['upload_paths'] 
     upload_paths = uploads_cat.split('>>>')
     create_report(upload_paths)
-    return render_template('result.html')
+    return render_template('file_download_summary/result.html')
 
-@app.route('/download', methods=['POST'])
+@file_download_summary.route('/download', methods=['POST'])
 def download():
     if request.method == "POST":
         outfile_name = 'fd-summary-report.xlsx'
-        fullpath = os.path.normpath(os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER']))
-        app.logger.info("Downloading from:")
-        app.logger.info(current_app.root_path)
-        app.logger.info(app.config['DOWNLOAD_FOLDER'])
-        app.logger.info(fullpath)
+        fullpath = os.path.normpath(os.path.join(current_app.root_path, current_app.config['DOWNLOAD_FOLDER']))
+        current_app.logger.info("Downloading from:")
+        current_app.logger.info(current_app.root_path)
+        current_app.logger.info(current_app.config['DOWNLOAD_FOLDER'])
+        current_app.logger.info(fullpath)
         return send_from_directory(directory=fullpath, path=outfile_name, as_attachment=True)
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
 
