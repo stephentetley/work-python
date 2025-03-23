@@ -46,6 +46,10 @@ def create_app(config_name):
     
     from .simple_equi_compare import simple_equi_compare as simple_equi_compare_blueprint
     app.register_blueprint(simple_equi_compare_blueprint, url_prefix='/simple_equi_compare')
+    
+    from .triage_aide_changes import triage_aide_changes as triage_aide_changes_blueprint
+    app.register_blueprint(triage_aide_changes_blueprint, url_prefix='/triage_aide_changes')
+    
     return app
 
 app = create_app('default')

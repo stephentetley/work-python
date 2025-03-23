@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Triage AIDE Changes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  </head>
+  <body>
+    <h4>Triage AIDE Changes</h4>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      {{ form.ih06_site_flocs.label }}
+      {{ form.ih06_site_flocs }}
+      {{ form.ih08_site_equi.label }}
+      {{ form.ih08_site_equi }}
+      {{ form.ai2_site_export.label }}
+      {{ form.ai2_site_export }}
+      {{ form.aide_changes_export.label }}
+      {{ form.aide_changes_export }}
+      <br>
+      <br>
+      {{ form.submit }}
+    </form>
+  </body>
+</html>
