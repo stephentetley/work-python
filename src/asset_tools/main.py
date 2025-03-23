@@ -26,7 +26,7 @@ limitations under the License.
 
 import os
 import duckdb
-from flask import Flask, render_template, session, request, redirect, url_for, send_from_directory, current_app
+from flask import Flask, render_template, session, request, current_app
 import werkzeug
 import werkzeug.datastructures
 
@@ -40,7 +40,9 @@ def create_app(config_name):
     app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
     from .floc_delta import floc_delta as floc_delta_blueprint
     app.register_blueprint(floc_delta_blueprint, url_prefix='/floc_delta')
-
+    
+    from .simple_equi_compare import simple_equi_compare as simple_equi_compare_blueprint
+    app.register_blueprint(simple_equi_compare_blueprint, url_prefix='/simple_equi_compare')
     return app
 
 app = create_app('default')

@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Simple Equi Compare</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+  </head>
+  <body>
+    <h4>Compare AI2 and S4 equipment</h4>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      {{ form.ih08_exports.label }}
+      {{ form.ih08_exports }}
+      {{ form.ai2_exports.label }}
+      {{ form.ai2_exports }}
+      <br>
+      <br>
+      {{ form.submit }}
+    </form>
+  </body>
+</html>
