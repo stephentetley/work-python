@@ -23,8 +23,8 @@ import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 
-from asset_tools.triage_aide_changes.forms import TriageAideChangesForm
-import asset_tools.triage_aide_changes.generate_report as generate_report
+from asset_tools.apps.triage_aide_changes.forms import TriageAideChangesForm
+import asset_tools.apps.triage_aide_changes.generate_report as generate_report
 from . import triage_aide_changes
 
 
@@ -90,22 +90,6 @@ def upload():
         return render_template('triage_aide_changes/loading.html')
     return render_template('triage_aide_changes/upload.html', form = form)
 
-# @triage_aide_changes.route('/upload', methods=['POST'])
-# def upload():
-#     if request.method == "POST":
-#         ih06_sto = request.files.get('ih06')
-#         ih06_file = store_upload_file(ih06_sto)
-#         ih08_sto = request.files.get('ih08')
-#         ih08_file = store_upload_file(ih08_sto)
-#         ai2_site_sto = request.files.get('ai2_site')
-#         ai2_site_file = store_upload_file(ai2_site_sto)
-#         aide_changes_sto = request.files.get('aide_changes')
-#         aide_changes_file = store_upload_file(aide_changes_sto)
-#         session["ih06_file"] = ih06_file
-#         session["ih08_file"] = ih08_file
-#         session["ai2_site_file"] = ai2_site_file
-#         session["aide_changes_file"] = aide_changes_file
-#         return render_template('triage_aide_changes/loading.html')
 
 
 @triage_aide_changes.route('/result')

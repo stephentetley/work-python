@@ -23,8 +23,8 @@ import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 
-from asset_tools.simple_equi_compare.forms import SimpleEquiCompareForm
-import asset_tools.simple_equi_compare.generate_report as generate_report
+from asset_tools.apps.simple_equi_compare.forms import SimpleEquiCompareForm
+import asset_tools.apps.simple_equi_compare.generate_report as generate_report
 from . import simple_equi_compare
 
 def create_report(ih08_files: list[str], ai2_export_files: list[str]) -> str: 

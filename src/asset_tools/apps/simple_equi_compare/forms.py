@@ -21,5 +21,5 @@ from flask_wtf.file import MultipleFileField, FileRequired, FileAllowed
 
 class SimpleEquiCompareForm(FlaskForm):
     ih08_exports = MultipleFileField('IH08 Equipment Export', validators=[FileRequired(), FileAllowed(['xlsx'], 'Excel *.xlsx files only')])
-    ai2_exports = MultipleFileField('Worklist', validators=[FileRequired(), FileAllowed(['xlsx'], 'Excel *.xlsx files only')])
+    ai2_exports = MultipleFileField('AI2 Exports', validators=[FileRequired(), FileAllowed(['xlsx'], 'Excel *.xlsx files only')])
     submit = SubmitField('Submit')

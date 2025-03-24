@@ -38,16 +38,16 @@ def create_app(config_name):
     app.config['RESOURCE_FOLDER'] = './runtime/config'
     app.config['UPLOAD_FOLDER'] = './runtime/uploads'
     app.config['DOWNLOAD_FOLDER'] = './runtime/downloads/'
-    from .file_download_summary import file_download_summary as file_download_summary_blueprint
+    from .apps.file_download_summary import file_download_summary as file_download_summary_blueprint
     app.register_blueprint(file_download_summary_blueprint, url_prefix='/file_download_summary')
 
-    from .floc_delta import floc_delta as floc_delta_blueprint
+    from .apps.floc_delta import floc_delta as floc_delta_blueprint
     app.register_blueprint(floc_delta_blueprint, url_prefix='/floc_delta')
     
-    from .simple_equi_compare import simple_equi_compare as simple_equi_compare_blueprint
+    from .apps.simple_equi_compare import simple_equi_compare as simple_equi_compare_blueprint
     app.register_blueprint(simple_equi_compare_blueprint, url_prefix='/simple_equi_compare')
     
-    from .triage_aide_changes import triage_aide_changes as triage_aide_changes_blueprint
+    from .apps.triage_aide_changes import triage_aide_changes as triage_aide_changes_blueprint
     app.register_blueprint(triage_aide_changes_blueprint, url_prefix='/triage_aide_changes')
     
     return app

@@ -22,8 +22,8 @@ import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 import duckdb
 
-from asset_tools.file_download_summary.forms import FileDownloadSummaryForm
-import asset_tools.file_download_summary.generate_report as generate_report
+from asset_tools.apps.file_download_summary.forms import FileDownloadSummaryForm
+import asset_tools.apps.file_download_summary.generate_report as generate_report
 from . import file_download_summary
 
 

@@ -24,8 +24,8 @@ import werkzeug
 import werkzeug.datastructures
 from werkzeug.utils import secure_filename
 
-from asset_tools.floc_delta.forms import FlocDeltaForm
-import asset_tools.floc_delta.generate_flocs as generate_flocs
+from asset_tools.apps.floc_delta.forms import FlocDeltaForm
+import asset_tools.apps.floc_delta.generate_flocs as generate_flocs
 from . import floc_delta
 
 
