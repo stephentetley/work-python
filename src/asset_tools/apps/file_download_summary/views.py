@@ -36,9 +36,11 @@ def create_report(fd_files: list[str]) -> None:
 
     output_folder = os.path.join(current_app.root_path, current_app.config['DOWNLOAD_FOLDER'])
     xlsx_output_path = os.path.join(output_folder, report_name)
+    
+    temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'file_download.duckdb'))
 
     # Use an in-memory connection
-    con = duckdb.connect(read_only=False)
+    con = duckdb.connect(database=temp_duckdb_path, read_only=False)
     generate_report.duckdb_init(file_download_files=fd_files,
                                 classlists_db_path=classlists_db, 
                                 con=con)
