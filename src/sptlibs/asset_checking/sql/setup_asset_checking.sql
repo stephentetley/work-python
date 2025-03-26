@@ -18,11 +18,21 @@ CREATE SCHEMA IF NOT EXISTS asset_checking;
 
 CREATE TYPE checker_serverity AS ENUM ('error', 'warning', 'style-issue', 'okay');
 
-CREATE OR REPLACE TABLE asset_checking.checking_report (
+CREATE OR REPLACE TABLE asset_checking.checking_results (
     serverity checker_serverity NOT NULL,
     category VARCHAR NOT NULL,
     checker_name VARCHAR NOT NULL,
     checker_description VARCHAR NOT NULL,
     checker_exceptions STRUCT(item VARCHAR, name VARCHAR)[],
-    exceptions_text VARCHAR,
 );
+
+CREATE OR REPLACE MACRO make_exceptions_text(exceptions) AS (
+    list_transform(exceptions, st -> format(E'{}: {}', st.item, st.name)).list_aggregate('string_agg', E', ')
+);
+
+CREATE OR REPLACE VIEW asset_checking.vw_checking_report AS
+SELECT 
+    t.*,
+    list_transform(t.checker_exceptions, st -> format(E'{}: {}', st.item, st.name)).list_aggregate('string_agg', E', ') AS exceptions_text
+FROM asset_checking.checking_results t;
+
