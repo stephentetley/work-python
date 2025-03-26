@@ -17,7 +17,7 @@
 
 -- All equipment must implement class EAST_NORTH
 
-INSERT INTO asset_checking.checking_report BY NAME
+INSERT INTO asset_checking.checking_results BY NAME
 WITH cte AS (
     SELECT 
         list(struct_pack(item := t.equipment_id, name := equi_description)) AS exceptions,
@@ -30,6 +30,7 @@ SELECT
     'equi_implements_east_north' AS checker_name,
     'All equipment must implement the class EAST_NORTH' AS checker_description,
     t.exceptions AS checker_exceptions, 
-    list_transform(t.exceptions, st -> format(E'{}: {}', st.item, st.name)).list_aggregate('string_agg', E', ') AS exceptions_text,
 FROM cte t
+WHERE checker_exceptions IS NOT NULL
 ;
+
