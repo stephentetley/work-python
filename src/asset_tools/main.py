@@ -17,9 +17,16 @@ limitations under the License.
 
 # For development, set PYTHONPATH and run from work-python root:
 
+# windows:
 # (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
 # (base) > flask --app .\src\asset_tools\main.py run
 #
+# linux:
+# (base) > conda activate develop-env
+# (develop-env) > export PYTHONPATH='/home/_working/coding/work/work-python'
+# (develop-env) > flask --app ./src/asset_tools/main.py run
+
+
 # Point browser to:
 # > http://localhost:5000/
 

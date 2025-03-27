@@ -106,12 +106,6 @@ CREATE OR REPLACE TABLE s4_classrep.floc_aib_reference (
 
 -- ## AIB_REFERENCE (equi)
 
--- CREATE OR REPLACE TABLE s4_classrep.equi_aib_reference (
---     equipment_id VARCHAR NOT NULL,
---     ai2_aib_reference VARCHAR[],
---     s4_aib_reference VARCHAR,
---     PRIMARY KEY(equipment_id)
--- );
 
 
 CREATE OR REPLACE TABLE s4_classrep.equi_aib_reference (
