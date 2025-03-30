@@ -16,6 +16,14 @@
 
 -- ## stats tables
 
+CREATE OR REPLACE MACRO pp_list(xs) AS
+CASE 
+    WHEN xs IS NULL THEN ''
+    WHEN xs = [] THEN ''
+    WHEN xs = [null] THEN ''
+    ELSE try_cast(xs AS VARCHAR)
+END;
+
 CREATE OR REPLACE VIEW s4_classrep.vw_flocclass_stats AS
 SELECT 
     array_slice(table_name, 11, len(table_name)) AS class_name,
@@ -58,7 +66,7 @@ SELECT
     fmd.user_status AS user_status,
     ifnull(t1.sai_ref_count, 0) AS ai2_aib_reference_count,
     t1.sai_ref AS sai_ref,
-    t1.other_sai_refs AS other_ai2_aib_refs,
+    pp_list(t1.other_sai_refs) AS other_ai2_aib_refs,
 FROM s4_classrep.floc_masterdata fmd
 LEFT OUTER JOIN cte1 t1 ON t1.funcloc_id = fmd.funcloc_id;
 
@@ -94,7 +102,7 @@ SELECT
     ifnull(t1.pli_ref_count, 0) + ifnull(t2.sai_ref_count, 0) AS ai2_aib_reference_count,
     t1.pli_ref AS pli_ref,
     t2.sai_ref AS sai_ref,
-    list_concat(t1.other_pli_refs, t2.other_sai_refs) AS other_ai2_aib_refs,
+    pp_list(list_concat(t1.other_pli_refs, t2.other_sai_refs)) AS other_ai2_aib_refs,
 FROM s4_classrep.equi_masterdata emd
 LEFT OUTER JOIN cte1 t1 ON t1.equipment_id = emd.equipment_id
 LEFT OUTER JOIN cte2 t2 ON t2.equipment_id = emd.equipment_id;
@@ -158,7 +166,7 @@ SELECT
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
     ifnull(fa.solution_id_count, 0) AS solution_id_count,
-    fa.solution_ids AS solution_ids,
+    pp_list(fa.solution_ids) AS solution_ids,
 FROM s4_classrep.floc_masterdata fmd
 LEFT OUTER JOIN cte fa ON fa.funcloc_id = fmd.funcloc_id
 GROUP BY ALL;
@@ -183,7 +191,7 @@ SELECT
     emd.object_type AS object_type,
     emd.user_status AS user_status,
     ifnull(ea.solution_id_count, 0) AS solution_id_count,
-    ea.solution_ids AS solution_ids,
+    pp_list(ea.solution_ids) AS solution_ids,
 FROM s4_classrep.equi_masterdata emd
 LEFT OUTER JOIN cte ea ON ea.equipment_id = emd.equipment_id
 GROUP BY ALL;
