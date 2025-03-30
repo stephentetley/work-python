@@ -109,6 +109,14 @@ LEFT OUTER JOIN s4_classrep.equi_east_north ea ON ea.equipment_id = emd.equipmen
 
 
 CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_solution_id AS
+WITH cte AS (
+    SELECT 
+        t.funcloc_id AS funcloc_id,
+        count(t.solution_id) AS solution_id_count,
+        list(t.solution_id) AS solution_ids,
+    FROM s4_classrep.floc_solution_id t,
+    GROUP BY t.funcloc_id
+)
 SELECT 
     fmd.funcloc_id AS funcloc_id, 
     fmd.functional_location AS functional_location,
@@ -116,12 +124,22 @@ SELECT
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
-    fa.* EXCLUDE (funcloc_id),
+    ifnull(fa.solution_id_count, 0) AS solution_id_count,
+    fa.solution_ids AS solution_ids,
 FROM s4_classrep.floc_masterdata fmd
-LEFT OUTER JOIN s4_classrep.floc_solution_id fa ON fa.funcloc_id = fmd.funcloc_id;
+LEFT OUTER JOIN cte fa ON fa.funcloc_id = fmd.funcloc_id
+GROUP BY ALL;
 
 
 CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_solution_id AS
+WITH cte AS (
+    SELECT 
+        t.equipment_id AS equipment_id,
+        count(t.solution_id) AS solution_id_count,
+        list(t.solution_id) AS solution_ids,
+    FROM s4_classrep.equi_solution_id t,
+    GROUP BY t.equipment_id
+)
 SELECT 
     emd.equipment_id AS equipment_id, 
     emd.equi_description AS equi_description,
@@ -131,8 +149,10 @@ SELECT
     emd.startup_date AS startup_date,
     emd.object_type AS object_type,
     emd.user_status AS user_status,
-    ea.* EXCLUDE (equipment_id),
+    ifnull(ea.solution_id_count, 0) AS solution_id_count,
+    ea.solution_ids AS solution_ids,
 FROM s4_classrep.equi_masterdata emd
-LEFT OUTER JOIN s4_classrep.equi_solution_id ea ON ea.equipment_id = emd.equipment_id;
+LEFT OUTER JOIN cte ea ON ea.equipment_id = emd.equipment_id
+GROUP BY ALL;
 
 
