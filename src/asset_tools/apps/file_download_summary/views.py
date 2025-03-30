@@ -38,6 +38,11 @@ def create_report(fd_files: list[str]) -> None:
     xlsx_output_path = os.path.join(output_folder, report_name)
     
     temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'file_download.duckdb'))
+    
+    # Use an file connection for the time being until we start to generate an xlsx file...
+    # Delete it first   
+    if os.path.exists(temp_duckdb_path):
+        os.remove(temp_duckdb_path)
 
     # Use an in-memory connection
     con = duckdb.connect(database=temp_duckdb_path, read_only=False)

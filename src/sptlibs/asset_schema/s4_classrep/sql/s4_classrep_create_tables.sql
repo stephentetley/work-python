@@ -98,9 +98,9 @@ CREATE OR REPLACE TABLE s4_classrep.equi_longtext(
 
 CREATE OR REPLACE TABLE s4_classrep.floc_aib_reference (
     funcloc_id VARCHAR NOT NULL,
-    ai2_aib_references VARCHAR[],
-    s4_aib_reference VARCHAR,
-    PRIMARY KEY(funcloc_id)
+    value_index INTEGER,
+    ai2_aib_reference VARCHAR,
+    PRIMARY KEY (funcloc_id, value_index)
 );
 
 
@@ -110,13 +110,9 @@ CREATE OR REPLACE TABLE s4_classrep.floc_aib_reference (
 
 CREATE OR REPLACE TABLE s4_classrep.equi_aib_reference (
     equipment_id VARCHAR NOT NULL,
-    sai_value_index INTEGER,
-    ai2_sai_reference VARCHAR,
-    pli_value_index INTEGER,
-    ai2_pli_reference VARCHAR,
-    ai2_extra_references VARCHAR[],
-    s4_aib_reference VARCHAR,
-    PRIMARY KEY(equipment_id)
+    value_index INTEGER,
+    ai2_aib_reference VARCHAR,
+    PRIMARY KEY (equipment_id, value_index)
 );
 
 
@@ -156,15 +152,17 @@ CREATE OR REPLACE TABLE s4_classrep.equi_east_north (
 
 CREATE OR REPLACE TABLE s4_classrep.floc_solution_id (
     funcloc_id VARCHAR NOT NULL,
-    solution_ids VARCHAR[],
-    PRIMARY KEY(funcloc_id)
+    value_index INTEGER,
+    solution_id VARCHAR,
+    PRIMARY KEY (funcloc_id, value_index)
 );
 
 
 CREATE OR REPLACE TABLE s4_classrep.equi_solution_id (
     equipment_id VARCHAR NOT NULL,
-    solution_ids VARCHAR[],
-    PRIMARY KEY(equipment_id)
+    value_index INTEGER,
+    solution_id VARCHAR,
+    PRIMARY KEY (equipment_id, value_index)
 );
 
 

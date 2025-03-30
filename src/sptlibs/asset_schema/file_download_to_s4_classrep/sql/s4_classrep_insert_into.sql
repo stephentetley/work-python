@@ -15,8 +15,6 @@
 -- 
 
 
--- TODO
--- This is file_download specific and should in a file_download specific package
 
 --- source table has _duplicates_ which cause an error without the row_number interior table 
 INSERT OR REPLACE INTO s4_classrep.floc_masterdata BY NAME
@@ -100,88 +98,25 @@ WHERE e.rownum = 1;
 
 -- ## AIB_REFERENCE (floc)
 
-INSERT OR REPLACE INTO s4_classrep_staging.floc_ai2_sai_references BY NAME
-SELECT DISTINCT ON(f.funcloc_id)   
-    f.funcloc_id AS funcloc_id,
-    list_sort(array_agg(eav.atwrt)) AS ai2_aib_references,
-FROM s4_classrep.floc_masterdata f
-JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id
-WHERE eav.charid = 'AI2_AIB_REFERENCE'
-GROUP BY funcloc_id;
-
-
-INSERT OR REPLACE INTO s4_classrep_staging.floc_s4_aib_reference BY NAME
-SELECT DISTINCT ON(f.funcloc_id)   
-    f.funcloc_id AS funcloc_id,
-    any_value(eav.atwrt) AS s4_aib_reference,
-FROM s4_classrep.floc_masterdata f
-JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id
-WHERE eav.charid = 'S4_AIB_REFERENCE'
-GROUP BY funcloc_id;
-
 INSERT OR REPLACE INTO s4_classrep.floc_aib_reference BY NAME
-SELECT DISTINCT ON(f.funcloc_id)
-    f.funcloc_id AS funcloc_id,
-    sai.ai2_aib_references AS ai2_aib_references,
-    s4.s4_aib_reference AS s4_aib_reference,
-FROM s4_classrep.floc_masterdata f
-LEFT JOIN s4_classrep_staging.floc_ai2_sai_references sai ON sai.funcloc_id = f.funcloc_id
-LEFT JOIN s4_classrep_staging.floc_s4_aib_reference s4 ON s4.funcloc_id = f.funcloc_id;
+SELECT DISTINCT ON (funcloc_id, value_index)
+    t.funcloc AS funcloc_id,
+    t.valcnt AS value_index,
+    t.atwrt AS ai2_aib_reference
+FROM s4_fd_raw_data.valuafloc_valuafloc1 t
+WHERE t.charid = 'AI2_AIB_REFERENCE'
+AND ai2_aib_reference IS NOT NULL;
 
 -- ## AIB_REFERENCE (equi)
 
-INSERT OR REPLACE INTO s4_classrep_staging.equi_ai2_sai_reference  BY NAME
-WITH cte AS (
-    SELECT  
-        e.equipment_id AS equipment_id,
-        eav.valcnt AS value_index,
-        eav.atwrt AS ai2_sai_reference,
-    FROM s4_classrep.equi_masterdata e
-    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-    WHERE eav.charid = 'AI2_AIB_REFERENCE'
-    AND NOT starts_with(ai2_sai_reference, 'PLI') 
-    ORDER BY equipment_id ASC, value_index ASC
-)
-SELECT 
-    equipment_id, 
-    any_value(ai2_sai_reference) AS ai2_sai_reference,
-    min(value_index) AS value_index
-FROM cte
-GROUP BY equipment_id;
-
-INSERT OR REPLACE INTO s4_classrep_staging.equi_ai2_pli_reference BY NAME
-WITH cte AS (
-    SELECT  
-        e.equipment_id AS equipment_id,
-        eav.valcnt AS value_index,
-        eav.atwrt AS ai2_pli_reference,
-    FROM s4_classrep.equi_masterdata e
-    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-    WHERE eav.charid = 'AI2_AIB_REFERENCE'
-    AND starts_with(ai2_pli_reference, 'PLI') 
-    ORDER BY equipment_id ASC, value_index ASC
-)
-SELECT 
-    equipment_id, 
-    any_value(ai2_pli_reference) AS ai2_pli_reference,
-    min(value_index) AS value_index
-FROM cte
-GROUP BY equipment_id;
-
 INSERT OR REPLACE INTO s4_classrep.equi_aib_reference BY NAME
-SELECT DISTINCT ON(e.equipment_id)
-    e.equipment_id AS equipment_id,
-    -- sai.value_index AS sai_value_index,  TODO reinstate...
-    sai.ai2_sai_reference AS ai2_sai_reference,
-    pli.value_index AS pli_value_index,
-    pli.ai2_pli_reference AS ai2_pli_reference,
-    s4.s4_aib_reference AS s4_aib_reference,
-    extras.extra_aib_references AS ai2_extra_references,
-FROM s4_classrep.equi_masterdata e
-LEFT JOIN s4_classrep_staging.equi_ai2_sai_reference sai ON sai.equipment_id = e.equipment_id
-LEFT JOIN s4_classrep_staging.equi_ai2_pli_reference pli ON pli.equipment_id = e.equipment_id
-LEFT JOIN s4_classrep_staging.vw_equi_ai2_extra_references extras ON extras.equipment_id = e.equipment_id
-LEFT JOIN s4_classrep_staging.vw_equi_s4_aib_references s4 ON s4.equipment_id = e.equipment_id;
+SELECT DISTINCT ON (equipment_id, value_index)
+    t.equi AS equipment_id,
+    t.valcnt AS value_index,
+    t.atwrt AS ai2_aib_reference
+FROM s4_fd_raw_data.valuaequi_valuaequi1 t
+WHERE t.charid = 'AI2_AIB_REFERENCE'
+AND ai2_aib_reference IS NOT NULL;
 
 -- ## ASSET_CONDITION
 
@@ -230,22 +165,22 @@ GROUP BY equipment_id;
 
 -- ## SOLUTION_ID
 
-INSERT OR REPLACE INTO s4_classrep.floc_solution_id BY NAME
-SELECT DISTINCT ON(f.funcloc_id)   
-    f.funcloc_id AS funcloc_id,
-    list_sort(array_agg(eav.atwrt)) AS solution_ids,
-FROM s4_classrep.floc_masterdata f
-JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id
-WHERE eav.charid = 'SOLUTION_ID'
-GROUP BY funcloc_id;
+INSERT INTO s4_classrep.floc_solution_id BY NAME
+SELECT DISTINCT ON (funcloc_id, value_index)
+    t.funcloc AS funcloc_id,
+    t.valcnt AS value_index,
+    t.atwrt AS solution_id
+FROM s4_fd_raw_data.valuafloc_valuafloc1 t
+WHERE t.charid = 'SOLUTION_ID'
+AND solution_id IS NOT NULL;
 
 
-INSERT OR REPLACE INTO s4_classrep.equi_solution_id BY NAME
-SELECT DISTINCT ON (e.equipment_id)
-    e.equipment_id AS equipment_id,
-    list_sort(array_agg(eav.atwrt)) AS solution_ids,
-FROM s4_classrep.equi_masterdata e
-JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
-WHERE eav.charid = 'SOLUTION_ID'
-GROUP BY equipment_id;
+INSERT INTO s4_classrep.equi_solution_id BY NAME
+SELECT DISTINCT ON (equipment_id, value_index)
+    t.equi AS equipment_id,
+    t.valcnt AS value_index,
+    t.atwrt AS solution_id
+FROM s4_fd_raw_data.valuaequi_valuaequi1 t
+WHERE t.charid = 'SOLUTION_ID'
+AND solution_id IS NOT NULL;
 

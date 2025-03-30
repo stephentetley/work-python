@@ -22,9 +22,9 @@ import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_classrep
 def translate_file_download_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> None: 
     setup_classrep.duckdb_init(gen_flocclasses=True, con=con)
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='s4_classrep_create_staging_tables.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_classrep_flocsummary_views.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_classrep_equisummary_views.sql')
+    
     # insert data...
     runner.exec_sql_file(rel_file_path='s4_classrep_insert_into.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_s4_classrep_flocclass_insert_into.sql')
