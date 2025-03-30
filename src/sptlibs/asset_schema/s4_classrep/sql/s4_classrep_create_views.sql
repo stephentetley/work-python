@@ -40,6 +40,15 @@ AND t.table_name LIKE 'equiclass_%';
 
 
 CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_aib_reference AS
+WITH cte1 AS (
+    SELECT 
+        t.funcloc_id AS funcloc_id,
+        count(t.ai2_aib_reference) AS sai_ref_count,
+        min(t.ai2_aib_reference) AS sai_ref,
+        list(t.ai2_aib_reference).list_filter(x -> x <> sai_ref) AS other_sai_refs,
+    FROM s4_classrep.floc_aib_reference t,
+    GROUP BY t.funcloc_id
+)
 SELECT 
     fmd.funcloc_id AS funcloc_id, 
     fmd.functional_location AS functional_location,
@@ -47,12 +56,32 @@ SELECT
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
     fmd.user_status AS user_status,
-    fa.* EXCLUDE (funcloc_id),
+    ifnull(t1.sai_ref_count, 0) AS ai2_aib_reference_count,
+    t1.sai_ref AS sai_ref,
+    t1.other_sai_refs AS other_ai2_aib_refs,
 FROM s4_classrep.floc_masterdata fmd
-LEFT OUTER JOIN s4_classrep.floc_aib_reference fa ON fa.funcloc_id = fmd.funcloc_id;
-
+LEFT OUTER JOIN cte1 t1 ON t1.funcloc_id = fmd.funcloc_id;
 
 CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_aib_reference AS
+WITH cte1 AS (
+    SELECT 
+        t.equipment_id AS equipment_id,
+        count(t.ai2_aib_reference) AS pli_ref_count,
+        min(t.ai2_aib_reference) AS pli_ref,
+        list(t.ai2_aib_reference).list_filter(x -> x <> pli_ref) AS other_pli_refs,
+    FROM s4_classrep.equi_aib_reference t,
+    WHERE t.ai2_aib_reference LIKE 'PLI%'
+    GROUP BY t.equipment_id
+), cte2 AS (
+    SELECT 
+        t.equipment_id AS equipment_id,
+        count(t.ai2_aib_reference) AS sai_ref_count,
+        min(t.ai2_aib_reference) AS sai_ref,
+        list(t.ai2_aib_reference).list_filter(x -> x <> sai_ref) AS other_sai_refs,
+    FROM s4_classrep.equi_aib_reference t,
+    WHERE t.ai2_aib_reference NOT LIKE 'PLI%'
+    GROUP BY t.equipment_id
+)
 SELECT 
     emd.equipment_id AS equipment_id, 
     emd.equi_description AS equi_description,
@@ -62,9 +91,13 @@ SELECT
     emd.startup_date AS startup_date,
     emd.object_type AS object_type,
     emd.user_status AS user_status,
-    ea.* EXCLUDE (equipment_id),
+    ifnull(t1.pli_ref_count, 0) + ifnull(t2.sai_ref_count, 0) AS ai2_aib_reference_count,
+    t1.pli_ref AS pli_ref,
+    t2.sai_ref AS sai_ref,
+    list_concat(t1.other_pli_refs, t2.other_sai_refs) AS other_ai2_aib_refs,
 FROM s4_classrep.equi_masterdata emd
-LEFT OUTER JOIN s4_classrep.equi_aib_reference ea ON ea.equipment_id = emd.equipment_id;
+LEFT OUTER JOIN cte1 t1 ON t1.equipment_id = emd.equipment_id
+LEFT OUTER JOIN cte2 t2 ON t2.equipment_id = emd.equipment_id;
 
 
 CREATE OR REPLACE VIEW s4_classrep.vw_equisummary_asset_condition AS
