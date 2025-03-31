@@ -23,7 +23,7 @@ from sptlibs.data_access.file_download._file_download import _FileDownload
 
 def duckdb_table_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='s4_fd_raw_data_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='fd_landing_create_tables.sql')
 
 
 def duckdb_import(*, path: str, con: duckdb.DuckDBPyConnection) -> None:

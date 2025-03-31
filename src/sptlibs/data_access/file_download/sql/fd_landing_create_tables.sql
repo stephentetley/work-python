@@ -14,10 +14,10 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS s4_fd_raw_data;
+CREATE SCHEMA IF NOT EXISTS fd_landing;
 
 
-CREATE OR REPLACE TABLE s4_fd_raw_data.funcloc_floc1 (
+CREATE OR REPLACE TABLE fd_landing.funcloc_floc1 (
     funcloc VARCHAR,
     abckzfloc VARCHAR,
     abckzi VARCHAR,
@@ -135,7 +135,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.funcloc_floc1 (
 );
 
 
-CREATE OR REPLACE TABLE s4_fd_raw_data.equi_equi1 (
+CREATE OR REPLACE TABLE fd_landing.equi_equi1 (
     equi VARCHAR,
     abck_eilo VARCHAR,
     abckzi VARCHAR,
@@ -273,7 +273,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.equi_equi1 (
 );
 
 -- TODO change class to class_name...
-CREATE OR REPLACE TABLE s4_fd_raw_data.classequi_classequi1 (
+CREATE OR REPLACE TABLE fd_landing.classequi_classequi1 (
     equi VARCHAR,
     class VARCHAR,
     classtype VARCHAR,
@@ -282,7 +282,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.classequi_classequi1 (
     lkenz_cla VARCHAR
 );
 
-CREATE OR REPLACE TABLE s4_fd_raw_data.classfloc_classfloc1 (
+CREATE OR REPLACE TABLE fd_landing.classfloc_classfloc1 (
     funcloc VARCHAR,
     class VARCHAR,
     classtype VARCHAR,
@@ -292,7 +292,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.classfloc_classfloc1 (
 );
 
 
-CREATE OR REPLACE TABLE s4_fd_raw_data.valuafloc_valuafloc1 (
+CREATE OR REPLACE TABLE fd_landing.valuafloc_valuafloc1 (
     funcloc VARCHAR,
     ataw1 VARCHAR,
     atawe VARCHAR,
@@ -312,7 +312,7 @@ CREATE OR REPLACE TABLE s4_fd_raw_data.valuafloc_valuafloc1 (
     atflb DECIMAL(18, 3)
 );
 
-CREATE OR REPLACE TABLE s4_fd_raw_data.valuaequi_valuaequi1 (
+CREATE OR REPLACE TABLE fd_landing.valuaequi_valuaequi1 (
     equi VARCHAR,
     ataw1 VARCHAR,
     atawe VARCHAR,

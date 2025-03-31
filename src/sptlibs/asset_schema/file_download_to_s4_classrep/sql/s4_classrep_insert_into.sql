@@ -50,7 +50,7 @@ FROM (
     SELECT
         *,
         ROW_NUMBER() OVER (PARTITION BY f1.floc_ref) AS rownum,
-    FROM s4_fd_raw_data.funcloc_floc1 f1
+    FROM fd_landing.funcloc_floc1 f1
     ) f
 WHERE f.rownum = 1;
 
@@ -92,7 +92,7 @@ FROM (
     SELECT
         *,
         ROW_NUMBER() OVER (PARTITION BY e1.equi) AS rownum,
-    FROM s4_fd_raw_data.equi_equi1 e1
+    FROM fd_landing.equi_equi1 e1
     ) e
 WHERE e.rownum = 1;
 
@@ -103,7 +103,7 @@ SELECT DISTINCT ON (funcloc_id, value_index)
     t.funcloc AS funcloc_id,
     t.valcnt AS value_index,
     t.atwrt AS ai2_aib_reference
-FROM s4_fd_raw_data.valuafloc_valuafloc1 t
+FROM fd_landing.valuafloc_valuafloc1 t
 WHERE t.charid = 'AI2_AIB_REFERENCE'
 AND ai2_aib_reference IS NOT NULL;
 
@@ -114,7 +114,7 @@ SELECT DISTINCT ON (equipment_id, value_index)
     t.equi AS equipment_id,
     t.valcnt AS value_index,
     t.atwrt AS ai2_aib_reference
-FROM s4_fd_raw_data.valuaequi_valuaequi1 t
+FROM fd_landing.valuaequi_valuaequi1 t
 WHERE t.charid = 'AI2_AIB_REFERENCE'
 AND ai2_aib_reference IS NOT NULL;
 
@@ -130,7 +130,7 @@ WITH cte AS (
         any_value(CASE WHEN eav.charid = 'SURVEY_COMMENTS' THEN eav.atwrt ELSE NULL END) AS survey_comments,
         any_value(CASE WHEN eav.charid = 'SURVEY_DATE' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS survey_date,
     FROM s4_classrep.equi_masterdata e
-    JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+    JOIN fd_landing.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
     GROUP BY equipment_id
 )
 SELECT 
@@ -150,7 +150,7 @@ SELECT DISTINCT ON(f.funcloc_id)
     any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
     any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
 FROM s4_classrep.floc_masterdata f
-JOIN s4_fd_raw_data.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id
+JOIN fd_landing.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id
 GROUP BY funcloc_id;
 
 INSERT OR REPLACE INTO s4_classrep.equi_east_north BY NAME
@@ -159,7 +159,7 @@ SELECT DISTINCT ON(e.equipment_id)
     any_value(CASE WHEN eav.charid = 'EASTING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS easting,
     any_value(CASE WHEN eav.charid = 'NORTHING' THEN TRY_CAST(eav.atflv AS INTEGER) ELSE NULL END) AS northing,
 FROM s4_classrep.equi_masterdata e
-JOIN s4_fd_raw_data.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
+JOIN fd_landing.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id
 GROUP BY equipment_id;
 
 
@@ -170,7 +170,7 @@ SELECT DISTINCT ON (funcloc_id, value_index)
     t.funcloc AS funcloc_id,
     t.valcnt AS value_index,
     t.atwrt AS solution_id
-FROM s4_fd_raw_data.valuafloc_valuafloc1 t
+FROM fd_landing.valuafloc_valuafloc1 t
 WHERE t.charid = 'SOLUTION_ID'
 AND solution_id IS NOT NULL;
 
@@ -180,7 +180,7 @@ SELECT DISTINCT ON (equipment_id, value_index)
     t.equi AS equipment_id,
     t.valcnt AS value_index,
     t.atwrt AS solution_id
-FROM s4_fd_raw_data.valuaequi_valuaequi1 t
+FROM fd_landing.valuaequi_valuaequi1 t
 WHERE t.charid = 'SOLUTION_ID'
 AND solution_id IS NOT NULL;
 

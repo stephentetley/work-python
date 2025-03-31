@@ -55,7 +55,7 @@ class _FileDownload:
         table_name = import_utils.normalize_name(f'{self.entity_type}_{self.variant}')
         view_name = import_utils.normalize_name(f'vw_{self.entity_type}')
         con.register(view_name=view_name, python_object=self.payload)
-        sql_stmt = f'CREATE OR REPLACE TABLE s4_fd_raw_data.{table_name} AS SELECT * FROM {view_name};'
+        sql_stmt = f'CREATE OR REPLACE TABLE fd_landing.{table_name} AS SELECT * FROM {view_name};'
         con.execute(sql_stmt)
         con.commit()
 
