@@ -17,7 +17,7 @@
 INSERT INTO s4_uploader.functional_location BY NAME
 SELECT
     t.funcloc AS functional_location,
-    t.name AS description,
+    t.name AS description_medium,
     t.floc_category AS category,
     t.floc_type AS object_type,
     current_date AS start_up_date,

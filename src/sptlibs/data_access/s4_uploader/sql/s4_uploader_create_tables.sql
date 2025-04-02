@@ -31,11 +31,13 @@ CREATE OR REPLACE MACRO get_superior_floc(floc, cat) AS
 -- a client needs to fill out, the view corresponds to a sheet in the uploader
 -- xlsx file
 
+-- IMPORTANT NOTE - we only model creating records with the `s4_uploader` tables,
+-- we don't attempt to model updating records.
 
 -- functional_location is just the fields client code needs to fill out...
 CREATE OR REPLACE TABLE s4_uploader.functional_location (
     functional_location VARCHAR NOT NULL,
-    description VARCHAR NOT NULL,
+    description_medium VARCHAR NOT NULL,
     category INTEGER NOT NULL,
     object_type VARCHAR NOT NULL,
     start_up_date DATETIME,
@@ -49,7 +51,7 @@ CREATE OR REPLACE VIEW s4_uploader.vw_function_location_data AS
 SELECT 
     t.functional_location AS functional_location,
     t.functional_location AS masked_func_loc,
-    t.description AS description,
+    t.description_medium AS description_medium,
     t.category AS funct_loc_cat,
     'YW-GS' AS str_indicator,
     t.object_type AS object_type,
@@ -75,30 +77,42 @@ ORDER BY functional_location;
 -- equipment is just the fields client code needs to fill out...
 CREATE OR REPLACE TABLE s4_uploader.equipment (
     equipment_id VARCHAR NOT NULL,
-    description VARCHAR NOT NULL,
-    category INTEGER NOT NULL,
-    object_type VARCHAR NOT NULL,
+    description_medium VARCHAR NOT NULL,
+    category VARCHAR,
+    object_type VARCHAR,
     start_up_date DATETIME,
     manufacturer VARCHAR,
     model VARCHAR,
     manuf_part_number VARCHAR,
     serial_number VARCHAR,
-    functional_location VARCHAR NOT NULL,
+    functional_location VARCHAR,
     superord_equip VARCHAR,
     position VARCHAR,
+    gross_weight_kg DECIMAL,
     tech_ident_no VARCHAR,
     status_of_an_object VARCHAR,
     maint_plant INTEGER,
+    plant_for_work_center INTEGER,
     user_status VARCHAR,
 );
 
 -- TODO - fill out...
 CREATE OR REPLACE VIEW s4_uploader.vw_equipment_data AS
 SELECT 
+    t.plant_for_work_center AS plant_work_center, 
     t.equipment_id AS equipment_id,
+    t.category AS category,
+    t.description_medium AS description_medium,
+    strftime(current_date, '%d.%m.%Y') AS valid_from,
+    IF(t.gross_weight_kg IS NULL, NULL, 'KG') AS unit_of_weight,
+    t.gross_weight_kg AS gross_weight_kg,
     t.functional_location AS functional_location,
+    t.superord_equip AS superord_equip,
+    t.tech_ident_no AS tech_ident_no,
+    'ZEQUIPST' AS status_profile,
+    t.status_of_an_object AS status_of_an_object,
 FROM s4_uploader.equipment t
-ORDER BY functional_location, equipment_id;
+ORDER BY functional_location, equipment_id, superord_equip;
 
 
 -- No Primary Key - multiples allowed
