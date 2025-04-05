@@ -38,11 +38,12 @@ CREATE OR REPLACE MACRO get_superior_floc(floc, cat) AS
 CREATE OR REPLACE TABLE s4_uploader.functional_location (
     functional_location VARCHAR NOT NULL,
     description_medium VARCHAR NOT NULL,
-    category INTEGER NOT NULL,
-    object_type VARCHAR NOT NULL,
+    category INTEGER,
+    object_type VARCHAR,
     start_up_date DATETIME,
     maint_plant INTEGER,
     user_status VARCHAR,
+    PRIMARY KEY (functional_location)
 );
 
 
@@ -80,6 +81,7 @@ CREATE OR REPLACE TABLE s4_uploader.equipment (
     description_medium VARCHAR NOT NULL,
     category VARCHAR,
     object_type VARCHAR,
+    gross_weight_kg DECIMAL,
     start_up_date DATETIME,
     manufacturer VARCHAR,
     model VARCHAR,
@@ -88,12 +90,12 @@ CREATE OR REPLACE TABLE s4_uploader.equipment (
     functional_location VARCHAR,
     superord_equip VARCHAR,
     position INTEGER,
-    gross_weight_kg DECIMAL,
     tech_ident_no VARCHAR,
     status_of_an_object VARCHAR,
     maint_plant INTEGER,
     plant_for_work_center INTEGER,
     user_status VARCHAR,
+    PRIMARY KEY (equipment_id)
 );
 
 -- TODO - fill out...
@@ -172,28 +174,39 @@ ORDER BY equipment_id, class, characteristics;
 
 
 CREATE OR REPLACE VIEW s4_uploader.vw_change_request_details AS
-WITH cte AS (
+WITH cte1 AS (
+    (SELECT
+        t.functional_location  AS functional_location,
+        null AS equipment_id
+    FROM s4_uploader.functional_location t)
+    UNION
+    (SELECT
+        null AS functional_location,
+        t.equipment_id AS equipment_id
+    FROM s4_uploader.equipment t)
+), cte2 AS (
     SELECT
-      ROW_NUMBER() OVER (
-      ORDER BY t.functional_location
-      ) AS row_num,
-      t.functional_location AS functional_location,
+          ROW_NUMBER() OVER (
+          ORDER BY t.functional_location, t.equipment_id
+          ) AS row_num,
+          t.functional_location AS functional_location,
+          t.equipment_id AS equipment_id,
     FROM
-      s4_uploader.functional_location t
+        cte1 t
 )
 SELECT 
-    IF(cte.row_num = 1, 'Upload Name', '') AS description_long,
+    IF(cte2.row_num = 1, 'Upload Name', '') AS description_long,
     null AS priority,
     null AS due_date,
     null AS reason,
-    IF(cte.row_num = 1, 'AIWEAM0P', '') AS type_of_change_request,
+    IF(cte2.row_num = 1, 'AIWEAM0P', '') AS type_of_change_request,
     null AS change_request_group,
     null AS mbom_material,
     null AS mbom_plant,
     null AS mbom_usage,
     null AS mbom_alternative,
-    cte.functional_location AS fl_functional_location,
-    null AS eq_equipment,
+    cte2.functional_location AS fl_functional_location,
+    cte2.equipment_id AS eq_equipment,
     'ASSET DATA' AS process_requester,
-FROM cte;
+FROM cte2;
 

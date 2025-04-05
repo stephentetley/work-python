@@ -2,8 +2,7 @@
 
 import os
 import duckdb
-import xlsxwriter
-import sptapps.simple_equi_compare.generate_report as generate_report
+import asset_tools.apps.simple_equi_compare.generate_report as generate_report
 
 duckdb_path = 'E:/coding/work/soev_equi_compare.duckdb'
 ppg_names_path = 'G:/work/2025/asset_data_facts/all_process_processgroup_names.xlsx'

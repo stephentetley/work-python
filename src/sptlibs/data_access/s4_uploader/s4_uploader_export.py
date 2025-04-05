@@ -62,5 +62,23 @@ def write_excel(*,
             index=False,
             header=False,
         )
+        equi_pandas = con.sql("SELECT * FROM s4_uploader.vw_equipment_data ORDER BY equipment_id;").df()
+        equi_pandas.to_excel(
+            writer,
+            sheet_name='Equipment Data',
+            startcol=0,
+            startrow=6,
+            index=False,
+            header=False,
+        )
+        equi_chars_pandas = con.sql("SELECT * FROM s4_uploader.vw_eq_classification ORDER BY equipment_id;").df()
+        equi_chars_pandas.to_excel(
+            writer,
+            sheet_name='EQ-Classification',
+            startcol=0,
+            startrow=6,
+            index=False,
+            header=False,
+        )
 
 
