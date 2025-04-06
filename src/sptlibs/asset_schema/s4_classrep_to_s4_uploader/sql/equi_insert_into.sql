@@ -14,6 +14,20 @@
 -- limitations under the License.
 -- 
 
+CREATE OR REPLACE TEMPORARY MACRO make_tostring_expression(ddl_data_type, char_precision, char_name) AS 
+    (WITH  cte AS (
+        SELECT lower(char_name) AS char_nameu, 
+    )
+    SELECT 
+            CASE
+                WHEN ddl_data_type LIKE 'DECIMAL%' THEN format('printf(''%.{}f'', {})', char_precision, char_nameu)
+                WHEN ddl_data_type = 'BIGINT' THEN format('printf(''%d'', {})', char_nameu)
+                WHEN ddl_data_type = 'INTEGER' THEN format('printf(''%d'', {})', char_nameu)
+                WHEN ddl_data_type = 'DATE' THEN format('strftime({}, ''%d.%m.%Y'')', char_nameu)
+                ELSE char_nameu
+            END
+        FROM cte
+);
 
 
 INSERT OR REPLACE INTO s4_uploader.equipment BY NAME
