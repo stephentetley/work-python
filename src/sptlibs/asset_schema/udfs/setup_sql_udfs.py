@@ -18,8 +18,11 @@ limitations under the License.
 import duckdb
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
-def setup_macros(*, con: duckdb.DuckDBPyConnection) -> None: 
+def setup_udfx_macros(*, con: duckdb.DuckDBPyConnection) -> None: 
+    con.execute("CREATE SCHEMA IF NOT EXISTS udfx;")
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='ai2_to_s4_create_macros.sql')
     runner.exec_sql_file(rel_file_path='east_north_create_macros.sql')
+    runner.exec_sql_file(rel_file_path='floc_macros.sql')
+    runner.exec_sql_file(rel_file_path='format_macros.sql')
+    runner.exec_sql_file(rel_file_path='translation_macros.sql')
     

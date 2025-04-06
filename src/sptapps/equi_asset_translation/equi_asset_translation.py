@@ -36,6 +36,7 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                            s4_classlists_db_source: str, 
                            ai2_equipment_attributes_source: XlsxSource, 
                            ai2_equipment_attribute_sets: XlsxSource) -> None:
+    setup_sql_udfs.setup_udfx_macros(con=con)
     s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_db_source, 
                                             setup_tables=True, 
                                             dest_con=con)
@@ -45,7 +46,6 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
     setup_s4_classrep.duckdb_init(gen_flocclasses=False, con=con)
-    setup_sql_udfs.setup_macros(con=con)
 
 # load ai2 exports into landing area...
 def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,

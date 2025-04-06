@@ -14,18 +14,12 @@
 -- limitations under the License.
 -- 
 
+
+-- asset_schema_udfs must be loaded
+
 CREATE SCHEMA IF NOT EXISTS s4_uploader;
 
-CREATE OR REPLACE MACRO get_superior_floc(floc, cat) AS 
-    CASE 
-        WHEN cat = 1 THEN ''
-        WHEN cat = 2 THEN floc[:5]
-        WHEN cat = 3 THEN floc[:9]
-        WHEN cat = 4 THEN floc[:13]
-        WHEN cat = 5 THEN floc[:17]
-        WHEN cat = 6 THEN floc[:23] 
-        ELSE '' 
-    END;
+
 
 -- The tables and views follow a pattern - the table contains just the fields 
 -- a client needs to fill out, the view corresponds to a sheet in the uploader
@@ -68,7 +62,7 @@ SELECT
     1000 AS co_area,
     null AS planning_plant,
     null AS display_position,
-    get_superior_floc(functional_location, funct_loc_cat) AS sup_funct_loc,
+    udfx.get_superior_floc(functional_location, funct_loc_cat) AS sup_funct_loc,
     IF(funct_loc_cat >= 5, 'X', '') AS equip_install,
     null AS status_of_an_object,
     null AS status_without_stsno,

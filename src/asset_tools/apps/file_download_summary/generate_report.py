@@ -20,6 +20,7 @@ import duckdb
 import polars as pl
 import xlsxwriter
 import sptlibs.utils.export_utils as export_utils
+import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
 import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.asset_schema.file_download_to_s4_classrep.file_download_to_s4_classrep as file_download_to_s4_classrep
@@ -29,6 +30,7 @@ def duckdb_init(*,
                 file_download_files: list[str],
                 classlists_db_path: str,
                 con: duckdb.DuckDBPyConnection) -> None: 
+    setup_sql_udfs.setup_udfx_macros(con=con)
     s4_classlists_import.copy_classlists_tables(classlists_source_db_path=classlists_db_path, setup_tables=True, dest_con=con)
 
     file_download_import.duckdb_table_init(con=con)

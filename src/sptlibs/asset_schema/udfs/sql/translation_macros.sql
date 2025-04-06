@@ -14,18 +14,6 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS udfx;
-
-CREATE OR REPLACE MACRO udfx.format_signal3(smin, smax, units) AS 
-(WITH 
-    cte1 AS (
-        SELECT 
-            upper(units) AS unitsu, 
-            trunc(TRY_CAST(smin AS DECIMAL)) AS smini,
-            trunc(TRY_CAST(smax AS DECIMAL)) AS smaxi,
-        )
-SELECT smini || ' - ' || smaxi || ' ' || unitsu FROM cte1
-);
 
 
 CREATE OR REPLACE MACRO udfx.get_voltage_ac_or_dc(str) AS
@@ -131,7 +119,7 @@ CREATE OR REPLACE MACRO udfx.power_to_killowatts(units, value) AS
 SELECT answer FROM cte2
 );
             
-CREATE OR REPLACE MACRO udfx.format_output_type(str) AS
+CREATE OR REPLACE MACRO udfx.get_output_type(str) AS
 (WITH 
     cte1 AS (
         SELECT upper(str) AS stru

@@ -14,22 +14,6 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS udfx;
-CREATE OR REPLACE MACRO udfx.weight_to_kilograms(units, value) AS
-(WITH 
-    cte1 AS (
-        SELECT upper(units) AS unitsu
-        ),
-    cte2 AS ( 
-        SELECT 
-            CASE 
-                WHEN unitsu IN ('KILOGRAMS', 'KG') THEN TRY_CAST(value AS DECIMAL)
-                ELSE null
-            END AS answer
-        FROM cte1
-        )
-SELECT TRY_CAST(answer AS DECIMAL) FROM cte2
-);
 
 
 INSERT OR REPLACE INTO s4_uploader.equipment BY NAME

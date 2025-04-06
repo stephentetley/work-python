@@ -75,7 +75,7 @@ FROM cte2
 --     t.pli_num,
 --     t.equi_name,
 --     t1.*,
---     norm_serial_number(t.serial_number) AS serial_number,
+--     udfx.normalize_serial_number(t.serial_number) AS serial_number,
 -- FROM equi_compare.ai2_equipment t
 -- JOIN get_normalize_manuf_model(equi_compare.ai2_equipment, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num;
 

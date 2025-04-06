@@ -21,13 +21,6 @@ CREATE SCHEMA IF NOT EXISTS equi_compare;
 DROP TYPE IF EXISTS inclusion_status;
 CREATE TYPE inclusion_status AS ENUM ('in-both', 'missing-in-s4', 'missing-in-ai2');
 
-CREATE OR REPLACE MACRO norm_serial_number(serialnum) AS (
-    CASE 
-        WHEN serialnum IS NULL THEN '#UNKNOWN'
-        WHEN upper(serialnum) IN ('TO BE DETERMINED', 'NOT APPLICABLE', 'UNSPECIFIED', 'UNKNOWN', '') THEN '#UNKNOWN'
-        ELSE regexp_replace(upper(serialnum), '[^[:alnum:]]+', '', 'g').regexp_replace('^0*', '')
-    END
-);
 
 
 -- Includes calculated fields...
@@ -109,7 +102,7 @@ WITH worklist AS
         t.pli_num,
         t1.manufacturer,
         t1.model AS norm_model,
-        norm_serial_number(t.serial_number) as norm_serial_number,
+        udfx.normalize_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_ai2_equi t
     JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
@@ -119,7 +112,7 @@ WITH worklist AS
         t.pli_num,
         t1.manufacturer,
         t1.model AS norm_model,
-        norm_serial_number(t.serial_number) as norm_serial_number,
+        udfx.normalize_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_s4_equi t
     JOIN get_normalize_manuf_model(equi_compare.skeleton_s4_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
@@ -153,7 +146,7 @@ WITH worklist AS
         t.pli_num,
         t1.manufacturer,
         t1.model,
-        norm_serial_number(t.serial_number) as norm_serial_number,
+        udfx.normalize_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_ai2_equi t
     JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
@@ -163,7 +156,7 @@ WITH worklist AS
         t.pli_num,
         t1.manufacturer,
         t1.model,
-        norm_serial_number(t.serial_number) as norm_serial_number,
+        udfx.normalize_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_s4_equi t
     JOIN get_normalize_manuf_model(equi_compare.skeleton_s4_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
@@ -195,7 +188,7 @@ WITH worklist AS
         t.pli_num,
         t1.manufacturer,
         t1.model,
-        norm_serial_number(t.serial_number) as norm_serial_number,
+        udfx.normalize_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_s4_equi t
     JOIN get_normalize_manuf_model(equi_compare.skeleton_s4_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)
@@ -205,7 +198,7 @@ WITH worklist AS
         t.pli_num,
         t1.manufacturer,
         t1.model,
-        norm_serial_number(t.serial_number) as norm_serial_number,
+        udfx.normalize_serial_number(t.serial_number) as norm_serial_number,
         t.install_date,
     FROM equi_compare.skeleton_ai2_equi t
     JOIN get_normalize_manuf_model(equi_compare.skeleton_ai2_equi, 'pli_num', 'manufacturer', 'model') t1 ON t1.equi_id = t.pli_num)

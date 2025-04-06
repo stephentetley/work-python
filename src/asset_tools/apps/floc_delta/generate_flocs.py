@@ -17,6 +17,7 @@ limitations under the License.
 
 
 import duckdb
+import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 import sptlibs.data_access.s4_uploader.s4_uploader_export as s4_uploader_export
@@ -27,6 +28,7 @@ def duckdb_init(*,
                 ih06_path: str, 
                 ztable_source_db: str,  
                 con: duckdb.DuckDBPyConnection) -> None: 
+    setup_sql_udfs.setup_udfx_macros(con=con)
     s4_ztables_import.copy_ztable_tables(source_db_path=ztable_source_db, dest_con=con)
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Flocs', table_name='raw_data.worklist', con=con)
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Config', table_name='raw_data.config', con=con)

@@ -14,7 +14,6 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS udfx;
 
 CREATE OR REPLACE MACRO udfx._osgb36_decode_major(cu) AS
 (CASE 

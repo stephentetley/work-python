@@ -18,6 +18,7 @@ limitations under the License.
 
 import duckdb
 import xlsxwriter
+import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.ai2_metadata.normalize_manuf_model_import as normalize_manuf_model_import
 import sptlibs.data_access.ai2_metadata.process_processgroup_names_import as process_processgroup_names_import
 import sptlibs.data_access.ai2_metadata.site_mapping_import as site_mapping_import
@@ -31,7 +32,8 @@ def duckdb_init(*,
                 metadata_site_mapping_path: str,
                 s4_ih08_paths: list[str],
                 ai2_export_paths: list[str],
-                con: duckdb.DuckDBPyConnection) -> None: 
+                con: duckdb.DuckDBPyConnection) -> None:
+    setup_sql_udfs.setup_udfx_macros(con=con) 
     con.execute('INSTALL excel;')
     con.execute('LOAD excel;')
     normalize_manuf_model_import.duckdb_import(xlsx_path=metadata_manuf_model_norm_path, con=con)
