@@ -42,7 +42,7 @@ CREATE OR REPLACE TABLE s4_uploader.functional_location (
     object_type VARCHAR,
     start_up_date DATETIME,
     maint_plant INTEGER,
-    user_status VARCHAR,
+    display_user_status VARCHAR,
     PRIMARY KEY (functional_location)
 );
 
@@ -67,7 +67,7 @@ SELECT
     2100 AS company_code,
     1000 AS co_area,
     null AS planning_plant,
-    null AS position,
+    null AS display_position,
     get_superior_floc(functional_location, funct_loc_cat) AS sup_funct_loc,
     IF(funct_loc_cat >= 5, 'X', '') AS equip_install,
     null AS status_of_an_object,
@@ -89,12 +89,12 @@ CREATE OR REPLACE TABLE s4_uploader.equipment (
     serial_number VARCHAR,
     functional_location VARCHAR,
     superord_equip VARCHAR,
-    position INTEGER,
+    display_position INTEGER,
     tech_ident_no VARCHAR,
     status_of_an_object VARCHAR,
     maint_plant INTEGER,
     plant_for_work_center INTEGER,
-    user_status VARCHAR,
+    display_user_status VARCHAR,
     PRIMARY KEY (equipment_id)
 );
 
@@ -123,7 +123,7 @@ SELECT
     'DEFAULT' AS maint_work_center,
     t.functional_location AS functional_location,
     t.superord_equip AS superord_equip,
-    printf('%04d', t.position) AS position,
+    printf('%04d', t.display_position) AS display_position,
     t.tech_ident_no AS tech_ident_no,
     'ZEQUIPST' AS status_profile,
     t.status_of_an_object AS status_of_an_object,

@@ -18,7 +18,7 @@ limitations under the License.
 import duckdb
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
-
+# must have s4_classlists setup
 def duckdb_init(gen_flocclasses: bool, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_classrep_create_tables.sql')

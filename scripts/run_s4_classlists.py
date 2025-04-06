@@ -23,7 +23,7 @@ import sptlibs.data_access.import_utils as import_utils
 
 
 def main(): 
-    parser = ArgumentParser(description='Generate ztable info DuckDB tables')
+    parser = ArgumentParser(description='Generate classlist info DuckDB tables')
     parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing classlist exports")
     parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
     args = parser.parse_args()

@@ -30,7 +30,7 @@ def duckdb_import(*, xlsx_path: str, con: duckdb.DuckDBPyConnection) -> None:
         "AI2_SiteReference" AS site_sai_num,
         "AI2_InstallationReference" AS inst_sai_num,
         "AI2_InstallationAssetType" AS installation_type,
-        "Asset Status 02/01/2025" as user_status,
+        "Asset Status 02/01/2025" as asset_status,
         "S/4 Hana Floc Lvl1_Code" AS s4_site_code,
         "S/4 Hana Floc Description" AS s4_site_name,
         "City Post Code (PostCode) CHAR 10" AS postcode,

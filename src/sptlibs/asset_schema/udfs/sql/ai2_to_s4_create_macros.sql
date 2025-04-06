@@ -94,6 +94,22 @@ CREATE OR REPLACE MACRO udfx.size_to_millimetres(units, value) AS
 SELECT TRY_CAST(answer AS INTEGER) FROM cte2
 );
 
+CREATE OR REPLACE MACRO udfx.weight_to_kilograms(units, value) AS
+(WITH 
+    cte1 AS (
+        SELECT upper(units) AS unitsu
+        ),
+    cte2 AS ( 
+        SELECT 
+            CASE 
+                WHEN unitsu IN ('KILOGRAMS', 'KG') THEN TRY_CAST(value AS DECIMAL)
+                ELSE null
+            END AS answer
+        FROM cte1
+        )
+SELECT TRY_CAST(answer AS DECIMAL) FROM cte2
+);
+
 -- For kVA use a power factor of 80.0
 CREATE OR REPLACE MACRO udfx.power_to_killowatts(units, value) AS 
 (WITH 

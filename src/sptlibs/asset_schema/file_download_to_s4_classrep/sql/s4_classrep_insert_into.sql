@@ -43,8 +43,8 @@ SELECT
     strptime(f.inbdt, '%d.%m.%Y') AS startup_date,
     f.tplkz_flc AS structure_indicator,
     f.tplma AS superior_funct_loc,
-    f.ustw_floc AS system_status,
-    f.usta_floc AS user_status,
+    f.ustw_floc AS status_of_an_object,
+    f.usta_floc AS display_user_status,
     f.arbplfloc AS work_center,
 FROM (
     SELECT
@@ -82,10 +82,10 @@ SELECT
     e.bebe_eilo AS plant_section,
     strptime(e.inbdt, '%d.%m.%Y') AS startup_date,
     e.hequ_eeqz AS superord_id,
-    e.ustw_equi AS system_status,
+    e.ustw_equi AS status_of_an_object,
     e.tidn_eeqz AS technical_ident_number,
     e.gewei AS unit_of_weight,
-    e.usta_equi AS user_status,
+    e.usta_equi AS display_user_status,
     strptime(e.data_eeqz, '%d.%m.%Y') AS valid_from,
     e.arbp_eilo AS work_center,
 FROM (

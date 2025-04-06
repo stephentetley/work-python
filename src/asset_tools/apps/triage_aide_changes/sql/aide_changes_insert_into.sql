@@ -37,7 +37,7 @@ SELECT DISTINCT
     t.model_number AS model,
     t.manufacturer_part_number AS specific_model_frame,
     t.manufacturer_s_serial_number AS serial_number, 
-    t.user_status AS status,
+    t.user_status AS asset_status,
     t1.sai_number AS sai_number,
     t1.pli_number AS pli_number,
 FROM raw_data.ih08_equi t

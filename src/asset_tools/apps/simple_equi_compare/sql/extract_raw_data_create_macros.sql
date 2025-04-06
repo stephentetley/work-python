@@ -27,8 +27,8 @@ SELECT DISTINCT ON (t."Equipment")
     t."Model number" AS model,
     t."Manufacturer part number" AS specific_model_frame,
     t."Manufacturer's Serial Number" AS serial_number,
-    t."User Status" AS user_status,
-    regexp_extract(user_status, '([A-Z]*)', 1) AS simple_status,
+    t."User Status" AS display_user_status,
+    regexp_extract(display_user_status, '([A-Z]*)', 1) AS simple_status,
     t."Object Type" AS object_type,
     t1."AI2 AIB Reference" AS pli_num,
     t2."AI2 AIB Reference" AS sai_num,
@@ -54,7 +54,7 @@ SELECT
     t."Model" AS model,
     t."Specific Model/Frame" AS specific_model_frame,
     t."Serial No" AS serial_number,
-    t."AssetStatus" AS user_status,
+    t."AssetStatus" AS display_user_status,
     t."Loc.Ref." AS grid_ref,
 FROM query_table(table_name::VARCHAR) t
 )

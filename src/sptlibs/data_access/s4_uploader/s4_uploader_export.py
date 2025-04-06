@@ -25,7 +25,7 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 # need to follow.
 
 
-def setup_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_uploader_create_tables.sql')
     
@@ -80,5 +80,3 @@ def write_excel(*,
             index=False,
             header=False,
         )
-
-

@@ -31,7 +31,7 @@ def duckdb_init(*,
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Flocs', table_name='raw_data.worklist', con=con)
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Config', table_name='raw_data.config', con=con)
     excel_table_import.duckdb_import(xls_path=ih06_path, sheet_name='Sheet1', table_name='raw_data.ih06_export', con=con)
-    s4_uploader_export.setup_tables(con=con)
+    s4_uploader_export.duckdb_init(con=con)
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='floc_delta_init_tables.sql')
     runner.exec_sql_file(rel_file_path='s4_uploader_insert_into.sql')

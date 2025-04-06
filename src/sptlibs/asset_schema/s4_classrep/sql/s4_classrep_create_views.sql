@@ -63,7 +63,7 @@ SELECT
     fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
-    fmd.user_status AS user_status,
+    fmd.display_user_status AS display_user_status,
     ifnull(t1.sai_ref_count, 0) AS ai2_aib_reference_count,
     t1.sai_ref AS sai_ref,
     pp_list(t1.other_sai_refs) AS other_ai2_aib_refs,
@@ -98,7 +98,7 @@ SELECT
     emd.model_number AS model_number,
     emd.startup_date AS startup_date,
     emd.object_type AS object_type,
-    emd.user_status AS user_status,
+    emd.display_user_status AS display_user_status,
     ifnull(t1.pli_ref_count, 0) + ifnull(t2.sai_ref_count, 0) AS ai2_aib_reference_count,
     t1.pli_ref AS pli_ref,
     t2.sai_ref AS sai_ref,
@@ -117,7 +117,7 @@ SELECT
     emd.model_number AS model_number,
     emd.startup_date AS startup_date,
     emd.object_type AS object_type,
-    emd.user_status AS user_status,
+    emd.display_user_status AS display_user_status,
     ea.* EXCLUDE (equipment_id),
 FROM s4_classrep.equi_masterdata emd
 LEFT OUTER JOIN s4_classrep.equi_asset_condition ea ON ea.equipment_id = emd.equipment_id;
@@ -129,7 +129,7 @@ SELECT
     fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
-    fmd.user_status AS user_status,
+    fmd.display_user_status AS display_user_status,
     fa.* EXCLUDE (funcloc_id),
 FROM s4_classrep.floc_masterdata fmd
 LEFT OUTER JOIN s4_classrep.floc_east_north fa ON fa.funcloc_id = fmd.funcloc_id;
@@ -143,7 +143,7 @@ SELECT
     emd.model_number AS model_number,
     emd.startup_date AS startup_date,
     emd.object_type AS object_type,
-    emd.user_status AS user_status,
+    emd.display_user_status AS display_user_status,
     ea.* EXCLUDE (equipment_id),
 FROM s4_classrep.equi_masterdata emd
 LEFT OUTER JOIN s4_classrep.equi_east_north ea ON ea.equipment_id = emd.equipment_id;
@@ -164,7 +164,7 @@ SELECT
     fmd.floc_description AS floc_description,
     fmd.startup_date AS startup_date,
     fmd.object_type AS object_type,
-    fmd.user_status AS user_status,
+    fmd.display_user_status AS display_user_status,
     ifnull(fa.solution_id_count, 0) AS solution_id_count,
     pp_list(fa.solution_ids) AS solution_ids,
 FROM s4_classrep.floc_masterdata fmd
@@ -189,7 +189,7 @@ SELECT
     emd.model_number AS model_number,
     emd.startup_date AS startup_date,
     emd.object_type AS object_type,
-    emd.user_status AS user_status,
+    emd.display_user_status AS display_user_status,
     ifnull(ea.solution_id_count, 0) AS solution_id_count,
     pp_list(ea.solution_ids) AS solution_ids,
 FROM s4_classrep.equi_masterdata emd

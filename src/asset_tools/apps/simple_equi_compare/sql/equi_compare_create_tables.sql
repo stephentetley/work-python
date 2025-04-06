@@ -44,7 +44,7 @@ CREATE OR REPLACE TABLE equi_compare.ai2_equipment (
     specific_model_frame VARCHAR,
     serial_number VARCHAR,
     pandi_tag VARCHAR,
-    user_status VARCHAR,
+    display_user_status VARCHAR,
     grid_ref VARCHAR,
     PRIMARY KEY (pli_num)
 );
@@ -61,7 +61,7 @@ CREATE OR REPLACE TABLE equi_compare.s4_equipment (
     model VARCHAR,
     specific_model_frame VARCHAR,
     serial_number VARCHAR,
-    user_status VARCHAR,
+    display_user_status VARCHAR,
     simple_status VARCHAR,
     object_type VARCHAR,
     address_id VARCHAR,
@@ -82,7 +82,7 @@ SELECT
     t.equi_name AS ai2_equi_name,
     
 FROM equi_compare.ai2_equipment t
-WHERE t.user_status = 'OPERATIONAL'
+WHERE t.display_user_status = 'OPERATIONAL'
 ;
 
 
@@ -139,7 +139,7 @@ SELECT
     strftime(t1.startup_date, '%d.%m.%Y') AS install_date,
 FROM worklist t
 LEFT OUTER JOIN equi_compare.s4_equipment t1 ON t1.pli_num = t.pli_num AND t1.simple_status = 'OPER'
-LEFT OUTER JOIN equi_compare.ai2_equipment t2 ON t2.pli_num = t.pli_num AND t2.user_status = 'OPERATIONAL'
+LEFT OUTER JOIN equi_compare.ai2_equipment t2 ON t2.pli_num = t.pli_num AND t2.display_user_status = 'OPERATIONAL'
 ORDER BY t.s4_site;
 
 
@@ -182,7 +182,7 @@ SELECT
     t1.serial_number AS serial_number,
     strftime(t1.startup_date, '%d.%m.%Y') AS install_date,    
 FROM worklist t
-LEFT OUTER JOIN equi_compare.ai2_equipment t1 ON t1.pli_num = t.pli_num AND t1.user_status = 'OPERATIONAL'
+LEFT OUTER JOIN equi_compare.ai2_equipment t1 ON t1.pli_num = t.pli_num AND t1.display_user_status = 'OPERATIONAL'
 ORDER BY t.s4_site;
 
 CREATE OR REPLACE VIEW equi_compare.vw_missing_in_ai2 AS

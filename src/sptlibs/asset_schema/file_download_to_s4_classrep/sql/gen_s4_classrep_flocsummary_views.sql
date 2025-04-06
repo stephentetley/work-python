@@ -31,7 +31,7 @@ SELECT
         '        fmd.floc_description AS floc_description,',
         '        fmd.startup_date AS startup_date,',
         '        fmd.object_type AS object_type,',
-        '        fmd.user_status AS user_status,',
+        '        fmd.display_user_status AS display_user_status,',
         '    fc.* EXCLUDE (funcloc_id),',
         format('FROM s4_classrep.flocclass_{} fc', t.class_name), 
         'JOIN s4_classrep.floc_masterdata fmd ON fmd.funcloc_id = fc.funcloc_id;' ) AS sql_text,

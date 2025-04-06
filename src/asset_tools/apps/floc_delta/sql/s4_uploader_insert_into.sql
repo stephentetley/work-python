@@ -22,7 +22,7 @@ SELECT
     t.floc_type AS object_type,
     current_date AS start_up_date,
     2110 AS maint_plant,
-    'OPER' AS user_status,
+    'OPER' AS display_user_status,
 FROM floc_delta.new_generated_flocs t
 ;
 

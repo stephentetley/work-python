@@ -26,7 +26,7 @@ CREATE OR REPLACE TABLE aide_changes.ih08_equi (
     model VARCHAR,
     specific_model_frame VARCHAR,
     serial_number VARCHAR,
-    status VARCHAR,
+    asset_status VARCHAR,
     sai_number VARCHAR,
     pli_number VARCHAR,
     PRIMARY KEY (equi_id)

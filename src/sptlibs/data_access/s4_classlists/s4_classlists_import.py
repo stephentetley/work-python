@@ -27,12 +27,12 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 # TODO - change source to list[str]
 def duckdb_import(*, sources: list[XlsxSource], con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql', con=con)
+    runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql')
     for source in sources:
         print(source.path)
         df = _read_source(source)
         import_utils.duckdb_store_polars_dataframe(df, table_name='s4_classlists.dataframe_temp', con=con)
-        runner.exec_sql_file(rel_file_path='s4_classlists_insert_into.sql', con=con)
+        runner.exec_sql_file(rel_file_path='s4_classlists_insert_into.sql')
                 
 
 # use `schema_overrides` because input source iss too sparse with long 

@@ -22,7 +22,7 @@ CREATE OR REPLACE TABLE ai2_metadata.site_mapping (
    site_sai_num VARCHAR,
    inst_sai_num VARCHAR,
    installation_type VARCHAR,
-   user_status VARCHAR, 
+   asset_status VARCHAR, 
    s4_site_code VARCHAR,
    s4_site_name VARCHAR,
    postcode VARCHAR,
