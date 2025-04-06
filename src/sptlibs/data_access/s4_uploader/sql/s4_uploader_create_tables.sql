@@ -81,6 +81,7 @@ CREATE OR REPLACE TABLE s4_uploader.equipment (
     description_medium VARCHAR NOT NULL,
     category VARCHAR,
     object_type VARCHAR,
+    display_user_status VARCHAR,
     gross_weight_kg DECIMAL,
     start_up_date DATETIME,
     manufacturer VARCHAR,
@@ -93,15 +94,19 @@ CREATE OR REPLACE TABLE s4_uploader.equipment (
     tech_ident_no VARCHAR,
     status_of_an_object VARCHAR,
     maint_plant INTEGER,
-    plant_for_work_center INTEGER,
-    display_user_status VARCHAR,
+    plant_section VARCHAR,
+    work_center INTEGER,
+    company_code INTEGER,
+    co_area INTEGER,
+    planning_plant INTEGER,
+    maint_work_center VARCHAR,
     PRIMARY KEY (equipment_id)
 );
 
--- TODO - fill out...
+-- TODO fill out null columns so shape matches uploader form...
 CREATE OR REPLACE VIEW s4_uploader.vw_equipment_data AS
 SELECT 
-    t.plant_for_work_center AS plant_work_center, 
+    t.maint_plant AS plant_work_center, 
     t.equipment_id AS equipment_id,
     t.category AS category,
     t.description_medium AS description_medium,
@@ -116,11 +121,11 @@ SELECT
     strftime(start_up_date, '%Y') AS construct_year,
     strftime(start_up_date, '%m') AS construct_month,
     maint_plant AS maint_plant,
-    2100 AS work_center,
-    'DEFAULT' AS company_code,
-    1000 AS co_area,
-    2100 AS planning_plant,
-    'DEFAULT' AS maint_work_center,
+    t.work_center AS work_center,
+    t.company_code AS company_code,
+    t.co_area AS co_area,
+    t.planning_plant AS planning_plant,
+    t.maint_work_center AS maint_work_center,
     t.functional_location AS functional_location,
     t.superord_equip AS superord_equip,
     printf('%04d', t.display_position) AS display_position,
