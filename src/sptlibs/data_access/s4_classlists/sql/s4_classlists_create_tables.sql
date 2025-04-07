@@ -66,54 +66,88 @@ CREATE OR REPLACE TABLE s4_classlists.equi_enums (
 
 
 CREATE OR REPLACE VIEW s4_classlists.vw_refined_equi_characteristic_defs AS
+WITH cte1 AS (
+    (SELECT 
+        t.class_name AS class_name,
+        t.char_name AS char_name, 
+        true AS is_enum,
+    FROM s4_classlists.equi_characteristics t
+    SEMI JOIN s4_classlists.equi_enums t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name)
+UNION
+    (SELECT 
+        t.class_name AS class_name,
+        t.char_name AS char_name, 
+        false AS is_enum,
+    FROM s4_classlists.equi_characteristics t
+    ANTI JOIN s4_classlists.equi_enums t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name)
+)
 SELECT 
-    ec.class_name AS class_name,
-    ec.char_name AS char_name, 
-    ec.class_description AS class_description,
-    ec.char_description AS char_description,
-    ec.char_type AS s4_char_type,
-    ec.char_length AS char_len,
-    ec.char_precision AS char_precision,
+    t.class_name AS class_name,
+    t.char_name AS char_name, 
+    t.class_description AS class_description,
+    t.char_description AS char_description,
+    t.char_type AS s4_char_type,
+    t.char_length AS char_len,
+    t.char_precision AS char_precision,
     CASE 
-        WHEN ec.char_type = 'CHAR' THEN 'TEXT'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length < 10 THEN 'INTEGER'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 10 AND ec.char_length < 19 THEN 'BIGINT'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 19 THEN 'HUGEINT'
-        WHEN ec.char_type = 'NUM' AND ec.char_precision > 0 THEN 'DECIMAL'
-        ELSE ec.char_type
+        WHEN t.char_type = 'CHAR' THEN 'TEXT'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length < 10 THEN 'INTEGER'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length >= 10 AND t.char_length < 19 THEN 'BIGINT'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length >= 19 THEN 'HUGEINT'
+        WHEN t.char_type = 'NUM' AND t.char_precision > 0 THEN 'DECIMAL'
+        ELSE t.char_type
     END AS refined_char_type,
     CASE 
-        WHEN ec.char_type = 'CHAR' THEN 'VARCHAR'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length < 10 THEN 'INTEGER'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 10 AND ec.char_length < 19 THEN 'BIGINT'
-        WHEN ec.char_type = 'NUM' AND (ec.char_precision IS NULL OR ec.char_precision = 0) AND ec.char_length >= 19 THEN 'HUGEINT'
-        WHEN ec.char_type = 'NUM' AND ec.char_precision > 0 THEN format('DECIMAL({}, {})', ec.char_length, ec.char_precision)
-        ELSE ec.char_type
-    END AS ddl_data_type
-FROM s4_classlists.equi_characteristics ec;
+        WHEN t.char_type = 'CHAR' THEN 'VARCHAR'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length < 10 THEN 'INTEGER'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length >= 10 AND t.char_length < 19 THEN 'BIGINT'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) AND t.char_length >= 19 THEN 'HUGEINT'
+        WHEN t.char_type = 'NUM' AND t.char_precision > 0 THEN format('DECIMAL({}, {})', t.char_length, t.char_precision)
+        ELSE t.char_type
+    END AS ddl_data_type,
+    t1.is_enum AS is_enum,
+FROM s4_classlists.equi_characteristics t
+JOIN cte1 t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name;
 
 CREATE OR REPLACE VIEW s4_classlists.vw_refined_floc_characteristic_defs AS
+WITH cte1 AS (
+    (SELECT 
+        t.class_name AS class_name,
+        t.char_name AS char_name, 
+        true AS is_enum,
+    FROM s4_classlists.floc_characteristics t
+    SEMI JOIN s4_classlists.floc_enums t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name)
+UNION
+    (SELECT 
+        t.class_name AS class_name,
+        t.char_name AS char_name, 
+        false AS is_enum,
+    FROM s4_classlists.floc_characteristics t
+    ANTI JOIN s4_classlists.floc_enums t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name)
+)
 SELECT 
-    fc.class_name AS class_name,
-    fc.char_name AS char_name, 
-    fc.class_description AS class_description,
-    fc.char_description AS char_description,
-    fc.char_type AS s4_char_type,
-    fc.char_length AS char_len,
-    fc.char_precision AS char_precision,
+    t.class_name AS class_name,
+    t.char_name AS char_name, 
+    t.class_description AS class_description,
+    t.char_description AS char_description,
+    t.char_type AS s4_char_type,
+    t.char_length AS char_len,
+    t.char_precision AS char_precision,
     CASE 
-        WHEN fc.char_type = 'CHAR' THEN 'TEXT'
-        WHEN fc.char_type = 'NUM' AND (fc.char_precision IS NULL OR fc.char_precision = 0) THEN 'INTEGER'
-        WHEN fc.char_type = 'NUM' AND fc.char_precision > 0 THEN 'DECIMAL'
-        ELSE fc.char_type
+        WHEN t.char_type = 'CHAR' THEN 'TEXT'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) THEN 'INTEGER'
+        WHEN t.char_type = 'NUM' AND t.char_precision > 0 THEN 'DECIMAL'
+        ELSE t.char_type
     END AS refined_char_type,
     CASE 
-        WHEN fc.char_type = 'CHAR' THEN 'VARCHAR'
-        WHEN fc.char_type = 'NUM' AND (fc.char_precision IS NULL OR fc.char_precision = 0) THEN 'INTEGER'
-        WHEN fc.char_type = 'NUM' AND fc.char_precision > 0 THEN format('DECIMAL({}, {})', fc.char_length, fc.char_precision)
-        ELSE fc.char_type
-    END AS ddl_data_type
-FROM s4_classlists.floc_characteristics fc;
+        WHEN t.char_type = 'CHAR' THEN 'VARCHAR'
+        WHEN t.char_type = 'NUM' AND (t.char_precision IS NULL OR t.char_precision = 0) THEN 'INTEGER'
+        WHEN t.char_type = 'NUM' AND t.char_precision > 0 THEN format('DECIMAL({}, {})', t.char_length, t.char_precision)
+        ELSE t.char_type
+    END AS ddl_data_type,
+    t1.is_enum AS is_enum,
+FROM s4_classlists.floc_characteristics t
+JOIN cte1 t1 ON t1.class_name = t.class_name AND t1.char_name = t.char_name;
 
 
 CREATE OR REPLACE VIEW s4_classlists.vw_equi_class_defs (class_name, class_description, is_object_class) AS
