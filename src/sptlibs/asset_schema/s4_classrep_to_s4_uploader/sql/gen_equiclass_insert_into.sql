@@ -19,7 +19,7 @@
 WITH cte AS (
     SELECT 
         ech.class_name AS class_name,
-        array_agg(format(E'    {} AS {},', make_tostring_expression(ech.ddl_data_type, ech.char_precision, ech.char_name), ech.char_name )) AS field_elements,
+        array_agg(format(E'    {} AS {},', make_tostring_expression(ech.refined_char_type, ech.char_precision, ech.char_name), ech.char_name )) AS field_elements,
     FROM s4_classlists.vw_refined_equi_characteristic_defs ech
     JOIN s4_classlists.vw_equi_class_defs ecl ON ecl.class_name = ech.class_name 
     WHERE ecl.is_object_class = true

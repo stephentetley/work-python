@@ -31,3 +31,10 @@ def get_class_enums_dimensions(*, class_name: str, con: duckdb.DuckDBPyConnectio
     con.execute(setvar_stmt)
     rel = runner.eval_sql_file(rel_file_path='get_class_enums_dimensions.sql')
     return rel.df()
+
+def get_char_form_data(*, class_name: str, con: duckdb.DuckDBPyConnection) -> pandas.DataFrame:
+    runner = SqlScriptRunner(__file__, con=con)
+    setvar_stmt = f"SET VARIABLE equiclass_name = '{class_name.upper()}';"
+    con.execute(setvar_stmt)
+    rel = runner.eval_sql_file(rel_file_path='get_char_form_data.sql')
+    return rel.df()
