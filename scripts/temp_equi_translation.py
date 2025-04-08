@@ -6,7 +6,7 @@ import sptapps.equi_asset_translation.equi_asset_translation as equi_asset_trans
 ## (base) > $env:PYTHONPATH='E:\coding\work\work-python\src'
 ## (base) > python.exe .\scripts\temp_equi_translation.py
 
-s4_classlists_source = 'g:/work/2024/asset_data_facts/s4_classlists/classlists_nov2024.duckdb'
+s4_classlists_source = 'g:/work/2025/asset_data_facts/s4_classlists/s4_classlists_jan2025.duckdb'
 ai2_equipment_attributes_source = XlsxSource('G:/work/2025/equi_translation/ai2_metadata/AI2AssetTypeAttributes20250123.xlsx', 'AssetTypesAttributes')
 ai2_equipment_attribute_sets = XlsxSource('G:/work/2025/equi_translation/ai2_metadata/equipment_attribute_sets.xlsx', 'Sheet1')
 

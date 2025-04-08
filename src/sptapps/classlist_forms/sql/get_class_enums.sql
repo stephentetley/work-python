@@ -15,17 +15,22 @@
 -- 
 
 
--- TODO class_name in WHERE clause should be a param
 -- Returns a table that can be written directly to Excel for picklist ranges
+-- Can't currently easily turn this into a macro as it use PIVOT
+
 WITH cte1 AS (
     SELECT 
         t.* EXCLUDE (enum_description),
     FROM s4_classlists.equi_enums t
-    WHERE t.class_name = 'LSTNUT'
+    WHERE t.class_name = getvariable('table_name')
     ORDER BY t.enum_value
 ), cte2 AS (
     PIVOT cte1
     ON char_name
     USING list(enum_value)
 )
-SELECT unnest(COLUMNS(* EXCLUDE (class_name))) from cte2;
+SELECT unnest(COLUMNS(* EXCLUDE (class_name))) from cte2
+;
+
+--  Set the table_name variable before calling this, e.g.
+-- > SET VARIABLE table_name = 'NETWTL';

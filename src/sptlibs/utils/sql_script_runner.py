@@ -93,7 +93,7 @@ class SqlScriptRunner:
         self.con.commit()
 
 
-    def eval_sql_generating_stmt(self, *, sql_query: str, action: Callable[[dict[str, Any], pl.DataFrame], None]) -> None:
+    def exec_sql_generating_stmt_with_action(self, *, sql_query: str, action: Callable[[dict[str, Any], pl.DataFrame], None]) -> None:
         """`sql_query` should be a single query and contain a column called `sql_text`"""
         df = self.con.execute(sql_query).pl()
         for row in df.rows(named=True):
@@ -108,4 +108,16 @@ class SqlScriptRunner:
                 print(exn)
                 raise(exn)
         self.con.commit()
+
+    def eval_sql_file(self, *, rel_file_path: str) -> duckdb.DuckDBPyRelation:
+        """The SQL file should have a single query"""
+        sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, rel_file_path))
+        if os.path.exists(sql_file_path):
+            with open(sql_file_path) as file:
+                statement = file.read()
+                ans = self.con.execute(statement)
+                return ans
+        else: 
+            print(f"SQL file does not exist {sql_file_path}")
+            raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 

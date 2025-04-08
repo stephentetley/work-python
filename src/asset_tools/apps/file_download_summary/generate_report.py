@@ -159,7 +159,7 @@ def _add_flocclass_tables(
                                                  sheet_name=sheet_name, 
                                                  column_formats = {})
     runner = SqlScriptRunner(None, con=con)
-    runner.eval_sql_generating_stmt(sql_query=_get_flocclass_tables, action=action)
+    runner.exec_sql_generating_stmt_with_action(sql_query=_get_flocclass_tables, action=action)
 
 
 _get_flocclass_tables = """
@@ -187,7 +187,7 @@ def _add_equiclass_tables(
                                                  sheet_name=sheet_name, 
                                                  column_formats = {})
     runner = SqlScriptRunner(None, con=con)
-    runner.eval_sql_generating_stmt(sql_query=_get_equiclass_tables, action=action)
+    runner.exec_sql_generating_stmt_with_action(sql_query=_get_equiclass_tables, action=action)
     
     
 _get_equiclass_tables = """
