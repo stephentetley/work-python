@@ -15,22 +15,17 @@
 -- 
 
 
--- Returns a table that can be written directly to Excel for picklist ranges
--- Not easy to turn this into a table macro as it uses PIVOT
+-- Returns "dimensions" of enums for turning into Excel ranges
 
-WITH cte1 AS (
+WITH cte AS (
     SELECT 
-        t.* EXCLUDE (enum_description),
+        t.char_name, 
+        count(t.enum_value) as enum_count,
     FROM s4_classlists.equi_enums t
     WHERE t.class_name = getvariable('equiclass_name')
-    ORDER BY t.enum_value
-), cte2 AS (
-    PIVOT cte1
-    ON char_name
-    USING list(enum_value)
+    GROUP BY t.char_name
 )
-SELECT unnest(COLUMNS(* EXCLUDE (class_name))) from cte2
-;
+SELECT lower(char_name) || '_range' AS range_name, row_number() OVER (ORDER BY char_name) AS column_idx, enum_count FROM cte;
 
 --  Set the `equiclass_name` variable before calling this, e.g.
 -- > SET VARIABLE equiclass_name = 'NETWTL';

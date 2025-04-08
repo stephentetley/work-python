@@ -36,6 +36,14 @@ df = make_classlist_forms.get_class_enums(class_name='LSTNUT', con=con)
 for df_row in dataframe_to_rows(df, index=False, header=True):
     md.append(df_row)
 
+df = make_classlist_forms.get_class_enums_dimensions(class_name='LSTNUT', con=con)
+for ix, df_row in df.iterrows():
+    column_letter = get_column_letter(df_row['column_idx'])
+    range = f"{column_letter}2:{column_letter}{df_row['enum_count']+1}"
+    ref =  f"{quote_sheetname(md.title)}!{absolute_coordinate(range)}"
+    defn = DefinedName(df_row['range_name'], attr_text=ref)
+    wb.defined_names.add(defn)
+    print(df_row['range_name'], range, ref)
 
 wb.save(xlsx_path)
 wb.close()
