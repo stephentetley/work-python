@@ -52,13 +52,25 @@ for ix, df_row in df.iterrows():
     column_letter = get_column_letter(df_row['column_idx'])
     range = f"{column_letter}2:{column_letter}1000"
     ws.cell(row=1, column=col).value = df_row['column_heading']
+    ws.column_dimensions[column_letter].width = df_row['column_width']
     dv = DataValidation(type=df_row['validation_type'], 
                         operator=df_row['validation_operator'], 
                         formula1=df_row['validation_formula1'],
                         allow_blank=True)
+    dv.promptTitle = df_row['validation_prompt_title']
+    dv.prompt = df_row['validation_prompt']
+    dv.showInputMessage = True
+    dv.errorTitle = df_row['validation_error_title']
+    dv.error =df_row['validation_error']
+    dv.showErrorMessage = True
     ws.add_data_validation(dv)
     dv.add(range)
-    print(df_row['validation_type'], df_row['validation_operator'], df_row['validation_formula1'], range)
+    print(range)
+
+ws.freeze_panes = 'A2'
+
+
+
 
 wb.save(xlsx_path)
 wb.close()
