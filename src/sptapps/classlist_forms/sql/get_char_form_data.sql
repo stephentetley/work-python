@@ -29,14 +29,20 @@ SELECT
     CASE 
         WHEN t.refined_char_type = 'TEXT' AND t.is_enum = True THEN null
         WHEN t.refined_char_type = 'TEXT' AND t.is_enum = False THEN 'lessThanOrEqual'
+        WHEN t.refined_char_type = 'INTEGER' THEN 'lessThanOrEqual'
+        WHEN t.refined_char_type = 'DECIMAL' THEN 'lessThanOrEqual'
+        WHEN t.refined_char_type = 'DATE' THEN 'greaterThanOrEqual'
         ELSE null
     END AS validation_operator,
     
     CASE 
         WHEN t.refined_char_type = 'TEXT' AND t.is_enum = True THEN lower(t.char_name) || '_range'
         WHEN t.refined_char_type = 'TEXT' AND t.is_enum = False THEN try_cast(t.char_len AS VARCHAR)
+        WHEN t.refined_char_type = 'INTEGER' THEN repeat('9', t.char_len)
+        WHEN t.refined_char_type = 'DECIMAL' THEN repeat('9', t.char_len - (t.char_precision + 1)) || '.' || repeat('9', t.char_precision)
+        WHEN t.refined_char_type = 'DATE' THEN '01/01/1900'
         ELSE null
-    END AS validation_formula,    
+    END AS validation_formula1,
 FROM s4_classlists.vw_refined_equi_characteristic_defs t
 WHERE t.class_name = getvariable('equiclass_name');
 

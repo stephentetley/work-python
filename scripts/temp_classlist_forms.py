@@ -54,11 +54,11 @@ for ix, df_row in df.iterrows():
     ws.cell(row=1, column=col).value = df_row['column_heading']
     dv = DataValidation(type=df_row['validation_type'], 
                         operator=df_row['validation_operator'], 
-                        formula1=df_row['validation_formula'],
+                        formula1=df_row['validation_formula1'],
                         allow_blank=True)
     ws.add_data_validation(dv)
     dv.add(range)
-    print(df_row['validation_type'], range)
+    print(df_row['validation_type'], df_row['validation_operator'], df_row['validation_formula1'], range)
 
 wb.save(xlsx_path)
 wb.close()
