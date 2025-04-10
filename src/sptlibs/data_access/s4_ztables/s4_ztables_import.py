@@ -48,14 +48,14 @@ class _ZTableInfo:
 def _get_table_props(df: pl.DataFrame) -> _ZTableInfo | None:
     """Original column names are normalized from the Excel ztable dumps, text dumps have different names."""
     match df.columns: 
-        case ['manufacturer_of_asset', 'model_number']: 
+        case ['manufacturer', 'model_number']: 
             return _ZTableInfo('s4_ztables.manuf_model', 
-                               {'manufacturer_of_asset': 'manufacturer', 
+                               {'manufacturer': 'manufacturer', 
                                 'model_number': 'model'})
-        case ['object_type', 'manufacturer_of_asset', 'remarks']:
+        case ['object_type', 'manufacturer', 'remarks']:
             return _ZTableInfo('s4_ztables.objtype_manuf', 
                                {'object_type': 'objtype', 
-                                'manufacturer_of_asset': 'manufacturer', 
+                                'manufacturer': 'manufacturer', 
                                 'remarks': 'comments'})
         case ['object_type', 'object_type_1', 'equipment_category', 'remarks']:
             return _ZTableInfo('s4_ztables.eqobjlbl', 

@@ -58,13 +58,13 @@ def _read_source(src: XlsxSource) -> pl.DataFrame:
     return df
 
 
-def copy_classlists_tables(*, classlists_source_db_path: str, setup_tables: bool, dest_con: duckdb.DuckDBPyConnection) -> None:
+def copy_classlists_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyConnection) -> None:
     """`dest_con` is the desination database."""
     # classlists includes views that we need to create
     runner = SqlScriptRunner(__file__, con=dest_con)
     runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql')
     import_utils.duckdb_import_tables_from_duckdb(
-        source_db_path=classlists_source_db_path, 
+        source_db_path=source_db_path, 
         con=dest_con,
         schema_name='s4_classlists',
         create_schema=True,

@@ -12,10 +12,12 @@ from openpyxl.utils import quote_sheetname, absolute_coordinate
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
+import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
 import sptapps.classlist_forms.make_classlist_forms as make_classlist_forms
 
 # TODO classlists should include ordering information...
 s4_classlists_source = 'g:/work/2025/asset_data_facts/s4_classlists/s4_classlists_jan2025.duckdb'
+s4_ztables_source = 'g:/work/2025/asset_data_facts/s4_ztables/s4_ztables_mar2025.duckdb'
 duckdb_path = 'e:/coding/work/work-sql/classlist_forms/output1.duckdb'
 xlsx_path = 'e:/coding/work/work-sql/classlist_forms/lstnut.xlsx'
 
@@ -24,8 +26,8 @@ if os.path.exists(duckdb_path):
 
 con = duckdb.connect(database=duckdb_path, read_only=False)
 
-s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_source, setup_tables=True, dest_con=con)
-
+s4_classlists_import.copy_classlists_tables(source_db_path=s4_classlists_source, dest_con=con)
+s4_ztables_import.copy_ztable_tables(source_db_path=s4_ztables_source, dest_con=con)
 wb = Workbook()
 ws = wb.active
 ws.title = "lstnut"

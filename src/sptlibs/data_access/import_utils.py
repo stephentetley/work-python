@@ -223,7 +223,7 @@ def _remove_index(s: str) -> str:
     return drop_ix
 
 def get_excel_sources_from_folder(source_folder: str, *, 
-                                  sheet_name: str = 'Sheet1', 
+                                  sheet_name: str | None = None, 
                                   glob_pattern: str = '*.xlsx') -> list[XlsxSource]:
     globlist = glob.glob(glob_pattern, root_dir=source_folder, recursive=False)
     def not_temp(file_name): 

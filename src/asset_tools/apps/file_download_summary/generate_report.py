@@ -31,7 +31,7 @@ def duckdb_init(*,
                 classlists_db_path: str,
                 con: duckdb.DuckDBPyConnection) -> None: 
     setup_sql_udfs.setup_udfx_macros(con=con)
-    s4_classlists_import.copy_classlists_tables(classlists_source_db_path=classlists_db_path, setup_tables=True, dest_con=con)
+    s4_classlists_import.copy_classlists_tables(source_db_path=classlists_db_path, dest_con=con)
 
     file_download_import.duckdb_table_init(con=con)
     for file_path in file_download_files:

@@ -37,9 +37,8 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                            ai2_equipment_attributes_source: XlsxSource, 
                            ai2_equipment_attribute_sets: XlsxSource) -> None:
     setup_sql_udfs.setup_udfx_macros(con=con)
-    s4_classlists_import.copy_classlists_tables(classlists_source_db_path=s4_classlists_db_source, 
-                                            setup_tables=True, 
-                                            dest_con=con)
+    s4_classlists_import.copy_classlists_tables(source_db_path=s4_classlists_db_source, 
+                                                dest_con=con)
     equipment_attributes_import.duckdb_import(equipment_attributes_source=ai2_equipment_attributes_source,
                                       attribute_sets_source=ai2_equipment_attribute_sets,
                                       con=con)
