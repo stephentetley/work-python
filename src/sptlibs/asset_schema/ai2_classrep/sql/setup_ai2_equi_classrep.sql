@@ -17,13 +17,7 @@
 
 CREATE SCHEMA IF NOT EXISTS ai2_classrep;
 
--- TODO use macros from from asset_schema.udfs
-CREATE OR REPLACE MACRO ai2_classrep.normalize_name(name) AS 
-    lower(name).regexp_replace('[\W+]', ' ', 'g').trim().regexp_replace('[\W]+', '_', 'g');
 
-CREATE OR REPLACE MACRO ai2_classrep.make_equiclass_name(name) AS 
-    ai2_classrep.normalize_name(replace(name, 'EQUIPMENT:', 'equiclass'))
-; 
 
 
 CREATE OR REPLACE TABLE ai2_classrep.equi_masterdata (

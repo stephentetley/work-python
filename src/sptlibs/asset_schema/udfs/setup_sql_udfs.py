@@ -24,5 +24,6 @@ def setup_udfx_macros(*, con: duckdb.DuckDBPyConnection) -> None:
     runner.exec_sql_file(rel_file_path='east_north_create_macros.sql')
     runner.exec_sql_file(rel_file_path='floc_macros.sql')
     runner.exec_sql_file(rel_file_path='format_macros.sql')
+    runner.exec_sql_file(rel_file_path='name_creation.sql')
     runner.exec_sql_file(rel_file_path='translation_macros.sql')
     

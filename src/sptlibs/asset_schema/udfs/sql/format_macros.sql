@@ -17,8 +17,6 @@
 CREATE SCHEMA IF NOT EXISTS udfx;
 
 
-CREATE OR REPLACE MACRO udfx.make_snake_case_name(name) AS 
-    lower(name).regexp_replace('[\W+]', ' ', 'g').trim().regexp_replace('[\W]+', '_', 'g');
 
 
 CREATE OR REPLACE MACRO udfx.normalize_serial_number(serialnum) AS (

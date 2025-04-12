@@ -15,9 +15,9 @@ ai2_equipment_attribute_sets = XlsxSource('G:/work/2025/equi_translation/ai2_met
 # source_folder = f'g:/work/2025/ai2_to_s4/{source_name}'
 # duckdb_output_path  = f'g:/work/2025/equi_translation/{source_name}_new_equi_translation.duckdb'
 
-source_folder = 'G:/work/2025/equi_translation/lstnut_2024_extracts'
-mapping_worklist = XlsxSource('G:/work/2025/equi_translation/lstnut_2024_extracts/lstnut24_mapping_file.xlsx', None)
-duckdb_path  = f'g:/work/2025/equi_translation/lstnut_ar2024_new_equi_translation.duckdb'
+source_folder = 'G:/work/2025/equi_translation/lstnut_ar2025'
+mapping_worklist = XlsxSource('G:/work/2025/equi_translation/lstnut_ar2025/lstnut25_mapping_file.xlsx', None)
+duckdb_path  = f'g:/work/2025/equi_translation/lstnut_ar2025/lstnut_ar2025.duckdb'
 
 
 if os.path.exists(duckdb_path):
