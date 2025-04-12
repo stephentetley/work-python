@@ -25,6 +25,15 @@ CREATE OR REPLACE TABLE equi_asset_translation.tt_equipment_classtypes (
     PRIMARY KEY(equipment_id)
 );
 
+CREATE OR REPLACE TABLE equi_asset_translation.mapping_worklist (
+    equipment_id VARCHAR NOT NULL,
+    common_name VARCHAR,
+    ai2_equipment_type VARCHAR,
+    s4_class VARCHAR,
+    s4_name VARCHAR,
+    PRIMARY KEY(equipment_id)
+);
+
 
     
 

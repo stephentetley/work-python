@@ -184,7 +184,7 @@ def duckdb_import_sheet_into(source: XlsxSource, *,
                              df_name: str, 
                              insert_stmt: str, 
                              con: duckdb.DuckDBPyConnection, 
-                             df_trafo: Callable[[pl.DataFrame], pl.DataFrame]) -> None:
+                             df_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None) -> None:
     '''Fill a table with an INSERT INTO statement'''
     df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
     if df_trafo is not None:

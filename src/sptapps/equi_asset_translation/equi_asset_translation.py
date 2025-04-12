@@ -30,8 +30,6 @@ import sptlibs.data_access.ai2_metadata.equipment_attributes_import as equipment
 
 
 
-                           
-
 def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                            s4_classlists_db_source: str, 
                            ai2_equipment_attributes_source: XlsxSource, 
@@ -44,7 +42,27 @@ def setup_equi_translation(*, con: duckdb.DuckDBPyConnection,
                                       con=con)
     setup_ai2_eav.setup_ai2_eav_tables(con=con)    
     setup_ai2_classrep.setup_ai2_classrep_tables(con=con)
+    runner = SqlScriptRunner(__file__, con=con)
+    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
     setup_s4_classrep.duckdb_init(gen_flocclasses=False, con=con)
+
+
+def import_mapping_worklist(*, 
+                            mapping_xlsx: XlsxSource,
+                            con: duckdb.DuckDBPyConnection) -> None:
+    insert_stmt = """
+        INSERT OR REPLACE INTO equi_asset_translation.mapping_worklist BY NAME
+        SELECT 
+            df.reference AS equipment_id,
+            df.common_name AS common_name,
+            df.ai2_equipment_type AS ai2_equipment_type,
+            df.s4_class AS s4_class,
+            df.s4_name AS s4_name,
+        FROM 
+            dataframe1 df
+        ;
+        """
+    import_utils.duckdb_import_sheet_into(source=mapping_xlsx, insert_stmt=insert_stmt, df_name='dataframe1', con=con)
 
 # load ai2 exports into landing area...
 def import_ai2_exports_to_ai2_landing(*, con: duckdb.DuckDBPyConnection,
@@ -81,7 +99,6 @@ def translate_ai2_eav_to_ai2_classrep(*, con: duckdb.DuckDBPyConnection) -> None
     
 def translate_ai2_classrep_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/setup_equi_asset_translation.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_a_to_c.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_d_to_f.sql')
     runner.exec_sql_file(rel_file_path='ai2_classrep_to_s4_classrep/translate_equiclass_g_to_k.sql')
