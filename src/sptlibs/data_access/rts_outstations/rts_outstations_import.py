@@ -19,24 +19,15 @@ limitations under the License.
 import duckdb
 import polars as pl
 import sptlibs.data_access.import_utils as import_utils
-
+import polars.selectors as cs
 
 def _trafo_dataframe(df: pl.DataFrame) -> pl.DataFrame:
-    return df.select([ 
-        (pl.col("os_name").str.strip_chars()),
-        (pl.col("od_name").str.strip_chars()),
-        (pl.col("os_addr").str.strip_chars().str.replace(',\s*', '_')),
-        (pl.col("os_type").str.strip_chars()),
-        (pl.col("os_comment").str.strip_chars()),
-        (pl.col("od_comment").str.strip_chars()),
-        (pl.col("media").str.strip_chars()),
-        (pl.col("scan_sched").str.strip_chars()),
-        (pl.col("set_name").str.strip_chars()),
-        (pl.col("parent_ou").str.strip_chars()),
-        (pl.col("parent_ou_comment").str.strip_chars()),
-        (pl.col("last_polled").str.strip_chars().str.to_datetime("%H:%M %d-%b-%y", strict=False)),
-        (pl.col("last_power_up").str.strip_chars().str.to_datetime("%H:%M %d-%b-%y", strict=False)),
-    ])
+    df = df.select(pl.all().str.strip_chars()) 
+    df = df.with_columns(
+        cs.by_name(['last_polled', 'last_power_up'], require_all=False).str.to_datetime("%H:%M %d-%b-%y", strict=False)
+    )
+    return df
+
 
 def duckdb_import(rts_report_csv: str, *, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS rts_raw_data;')
