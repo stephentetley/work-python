@@ -26,9 +26,14 @@ def _trafo_dataframe(df: pl.DataFrame) -> pl.DataFrame:
     df = df.with_columns(
         cs.by_name(['last_polled', 'last_power_up'], require_all=False).str.to_datetime("%H:%M %d-%b-%y", strict=False)
     )
+    df = df.select(
+        cs.by_name(['os_name', 'od_name', 'od_comment', 'os_comment', 
+                    'scan_status', 'last_polled', 'last_power_up', 'set_name',
+                    'media_type', 'ip_address', 'os_address', 'os_type'], require_all=False)
+    )
     return df
 
-
+# TODO import_utils is a mess
 def duckdb_import(rts_report_csv: str, *, con: duckdb.DuckDBPyConnection) -> None:
     con.execute('CREATE SCHEMA IF NOT EXISTS rts_raw_data;')
     import_utils.duckdb_import_csv(
