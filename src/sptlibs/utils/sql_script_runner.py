@@ -38,13 +38,13 @@ class SqlScriptRunner:
             self.sql_root_dir = None
 
 
-    def exec_sql_file(self, *, rel_file_path: str) -> None:
+    def exec_sql_file(self, *, rel_file_path: str, parameters: object = None) -> None:
         sql_file_path = os.path.normpath(os.path.join(self.sql_root_dir, rel_file_path))
         if os.path.exists(sql_file_path):
             with open(sql_file_path) as file:
                 statements = file.read()
                 try: 
-                    self.con.execute(statements)
+                    self.con.execute(statements, parameters=parameters)
                     self.con.commit()
                 except Exception as exn: 
                     print(f"SQL script failed:")
