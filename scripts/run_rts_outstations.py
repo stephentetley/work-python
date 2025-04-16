@@ -37,7 +37,7 @@ def main():
         rts_outstations_import.duckdb_import(source_file, con=conn)
 
         csv_output_path = os.path.normpath(os.path.join(dest_directory, "outstations_tidy.csv"))
-        export_stmt = f"COPY rts_raw_data.outstations_report TO '{csv_output_path}' (HEADER, DELIMITER ',');"
+        export_stmt = f"COPY rts_outstations.outstations TO '{csv_output_path}' (HEADER, DELIMITER ',');"
         conn.execute(export_stmt)
         print(f"{csv_output_path} created")
         

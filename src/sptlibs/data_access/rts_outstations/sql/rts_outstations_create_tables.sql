@@ -14,11 +14,22 @@
 -- limitations under the License.
 -- 
 
-
--- Setup classlist info tables...
-
-
 CREATE SCHEMA IF NOT EXISTS rts_outstations;
+
+CREATE OR REPLACE TEMPORARY TABLE rts_import_file_schema (
+    "OS name" VARCHAR NOT NULL,
+    "OD name" VARCHAR NOT NULL,
+    "OD comment" VARCHAR,
+    "OS comment" VARCHAR,
+    "Scan" VARCHAR,
+    "Last polled" VARCHAR,
+    "Last power up" VARCHAR,
+    "Set name" VARCHAR,
+    "Media" VARCHAR,
+    "IP Address,  1'ary IP Route,2'ary IP Route" VARCHAR,
+    "OS Addr" VARCHAR,
+    "OS type" VARCHAR,
+);
 
 CREATE OR REPLACE TABLE rts_outstations.outstations (
     os_name VARCHAR NOT NULL,
@@ -27,7 +38,7 @@ CREATE OR REPLACE TABLE rts_outstations.outstations (
     os_comment VARCHAR,
     scan_status VARCHAR,
     last_polled DATETIME,
-    last_powerup DATETIME,
+    last_power_up DATETIME,
     set_name VARCHAR,
     media_type VARCHAR,
     ip_address VARCHAR,
@@ -35,4 +46,3 @@ CREATE OR REPLACE TABLE rts_outstations.outstations (
     os_type VARCHAR,
     PRIMARY KEY(os_name)
 );
-
