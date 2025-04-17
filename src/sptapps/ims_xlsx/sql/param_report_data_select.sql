@@ -14,22 +14,13 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS ims_reports;
 
-
-CREATE OR REPLACE TABLE ims_reports.source_unpivoted (
-    source_type VARCHAR NOT NULL,
-    group_idx INTEGER NOT NULL,
-    element_idx INTEGER NOT NULL,
-    attr_name VARCHAR NOT NULL,
-    attr_value VARCHAR,
-);
-
-CREATE OR REPLACE VIEW ims_reports.vw_size_stats AS 
+-- Run this with params `asset_type` & `asset_index`
 SELECT 
-    source_type AS source_type,
-    max(group_idx) AS asset_count, 
-FROM ims_reports.source_unpivoted 
-GROUP BY source_type;
-
--- TODO need a view_to help create file names...
+    t.attr_name,
+    t.attr_value,
+FROM ims_reports.source_unpivoted t
+WHERE t.source_type = :asset_type
+AND t.group_idx = :asset_index
+ORDER BY t.element_idx
+;
