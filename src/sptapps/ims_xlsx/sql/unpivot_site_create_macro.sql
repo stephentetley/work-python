@@ -18,25 +18,25 @@
 -- DuckDb syntax does allow `INCLUDE NULLS`
 
 
--- Run this with params `file_path` & `tab_name`
-INSERT INTO ims_reports.source_unpivoted
+CREATE OR REPLACE MACRO unpivot_site(table_name, site_reference) AS TABLE (
 WITH cte1 AS (
     SELECT 
-        row_number() OVER () AS group_idx, 
         *, 
-    FROM read_xlsx(:file_path, sheet=:tab_name, all_varchar=true)
+    FROM query_table(table_name) t
+    WHERE t."SiteReference" = site_reference
 ), cte2 AS (
     FROM cte1 UNPIVOT INCLUDE NULLS (
-        attr_value FOR attr_name IN (COLUMNS(* EXCLUDE(group_idx)))
+        attr_value FOR attr_name IN (COLUMNS(*))
     )
 )
-SELECT 
-    :tab_name AS source_type,
-    group_idx, 
-    row_number() OVER (PARTITION BY group_idx) AS element_idx, 
+SELECT  
     attr_name,
     attr_value,
 FROM cte2
-ORDER BY source_type, group_idx, element_idx
-;
+);
+
+
+-- Calling examples
+-- SELECT * FROM unpivot_site('ims_landing.cso_assets', 'SAI00003607');
+-- SELECT * FROM unpivot_site('ims_landing.cso_assets', 'SAI00035751');
 
