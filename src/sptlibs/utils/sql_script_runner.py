@@ -121,3 +121,14 @@ class SqlScriptRunner:
             print(f"SQL file does not exist {sql_file_path}")
             raise FileNotFoundError(f"SQL file does not exist {sql_file_path}")
 
+    def set_variable(self, *, var_name: str, var_value: type[Any]) -> duckdb.DuckDBPyRelation:
+        if isinstance(var_value, str):
+            statement = f"SET VARIABLE {var_name} = '{var_value}';"
+            self.con.execute(statement)
+        elif isinstance(var_value, int) or isinstance(var_value, float):
+            statement = f"SET VARIABLE {var_name} = {var_value};"
+            self.con.execute(statement)
+        else: 
+            print(f"Unrecognized type for {var_name} ({var_value})")
+            raise TypeError(f"Unrecognized type")
+
