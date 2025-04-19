@@ -15,9 +15,9 @@ ai2_equipment_attribute_sets = XlsxSource('G:/work/2025/equi_translation/ai2_met
 # source_folder = f'g:/work/2025/ai2_to_s4/{source_name}'
 # duckdb_output_path  = f'g:/work/2025/equi_translation/{source_name}_new_equi_translation.duckdb'
 
-source_folder = 'G:/work/2025/equi_translation/lstnut_ar2025'
-mapping_worklist = XlsxSource('G:/work/2025/equi_translation/lstnut_ar2025/lstnut25_mapping_file.xlsx', None)
-duckdb_path  = f'g:/work/2025/equi_translation/lstnut_ar2025/lstnut_ar2025.duckdb'
+source_folder = 'G:/work/2025/equi_translation/lstnut_pseudo_uploader/pseudo_upload'
+mapping_worklist = XlsxSource('G:/work/2025/equi_translation/lstnut_pseudo_uploader/pseudo_upload/worklist.xlsx', None)
+duckdb_path  = f'g:/work/2025/equi_translation/lstnut_pseudo_uploader/lstnut_pseudo_upload.duckdb'
 
 
 if os.path.exists(duckdb_path):
@@ -35,7 +35,7 @@ equi_asset_translation.import_mapping_worklist(mapping_xlsx=mapping_worklist, co
 
 added = equi_asset_translation.import_ai2_exports_to_ai2_landing(con=con,
                                                                  source_folder=source_folder,
-                                                                 glob_pattern='*export*.xlsx')
+                                                                 glob_pattern='*extract*.xlsx')
 
 if added > 0:
     print(f'{added} exports added')
