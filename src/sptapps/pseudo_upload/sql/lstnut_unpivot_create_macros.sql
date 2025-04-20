@@ -14,32 +14,59 @@
 -- limitations under the License.
 -- 
 
+
+CREATE OR REPLACE TEMPORARY MACRO norm_siemens_model(model_name) AS (
+    CASE
+        WHEN model_name = 'HYDRORANGER 200  HMI' THEN 'HYDRORANGER 200'
+        ELSE model_name
+    END
+);
+
+CREATE OR REPLACE MACRO get_masterdata(site_reference) AS TABLE (
+WITH cte1 AS (
+    SELECT 
+        t.equipment_id AS "AI2 PLI Number",
+        t1.s4_name AS "Description",
+        'I' AS "Category",
+        t1.s4_floc AS "Functional Location",
+        '0110' AS "Position",
+        t.object_type AS "Object Type",
+        t.status_of_an_object AS "Status",
+    FROM s4_classrep.equi_masterdata t
+    JOIN worklist_extra.worklist t1 ON t1.equipment_id = t.equipment_id
+    WHERE t.equipment_id = site_reference
+)
+SELECT * FROM cte1);
+
 CREATE OR REPLACE MACRO unpivot_masterdata(site_reference) AS TABLE (
 WITH cte1 AS (
     SELECT 
-        0 AS class_order,
-        '[Masterdata]' AS class_name,
-        t.equi_description AS "1. Description",
-        'I' AS "2. Category",
-        t.functional_location AS "3. Functional Location",
+        t.equipment_id AS "AI2 PLI Number",
+        strftime(t.startup_date, '%d.%m.%Y') AS "Start Up Date",
+        strftime(t.startup_date, '%Y') AS "Construction Year",
+        strftime(t.startup_date, '%m') AS "Construction Month",
+        t.manufacturer AS "Manufacturer",
+        norm_siemens_model(t.model_number) AS "Model",
+        t.manufact_part_number AS "Manuf. Part Number",
+        t.serial_number AS "Serial Number",
+        'LSTNUT' AS "Catalog Profile",
+        t.technical_ident_number AS "Tech Ident Number",
     FROM s4_classrep.equi_masterdata t
-    WHERE equipment_id = site_reference
+    JOIN worklist_extra.worklist t1 ON t1.equipment_id = t.equipment_id
+    WHERE t.equipment_id = site_reference
 ), cte2 AS (
     FROM cte1 UNPIVOT INCLUDE NULLS (
-        attr_value FOR attr_name IN (COLUMNS(* EXCLUDE (class_order, class_name)))
+        attr_value FOR attr_name IN (COLUMNS(*))
     )
 )
 SELECT * FROM cte2);
-
-        
         
 
 CREATE OR REPLACE MACRO unpivot_lstnut(site_reference) AS TABLE (
 WITH cte1 AS (
     SELECT 
-        1 AS class_order,
-        'LSTNUT' AS class_name,
         t.ip_rating AS "IP_RATING", 
+        upper(t1.location_on_site) AS "LOCATION_ON_SITE",
         printf('%.0f', t.lstn_range_max) AS "LSTN_RANGE_MAX",
         printf('%.0f', t.lstn_range_min) AS "LSTN_RANGE_MIN",
         upper(t.lstn_range_units) AS "LSTN_RANGE_UNITS",
@@ -74,36 +101,33 @@ WITH cte1 AS (
         t.uniclass_code AS "UNICLASS_CODE",
         t.uniclass_desc AS "UNICLASS_DESC",
     FROM s4_classrep.equiclass_lstnut t
-    WHERE equipment_id = site_reference
+    JOIN worklist_extra.checked_location_on_site t1 ON t1.equipment_id = t.equipment_id
+    WHERE t.equipment_id = site_reference
 ), cte2 AS (
     FROM cte1 UNPIVOT INCLUDE NULLS (
-        attr_value FOR attr_name IN (COLUMNS(* EXCLUDE (class_order, class_name)))
+        attr_value FOR attr_name IN (COLUMNS(*))
     )
 )
-SELECT * FROM cte2);
+SELECT * FROM cte2 ORDER BY attr_name);
 
 CREATE OR REPLACE MACRO unpivot_east_north(site_reference) AS TABLE (
 WITH cte1 AS (
     SELECT 
-        2 AS class_order,
-        'EAST_NORTH' AS class_name,
         try_cast(t.easting AS VARCHAR) AS "EASTING", 
         try_cast(t.northing AS VARCHAR) AS "NORTHING",
     FROM s4_classrep.equi_east_north t
     WHERE equipment_id = site_reference
 ), cte2 AS (
     FROM cte1 UNPIVOT INCLUDE NULLS (
-        attr_value FOR attr_name IN (COLUMNS(* EXCLUDE (class_order, class_name)))
+        attr_value FOR attr_name IN (COLUMNS(*))
     )
 )
-SELECT * FROM cte2);
+SELECT * FROM cte2 ORDER BY attr_name);
 
 
 CREATE OR REPLACE MACRO unpivot_asset_condition(site_reference) AS TABLE (
 WITH cte1 AS (
     SELECT 
-        3 AS class_order,
-        'ASSET_CONDITION' AS class_name,
         '1 - GOOD' AS "CONDITION_GRADE", 
         'NEW' AS "CONDITION_GRADE_REASON",
         NULL AS "LAST_REFURBISHED_DATE",
@@ -113,20 +137,8 @@ WITH cte1 AS (
     WHERE equipment_id = site_reference
 ), cte2 AS (
     FROM cte1 UNPIVOT INCLUDE NULLS (
-        attr_value FOR attr_name IN (COLUMNS(* EXCLUDE (class_order, class_name)))
+        attr_value FOR attr_name IN (COLUMNS(*))
     )
 )
-SELECT * FROM cte2);
+SELECT * FROM cte2 ORDER BY attr_name);
 
-WITH cte1 AS (
-    SELECT * FROM unpivot_masterdata(:reference)
-    UNION BY NAME
-    SELECT * FROM unpivot_lstnut(:reference)
-    UNION BY NAME
-    SELECT * FROM unpivot_east_north(:reference)
-    UNION BY NAME
-    SELECT * FROM unpivot_asset_condition(:reference)
-)
-SELECT * FROM cte1
-ORDER BY class_order, class_name, attr_name
-;
