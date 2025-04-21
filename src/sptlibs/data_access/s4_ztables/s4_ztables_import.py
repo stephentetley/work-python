@@ -16,64 +16,40 @@ limitations under the License.
 """
 
 
-from dataclasses import dataclass
 import duckdb
-import polars as pl
 from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_access.import_utils as import_utils
-
-
+from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def duckdb_import(*, sources: list[XlsxSource], con: duckdb.DuckDBPyConnection) -> None:
-    con.execute('CREATE SCHEMA IF NOT EXISTS s4_ztables;')
-    for source in sources:
-        print(source)
-        df = import_utils.read_xlsx_source(source, normalize_column_names=True)
-        info = _get_table_props(df)
-        if info:
-            df1 = df.rename(info.column_renames)
-            import_utils.duckdb_store_polars_dataframe(df1, 
-                                                        table_name=info.table_name,
-                                                        con=con)
+    runner = SqlScriptRunner(__file__, con=con)
+    runner.exec_sql_file(rel_file_path='ztables_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='ztables_create_macros.sql')
+    for idx, source in enumerate(sources):
+        load_stmt = _make_load_landing_table(idx=idx, source=source)
+        con.execute(load_stmt)
+    df = con.execute("SELECT ztable_name, landing_table FROM s4_ztables_landing.vw_table_information;").pl()
+    for row in df.rows(named=True):
+        ztable_name = row['ztable_name']
+        landing_table = row['landing_table']
+        insert_stmt = _make_insert_into_query(ztable_name=ztable_name, landing_table=landing_table)
+        con.execute(insert_stmt)
 
 
-@dataclass
-class _ZTableInfo:
-    table_name: str
-    column_renames: dict[str, str]
+def _make_load_landing_table(*, idx: str, source:XlsxSource) -> str:
+    return f"""
+            CREATE OR REPLACE TABLE s4_ztables_landing.ztable{idx+1} AS
+            SELECT 
+                *
+            FROM read_xlsx('{source.path}');
+        """
 
 
-
-
-def _get_table_props(df: pl.DataFrame) -> _ZTableInfo | None:
-    """Original column names are normalized from the Excel ztable dumps, text dumps have different names."""
-    match df.columns: 
-        case ['manufacturer', 'model_number']: 
-            return _ZTableInfo('s4_ztables.manuf_model', 
-                               {'manufacturer': 'manufacturer', 
-                                'model_number': 'model'})
-        case ['object_type', 'manufacturer', 'remarks']:
-            return _ZTableInfo('s4_ztables.objtype_manuf', 
-                               {'object_type': 'objtype', 
-                                'manufacturer': 'manufacturer', 
-                                'remarks': 'comments'})
-        case ['object_type', 'object_type_1', 'equipment_category', 'remarks']:
-            return _ZTableInfo('s4_ztables.eqobjlbl', 
-                                {'object_type': 'obj_parent',
-                                'object_type_1': 'obj_child', 
-                                'equipment_category': 'category',
-                                'remarks': 'comments'})
-        case ['object_type', 'standard_floc_description']:
-            return _ZTableInfo('s4_ztables.flocdes', 
-                                {'object_type': 'objtype',
-                                 'standard_floc_description': 'description'})
-        case ['structure_indicator', 'object_type', 'object_type_1', 'remarks']:
-            return _ZTableInfo('s4_ztables.floobjlbjl', 
-                               {'object_type': 'obj_parent', 
-                                'object_type_1': 'obj_child', 
-                                'remarks': 'comments'})
-        case _:
-            return None
+def _make_insert_into_query(*, ztable_name: str, landing_table:str) -> str:
+    return f"""
+            INSERT INTO s4_ztables.{ztable_name}
+            SELECT * FROM get_{ztable_name}_table_data('s4_ztables_landing.{landing_table}');
+        """
 
 
 def copy_ztable_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyConnection) -> None:
@@ -83,8 +59,8 @@ def copy_ztable_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyConnecti
                                                   con=dest_con,
                                                   schema_name='s4_ztables',
                                                   create_schema=True,
-                                                  source_tables=['s4_ztables.manuf_model',
-                                                                 's4_ztables.objtype_manuf', 
-                                                                 's4_ztables.eqobjlbl',
+                                                  source_tables=['s4_ztables.eqobj',
+                                                                 's4_ztables.flobjl', 
                                                                  's4_ztables.flocdes',
-                                                                 's4_ztables.floobjlbjl'])
+                                                                 's4_ztables.manuf_model',
+                                                                 's4_ztables.obj'])
