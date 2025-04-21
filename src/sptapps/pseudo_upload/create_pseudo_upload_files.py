@@ -58,7 +58,7 @@ def _output_files(*, output_root:str, con: duckdb.DuckDBPyConnection) -> None:
         ws.append(["Enter in equipment details view..."])
         ws.append(["Remember, set [Data Origin] first"])
         df = con.execute("SELECT * FROM unpivot_masterdata($reference);", parameters={'reference': ai2_pli_num}).df()
-        for r in dataframe_to_rows(df, index=False, header=False):
+        for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
         # LSTNUT
         wb.create_sheet("lstnut")
@@ -91,7 +91,7 @@ def _output_files(*, output_root:str, con: duckdb.DuckDBPyConnection) -> None:
 _outer_select_stmt = """
 SELECT 
     t.equipment_id AS ai2_pli_num,
-    t.s4_floc || '-' || t.equipment_id || '-' || udfx.make_snake_case_name(t.s4_name) || '.xlsx' AS file_name,
+    t.batch_name || '-' || t.s4_floc || '-' || t.equipment_id || '-' || udfx.make_snake_case_name(t.s4_name) || '.xlsx' AS file_name,
 FROM worklist_extra.worklist t
-WHERE t.equipment_id IN ('PLI00389806', 'PLI00412806') ;
+WHERE t.equipment_id IN ('PLI00692981', 'PLI00564553', 'PLI00373536', 'PLI00389806');
 """

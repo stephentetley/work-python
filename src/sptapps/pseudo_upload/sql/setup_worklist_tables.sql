@@ -20,6 +20,7 @@ CREATE SCHEMA IF NOT EXISTS worklist_extra;
 CREATE OR REPLACE TABLE worklist_extra.worklist AS
 SELECT 
     t."Reference" AS equipment_id,
+    t."Batch" AS batch_name,
     t."Common Name" as ai2_common_name,
     t."S4 Name" as s4_name,
     t."S4 Floc" as s4_floc,
