@@ -41,7 +41,6 @@ SELECT * FROM cte1);
 CREATE OR REPLACE MACRO unpivot_masterdata(site_reference) AS TABLE (
 WITH cte1 AS (
     SELECT 
-        t.equipment_id AS "AI2 PLI Number",
         strftime(t.startup_date, '%d.%m.%Y') AS "Start Up Date",
         strftime(t.startup_date, '%Y') AS "Construction Year",
         strftime(t.startup_date, '%m') AS "Construction Month",

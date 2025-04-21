@@ -19,6 +19,7 @@ import os
 import duckdb
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import PatternFill, Font
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
@@ -35,6 +36,18 @@ def create_pseudo_upload_files(*,
     runner.exec_sql_file(rel_file_path='setup_worklist_tables.sql')
     runner.exec_sql_file(rel_file_path='lstnut_unpivot_create_macros.sql')
     _output_files(output_root=output_root, con=con)
+
+
+def set_bgcolour_of_range(*, range: str, colour: str, ws) -> None:
+    for row in ws[range]:
+        for cell in row:
+            cell.fill = PatternFill(fill_type="solid", start_color=colour, end_color=colour)
+
+def set_font_bold_of_range(*, range: str, ws) -> None:
+    for row in ws[range]:
+        for cell in row:
+            cell.font = Font(bold=True)
+
 
 
     
@@ -55,35 +68,72 @@ def _output_files(*, output_root:str, con: duckdb.DuckDBPyConnection) -> None:
         for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
         ws.append([None])
-        ws.append(["Enter in equipment details view..."])
+        ws.append(["Enter the attr_values in the equipment details view..."])
         ws.append(["Remember, set [Data Origin] first"])
         df = con.execute("SELECT * FROM unpivot_masterdata($reference);", parameters={'reference': ai2_pli_num}).df()
         for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
+        ws.column_dimensions['A'].width = 55
+        for ch in 'BCDEFG':
+            ws.column_dimensions[ch].width = 30
+        set_bgcolour_of_range(range='A2:G2', colour='00FFFF00', ws=ws)
+        set_bgcolour_of_range(range='A7:B7', colour='00FFFF00', ws=ws)
+        set_bgcolour_of_range(range='B8:B16', colour='00FFCC99', ws=ws)
+        set_font_bold_of_range(range='A1:A1', ws=ws)
+        set_font_bold_of_range(range='A5:A6', ws=ws)
         # LSTNUT
         wb.create_sheet("lstnut")
         ws = wb["lstnut"]
-        ws.append(["Copy-paste these values into class LSTNUT..."])
+        ws.append(["Copy-paste the attr_values into class LSTNUT..."])
         ws.append(["The Characteristics table must be sorted by characteristic..."])
         df = con.execute("SELECT * FROM unpivot_lstnut($reference);", parameters={'reference': ai2_pli_num}).df()
         for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
+        ws.column_dimensions['A'].width = 60
+        ws.column_dimensions['B'].width = 40
+        set_bgcolour_of_range(range='A3:B3', colour='00FFFF00', ws=ws)
+        set_bgcolour_of_range(range='B4:B38', colour='00FFCC99', ws=ws)
+        set_font_bold_of_range(range='A1:A2', ws=ws)
+        # AIB_REFERENCE
+        wb.create_sheet("aib_reference")
+        ws = wb["aib_reference"]
+        ws.append(["Copy-paste the attr_value into class AIB_REFERENCE..."])
+        ws.append([f"Look up {ai2_pli_num} in AI2 to find its parent SAI number and add that."])
+        query_aib = f"SELECT 'AI2_AIB_REFERENCE' AS attr_name, '{ai2_pli_num}' AS attr_value;"
+        df = con.execute(query_aib).df()
+        for r in dataframe_to_rows(df, index=False, header=True):
+            ws.append(r)
+        ws.column_dimensions['A'].width = 60
+        ws.column_dimensions['B'].width = 40
+        set_bgcolour_of_range(range='A3:B3', colour='00FFFF00', ws=ws)
+        set_bgcolour_of_range(range='B4:B4', colour='00FFCC99', ws=ws)
+        set_font_bold_of_range(range='A1:A2', ws=ws)
         # EAST_NORTH
         wb.create_sheet("east_north")
         ws = wb["east_north"]
-        ws.append(["Copy-paste these values into class EAST_NORTH..."])
+        ws.append(["Copy-paste the attr_values into class EAST_NORTH..."])
         ws.append(["The Characteristics table must be sorted by characteristic..."])
         df = con.execute("SELECT * FROM unpivot_east_north($reference);", parameters={'reference': ai2_pli_num}).df()
         for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
+        ws.column_dimensions['A'].width = 60
+        ws.column_dimensions['B'].width = 40
+        set_bgcolour_of_range(range='A3:B3', colour='00FFFF00', ws=ws)
+        set_bgcolour_of_range(range='B4:B5', colour='00FFCC99', ws=ws)
+        set_font_bold_of_range(range='A1:A2', ws=ws)
         # ASSET_CONDITION
         wb.create_sheet("asset_condition")
         ws = wb["asset_condition"]
-        ws.append(["Copy-paste these values into class ASSET_CONDITION..."])
+        ws.append(["Copy-paste the attr_values into class ASSET_CONDITION..."])
         ws.append(["The Characteristics table must be sorted by characteristic..."])
         df = con.execute("SELECT * FROM unpivot_asset_condition($reference);", parameters={'reference': ai2_pli_num}).df()
         for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
+        ws.column_dimensions['A'].width = 60
+        ws.column_dimensions['B'].width = 40
+        set_bgcolour_of_range(range='A3:B3', colour='00FFFF00', ws=ws)
+        set_bgcolour_of_range(range='B4:B8', colour='00FFCC99', ws=ws)
+        set_font_bold_of_range(range='A1:A2', ws=ws)
         wb.save(out_file)
         wb.close()
 
@@ -92,6 +142,5 @@ _outer_select_stmt = """
 SELECT 
     t.equipment_id AS ai2_pli_num,
     t.batch_name || '-' || t.s4_floc || '-' || t.equipment_id || '-' || udfx.make_snake_case_name(t.s4_name) || '.xlsx' AS file_name,
-FROM worklist_extra.worklist t
-WHERE t.equipment_id IN ('PLI00692981', 'PLI00564553', 'PLI00373536', 'PLI00389806');
+FROM worklist_extra.worklist t;
 """
