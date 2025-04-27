@@ -1,5 +1,5 @@
 """
-Copyright 2024 Stephen Tetley
+Copyright 2025 Stephen Tetley
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,29 +16,71 @@ limitations under the License.
 """
 
 import os
-import glob
 import duckdb
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
-from sptlibs.data_access.file_download._file_download import _FileDownload
 
-def duckdb_table_init(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='fd_landing_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='file_download_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='file_download_create_macros.sql')
+
+def duckdb_import_files(*, file_paths: list[str], con: duckdb.DuckDBPyConnection) -> None: 
+    for idx, path in enumerate(file_paths):
+        file_name = os.path.basename(path)
+        query = f"""
+            INSERT INTO file_download_landing.landing_files BY NAME
+            SELECT 
+                'file_download_landing.export{idx+1}' AS qualified_table_name,
+                '{file_name}' AS file_name,
+                '{path}' AS file_path;
+            """
+        con.execute(query)
+    _import_landing_tables(con=con)
+    _translate_landing_tables(con=con)
 
 
-def duckdb_import(*, path: str, con: duckdb.DuckDBPyConnection) -> None:
-    fd = _FileDownload.from_download(path=path)
-    if fd:
-        fd.store_to_duckdb(con=con)
+def duckdb_import_directory(*, directory_glob: str, con: duckdb.DuckDBPyConnection) -> None: 
+    query = f"""
+        INSERT INTO file_download_landing.landing_files BY NAME
+        SELECT 
+            'file_download_landing.export' || file_index AS qualified_table_name,
+            file_name AS file_name,
+            file_path AS file_path,
+        FROM get_glob_matches('{directory_glob}');
+        """
+    con.execute(query)
+    _import_landing_tables(con=con)
+    _translate_landing_tables(con=con)
 
 
-def duckdb_import_directory(*, source_dir: str, glob_pattern: str, con: duckdb.DuckDBPyConnection) -> None:
-    globlist = glob.glob(glob_pattern, root_dir=source_dir, recursive=False)
-    for file_name in globlist: 
-        path = os.path.normpath(os.path.join(source_dir, file_name))
-        print(path)
-        try:
-            duckdb_import(path=path, con=con)
-        except Exception as exn:
-            print(exn)
-            continue
+def _import_landing_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
+    query = "SELECT * FROM file_download_landing.landing_files;"
+    df = con.execute(query).pl()
+    for row in df.rows(named=True):
+        qualified_table_name = row['qualified_table_name']
+        fd_file_path = row['file_path']
+        insert_stmt = f"""
+            CREATE OR REPLACE TABLE {qualified_table_name} AS 
+            SELECT 
+                t.* FROM get_raw_download_table('{fd_file_path}') t;
+            """
+        con.execute(insert_stmt)
+
+
+def _translate_landing_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
+    query = "SELECT * FROM file_download_landing.vw_table_information;"
+    df = con.execute(query).pl()
+    for row in df.rows(named=True):
+        qualified_landing_table = row['qualified_landing_table']
+        entity_type = row['entity_type']
+        insert_stmt = f"""
+            INSERT INTO file_download.{entity_type} BY NAME 
+            SELECT * FROM get_{entity_type}_landing_table('{qualified_landing_table}');
+            """
+        con.execute(insert_stmt)
+
+
+
+
+
+

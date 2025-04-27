@@ -44,7 +44,7 @@ CREATE OR REPLACE TABLE s4_classrep.floc_masterdata (
     plant_section VARCHAR,
     object_number VARCHAR,
     floc_location VARCHAR,
-    address_ref INTEGER,
+    address_ref VARCHAR,
     PRIMARY KEY(funcloc_id)
 );
 
@@ -79,7 +79,7 @@ CREATE OR REPLACE TABLE s4_classrep.equi_masterdata (
     planning_plant INTEGER,
     plant_section VARCHAR,
     equi_location VARCHAR,
-    address_ref INTEGER,
+    address_ref VARCHAR,
     PRIMARY KEY(equipment_id)
 );
 

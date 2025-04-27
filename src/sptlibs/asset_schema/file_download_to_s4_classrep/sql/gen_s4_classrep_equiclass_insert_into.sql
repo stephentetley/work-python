@@ -43,9 +43,9 @@ SELECT
         '    e.equipment_id AS equipment_id,',
         list_sort(t.field_elements).list_aggregate('string_agg', E'\n'),
         'FROM s4_classrep.equi_masterdata e',
-        'JOIN fd_landing.classequi_classequi1 clz ON clz.equi = e.equipment_id',
-        'JOIN fd_landing.valuaequi_valuaequi1 eav ON eav.equi = e.equipment_id',
-        format('WHERE clz.class = ''{}''', t.class_name),
+        'JOIN file_download.classequi clz ON clz.equi = e.equipment_id',
+        'JOIN file_download.valuaequi eav ON eav.equi = e.equipment_id',
+        format('WHERE clz.classname = ''{}''', t.class_name),
         'GROUP BY e.equipment_id;') AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;

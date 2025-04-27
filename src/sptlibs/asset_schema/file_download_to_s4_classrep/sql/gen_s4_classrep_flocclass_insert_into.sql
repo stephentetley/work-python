@@ -44,9 +44,9 @@ SELECT
         '    f.funcloc_id AS funcloc_id,',
         list_sort(t.field_elements).list_aggregate('string_agg', E'\n'),
         'FROM s4_classrep.floc_masterdata f',
-        'JOIN fd_landing.classfloc_classfloc1 clz ON clz.funcloc = f.funcloc_id',
-        'JOIN fd_landing.valuafloc_valuafloc1 eav ON eav.funcloc = f.funcloc_id',
-        format('WHERE clz.class = ''{}''', t.class_name),
+        'JOIN file_download.classfloc clz ON clz.funcloc = f.funcloc_id',
+        'JOIN file_download.valuafloc eav ON eav.funcloc = f.funcloc_id',
+        format('WHERE clz.classname = ''{}''', t.class_name),
         'GROUP BY f.funcloc_id;') AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
