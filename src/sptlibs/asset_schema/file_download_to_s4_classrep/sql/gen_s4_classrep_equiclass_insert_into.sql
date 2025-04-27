@@ -25,7 +25,7 @@ WITH cte AS (
         array_agg(format(E'    any_value(CASE WHEN eav.charid = ''{}'' THEN {} ELSE NULL END) AS {},', 
                     ech.char_name,
                     CASE 
-                        WHEN ech.refined_char_type = 'DECIMAL' THEN 'TRY_CAST(eav.atflv AS DECIMAL)' 
+                        WHEN ech.refined_char_type = 'DECIMAL' THEN 'TRY_CAST(eav.atwrt AS DECIMAL)' 
                         WHEN ech.refined_char_type = 'INTEGER' THEN 'round(eav.atflv, 0)' 
                         ELSE 'eav.atwrt'
                     END,                    
