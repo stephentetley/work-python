@@ -1,7 +1,7 @@
 # temp_concat_aide_changes.py
 import os
 import duckdb
-import sptlibs.data_access.aide_changes.aide_changes as aide_changes
+import sptlibs.data_access.aide_changes.aide_changes_import as aide_changes_import
 
 # DuckDB's `read_xlsx` not capable of using globs at the moment
 
@@ -13,7 +13,7 @@ if os.path.exists(duckdb_output_path):
     os.remove(duckdb_output_path)
 
 con = duckdb.connect(database=duckdb_output_path, read_only=False)
-aide_changes.duckdb_init(xlsx_directory_glob=xlsx_source_directory_glob, con=con)
-aide_changes.export_xlsx(xlsx_path=xlsx_output_path, con=con)
+aide_changes_import.duckdb_init(xlsx_directory_glob=xlsx_source_directory_glob, con=con)
+aide_changes_import.export_xlsx(xlsx_path=xlsx_output_path, con=con)
 con.close()
 
