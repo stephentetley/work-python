@@ -184,3 +184,32 @@ FROM file_download.valuaequi t
 WHERE t.charid = 'SOLUTION_ID'
 AND solution_id IS NOT NULL;
 
+
+-- ## Equi shape classes
+
+INSERT INTO s4_classrep.equishape_cfbm BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'DAIMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
+    any_value(CASE WHEN t2.charid = 'TOP_SURFACE_AREA_M2' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS top_surface_area_m2,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHCFBM'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_rfbm BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'LENGTH_MM' THEN t2.atflv ELSE NULL END) AS length_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
+    any_value(CASE WHEN t2.charid = 'TOP_SURFACE_AREA_M2' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS top_surface_area_m2,
+    any_value(CASE WHEN t2.charid = 'WIDTH_MM' THEN t2.atflv ELSE NULL END) AS width_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHRFBM'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;

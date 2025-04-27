@@ -165,4 +165,25 @@ CREATE OR REPLACE TABLE s4_classrep.equi_solution_id (
     PRIMARY KEY (equipment_id, value_index)
 );
 
+-- ## Equi shape classes
 
+CREATE OR REPLACE TABLE s4_classrep.equishape_cfbm (
+    equipment_id VARCHAR NOT NULL,
+    capacity_m3 DECIMAL(18,3),
+    diameter_mm INTEGER,
+    side_depth_mm INTEGER,
+    top_surface_area_m2 DECIMAL(18,3),
+    working_volume_m3 DECIMAL(18,3),
+    PRIMARY KEY (equipment_id)
+);
+
+CREATE OR REPLACE TABLE s4_classrep.equishape_rfbm (
+    equipment_id VARCHAR NOT NULL,
+    capacity_m3 DECIMAL(18,3),
+    length_mm INTEGER,
+    side_depth_mm INTEGER,
+    top_surface_area_m2 DECIMAL(18,3),
+    width_mm INTEGER,
+    working_volume_m3 DECIMAL(18,3),
+    PRIMARY KEY (equipment_id)
+);

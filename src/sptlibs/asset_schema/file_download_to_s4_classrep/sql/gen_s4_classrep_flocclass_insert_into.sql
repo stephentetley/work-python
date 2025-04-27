@@ -16,8 +16,6 @@
 
 -- INSERT INTO `flocclass_` tables
 
--- TODO
--- This is file_download specific and should in a file_download specific package
 
 
 WITH cte AS (
