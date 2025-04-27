@@ -22,25 +22,25 @@ CREATE SCHEMA IF NOT EXISTS ims_landing;
 -- SET VARIABLE file_source = 'g:/work/2025/sps_for_ims/source_files/AI2MitigationPlans20250212.xlsx';
 
 CREATE OR REPLACE TABLE ims_landing.sps_assets AS
-SELECT *, 
+SELECT * EXCLUDE(InstAssetID2), 
 FROM read_xlsx(getvariable('file_source'), sheet='SPS', all_varchar=true);
 
 CREATE OR REPLACE TABLE ims_landing.dtk_assets AS
-SELECT *, 
+SELECT * EXCLUDE(InstAssetID2),
 FROM read_xlsx(getvariable('file_source'), sheet='DTK', all_varchar=true);
 
 CREATE OR REPLACE TABLE ims_landing.inlet_pumping_assets AS
-SELECT *, 
+SELECT * EXCLUDE(InstAssetID2),
 FROM read_xlsx(getvariable('file_source'), sheet='InletPumping', all_varchar=true);
 
 CREATE OR REPLACE TABLE ims_landing.cso_assets AS
-SELECT *, 
+SELECT * EXCLUDE(InstAssetID2),
 FROM read_xlsx(getvariable('file_source'), sheet='CSO', all_varchar=true);
 
 CREATE OR REPLACE TABLE ims_landing.cso_storage_assets AS
-SELECT *, 
+SELECT * EXCLUDE(InstAssetID2),
 FROM read_xlsx(getvariable('file_source'), sheet='CSO Storage', all_varchar=true);
 
 CREATE OR REPLACE TABLE ims_landing.suds_assets AS
-SELECT *, 
+SELECT * EXCLUDE(InstAssetID2),
 FROM read_xlsx(getvariable('file_source'), sheet='SuDS', all_varchar=true);

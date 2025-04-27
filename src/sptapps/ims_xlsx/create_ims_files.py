@@ -37,11 +37,11 @@ def create_ims_files(*, ims_source_path: str, output_root: str, con: duckdb.Duck
     runner.set_variable(var_name='file_source', var_value=ims_source_path)
     runner.exec_sql_file(rel_file_path='setup_landing_tables.sql')
     runner.exec_sql_file(rel_file_path='unpivot_site_create_macro.sql')
-    # _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('sps'), con=con)
-    # _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('dtk'), con=con)
-    # _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('inlet_pumping'), con=con)
-    # _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('cso'), con=con)
-    # _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('cso_storage'), con=con)
+    _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('sps'), con=con)
+    _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('dtk'), con=con)
+    _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('inlet_pumping'), con=con)
+    _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('cso'), con=con)
+    _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('cso_storage'), con=con)
     _gen_ims_files_for_table(output_root=output_root, table_source=_make_table_source('suds'), con=con)
 
 
