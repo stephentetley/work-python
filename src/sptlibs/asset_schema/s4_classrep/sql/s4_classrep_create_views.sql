@@ -24,6 +24,36 @@ CASE
     ELSE try_cast(xs AS VARCHAR)
 END;
 
+-- use table macros for simple views
+
+CREATE OR REPLACE MACRO simple_floc_summary(table_name) AS TABLE (
+SELECT
+    t.funcloc_id AS funcloc_id,
+    t.functional_location AS functional_location,
+    t.floc_description AS floc_description,
+    t.startup_date AS startup_date,
+    t.object_type AS object_type,
+    t.display_user_status AS display_user_status,
+    t1.* EXCLUDE (funcloc_id),
+FROM s4_classrep.floc_masterdata t
+JOIN query_table(table_name::VARCHAR) t1 ON t1.funcloc_id = t.funcloc_id
+);
+
+CREATE OR REPLACE MACRO simple_equi_summary(table_name) AS TABLE (
+SELECT 
+    t.equipment_id AS equipment_id, 
+    t.equi_description AS equi_description,
+    t.functional_location AS functional_location,
+    t.manufacturer AS manufacturer,
+    t.model_number AS model_number,
+    t.startup_date AS startup_date,
+    t.object_type AS object_type,
+    t.display_user_status AS display_user_status,
+    t1.* EXCLUDE (equipment_id),
+FROM s4_classrep.equi_masterdata t
+JOIN query_table(table_name::VARCHAR) t1 ON t1.equipment_id = t.equipment_id
+);
+
 CREATE OR REPLACE VIEW s4_classrep.vw_flocclass_stats AS
 SELECT 
     array_slice(table_name, 11, len(table_name)) AS class_name,
@@ -207,21 +237,3 @@ FROM s4_classrep.equi_masterdata emd
 LEFT OUTER JOIN cte ea ON ea.equipment_id = emd.equipment_id
 GROUP BY ALL;
 
--- shape class summaries
-
--- TODO - use a new scheme with a table macro rather than creating hundreds of views
-
-CREATE OR REPLACE MACRO simple_equi_summary(table_name) AS TABLE (
-SELECT 
-    t.equipment_id AS equipment_id, 
-    t.equi_description AS equi_description,
-    t.functional_location AS functional_location,
-    t.manufacturer AS manufacturer,
-    t.model_number AS model_number,
-    t.startup_date AS startup_date,
-    t.object_type AS object_type,
-    t.display_user_status AS display_user_status,
-    t1.* EXCLUDE (equipment_id),
-FROM s4_classrep.equi_masterdata t
-JOIN query_table(table_name::VARCHAR) t1 ON t1.equipment_id = t.equipment_id
-);

@@ -163,13 +163,14 @@ def _add_flocclass_tables(
 _get_flocclass_tables = """
 WITH cte AS (
     SELECT 
+        t.table_name,
         t.class_name,
     FROM s4_classrep.vw_flocclass_stats t 
     WHERE t.estimated_size > 0
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'SELECT t.* FROM s4_classrep.vw_flocsummary_{} t ORDER BY t.functional_location;', t.class_name) AS sql_text,
+    format(E'SELECT * FROM simple_floc_summary(''s4_classrep.{}'') ORDER BY functional_location;', t.table_name) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
 """
@@ -192,13 +193,14 @@ def _add_equiclass_tables(
 _get_equiclass_tables = """
 WITH cte AS (
     SELECT 
+        t.table_name,
         t.class_name,
     FROM s4_classrep.vw_equiclass_stats t 
     WHERE t.estimated_size > 0
 )
 SELECT 
     t.class_name AS class_name,
-    format(E'SELECT t.* FROM s4_classrep.vw_equisummary_{} t ORDER BY t.equipment_id;', t.class_name) AS sql_text,
+    format(E'SELECT * FROM simple_equi_summary(''s4_classrep.{}'') ORDER BY equipment_id;', t.table_name) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;
 """
