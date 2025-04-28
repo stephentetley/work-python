@@ -139,6 +139,7 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
             con=con, workbook=workbook)
         
         _add_equiclass_tables(con=con, workbook=workbook)
+        _add_equishape_tables(con=con, workbook=workbook)
         
 
 def _general_columns(ls: list[str]) -> dict[str, str]:
@@ -173,6 +174,7 @@ FROM cte t
 ORDER BY t.class_name ASC;
 """
 
+# equiclass
 def _add_equiclass_tables(
         *, 
         workbook: xlsxwriter.Workbook, 
@@ -201,3 +203,32 @@ FROM cte t
 ORDER BY t.class_name ASC;
 """
 
+# equishape
+def _add_equishape_tables(
+        *, 
+        workbook: xlsxwriter.Workbook, 
+        con: duckdb.DuckDBPyConnection) -> None:
+    def action(row: dict[str, Any], df: pl.DataFrame) -> None: 
+        sheet_name = "e.{}".format(row.get('class_name', "unknown"))
+        export_utils.write_pl_dataframe_to_excel(df=df,
+                                                 workbook=workbook, 
+                                                 sheet_name=sheet_name, 
+                                                 column_formats = {})
+    runner = SqlScriptRunner(None, con=con)
+    runner.exec_sql_generating_stmt_with_action(sql_query=_get_equishape_tables, action=action)
+    
+    
+_get_equishape_tables = """
+WITH cte AS (
+    SELECT 
+        t.class_name,
+        t.table_name,
+    FROM s4_classrep.vw_equishape_stats t 
+    WHERE t.estimated_size > 0
+)
+SELECT 
+    t.class_name AS class_name,
+    format(E'SELECT * FROM simple_equi_summary(''s4_classrep.{}'') ORDER BY equipment_id;', t.table_name) AS sql_text,
+FROM cte t
+ORDER BY t.class_name ASC;
+"""

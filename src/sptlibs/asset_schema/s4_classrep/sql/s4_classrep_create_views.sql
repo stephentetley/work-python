@@ -46,6 +46,17 @@ WHERE
     t.schema_name = 's4_classrep'
 AND t.table_name LIKE 'equiclass_%';
 
+CREATE OR REPLACE VIEW s4_classrep.vw_equishape_stats AS
+SELECT 
+    'sh' || regexp_extract(table_name, 'equishape_(\w{4})', 1) AS class_name,
+    t.table_name AS table_name,
+    t.estimated_size AS estimated_size, 
+    t.estimated_size > 0 AS is_populated,
+FROM duckdb_tables() t
+WHERE 
+    t.schema_name = 's4_classrep'
+AND t.table_name LIKE 'equishape_%';
+
 
 CREATE OR REPLACE VIEW s4_classrep.vw_flocsummary_aib_reference AS
 WITH cte1 AS (
@@ -196,4 +207,21 @@ FROM s4_classrep.equi_masterdata emd
 LEFT OUTER JOIN cte ea ON ea.equipment_id = emd.equipment_id
 GROUP BY ALL;
 
+-- shape class summaries
 
+-- TODO - use a new scheme with a table macro rather than creating hundreds of views
+
+CREATE OR REPLACE MACRO simple_equi_summary(table_name) AS TABLE (
+SELECT 
+    t.equipment_id AS equipment_id, 
+    t.equi_description AS equi_description,
+    t.functional_location AS functional_location,
+    t.manufacturer AS manufacturer,
+    t.model_number AS model_number,
+    t.startup_date AS startup_date,
+    t.object_type AS object_type,
+    t.display_user_status AS display_user_status,
+    t1.* EXCLUDE (equipment_id),
+FROM s4_classrep.equi_masterdata t
+JOIN query_table(table_name::VARCHAR) t1 ON t1.equipment_id = t.equipment_id
+);
