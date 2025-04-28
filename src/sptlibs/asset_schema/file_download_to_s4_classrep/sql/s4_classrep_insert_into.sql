@@ -200,6 +200,62 @@ SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classn
 JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
 GROUP BY equipment_id;
 
+INSERT INTO s4_classrep.equishape_cobm BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'CENTRE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS centre_depth_mm,
+    any_value(CASE WHEN t2.charid = 'DAIMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHCOBM'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_ecyl BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'LENGTH_MM' THEN t2.atflv ELSE NULL END) AS length_mm,
+    any_value(CASE WHEN t2.charid = 'MAJOR_AXIS' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS major_axis_mm,
+    any_value(CASE WHEN t2.charid = 'MINOR_AXIS' THEN t2.atflv ELSE NULL END) AS minor_axis_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHECYL'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_hcyl BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'DIAMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
+    any_value(CASE WHEN t2.charid = 'LENGTH_MM' THEN t2.atflv ELSE NULL END) AS length_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHHCYL'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_miir BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'CENTRE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS centre_depth_mm,
+    any_value(CASE WHEN t2.charid = 'DIAMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
+    any_value(CASE WHEN t2.charid = 'LENGTH_MM' THEN t2.atflv ELSE NULL END) AS length_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MAX_MM' THEN t2.atflv ELSE NULL END) AS side_depth_max_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MIN_MM' THEN t2.atflv ELSE NULL END) AS side_depth_min_mm,
+    any_value(CASE WHEN t2.charid = 'TOP_SURFACE_AREA_M2' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS top_surface_area_m2,
+    any_value(CASE WHEN t2.charid = 'WIDTH_MM' THEN t2.atflv ELSE NULL END) AS width_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHMIIR'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
 INSERT INTO s4_classrep.equishape_rfbm BY NAME
 SELECT DISTINCT ON(t.equipment_id)
     t.equipment_id AS equipment_id,
@@ -211,5 +267,46 @@ SELECT DISTINCT ON(t.equipment_id)
     any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
 FROM s4_classrep.equi_masterdata t
 SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHRFBM'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_rpbm BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'CENTRE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS centre_depth_mm,
+    any_value(CASE WHEN t2.charid = 'LENGTH_MM' THEN t2.atflv ELSE NULL END) AS length_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
+    any_value(CASE WHEN t2.charid = 'WIDTH_MM' THEN t2.atflv ELSE NULL END) AS width_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHRPBM'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_rsbm BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'LENGTH_MM' THEN t2.atflv ELSE NULL END) AS length_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MAX_MM' THEN t2.atflv ELSE NULL END) AS side_depth_max_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MIN_MM' THEN t2.atflv ELSE NULL END) AS side_depth_min_mm,
+    any_value(CASE WHEN t2.charid = 'TOP_SURFACE_AREA_M2' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS top_surface_area_m2,
+    any_value(CASE WHEN t2.charid = 'WIDTH_MM' THEN t2.atflv ELSE NULL END) AS width_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHRSBM'
+JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
+GROUP BY equipment_id;
+
+INSERT INTO s4_classrep.equishape_scyl BY NAME
+SELECT DISTINCT ON(t.equipment_id)
+    t.equipment_id AS equipment_id,
+    any_value(CASE WHEN t2.charid = 'CAPACITY_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS capacity_m3,
+    any_value(CASE WHEN t2.charid = 'DIAMETER_MM' THEN t2.atflv ELSE NULL END) AS diameter_mm,
+    any_value(CASE WHEN t2.charid = 'SIDE_DEPTH_MM' THEN t2.atflv ELSE NULL END) AS side_depth_mm,
+    any_value(CASE WHEN t2.charid = 'WORKING_VOLUME_M3' THEN TRY_CAST(t2.atwrt AS DECIMAL) ELSE NULL END) AS working_volume_m3,
+FROM s4_classrep.equi_masterdata t
+SEMI JOIN file_download.classequi t1 ON (t1.equi = t.equipment_id) AND t1.classname = 'SHSCYL'
 JOIN file_download.valuaequi t2 ON t2.equi = t.equipment_id
 GROUP BY equipment_id;
