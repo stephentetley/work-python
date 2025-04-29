@@ -73,7 +73,6 @@ SELECT
     t.serial_number AS serial_number, 
     strftime(t.startup_date, '%d.%m.%Y') AS install_date,
     t.equi_name AS ai2_equi_name,
-    
 FROM equi_compare.ai2_equipment t
 WHERE t.display_user_status = 'OPERATIONAL'
 ;

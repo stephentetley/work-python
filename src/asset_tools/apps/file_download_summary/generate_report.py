@@ -25,6 +25,7 @@ import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_i
 import sptlibs.data_access.file_download.file_download_import as file_download_import
 import sptlibs.asset_schema.file_download_to_s4_classrep.file_download_to_s4_classrep as file_download_to_s4_classrep
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
+import sptlibs.asset_checking.asset_checking as asset_checking
 
 def duckdb_init(*, 
                 file_download_files: list[str],
@@ -35,6 +36,8 @@ def duckdb_init(*,
     file_download_import.duckdb_init(con=con)
     file_download_import.duckdb_import_files(file_paths=file_download_files, con=con)
     file_download_to_s4_classrep.translate_file_download_to_s4_classrep(con=con)
+    asset_checking.setup_asset_checking(con=con)
+    asset_checking.run_s4_classrep_checkers(con=con)
 
 
 
@@ -140,7 +143,13 @@ def gen_xls_report(*, xls_output_path: str, con: duckdb.DuckDBPyConnection) -> N
         
         _add_equiclass_tables(con=con, workbook=workbook)
         _add_equishape_tables(con=con, workbook=workbook)
-        
+                
+        export_utils.write_sql_table_to_excel(
+            qualified_table_name='asset_checking.vw_checking_report',
+            order_by_columns=['category', 'checker_name'],
+            sheet_name='asset_checks', 
+            column_formats = {},
+            con=con, workbook=workbook)
 
 def _general_columns(ls: list[str]) -> dict[str, str]:
     return {key: 'General' for key in ls}
