@@ -20,17 +20,17 @@
 INSERT INTO asset_checking.checking_results BY NAME
 WITH cte AS (
     SELECT 
-        list(struct_pack(item := t.equipment_id, name := equi_description)) AS exceptions,
+        t.equipment_id AS item_id,
+        t.equi_description AS item_name,
     FROM s4_classrep.equi_masterdata t
     ANTI JOIN s4_classrep.equi_east_north USING (equipment_id)
 ) 
-SELECT 
-    'error'::checker_serverity AS serverity,
-    'Equipment Masterdata' AS category,
-    'equi_implements_east_north' AS checker_name,
-    'All equipment must implement the class EAST_NORTH' AS checker_description,
-    t.exceptions AS checker_exceptions, 
-FROM cte t
-WHERE checker_exceptions IS NOT NULL
-;
+SELECT * FROM cte
+CROSS JOIN checker_classification(
+        'error'::checker_severity, 
+        'Equipment Masterdata', 
+        'equi_implements_east_north',
+        'All equipment must implement the class EAST_NORTH'
+        );
+
 

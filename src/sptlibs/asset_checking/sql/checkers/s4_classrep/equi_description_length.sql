@@ -14,9 +14,8 @@
 -- limitations under the License.
 -- 
 
--- TODO change check length back to 40 once we have seen this working...
 
--- All equipment must implement class EAST_NORTH
+-- All equipment names must be shorter than 40 characters
 
 INSERT INTO asset_checking.checking_results BY NAME
 WITH cte AS (
@@ -25,7 +24,7 @@ SELECT
     t.equi_description AS item_name,
 FROM 
     s4_classrep.equi_masterdata t
-WHERE length(t.equi_description) > 24
+WHERE length(t.equi_description) > 40
 )
 SELECT * FROM cte
 CROSS JOIN checker_classification(

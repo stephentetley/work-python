@@ -38,6 +38,7 @@ def duckdb_init(*,
     file_download_to_s4_classrep.translate_file_download_to_s4_classrep(con=con)
     asset_checking.setup_asset_checking(con=con)
     asset_checking.run_s4_classrep_checkers(con=con)
+    asset_checking.run_s4_classrep_file_download_checkers(con=con)
 
 
 
