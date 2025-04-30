@@ -16,23 +16,39 @@
 
 CREATE SCHEMA IF NOT EXISTS asset_checking;
 
-CREATE TYPE checker_serverity AS ENUM ('error', 'warning', 'style-issue', 'okay');
+CREATE TYPE checker_severity AS ENUM ('error', 'warning', 'style-issue', 'okay');
 
 CREATE OR REPLACE TABLE asset_checking.checking_results (
-    serverity checker_serverity NOT NULL,
+    severity checker_severity NOT NULL,
     category VARCHAR NOT NULL,
     checker_name VARCHAR NOT NULL,
     checker_description VARCHAR NOT NULL,
-    checker_exceptions STRUCT(item VARCHAR, name VARCHAR)[],
+    item_id VARCHAR, 
+    item_name VARCHAR,
 );
 
-CREATE OR REPLACE MACRO make_exceptions_text(exceptions) AS (
-    list_transform(exceptions, st -> format(E'{}: {}', st.item, st.name)).list_aggregate('string_agg', E', ')
-);
 
 CREATE OR REPLACE VIEW asset_checking.vw_checking_report AS
+WITH cte AS ( 
+    SELECT 
+        list(struct_pack(item := item_id, name := item_name)) AS checker_exceptions, 
+        severity, 
+        category, 
+        checker_name, 
+        checker_description,
+    FROM asset_checking.checking_results
+    GROUP BY severity, category, checker_name, checker_description
+)
 SELECT 
-    t.*,
+    t.* EXCLUDE(checker_exceptions),
     list_transform(t.checker_exceptions, st -> format(E'{}: {}', st.item, st.name)).list_aggregate('string_agg', E', ') AS exceptions_text
-FROM asset_checking.checking_results t;
+FROM cte t;
 
+
+CREATE OR REPLACE MACRO checker_classification(severity, category, checker_name, checker_descr) AS TABLE (
+SELECT 
+   severity::checker_severity AS severity,
+   category::VARCHAR AS category,
+   checker_name::VARCHAR AS checker_name,
+   checker_descr::VARCHAR AS checker_description
+);

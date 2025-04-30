@@ -25,5 +25,6 @@ def setup_asset_checking(con: duckdb.DuckDBPyConnection) -> None:
 
 def run_s4_classrep_checkers(con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='checkers/s4_classrep/equi_implements_aib_reference.sql')
-    runner.exec_sql_file(rel_file_path='checkers/s4_classrep/equi_implements_east_north.sql')
+    runner.exec_sql_file(rel_file_path='checkers/s4_classrep/equi_description_length.sql')
+    # runner.exec_sql_file(rel_file_path='checkers/s4_classrep/equi_implements_aib_reference.sql')
+    # runner.exec_sql_file(rel_file_path='checkers/s4_classrep/equi_implements_east_north.sql')
