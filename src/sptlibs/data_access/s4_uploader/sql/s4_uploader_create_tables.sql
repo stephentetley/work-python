@@ -133,7 +133,7 @@ ORDER BY functional_location, equipment_id, superord_equip;
 -- No Primary Key - multiples allowed
 CREATE OR REPLACE TABLE s4_uploader.fl_classification (
     functional_location VARCHAR NOT NULL,
-    class VARCHAR NOT NULL,
+    class_name VARCHAR NOT NULL,
     characteristics VARCHAR NOT NULL,
     char_value VARCHAR,
 );
@@ -143,17 +143,17 @@ SELECT
     t.functional_location AS functional_location,
     null AS deletion_ind,
    '003' AS class_type,
-    t.classname AS class,
+    t.class_name AS class_name,
     t.characteristics AS characteristics,
     t.char_value AS char_value,
     null AS ch_deletion_ind,
 FROM s4_uploader.fl_classification t
-ORDER BY functional_location, class, characteristics;
+ORDER BY functional_location, class_name, characteristics;
 
 
 CREATE OR REPLACE TABLE s4_uploader.eq_classification (
     equipment_id VARCHAR NOT NULL,
-    class VARCHAR NOT NULL,
+    class_name VARCHAR NOT NULL,
     characteristics VARCHAR NOT NULL,
     char_value VARCHAR,
 );
@@ -163,12 +163,12 @@ SELECT
     t.equipment_id AS equipment_id,
     null AS deletion_ind,
    '002' AS class_type,
-    t.classname AS class,
+    t.class_name AS class_name,
     t.characteristics AS characteristics,
     t.char_value AS char_value,
     null AS ch_deletion_ind,
 FROM s4_uploader.eq_classification t
-ORDER BY equipment_id, class, characteristics;
+ORDER BY equipment_id, class_name, characteristics;
 
 
 

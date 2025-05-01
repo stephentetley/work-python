@@ -39,8 +39,8 @@ def duckdb_import_table(*, xls_path: str, sheet_name: str | None, output_db: str
 
 def duckdb_import(xls_path: str, *, 
                   con: duckdb.DuckDBPyConnection,
-                  table_name: str | None =None,
-                  sheet_name : str | None =None,) -> None:
+                  table_name: str | None=None,
+                  sheet_name: str | None=None,) -> None:
     
     if not sheet_name:
         sheet_name = 'Sheet1'
@@ -62,3 +62,24 @@ def duckdb_import(xls_path: str, *,
         print(f'wrote {table_name}')
     else:
         print(f'fail table name not recognized')
+
+
+
+def duckdb_imports(xls_paths: list[str], *, 
+                  con: duckdb.DuckDBPyConnection,
+                  table_name_root: str | None=None,
+                  sheet_name: str | None=None,
+                  union: bool = False) -> None:
+    tables = []
+    for idx, xls_path in enumerate(xls_paths):
+        table_name = f"{table_name_root}{idx+1}"
+        tables.append(table_name)
+        duckdb_import(xls_path=xls_path, sheet_name=sheet_name, table_name=table_name, con=con)
+    if union:
+        selects = [f"SELECT * FROM {t}" for t in tables]
+        body = "\nUNION BY NAME\n".join(selects)
+        query = f"""
+            CREATE OR REPLACE TABLE {table_name_root}_union AS
+            {body};
+        """
+        con.execute(query)

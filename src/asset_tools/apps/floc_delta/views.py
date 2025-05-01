@@ -31,9 +31,10 @@ from . import floc_delta
 
 
 
-def create_report(worklist_path: str, ih06_path: str) -> str: 
+def create_report(worklist_path: str, ih06_paths: list[str]) -> str: 
     current_app.logger.info(f"worklist - {worklist_path}")
-    current_app.logger.info(f"ih06 - {ih06_path}")
+    for path1 in ih06_paths: 
+        current_app.logger.info(f"ih06 - {path1}")
 
     config_folder = os.path.join(current_app.root_path, current_app.config['RESOURCE_FOLDER'])
     ztables_db = os.path.normpath(os.path.join(config_folder, 's4_ztables_latest.duckdb'))
@@ -42,7 +43,7 @@ def create_report(worklist_path: str, ih06_path: str) -> str:
     report_name = 'flocs_delta_upload.xlsx'
     output_folder = os.path.join(current_app.root_path, current_app.config['DOWNLOAD_FOLDER'])
     
-    temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'new_flocs.duckdb'))
+    temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'floc_delta_db.duckdb'))
     report_path = os.path.normpath(os.path.join(output_folder, report_name))
 
     # Use an file connection for the time being until we start to generate an xlsx file...
@@ -53,7 +54,7 @@ def create_report(worklist_path: str, ih06_path: str) -> str:
     con = duckdb.connect(database=temp_duckdb_path, read_only=False)
     current_app.logger.info(f"before: <generate_flocs>")
     generate_flocs.duckdb_init(worklist_path=worklist_path, 
-                               ih06_path=ih06_path, 
+                               ih06_paths=ih06_paths, 
                                ztable_source_db=ztables_db,
                                con=con)
     generate_flocs.gen_xls_upload(uploader_template=uploader_template,
@@ -76,21 +77,22 @@ def upload():
     form = FlocDeltaForm()
     if form.validate_on_submit():
         current_app.logger.info("form.validate_on_submit():")
-        ih06_sto = form.ih06_export.data
-        ih06_file = store_upload_file(ih06_sto)
+        ih06_paths = [store_upload_file(file_sto) for file_sto in form.ih06_exports.data]
+        ih06s_cat = '>>>'.join(ih06_paths)
         worklist_sto = form.worklist.data
         worklist_path = store_upload_file(worklist_sto)
-        session["ih06_file"] = ih06_file
+        session["ih06_files"] = ih06s_cat
         session["worklist_path"] = worklist_path
         return render_template('floc_delta/loading.html')
     return render_template('floc_delta/upload.html', form = form)
 
 @floc_delta.route('/result')
 def result():
-    ih06_file = session["ih06_file"]
+    ih06s_cat = session["ih06_files"]
+    ih06_paths = ih06s_cat.split('>>>')
     worklist_path = session["worklist_path"]
     outfile_name = create_report(worklist_path=worklist_path,
-                                     ih06_path=ih06_file)
+                                     ih06_paths=ih06_paths)
     session["outfile_name"] = outfile_name
     current_app.logger.info(f'outfile_name: {outfile_name}')
     return render_template('floc_delta/result.html')

@@ -31,11 +31,9 @@ limitations under the License.
 # > http://localhost:5000/
 
 
-import os
-import duckdb
+
 from flask import Flask, render_template, session, request, current_app
-import werkzeug
-import werkzeug.datastructures
+
 
 
 

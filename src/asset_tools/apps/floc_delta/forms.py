@@ -17,9 +17,9 @@ limitations under the License.
 
 from flask_wtf import FlaskForm
 from wtforms import SubmitField
-from flask_wtf.file import FileField, FileRequired, FileAllowed
+from flask_wtf.file import MultipleFileField, FileField, FileRequired, FileAllowed
 
 class FlocDeltaForm(FlaskForm):
-    ih06_export = FileField('IH06 Export', validators=[FileRequired(), FileAllowed(['xlsx'], 'Excel *.xlsx files only')])
+    ih06_exports = MultipleFileField('IH06 Exports', validators=[FileRequired(), FileAllowed(['xlsx'], 'Excel *.xlsx files only')])
     worklist = FileField('Worklist', validators=[FileRequired(), FileAllowed(['xlsx'], 'Excel *.xlsx files only')])
     submit = SubmitField('Submit')

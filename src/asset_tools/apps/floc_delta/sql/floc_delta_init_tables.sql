@@ -26,7 +26,7 @@ cte1 AS (
         t.description_of_functional_location AS floc_name,
         regexp_split_to_array(funcloc, '-') AS arr,
         len(arr) as floc_category,
-    FROM raw_data.ih06_export t
+    FROM floc_delta_landing.floc_export_union t
 ) 
 SELECT * EXCLUDE(arr) FROM cte1 ORDER BY funcloc
 ;
@@ -53,18 +53,18 @@ cte1 AS (
         IF (proc        IS NOT NULL, concat_ws('-', site, func, proc_grp, proc), NULL) AS level4,
         IF (sysm        IS NOT NULL, concat_ws('-', site, func, proc_grp, proc, sysm), NULL) AS level5,
         IF (floc_category = 6,       concat_ws('-', site, func, proc_grp, proc, sysm, subsysm), NULL) AS level6,
-    FROM raw_data.worklist t
+    FROM floc_delta_landing.worklist t
     ),
     cte2 AS (
         SELECT 
             t1.*,
-            t2.description AS name_2,
-            t3.description AS name_3,
-            t4.description AS name_4,
+            t2.standard_floc_description AS name_2,
+            t3.standard_floc_description AS name_3,
+            t4.standard_floc_description AS name_4,
         FROM cte1 t1
-        LEFT JOIN s4_ztables.flocdes t2 ON t2.objtype = t1.func
-        LEFT JOIN s4_ztables.flocdes t3 ON t3.objtype = t1.proc_grp
-        LEFT JOIN s4_ztables.flocdes t4 ON t4.objtype = t1.proc
+        LEFT JOIN s4_ztables.flocdes t2 ON t2.object_type = t1.func
+        LEFT JOIN s4_ztables.flocdes t3 ON t3.object_type = t1.proc_grp
+        LEFT JOIN s4_ztables.flocdes t4 ON t4.object_type = t1.proc
     )  
 (SELECT  
     site AS funcloc,
