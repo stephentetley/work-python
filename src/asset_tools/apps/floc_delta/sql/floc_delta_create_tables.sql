@@ -1,0 +1,94 @@
+-- 
+-- Copyright 2025 Stephen Tetley
+-- 
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+-- 
+-- http://www.apache.org/licenses/LICENSE-2.0
+-- 
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+-- 
+
+CREATE SCHEMA IF NOT EXISTS floc_delta;
+
+CREATE OR REPLACE TABLE floc_delta.worklist(
+    requested_floc VARCHAR NOT NULL,
+    s4_site VARCHAR,
+    floc_description VARCHAR,
+    objtype VARCHAR,
+    classtype VARCHAR,
+    system_name VARCHAR,
+    grid_ref VARCHAR,
+    solution_id VARCHAR,
+    PRIMARY KEY (requested_floc)
+    );
+
+
+CREATE OR REPLACE TABLE floc_delta.existing_flocs (
+    funcloc VARCHAR NOT NULL,
+    floc_name VARCHAR,
+    floc_category INTEGER
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY (funcloc)
+    );
+    
+
+CREATE OR REPLACE TABLE floc_delta.existing_and_new_flocs (
+    funcloc VARCHAR,
+    floc_name VARCHAR,
+    floc_category INTEGER,
+    floc_type VARCHAR,
+    floc_class VARCHAR,
+    parent_floc VARCHAR,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY (funcloc)
+    );
+
+
+CREATE OR REPLACE TABLE floc_delta.new_generated_flocs(
+    funcloc VARCHAR NOT NULL,
+    floc_name VARCHAR,
+    floc_category INTEGER,
+    floc_type VARCHAR,
+    floc_class VARCHAR,
+    parent_floc VARCHAR,
+    easting INTEGER,
+    northing INTEGER,
+    PRIMARY KEY (funcloc)
+    );
+
+CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
+WITH cte1 AS (
+    (SELECT 
+        t.funcloc AS functloc,
+        ' ' || repeat('+', t.floc_category) || ' ' || t.funcloc || ' | ' || t.floc_name AS plant_uml1, 
+    FROM floc_delta.existing_flocs t)
+    UNION
+    (SELECT 
+        t.funcloc AS functloc,
+        ' ' || repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.name AS plant_uml1,  
+    FROM floc_delta.new_generated_flocs t)
+), cte2 AS (
+    SELECT * FROM cte1 ORDER BY functloc 
+)
+SELECT 
+    concat_ws(E'\n',
+        '@startsalt',
+        '{',
+        '{T',
+        ' +Functional Location | Description',
+        list(plant_uml1).list_aggregate('string_agg', E'\n'), 
+        '}',
+        '}',
+        '@endsalt'
+        ) AS plant_uml,
+FROM cte2
+;
+

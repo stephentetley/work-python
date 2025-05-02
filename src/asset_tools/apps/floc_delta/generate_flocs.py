@@ -40,6 +40,7 @@ def duckdb_init(*,
                                       con=con)
     s4_uploader_export.duckdb_init(con=con)
     runner = SqlScriptRunner(__file__, con=con)
+    # runner.exec_sql_file(rel_file_path='floc_delta_create_tables.sql')
     runner.exec_sql_file(rel_file_path='floc_delta_init_tables.sql')
     runner.exec_sql_file(rel_file_path='s4_uploader_insert_into.sql')
 
