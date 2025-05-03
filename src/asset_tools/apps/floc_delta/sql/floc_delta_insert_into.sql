@@ -27,7 +27,7 @@ SELECT
     t."Level 5 System Type" AS level5_system_name,
     t."Grid Ref" AS grid_ref,
     t."Solution ID" AS solution_id,
-FROM floc_delta_landing.worklist2 t
+FROM floc_delta_landing.worklist t
 );
 
 

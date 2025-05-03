@@ -25,37 +25,3 @@ SELECT
     'OPER' AS display_user_status,
 FROM floc_delta.new_generated_flocs t
 ;
-
--- FROM floc_delta.new_generated_flocs t1
--- JOIN raw_data.config kv ON kv.key = 'Solution Id'
--- WHERE kv.value IS NOT NULL;
-
--- INSERT INTO s4_uploader.fl_classification BY NAME
--- SELECT 
---     t.funcloc AS functional_location,
---     'SOLUTION_ID' AS class,
---     'SOLUTION_ID' AS characteristics,
---     kv.value AS char_value,
--- FROM floc_delta.new_generated_flocs t
--- JOIN raw_data.config kv ON kv.key = 'Solution Id'
--- WHERE kv.value IS NOT NULL;
-
--- INSERT INTO s4_uploader.fl_classification BY NAME
--- SELECT 
---     t.funcloc AS functional_location,
---     'EAST_NORTH' AS class,
---     'EASTING' AS characteristics,
---     kv.value AS char_value,
--- FROM floc_delta.new_generated_flocs t
--- JOIN raw_data.config kv ON kv.key = 'Easting'
--- WHERE kv.value IS NOT NULL;
-
--- INSERT INTO s4_uploader.fl_classification BY NAME
--- SELECT 
---     t.funcloc AS functional_location,
---     'EAST_NORTH' AS class,
---     'NORTHING' AS characteristics,
---     kv.value AS char_value,
--- FROM floc_delta.new_generated_flocs t
--- JOIN raw_data.config kv ON kv.key = 'Northing'
--- WHERE kv.value IS NOT NULL;

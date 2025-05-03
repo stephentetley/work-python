@@ -66,6 +66,20 @@ CREATE OR REPLACE TABLE floc_delta.new_generated_flocs(
     PRIMARY KEY (funcloc)
     );
 
+CREATE OR REPLACE VIEW floc_delta.vw_existing_ancestor AS 
+WITH cte AS (
+SELECT 
+    t.funcloc AS gen_funcloc, 
+    t1.funcloc AS ancestor,
+FROM floc_delta.new_generated_flocs t
+JOIN floc_delta.existing_flocs t1 ON  t.funcloc ^@ t1.funcloc 
+) 
+SELECT gen_funcloc AS new_funcloc, max(ancestor) AS existing_ancestor
+FROM cte
+GROUP BY gen_funcloc
+;
+
+-- NOTE list(plant_uml1).... is not providing a sufficient ordering
 CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
 WITH cte1 AS (
     (SELECT 
@@ -78,7 +92,7 @@ WITH cte1 AS (
         ' ' || repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.floc_name AS plant_uml1,  
     FROM floc_delta.new_generated_flocs t)
 ), cte2 AS (
-    SELECT * FROM cte1 ORDER BY functloc 
+    SELECT functloc, plant_uml1 FROM cte1 ORDER BY functloc 
 )
 SELECT 
     concat_ws(E'\n',
@@ -86,7 +100,7 @@ SELECT
         '{',
         '{T',
         ' +Functional Location | Description',
-        list(plant_uml1).list_aggregate('string_agg', E'\n'), 
+        string_agg(plant_uml1, E'\n' ORDER BY functloc ASC),
         '}',
         '}',
         '@endsalt'
