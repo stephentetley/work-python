@@ -37,11 +37,11 @@ def duckdb_import_table(*, xls_path: str, sheet_name: str | None, output_db: str
     else:
         print(f'failed, check {output_db}')
 
+
 def duckdb_import(xls_path: str, *, 
                   con: duckdb.DuckDBPyConnection,
                   table_name: str | None=None,
                   sheet_name: str | None=None,) -> None:
-    
     if not sheet_name:
         sheet_name = 'Sheet1'
 

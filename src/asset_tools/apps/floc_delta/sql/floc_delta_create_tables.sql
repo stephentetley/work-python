@@ -18,25 +18,27 @@ CREATE SCHEMA IF NOT EXISTS floc_delta;
 
 CREATE OR REPLACE TABLE floc_delta.worklist(
     requested_floc VARCHAR NOT NULL,
-    s4_site VARCHAR,
     floc_description VARCHAR,
-    objtype VARCHAR,
-    classtype VARCHAR,
-    system_name VARCHAR,
+    object_type VARCHAR,
+    class_type VARCHAR,
+    level5_system_name VARCHAR,
     grid_ref VARCHAR,
     solution_id VARCHAR,
     PRIMARY KEY (requested_floc)
-    );
+);
 
 
 CREATE OR REPLACE TABLE floc_delta.existing_flocs (
     funcloc VARCHAR NOT NULL,
     floc_name VARCHAR,
-    floc_category INTEGER
+    floc_category INTEGER,
+    startup_date DATE,
+    cost_center INTEGER,
+    maint_work_center VARCHAR,
     easting INTEGER,
     northing INTEGER,
     PRIMARY KEY (funcloc)
-    );
+);
     
 
 CREATE OR REPLACE TABLE floc_delta.existing_and_new_flocs (
@@ -73,7 +75,7 @@ WITH cte1 AS (
     UNION
     (SELECT 
         t.funcloc AS functloc,
-        ' ' || repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.name AS plant_uml1,  
+        ' ' || repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.floc_name AS plant_uml1,  
     FROM floc_delta.new_generated_flocs t)
 ), cte2 AS (
     SELECT * FROM cte1 ORDER BY functloc 

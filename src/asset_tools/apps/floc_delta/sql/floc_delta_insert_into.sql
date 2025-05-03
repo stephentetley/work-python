@@ -16,30 +16,43 @@
 
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 
--- TODO change to explicit DDL and INSERT INTO statements?
+-- In progress - change to explicit DDL and INSERT INTO statements...
 
-CREATE OR REPLACE TABLE floc_delta.existing_flocs AS
-WITH 
-cte1 AS (
-    SELECT 
-        t.functional_location AS funcloc,
-        t.description_of_functional_location AS floc_name,
-        regexp_split_to_array(funcloc, '-') AS arr,
-        len(arr) as floc_category,
-    FROM floc_delta_landing.floc_export_union t
-) 
-SELECT * EXCLUDE(arr) FROM cte1 ORDER BY funcloc
-;
+INSERT INTO floc_delta.worklist BY NAME (
+SELECT 
+    t."Requested Floc" AS requested_floc,
+    t."Name" AS floc_description,
+    t."Object Type" AS object_type,
+    t."Class Type" AS class_type,
+    t."Level 5 System Type" AS level5_system_name,
+    t."Grid Ref" AS grid_ref,
+    t."Solution ID" AS solution_id,
+FROM floc_delta_landing.worklist2 t
+);
+
+
+INSERT INTO floc_delta.existing_flocs BY NAME (
+SELECT 
+    t.functional_location AS funcloc,
+    t.description_of_functional_location AS floc_name,
+    regexp_split_to_array(funcloc, '-').len() AS floc_category,
+    t.start_up_date AS startup_date,
+    TRY_CAST(t.cost_center AS INTEGER) AS cost_center,
+    t.main_work_center AS maint_work_center,
+    TRY_CAST(t.easting AS INTEGER) AS easting,
+    TRY_CAST(t.northing AS INTEGER) AS northing,
+FROM floc_delta_landing.floc_export_union t
+);
     
 
-CREATE OR REPLACE TABLE floc_delta.existing_and_new_flocs AS  
+INSERT INTO floc_delta.existing_and_new_flocs BY NAME (
 WITH 
 cte1 AS (
     SELECT 
         t.requested_floc AS floc, 
-        t.name AS source_name,
-        t.objtype AS source_type,
-        t.classtype AS source_class_type,
+        t.floc_description AS source_name,
+        t.object_type AS source_type,
+        t.class_type AS source_class_type,
         regexp_split_to_array(floc, '-') AS arr,
         len(arr) as floc_category,
         list_extract(arr, 1) as site,
@@ -53,7 +66,7 @@ cte1 AS (
         IF (proc        IS NOT NULL, concat_ws('-', site, func, proc_grp, proc), NULL) AS level4,
         IF (sysm        IS NOT NULL, concat_ws('-', site, func, proc_grp, proc, sysm), NULL) AS level5,
         IF (floc_category = 6,       concat_ws('-', site, func, proc_grp, proc, sysm, subsysm), NULL) AS level6,
-    FROM floc_delta_landing.worklist t
+    FROM floc_delta.worklist t
     ),
     cte2 AS (
         SELECT 
@@ -68,7 +81,7 @@ cte1 AS (
     )  
 (SELECT  
     site AS funcloc,
-    source_name AS name,
+    source_name AS floc_name,
     1 AS floc_category,
     'SITE' AS floc_type,
     NULL AS floc_class,
@@ -77,7 +90,7 @@ FROM cte2 WHERE cte2.floc_category = 1)
 UNION BY NAME
 (SELECT 
     level2 AS funcloc,
-    name_2 AS name,
+    name_2 AS floc_name,
     2 AS floc_category,
     func AS floc_type,
     NULL AS floc_class,
@@ -86,7 +99,7 @@ FROM cte2 WHERE cte2.level2 IS NOT NULL)
 UNION BY NAME 
 (SELECT 
     level3 AS funcloc,
-    name_3 AS name,
+    name_3 AS floc_name,
     3 AS floc_category,
     proc_grp AS floc_type,
     NULL AS floc_class,
@@ -95,7 +108,7 @@ FROM cte2 WHERE cte2.level3 IS NOT NULL)
 UNION BY NAME
 (SELECT 
     level4 AS funcloc,
-    name_4 AS name,
+    name_4 AS floc_name,
     4 AS floc_category,
     proc AS floc_type,
     NULL AS floc_class,
@@ -104,7 +117,7 @@ FROM cte2 WHERE cte2.level4 IS NOT NULL)
 UNION BY NAME
 (SELECT 
     level5 AS funcloc, 
-    source_name AS name, 
+    source_name AS floc_name, 
     5 AS floc_category,
     source_class_type AS floc_class,
     source_type AS floc_type, 
@@ -113,47 +126,22 @@ FROM cte2 WHERE cte2.floc_category = 5)
 UNION BY NAME
 (SELECT 
     level6 AS funcloc, 
-    source_name AS name,
+    source_name AS floc_name,
     6 AS floc_category,
     source_type AS floc_type, 
     NULL AS floc_class,
     level5 AS parent_floc,
 FROM cte2 WHERE cte2.floc_category = 6)
 ORDER BY funcloc
-;
+);
 
-CREATE OR REPLACE TABLE floc_delta.new_generated_flocs AS  
+
+INSERT INTO floc_delta.new_generated_flocs BY NAME (
 SELECT t1.* 
 FROM floc_delta.existing_and_new_flocs t1
 ANTI JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.funcloc
 ORDER BY funcloc
-;
+);
 
-CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
-WITH cte1 AS (
-    (SELECT 
-        t.funcloc AS functloc,
-        ' ' || repeat('+', t.floc_category) || ' ' || t.funcloc || ' | ' || t.floc_name AS plant_uml1, 
-    FROM floc_delta.existing_flocs t)
-    UNION
-    (SELECT 
-        t.funcloc AS functloc,
-        ' ' || repeat('+', t.floc_category) || ' <color:Green>' || t.funcloc || ' | <color:Green>' || t.name AS plant_uml1,  
-    FROM floc_delta.new_generated_flocs t)
-), cte2 AS (
-    SELECT * FROM cte1 ORDER BY functloc 
-)
-SELECT 
-    concat_ws(E'\n',
-        '@startsalt',
-        '{',
-        '{T',
-        ' +Functional Location | Description',
-        list(plant_uml1).list_aggregate('string_agg', E'\n'), 
-        '}',
-        '}',
-        '@endsalt'
-        ) AS plant_uml,
-FROM cte2
-;
+
 

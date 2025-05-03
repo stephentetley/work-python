@@ -29,10 +29,17 @@ def duckdb_init(*,
                 ztable_source_db: str,  
                 con: duckdb.DuckDBPyConnection) -> None: 
     con.execute("CREATE SCHEMA IF NOT EXISTS floc_delta_landing;")
+    con.execute("INSTALL excel;")
+    con.execute("LOAD excel;")
     setup_sql_udfs.setup_udfx_macros(con=con)
     s4_ztables_import.copy_ztable_tables(source_db_path=ztable_source_db, dest_con=con)
+    import_stmt = f"""
+        CREATE OR REPLACE TABLE floc_delta_landing.worklist2 AS 
+        SELECT * FROM read_xlsx('{worklist_path}', header = true, sheet ='Flocs', all_varchar = true);
+    """
+    con.execute(import_stmt)
+    # remove...
     excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Flocs', table_name='floc_delta_landing.worklist', con=con)
-    # excel_table_import.duckdb_import(xls_path=worklist_path, sheet_name='Config', table_name='floc_delta_landing.config', con=con)
     excel_table_import.duckdb_imports(xls_paths=ih06_paths, 
                                       sheet_name='Sheet1', 
                                       table_name_root='floc_delta_landing.floc_export', 
@@ -40,8 +47,8 @@ def duckdb_init(*,
                                       con=con)
     s4_uploader_export.duckdb_init(con=con)
     runner = SqlScriptRunner(__file__, con=con)
-    # runner.exec_sql_file(rel_file_path='floc_delta_create_tables.sql')
-    runner.exec_sql_file(rel_file_path='floc_delta_init_tables.sql')
+    runner.exec_sql_file(rel_file_path='floc_delta_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='floc_delta_insert_into.sql')
     runner.exec_sql_file(rel_file_path='s4_uploader_insert_into.sql')
 
 def gen_xls_upload(*, 
