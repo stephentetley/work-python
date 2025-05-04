@@ -79,6 +79,17 @@ FROM cte
 GROUP BY gen_funcloc
 ;
 
+CREATE OR REPLACE VIEW floc_delta.vw_new_flocs AS 
+SELECT 
+    t.*,
+    t2.startup_date AS startup_date,
+    t2.cost_center AS cost_center,
+    t2.maint_work_center AS maint_work_center,
+FROM floc_delta.new_generated_flocs t
+LEFT OUTER JOIN floc_delta.vw_existing_ancestor t1 ON t1.new_funcloc = t.funcloc
+LEFT OUTER JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.existing_ancestor 
+;
+
 -- NOTE list(plant_uml1).... is not providing a sufficient ordering
 CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS
 WITH cte1 AS (
