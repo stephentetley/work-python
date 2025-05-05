@@ -14,7 +14,7 @@
 -- limitations under the License.
 -- 
 
-CREATE OR REPLACE MACRO _osgb36_decode_major(cu) AS
+CREATE OR REPLACE MACRO udfx._osgb36_decode_major(cu) AS
 (CASE 
     WHEN cu = 'S' THEN row(0,       0)
     WHEN cu = 'T' THEN row(500_000, 0)
@@ -25,7 +25,7 @@ CREATE OR REPLACE MACRO _osgb36_decode_major(cu) AS
 END
 );
     
-CREATE OR REPLACE MACRO _osgb36_decode_minor(cu) AS
+CREATE OR REPLACE MACRO udfx._osgb36_decode_minor(cu) AS
 (CASE 
     WHEN cu = 'A' THEN row(0,         400_000)
     WHEN cu = 'B' THEN row(100_000,   400_000)
@@ -56,44 +56,35 @@ CREATE OR REPLACE MACRO _osgb36_decode_minor(cu) AS
 END
 );
 
-
-CREATE OR REPLACE MACRO get_east_north(table_name, col_name) AS TABLE 
+CREATE OR REPLACE MACRO udfx.get_east_north(gridref) AS TABLE 
 WITH cte1 AS (
     SELECT 
-        COLUMNS(col_name::VARCHAR) AS gridref,
-    FROM query_table(table_name::VARCHAR)
+        upper(gridref) AS ugridref,
 ), cte2 AS (
     SELECT 
-        gridref AS gridref,
-        upper(gridref) AS ugridref, 
-    FROM cte1
-), cte3 AS (
-    SELECT 
-        gridref AS gridref,
         ugridref[1] AS major_letter,
         ugridref[2] AS minor_letter,
-        _osgb36_decode_major(major_letter) AS major_struct,
-        _osgb36_decode_minor(minor_letter) AS minor_struct,
+        udfx._osgb36_decode_major(major_letter) AS major_struct,
+        udfx._osgb36_decode_minor(minor_letter) AS minor_struct,
         try_cast(ugridref[3:7] AS INTEGER) AS east1,
         try_cast(ugridref[8:12] AS INTEGER) AS north1,
         struct_extract(major_struct, 1) + struct_extract(minor_struct, 1) + east1 AS easting, 
         struct_extract(major_struct, 2) + struct_extract(minor_struct, 2) + north1 AS northing,
-    FROM cte2
+    FROM cte1
 )
 SELECT 
-    gridref, 
     easting,
     northing, 
-FROM cte3
+FROM cte2
 ;
 
 -- -- Example of how to call....
+--
 -- SELECT
---     t.* EXCLUDE("Loc.Ref."),
---     t."Loc.Ref.",
---     t1.easting ,
---     t1.northing,    
--- FROM equi_raw_data.ai2_export1 t
--- JOIN get_east_north(equi_raw_data.ai2_export1, 'Loc.Ref.') t1 ON t1.gridref = t."Loc.Ref."
--- ;
+--     t.*,
+--     t1.easting,
+--     t1.northing,
+-- FROM hello_world t
+-- CROSS JOIN udfx.get_east_north(t.loc_ref) t1;
+--
 

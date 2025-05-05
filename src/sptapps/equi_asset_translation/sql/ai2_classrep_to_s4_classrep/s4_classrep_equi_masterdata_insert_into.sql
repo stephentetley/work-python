@@ -44,9 +44,10 @@ LEFT JOIN equi_asset_translation.tt_equipment_classtypes t1 ON t1.equipment_id =
 INSERT OR REPLACE INTO s4_classrep.equi_east_north BY NAME
 SELECT 
     t.ai2_reference AS equipment_id,
-    udfx.get_easting(t.grid_ref) AS easting,
-    udfx.get_northing(t.grid_ref) AS northing,
+    t1.easting AS easting,
+    t1.northing AS northing,
 FROM ai2_classrep.equi_masterdata t
+CROSS JOIN udfx.get_east_north(t.grid_ref) t1
 ;
 
 INSERT OR REPLACE INTO s4_classrep.equi_asset_condition BY NAME
