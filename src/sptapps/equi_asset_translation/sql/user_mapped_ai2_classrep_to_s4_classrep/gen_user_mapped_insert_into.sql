@@ -28,13 +28,11 @@ SELECT
     concat_ws(E'\n',
         format('INSERT INTO {} BY NAME', qualified_dest_name),
         'SELECT',
-        '    t.ai2_reference,', 
-        '    t2.* EXCLUDE (equipment_id),',
-        'FROM ai2_classrep.equi_masterdata t',
-        'JOIN equi_asset_translation.mapping_worklist t1 ON t1.equipment_id = t.ai2_reference',
-        format('JOIN {}() t2 ON t2.equipment_id = t1.equipment_id', macro_name),
-        format('WHERE t1.ai2_equipment_type = ''{}''', ai2_equipment_type),
-        format('AND t1.s4_class = ''{}'';',  class_name)
+        '    t1.*,',
+        'FROM equi_asset_translation.mapping_worklist t',
+        format('JOIN {}() t1 ON t1.equipment_id = t.equipment_id', macro_name),
+        format('WHERE t.ai2_equipment_type = ''{}''', ai2_equipment_type),
+        format('AND t.s4_class = ''{}'';',  class_name)
         ) AS sql_text,
 FROM cte t
 ORDER BY t.class_name ASC;

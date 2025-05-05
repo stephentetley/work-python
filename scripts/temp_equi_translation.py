@@ -11,14 +11,10 @@ s4_classlists_source = 'g:/work/2025/asset_data_facts/s4_classlists/s4_classlist
 ai2_equipment_attributes_source = XlsxSource('G:/work/2025/equi_translation/ai2_metadata/AI2AssetTypeAttributes20250123.xlsx', 'AssetTypesAttributes')
 ai2_equipment_attribute_sets = XlsxSource('G:/work/2025/equi_translation/ai2_metadata/equipment_attribute_sets.xlsx', 'Sheet1')
 
-# source_name = 'lstnut'
-# source_folder = f'g:/work/2025/ai2_to_s4/{source_name}'
-# duckdb_output_path  = f'g:/work/2025/equi_translation/{source_name}_new_equi_translation.duckdb'
-
-source_folder = 'G:/work/2025/equi_translation/lstnut_pseudo_uploader/pseudo_upload'
-mapping_worklist = XlsxSource('G:/work/2025/equi_translation/lstnut_pseudo_uploader/pseudo_upload/worklist.xlsx', None)
-duckdb_path  = f'g:/work/2025/equi_translation/lstnut_pseudo_uploader/lstnut_pseudo_upload.duckdb'
-
+source_folder = 'G:/work/2025/great_telemetry_reconcile/netwtl'
+mapping_worklist = XlsxSource('G:/work/2025/great_telemetry_reconcile/netwtl/worklist.xlsx', None)
+duckdb_path  = f'g:/work/2025/great_telemetry_reconcile/netwtl/netwtl_pseudo_upload_db.duckdb'
+ai2_exports_glob = '*export*.xlsx'
 
 if os.path.exists(duckdb_path):
     os.remove(duckdb_path)
@@ -35,7 +31,7 @@ equi_asset_translation.import_mapping_worklist(mapping_xlsx=mapping_worklist, co
 
 added = equi_asset_translation.import_ai2_exports_to_ai2_landing(con=con,
                                                                  source_folder=source_folder,
-                                                                 glob_pattern='*extract*.xlsx')
+                                                                 glob_pattern=ai2_exports_glob)
 
 if added > 0:
     print(f'{added} exports added')

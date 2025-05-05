@@ -41,7 +41,7 @@ def create_report(ih08_files: list[str], ai2_export_files: list[str]) -> str:
     report_name = 'equi_compare.xlsx'
     output_folder = os.path.join(current_app.root_path, current_app.config['DOWNLOAD_FOLDER'])
     
-    temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'simple_equi_compare.duckdb'))
+    temp_duckdb_path = os.path.normpath(os.path.join(output_folder, 'simple_equi_compare_db.duckdb'))
     report_path = os.path.normpath(os.path.join(output_folder, report_name))
 
     # Use an file connection for the time being until we start to generate an xlsx file...
