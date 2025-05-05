@@ -22,7 +22,8 @@ CREATE OR REPLACE TABLE floc_delta.worklist(
     object_type VARCHAR,
     class_type VARCHAR,
     level5_system_name VARCHAR,
-    grid_ref VARCHAR,
+    easting INTEGER,
+    northing INTEGER,
     solution_id VARCHAR,
     PRIMARY KEY (requested_floc)
 );
@@ -50,6 +51,8 @@ CREATE OR REPLACE TABLE floc_delta.existing_and_new_flocs (
     parent_floc VARCHAR,
     easting INTEGER,
     northing INTEGER,
+    solution_id VARCHAR,
+    level5_system_name VARCHAR,
     PRIMARY KEY (funcloc)
     );
 
@@ -63,6 +66,8 @@ CREATE OR REPLACE TABLE floc_delta.new_generated_flocs(
     parent_floc VARCHAR,
     easting INTEGER,
     northing INTEGER,
+    solution_id VARCHAR,
+    level5_system_name VARCHAR,
     PRIMARY KEY (funcloc)
     );
 
@@ -76,19 +81,20 @@ JOIN floc_delta.existing_flocs t1 ON  t.funcloc ^@ t1.funcloc
 ) 
 SELECT gen_funcloc AS new_funcloc, max(ancestor) AS existing_ancestor
 FROM cte
-GROUP BY gen_funcloc
-;
+GROUP BY gen_funcloc;
 
 CREATE OR REPLACE VIEW floc_delta.vw_new_flocs AS 
 SELECT 
-    t.*,
+    t.* EXCLUDE(easting, northing),
+    t1.existing_ancestor AS existing_ancestor,
     t2.startup_date AS startup_date,
     t2.cost_center AS cost_center,
     t2.maint_work_center AS maint_work_center,
+    IF (t.easting IS NULL, t2.easting, t.easting) AS easting,
+    IF (t.northing IS NULL, t2.northing, t.northing) AS northing,
 FROM floc_delta.new_generated_flocs t
 LEFT OUTER JOIN floc_delta.vw_existing_ancestor t1 ON t1.new_funcloc = t.funcloc
-LEFT OUTER JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.existing_ancestor 
-;
+LEFT OUTER JOIN floc_delta.existing_flocs t2 ON t2.funcloc = t1.existing_ancestor;
 
 -- NOTE list(plant_uml1).... is not providing a sufficient ordering
 CREATE OR REPLACE VIEW floc_delta.vw_plant_uml_export AS

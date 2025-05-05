@@ -16,7 +16,7 @@
 
 CREATE SCHEMA IF NOT EXISTS floc_delta;
 
--- In progress - change to explicit DDL and INSERT INTO statements...
+-- Use explicit DDL and INSERT INTO statements...
 
 INSERT INTO floc_delta.worklist BY NAME (
 SELECT 
@@ -25,9 +25,11 @@ SELECT
     t."Object Type" AS object_type,
     t."Class Type" AS class_type,
     t."Level 5 System Type" AS level5_system_name,
-    t."Grid Ref" AS grid_ref,
+    t1.easting AS easting,
+    t1.northing AS northing,
     t."Solution ID" AS solution_id,
 FROM floc_delta_landing.worklist t
+CROSS JOIN udfx.get_east_north(t."Grid Ref") t1
 );
 
 
@@ -66,71 +68,103 @@ cte1 AS (
         IF (proc        IS NOT NULL, concat_ws('-', site, func, proc_grp, proc), NULL) AS level4,
         IF (sysm        IS NOT NULL, concat_ws('-', site, func, proc_grp, proc, sysm), NULL) AS level5,
         IF (floc_category = 6,       concat_ws('-', site, func, proc_grp, proc, sysm, subsysm), NULL) AS level6,
+        t.easting AS easting,
+        t.northing AS northing,
+        t.solution_id AS solution_id,
+        t.level5_system_name AS level5_system_name,
     FROM floc_delta.worklist t
-    ),
-    cte2 AS (
-        SELECT 
-            t1.*,
-            t2.standard_floc_description AS name_2,
-            t3.standard_floc_description AS name_3,
-            t4.standard_floc_description AS name_4,
-        FROM cte1 t1
-        LEFT JOIN s4_ztables.flocdes t2 ON t2.object_type = t1.func
-        LEFT JOIN s4_ztables.flocdes t3 ON t3.object_type = t1.proc_grp
-        LEFT JOIN s4_ztables.flocdes t4 ON t4.object_type = t1.proc
-    )  
+), cte2 AS (
+    SELECT 
+        t1.*,
+        t2.standard_floc_description AS name_2,
+        t3.standard_floc_description AS name_3,
+        t4.standard_floc_description AS name_4,
+    FROM cte1 t1
+    LEFT JOIN s4_ztables.flocdes t2 ON t2.object_type = t1.func
+    LEFT JOIN s4_ztables.flocdes t3 ON t3.object_type = t1.proc_grp
+    LEFT JOIN s4_ztables.flocdes t4 ON t4.object_type = t1.proc
+)  
 (SELECT  
+    -- Level 1 (site)
     site AS funcloc,
     source_name AS floc_name,
     1 AS floc_category,
     'SITE' AS floc_type,
     NULL AS floc_class,
     NULL AS parent_floc,
+    NULL AS easting,
+    NULL AS northing,
+    NULL AS solution_id,
 FROM cte2 WHERE cte2.floc_category = 1)
 UNION BY NAME
 (SELECT 
+    -- Level 2 (function)
     level2 AS funcloc,
     name_2 AS floc_name,
     2 AS floc_category,
     func AS floc_type,
     NULL AS floc_class,
     site AS parent_floc,
+    NULL AS easting,
+    NULL AS northing,
+    NULL AS solution_id,
+    NULL AS level5_system_name,
 FROM cte2 WHERE cte2.level2 IS NOT NULL)
 UNION BY NAME 
 (SELECT 
+    -- Level 3 (process group)
     level3 AS funcloc,
     name_3 AS floc_name,
     3 AS floc_category,
     proc_grp AS floc_type,
     NULL AS floc_class,
     level2 AS parent_floc,
+    NULL AS easting,
+    NULL AS northing,
+    NULL AS solution_id,
+    NULL AS level5_system_name,
 FROM cte2 WHERE cte2.level3 IS NOT NULL)
 UNION BY NAME
 (SELECT 
+    -- Level 4 (process)
     level4 AS funcloc,
     name_4 AS floc_name,
     4 AS floc_category,
     proc AS floc_type,
     NULL AS floc_class,
     level3 AS parent_floc,
+    NULL AS easting,
+    NULL AS northing,
+    NULL AS solution_id,
+    NULL AS level5_system_name,
 FROM cte2 WHERE cte2.level4 IS NOT NULL)
 UNION BY NAME
 (SELECT 
+    -- Level 5 (system)
     level5 AS funcloc, 
     source_name AS floc_name, 
     5 AS floc_category,
     source_class_type AS floc_class,
     source_type AS floc_type, 
     level4 AS parent_floc,
+    easting AS easting,
+    northing AS northing,
+    solution_id as solution_id,
+    level5_system_name AS level5_system_name,
 FROM cte2 WHERE cte2.floc_category = 5)
 UNION BY NAME
 (SELECT 
+    -- Level 6 (subsystem)
     level6 AS funcloc, 
     source_name AS floc_name,
     6 AS floc_category,
     source_type AS floc_type, 
     NULL AS floc_class,
     level5 AS parent_floc,
+    easting AS easting,
+    northing AS northing,
+    solution_id as solution_id,
+    NULL AS level5_system_name,
 FROM cte2 WHERE cte2.floc_category = 6)
 ORDER BY funcloc
 );

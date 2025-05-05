@@ -20,8 +20,48 @@ SELECT
     t.floc_name AS description_medium,
     t.floc_category AS category,
     t.floc_type AS object_type,
-    current_date AS start_up_date,
+    t.startup_date AS start_up_date,
     2110 AS maint_plant,
     'OPER' AS display_user_status,
-FROM floc_delta.new_generated_flocs t
-;
+FROM floc_delta.vw_new_flocs t;
+
+
+-- SOLUTION_ID
+INSERT INTO s4_uploader.fl_classification BY NAME
+SELECT
+    t.funcloc AS functional_location,
+    'SOLUTION_ID' AS class_name,
+    'SOLUTION_ID' AS characteristics,
+    t.solution_id AS char_value,
+FROM floc_delta.vw_new_flocs t
+WHERE t.solution_id IS NOT NULL;
+
+-- EASTING
+INSERT INTO s4_uploader.fl_classification BY NAME
+SELECT
+    t.funcloc AS functional_location,
+    'EAST_NORTH' AS class_name,
+    'EASTING' AS characteristics,
+    t.solution_id AS char_value,
+FROM floc_delta.vw_new_flocs t
+WHERE t.solution_id IS NOT NULL;
+
+
+-- NORTHING
+INSERT INTO s4_uploader.fl_classification BY NAME
+SELECT
+    t.funcloc AS functional_location,
+    'EAST_NORTH' AS class_name,
+    'NORTHING' AS characteristics,
+    printf('%d', t.northing) AS char_value,
+FROM floc_delta.vw_new_flocs t
+WHERE t.northing IS NOT NULL;
+
+-- Level 5 systems with SYSTEM_TYPE
+SELECT
+    t.funcloc AS functional_location,
+    t.floc_class AS class_name,
+    'SYSTEM_TYPE' AS characteristics,
+    t.level5_system_name AS char_value,
+FROM floc_delta.vw_new_flocs t
+WHERE t.level5_system_name IS NOT NULL;
