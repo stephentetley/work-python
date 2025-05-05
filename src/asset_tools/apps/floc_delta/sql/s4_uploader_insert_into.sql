@@ -22,7 +22,7 @@ SELECT
     t.floc_type AS object_type,
     t.startup_date AS start_up_date,
     2110 AS maint_plant,
-    'OPER' AS display_user_status,
+    t.user_status AS display_user_status,
 FROM floc_delta.vw_new_flocs t;
 
 
@@ -58,6 +58,7 @@ FROM floc_delta.vw_new_flocs t
 WHERE t.northing IS NOT NULL;
 
 -- Level 5 systems with SYSTEM_TYPE
+INSERT INTO s4_uploader.fl_classification BY NAME
 SELECT
     t.funcloc AS functional_location,
     t.floc_class AS class_name,
