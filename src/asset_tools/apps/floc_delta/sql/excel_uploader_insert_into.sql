@@ -44,9 +44,9 @@ SELECT
     t.funcloc AS functional_location,
     'EAST_NORTH' AS class_name,
     'EASTING' AS characteristics,
-    t.solution_id AS char_value,
+    printf('%d', t.easting) AS char_value,
 FROM floc_delta.vw_new_flocs t
-WHERE t.solution_id IS NOT NULL;
+WHERE t.easting IS NOT NULL;
 
 
 -- NORTHING
