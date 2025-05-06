@@ -38,7 +38,7 @@ def create_report(worklist_path: str, ih06_paths: list[str]) -> str:
 
     config_folder = os.path.join(current_app.root_path, current_app.config['RESOURCE_FOLDER'])
     ztables_db = os.path.normpath(os.path.join(config_folder, 's4_ztables_latest.duckdb'))
-    uploader_template = os.path.normpath(os.path.join(config_folder, 'Uploader_Template.xlsx'))
+    uploader_template = os.path.normpath(os.path.join(config_folder, 'AIW_Floc_Creation_Template_V1.0.writable.xlsx'))
    
     report_name = 'flocs_delta_upload.xlsx'
     output_folder = os.path.join(current_app.root_path, current_app.config['DOWNLOAD_FOLDER'])

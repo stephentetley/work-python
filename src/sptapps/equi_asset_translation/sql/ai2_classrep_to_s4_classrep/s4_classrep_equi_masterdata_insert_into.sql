@@ -25,7 +25,7 @@ INSERT OR REPLACE INTO s4_classrep.equi_masterdata BY NAME
 SELECT 
     t.ai2_reference AS equipment_id,
     t.item_name AS equi_description,
-    regexp_extract(t.common_name, '(.*)/EQUIPMENT:', 1) AS functional_location,
+    regexp_extract(t.common_name, '(.*)/EQUIPMENT:', 1) AS functional_location,   -- Fix this 
     null AS superord_id,
     'Z' AS category,
     t1.objtype AS object_type,

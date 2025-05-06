@@ -14,20 +14,22 @@
 -- limitations under the License.
 -- 
 
-INSERT INTO s4_uploader.functional_location BY NAME
+INSERT INTO excel_uploader_floc_create.functional_location BY NAME
 SELECT
     t.funcloc AS functional_location,
-    t.floc_name AS description_medium,
+    t.floc_name AS floc_description,
     t.floc_category AS category,
     t.floc_type AS object_type,
     t.startup_date AS start_up_date,
     2110 AS maint_plant,
-    t.user_status AS display_user_status,
+    t.cost_center AS cost_center,
+    t.maint_work_center AS maint_work_center,
+    -- t.user_status AS display_user_status,
 FROM floc_delta.vw_new_flocs t;
 
 
 -- SOLUTION_ID
-INSERT INTO s4_uploader.fl_classification BY NAME
+INSERT INTO excel_uploader_floc_create.classification BY NAME
 SELECT
     t.funcloc AS functional_location,
     'SOLUTION_ID' AS class_name,
@@ -37,7 +39,7 @@ FROM floc_delta.vw_new_flocs t
 WHERE t.solution_id IS NOT NULL;
 
 -- EASTING
-INSERT INTO s4_uploader.fl_classification BY NAME
+INSERT INTO excel_uploader_floc_create.classification BY NAME
 SELECT
     t.funcloc AS functional_location,
     'EAST_NORTH' AS class_name,
@@ -48,7 +50,7 @@ WHERE t.solution_id IS NOT NULL;
 
 
 -- NORTHING
-INSERT INTO s4_uploader.fl_classification BY NAME
+INSERT INTO excel_uploader_floc_create.classification BY NAME
 SELECT
     t.funcloc AS functional_location,
     'EAST_NORTH' AS class_name,
@@ -58,7 +60,7 @@ FROM floc_delta.vw_new_flocs t
 WHERE t.northing IS NOT NULL;
 
 -- Level 5 systems with SYSTEM_TYPE
-INSERT INTO s4_uploader.fl_classification BY NAME
+INSERT INTO excel_uploader_floc_create.classification BY NAME
 SELECT
     t.funcloc AS functional_location,
     t.floc_class AS class_name,

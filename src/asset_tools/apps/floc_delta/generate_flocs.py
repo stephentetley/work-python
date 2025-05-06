@@ -20,7 +20,7 @@ import duckdb
 import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.s4_ztables.s4_ztables_import as s4_ztables_import
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
-import sptlibs.data_access.s4_uploader.s4_uploader_export as s4_uploader_export
+import sptlibs.data_access.excel_uploader.excel_uploader_export as excel_uploader_export
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def duckdb_init(*, 
@@ -43,16 +43,16 @@ def duckdb_init(*,
                                       table_name_root='floc_delta_landing.floc_export', 
                                       union=True,
                                       con=con)
-    s4_uploader_export.duckdb_init(con=con)
+    excel_uploader_export.duckdb_init_floc(con=con)
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='floc_delta_create_tables.sql')
     runner.exec_sql_file(rel_file_path='floc_delta_insert_into.sql')
-    runner.exec_sql_file(rel_file_path='s4_uploader_insert_into.sql')
+    runner.exec_sql_file(rel_file_path='excel_uploader_insert_into.sql')
 
 def gen_xls_upload(*, 
                    uploader_template: str, 
                    uploader_outfile: str,
                    con: duckdb.DuckDBPyConnection) -> None:
-    s4_uploader_export.write_excel(upload_template_path=uploader_template,
-                                   dest=uploader_outfile,
-                                   con=con)
+    excel_uploader_export.write_excel_floc(upload_template_path=uploader_template,
+                                           dest=uploader_outfile,
+                                           con=con)

@@ -90,7 +90,7 @@ SELECT
     null AS "SupFunctLoc",
     null AS "Position",
     null AS "Ref. Location",
-    IF(funct_loc_cat >= 5, 'X', null) AS "Installation Allowed",
+    IF(t.category IN ('5', '6'), 'X', null) AS "Installation Allowed",
     null AS "Construction type",
     null AS "Status Profile",
     null AS "Status of an object",
