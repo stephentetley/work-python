@@ -17,7 +17,9 @@
 
 
 -- NOTE - translate equiclasses first then we can use use 
--- equiclass_* to calculate classtype (objecttype and category)
+-- equiclass_* to calculate classtype (objecttype and category) /old
+
+-- TODO want to use `equi_asset_translation.worklist` instead...
 
 INSERT OR REPLACE INTO s4_classrep.equi_masterdata BY NAME
 SELECT 
