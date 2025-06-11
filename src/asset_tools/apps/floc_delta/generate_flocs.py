@@ -53,6 +53,7 @@ def gen_xls_upload(*,
                    uploader_template: str, 
                    uploader_outfile: str,
                    con: duckdb.DuckDBPyConnection) -> None:
-    excel_uploader_export.write_excel_floc(upload_template_path=uploader_template,
-                                           dest=uploader_outfile,
-                                           con=con)
+    excel_uploader_export.write_excel_floc_upload(upload_template_path=uploader_template,
+                                                  dest=uploader_outfile,
+                                                  con=con)
+
