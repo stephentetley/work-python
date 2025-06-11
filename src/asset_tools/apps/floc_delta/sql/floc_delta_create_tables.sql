@@ -38,6 +38,8 @@ CREATE OR REPLACE TABLE floc_delta.existing_flocs (
     startup_date DATE,
     cost_center INTEGER,
     maint_work_center VARCHAR,
+    maintenance_plant VARCHAR,
+    plant_section VARCHAR,
     easting INTEGER,
     northing INTEGER,
     PRIMARY KEY (funcloc)
@@ -93,7 +95,8 @@ SELECT
     t1.existing_ancestor AS existing_ancestor,
     t2.startup_date AS startup_date,
     t2.cost_center AS cost_center,
-    t2.maint_work_center AS maint_work_center,
+    t2.maintenance_plant AS maintenance_plant,
+    t2.plant_section AS plant_section,
     IF (t.user_status IS NULL, t2.user_status, t.user_status) AS user_status,
     IF (t.easting IS NULL, t2.easting, t.easting) AS easting,
     IF (t.northing IS NULL, t2.northing, t.northing) AS northing,

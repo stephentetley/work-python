@@ -1,4 +1,4 @@
--- 
+    -- 
 -- Copyright 2025 Stephen Tetley
 -- 
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,10 +35,9 @@ CREATE OR REPLACE TABLE excel_uploader_floc_create.functional_location (
     start_up_date DATETIME,
     maint_plant VARCHAR,
     plant_section VARCHAR,
-    cost_center VARCHAR,
-    planning_plant VARCHAR,
-    maint_work_center VARCHAR,
-    plant_work_center VARCHAR,
+    position INTEGER,
+    status_profile VARCHAR,
+    user_status VARCHAR,
     PRIMARY KEY (functional_location)
 );
 
@@ -66,8 +65,8 @@ SELECT
     null AS "ManufPartNo",
     null AS "ManufSerialNo",
     null AS "ManufCountry",
-    null AS "ConstructYear",
-    null AS "ConstructMth",
+    strftime(t.start_up_date, '%Y') AS "ConstructYear",
+    strftime(t.start_up_date, '%m') AS "ConstructMth",
     t.maint_plant AS "MaintPlant",
     null AS "Location", 
     null AS "Room",
@@ -78,23 +77,23 @@ SELECT
     null AS "Business Area",
     null AS "Asset",
     null AS "Sub-number",
-    t.cost_center AS "Cost Center",
+    null AS "Cost Center",
     null AS "WBS Element",
     null AS "StandgOrder",
     null AS "SettlementOrder",
-    t.planning_plant AS "Planning plant",
+    null AS "Planning plant",
     null AS "Planner group",
-    t.maint_work_center AS "Main WorkCtr",
-    t.plant_work_center AS "Plnt WorkCenter",
+    null AS "Main WorkCtr",
+    null AS "Plnt WorkCenter",
     null AS "Catalog profile",
     null AS "SupFunctLoc",
-    null AS "Position",
+    printf('%04d', t.position) AS "Position",
     null AS "Ref. Location",
     IF(t.category IN ('5', '6'), 'X', null) AS "Installation Allowed",
     null AS "Construction type",
-    null AS "Status Profile",
-    null AS "Status of an object",
-    null AS "Status without stsno",
+    t.status_profile AS "Status Profile",
+    t.user_status AS "Status of an object",
+    t.user_status AS "Status without stsno",
     null AS "Begin guarantee(C)",
     null AS "Warranty end(C)",
     null AS "Master Warranty(C)",

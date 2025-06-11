@@ -19,14 +19,17 @@ SELECT
     t.funcloc AS functional_location,
     t.floc_name AS floc_description,
     t.floc_category AS category,
+    'YW-GS' AS str_indicator,
     t.floc_type AS object_type,
     t.startup_date AS start_up_date,
-    2110 AS maint_plant,
-    t.cost_center AS cost_center,
-    t.maint_work_center AS maint_work_center,
-    -- t.user_status AS display_user_status,
+    t.maintenance_plant AS maint_plant,
+    t.plant_section AS plant_section,
+    10 AS position,
+    'ZFLOCST' AS status_profile,
+    t.user_status AS user_status,
 FROM floc_delta.vw_new_flocs t;
 
+    
 
 -- SOLUTION_ID
 INSERT INTO excel_uploader_floc_create.classification BY NAME
