@@ -90,6 +90,7 @@ SELECT
     printf('%04d', t.position) AS "Position",
     null AS "Ref. Location",
     IF(t.category IN ('5', '6'), 'X', null) AS "Installation Allowed",
+    null AS "Single Inst.",
     null AS "Construction type",
     t.status_profile AS "Status Profile",
     t.user_status AS "Status of an object",

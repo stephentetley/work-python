@@ -39,9 +39,11 @@ SELECT
     t.functional_location AS funcloc,
     t.description_of_functional_location AS floc_name,
     regexp_split_to_array(funcloc, '-').len() AS floc_category,
+    t.user_status AS user_status,
     t.start_up_date AS startup_date,
     TRY_CAST(t.cost_center AS INTEGER) AS cost_center,
     t.main_work_center AS maint_work_center,
+    t.maintenance_plant AS maintenance_plant,
     TRY_CAST(t.easting AS INTEGER) AS easting,
     TRY_CAST(t.northing AS INTEGER) AS northing,
 FROM floc_delta_landing.floc_export_union t

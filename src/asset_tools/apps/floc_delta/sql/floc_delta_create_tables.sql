@@ -91,12 +91,12 @@ GROUP BY gen_funcloc;
 
 CREATE OR REPLACE VIEW floc_delta.vw_new_flocs AS 
 SELECT 
-    t.* EXCLUDE(easting, northing),
+    t.* EXCLUDE(easting, northing, user_status),
     t1.existing_ancestor AS existing_ancestor,
     t2.startup_date AS startup_date,
     t2.cost_center AS cost_center,
     t2.maintenance_plant AS maintenance_plant,
-    t2.plant_section AS plant_section,
+    IF (t.floc_category = 4, t.floc_type, NULL) AS plant_section,
     IF (t.user_status IS NULL, t2.user_status, t.user_status) AS user_status,
     IF (t.easting IS NULL, t2.easting, t.easting) AS easting,
     IF (t.northing IS NULL, t2.northing, t.northing) AS northing,
