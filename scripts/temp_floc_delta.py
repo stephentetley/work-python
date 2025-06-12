@@ -13,11 +13,11 @@ import glob
 
 duckdb_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/june_gen_missing_flocs/floc_delta_telem_db.duckdb')    
 ztable_source = './src/asset_tools/runtime/config/s4_ztables_latest.duckdb'
-uploader_template_source = os.path.expanduser('~/_working/coding/work/work-python/src/asset_tools/runtime/config/Uploader_Template.xlsx')
+uploader_template_source = os.path.expanduser('~/_working/coding/work/work-python/src/asset_tools/runtime/config/AIW_Floc_Creation_Template_V1.0.writable.xlsx')
 worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/june_gen_missing_flocs/A1_edited_worklist_june.xlsx')
 ih06_glob = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/june_gen_missing_flocs/s4_existing_flocs/*.xlsx')
 ih06_paths = glob.glob(pathname=ih06_glob)
-outfile_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/june_gen_missing_flocs/telem_missing_sloc_upload1.xlsx')
+outfile_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/june_gen_missing_flocs/telem_missing_floc_upload1.xlsx')
 
 for name in ih06_paths:
     print(name)
