@@ -24,6 +24,25 @@ CREATE SCHEMA IF NOT EXISTS excel_uploader_floc_create;
 -- a client needs to fill out, the view corresponds to a sheet in the uploader
 -- xlsx file
 
+CREATE OR REPLACE TABLE excel_uploader_floc_create.change_request_header (
+    usmd_crequest VARCHAR,
+	change_request_decription VARCHAR NOT NULL,
+);
+
+CREATE OR REPLACE VIEW excel_uploader_floc_create.vw_change_request_header AS
+SELECT 
+    t.usmd_crequest AS "Change Request",
+    t.change_request_decription AS "Change Request Description",
+    null AS "Priority",
+    null AS "Due Date",
+FROM excel_uploader_floc_create.change_request_header t;
+    
+    
+
+CREATE OR REPLACE TABLE excel_uploader_floc_create.change_request_notes (
+    usmd_note VARCHAR NOT NULL,
+);
+
 
 -- functional_location is just the fields client code needs to fill out...
 CREATE OR REPLACE TABLE excel_uploader_floc_create.functional_location (
