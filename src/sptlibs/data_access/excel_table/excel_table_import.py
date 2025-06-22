@@ -22,7 +22,11 @@ from sptlibs.utils.xlsx_source import XlsxSource
 import sptlibs.data_access.import_utils as import_utils
 
 
-def duckdb_import_table(*, xls_path: str, sheet_name: str | None, output_db: str | None, table_name: str | None) -> None:
+def duckdb_import_table(*, 
+                        xls_path: str, 
+                        sheet_name: str | None, 
+                        output_db: str | None, 
+                        table_name: str | None) -> None:
     if not output_db:
         output_dir = os.path.dirname(xls_path)
         file_name = Path(xls_path).stem + '.duckdb'
@@ -44,7 +48,6 @@ def duckdb_import(xls_path: str, *,
                   sheet_name: str | None=None,) -> None:
     if not sheet_name:
         sheet_name = 'Sheet1'
-
     xls_source = XlsxSource(xls_path, sheet_name)
     
     if table_name:
