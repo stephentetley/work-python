@@ -15,7 +15,7 @@
 -- 
 
 
--- dispose of
+-- asset replace / dispose of
 
 CREATE OR REPLACE MACRO rename_as_del(equi_description) AS
     CASE 
