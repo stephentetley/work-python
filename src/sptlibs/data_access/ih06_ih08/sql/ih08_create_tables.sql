@@ -14,5 +14,13 @@
 -- limitations under the License.
 -- 
 
-CREATE SCHEMA IF NOT EXISTS telemetry_landing;
-CREATE SCHEMA IF NOT EXISTS asset_replace;
+
+
+CREATE SCHEMA IF NOT EXISTS ih08_landing;
+
+
+CREATE TABLE ih08_landing.landing_files(
+    qualified_table_name VARCHAR NOT NULL,
+    file_name VARCHAR,
+    file_path VARCHAR,
+);
