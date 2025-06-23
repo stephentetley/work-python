@@ -16,6 +16,7 @@
 
 CREATE SCHEMA IF NOT EXISTS ai2_export;
 
+-- TODO landing tables?
 
 CREATE OR REPLACE TABLE ai2_export.equi_master_data (
     ai2_reference VARCHAR NOT NULL,

@@ -49,7 +49,7 @@ def read_xlsx_source(
         pre_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
         post_normalize_names_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None,
         normalize_column_names = True) -> pl.DataFrame:
-    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine', drop_empty_rows=True)
+    df = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
     if pre_normalize_names_trafo: 
         df = pre_normalize_names_trafo(df)
     if normalize_column_names:

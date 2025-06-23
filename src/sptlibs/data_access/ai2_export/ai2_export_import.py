@@ -23,10 +23,11 @@ import sptlibs.data_access.import_utils as import_utils
 
 def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='ai2_export_create_tables.sql', con=con)
+    runner.exec_sql_file(rel_file_path='ai2_export_create_tables.sql')
 
-def duckdb_import(sources: list[XlsxSource], *, con: duckdb.DuckDBPyConnection) -> None:
-    for src in sources:
+def duckdb_import(sources: list[str], *, con: duckdb.DuckDBPyConnection) -> None:
+    for srcfile in sources:
+        src = XlsxSource(path=srcfile, sheet=None)
         import_ai2_export(src, con=con)
 
 
