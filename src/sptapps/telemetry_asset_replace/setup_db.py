@@ -21,11 +21,12 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 
 def init_db(*, 
-            worklist_path: str, 
+            worklist_path: str,
+            sheet_name: str, 
             con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='setup_tables.sql')
     excel_table_import.duckdb_import(xls_path=worklist_path, 
                                      con=con, 
                                      table_name='telemetry_landing.worklist', 
-                                     sheet_name='Sheet1')
+                                     sheet_name=sheet_name)

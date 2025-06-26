@@ -14,7 +14,15 @@
 -- limitations under the License.
 -- 
 
+CREATE SCHEMA IF NOT EXISTS ai2_export_landing;
 CREATE SCHEMA IF NOT EXISTS ai2_export;
+
+
+CREATE TABLE ai2_export_landing.landing_files(
+    qualified_table_name VARCHAR NOT NULL,
+    file_name VARCHAR,
+    file_path VARCHAR,
+);
 
 -- TODO landing tables?
 
