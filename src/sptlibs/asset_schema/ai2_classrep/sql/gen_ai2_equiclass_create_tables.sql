@@ -23,6 +23,7 @@ WITH cte1 AS (
         udfx.make_equiclass_name(t.asset_type_description) AS class_name,
         list(struct_pack(field_name := udfx.make_snake_case_name(t.attribute_description), field_type := t.duck_type)) AS field_elements,
     FROM ai2_metadata.vw_specific_equipment_attributes t
+    JOIN ai2_classrep.classes_used t1 ON t1.class_name = t.asset_type_description
     WHERE t.asset_type_description LIKE 'EQUIPMENT: %'
     GROUP BY t.asset_type_description
 ), cte2 AS (

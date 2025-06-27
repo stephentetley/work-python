@@ -18,6 +18,9 @@
 CREATE SCHEMA IF NOT EXISTS ai2_classrep;
 
 
+CREATE OR REPLACE TABLE ai2_classrep.classes_used (
+    class_name VARCHAR
+);
 
 
 CREATE OR REPLACE TABLE ai2_classrep.equi_masterdata (

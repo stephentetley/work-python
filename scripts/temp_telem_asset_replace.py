@@ -52,6 +52,7 @@ setup_s4_classrep.duckdb_init(gen_flocclasses=False, con=con)
 
 setup_ai2_classrep.duckdb_init(equipment_attributes_source=ai2_equipment_attributes_source,
                                attribute_sets_source=ai2_equipment_attribute_sets,
+                               class_tables=['EQUIPMENT: TELEMETRY OUTSTATION'],
                                con=con)
 
 con.close()
