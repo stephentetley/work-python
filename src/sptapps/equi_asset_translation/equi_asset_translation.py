@@ -26,7 +26,7 @@ import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_i
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
-import sptlibs.data_access.ai2_metadata.equipment_attributes_import as equipment_attributes_import
+import sptlibs.asset_schema.ai2_classrep.equipment_attributes_import as equipment_attributes_import
 
 
 

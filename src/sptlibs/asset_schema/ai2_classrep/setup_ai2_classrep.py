@@ -16,9 +16,17 @@ limitations under the License.
 """
 
 import duckdb
+from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
+import sptlibs.asset_schema.ai2_classrep.equipment_attributes_import as equipment_attributes_import
 
-def setup_ai2_classrep_tables(con: duckdb.DuckDBPyConnection) -> None:
+def duckdb_init(*, 
+                equipment_attributes_source: XlsxSource,
+                attribute_sets_source: XlsxSource,
+                con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
+    equipment_attributes_import.duckdb_import(equipment_attributes_source=equipment_attributes_source,
+                                              attribute_sets_source=attribute_sets_source,
+                                              con=con)
     runner.exec_sql_file(rel_file_path='setup_ai2_equi_classrep.sql')
     runner.exec_sql_generating_file(rel_file_path='gen_ai2_equiclass_create_tables.sql')

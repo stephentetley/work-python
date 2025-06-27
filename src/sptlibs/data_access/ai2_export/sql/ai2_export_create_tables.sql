@@ -33,6 +33,7 @@ CREATE OR REPLACE TABLE ai2_export.floc_master_data (
     installed_from DATE,
     hierarchy_key VARCHAR,
     asset_status VARCHAR,
+    loc_ref VARCHAR,
     asset_in_aide BOOLEAN,
     PRIMARY KEY(ai2_reference)
 );
@@ -44,6 +45,7 @@ CREATE OR REPLACE TABLE ai2_export.equi_master_data (
     manufacturer VARCHAR,
     model VARCHAR,
     asset_status VARCHAR,
+    loc_ref VARCHAR,
     asset_in_aide BOOLEAN,
     PRIMARY KEY(ai2_reference)
 );
@@ -70,6 +72,7 @@ SELECT
     t.manufacturer AS manufacturer,
     t.model AS model,
     t.assetstatus AS asset_status,
+    t.loc_ref AS loc_ref,
     t.asset_in_aide AS asset_in_aide, 
 FROM query_table(table_name::VARCHAR) t
 WHERE t.common_name LIKE '%/EQUIPMENT:%' OR t.common_name LIKE '%/EQPT:%' 
@@ -82,6 +85,7 @@ SELECT
     t.installed_from AS installed_from,
     t.hierarchy_key AS hierarchy_key,
     t.assetstatus AS asset_status,
+    t.loc_ref AS loc_ref,
     t.asset_in_aide AS asset_in_aide, 
 FROM query_table(table_name::VARCHAR) t
 WHERE t.common_name NOT LIKE '%/EQUIPMENT:%' AND t.common_name NOT LIKE '%/EQPT:%' 

@@ -23,7 +23,6 @@ import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
-
 def duckdb_import(*, 
                   equipment_attributes_source: XlsxSource,
                   attribute_sets_source: XlsxSource,
@@ -69,8 +68,7 @@ def _read_equipment_attributes_source(src: XlsxSource) -> pl.DataFrame:
                                          'Unit Name': pl.String, 
                                          'Unit Description': pl.String,
                                          'Data Type Name': pl.String, 
-                                         'Data Type Description': pl.String},
-                       drop_empty_rows=True)
+                                         'Data Type Description': pl.String})
     df = df.rename({'Code' : 'asset_type_code',
                     'Description': 'asset_type_description', 
                     'AssetTypeDeletionFlag': 'asset_type_deletion_flag',
@@ -82,8 +80,7 @@ def _read_equipment_attributes_source(src: XlsxSource) -> pl.DataFrame:
                     'Unit Name': 'unit_name', 
                     'Unit Description': 'unit_description',
                     'Data Type Name': 'data_type_name', 
-                    'Data Type Description': 'data_type_description'},
-                    strict=True)
+                    'Data Type Description': 'data_type_description'})
     return df
 
 
