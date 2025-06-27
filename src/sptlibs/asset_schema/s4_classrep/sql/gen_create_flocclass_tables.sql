@@ -23,6 +23,7 @@ WITH cte AS (
         array_agg(format(E'    {} {},', lower(fch.char_name), fch.ddl_data_type)) AS field_elements,
     FROM s4_classlists.vw_refined_floc_characteristic_defs fch
     JOIN s4_classlists.vw_floc_class_defs fcl ON fcl.class_name = fch.class_name 
+    JOIN s4_classrep.floc_classes_used t2 ON t2.class_name = fch.class_name    
     WHERE fcl.is_system_class = true
     GROUP BY fch.class_name
 )

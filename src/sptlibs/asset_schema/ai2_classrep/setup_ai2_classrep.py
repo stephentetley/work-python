@@ -22,11 +22,11 @@ import sptlibs.asset_schema.ai2_classrep.equipment_attributes_import as equipmen
 
 
 
-def duckdb_init(*, 
-                equipment_attributes_source: XlsxSource,
-                attribute_sets_source: XlsxSource,
-                class_tables: list[str],
-                con: duckdb.DuckDBPyConnection) -> None:
+def duckdb_init_ai2_classrep(*,
+                             equipment_attributes_source: XlsxSource,
+                             attribute_sets_source: XlsxSource,
+                             class_tables: list[str],
+                             con: duckdb.DuckDBPyConnection) -> None:
     """ Depends on `class` definitions from the attributes exports """
     runner = SqlScriptRunner(__file__, con=con)
     equipment_attributes_import.duckdb_import(equipment_attributes_source=equipment_attributes_source,

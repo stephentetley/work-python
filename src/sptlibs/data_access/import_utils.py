@@ -231,3 +231,12 @@ def get_excel_sources_from_folder(source_folder: str, *,
     def expand(file_name): 
         return XlsxSource(os.path.normpath(os.path.join(source_folder, file_name)), sheet_name)
     return [expand(e) for e in globlist if not_temp(e)]
+
+def get_excel_paths_from_folder(source_folder: str, *, 
+                                glob_pattern: str = '*.xlsx') -> list[str]:
+    globlist = glob.glob(glob_pattern, root_dir=source_folder, recursive=False)
+    def not_temp(file_name): 
+        return not '~$' in file_name
+    def expand(file_name): 
+        return os.path.normpath(os.path.join(source_folder, file_name))
+    return [expand(e) for e in globlist if not_temp(e)]

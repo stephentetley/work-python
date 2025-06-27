@@ -16,6 +16,13 @@
 
 CREATE SCHEMA IF NOT EXISTS s4_classrep;
 
+CREATE OR REPLACE TABLE s4_classrep.equi_classes_used (
+    class_name VARCHAR
+);
+
+CREATE OR REPLACE TABLE s4_classrep.floc_classes_used (
+    class_name VARCHAR
+);
 
 CREATE OR REPLACE TABLE s4_classrep.floc_masterdata (
     funcloc_id VARCHAR NOT NULL,

@@ -31,7 +31,7 @@ def main():
     output_db = args.output_db
     
     if source_directory and os.path.exists(source_directory):
-        files = import_utils.get_excel_sources_from_folder(source_folder=source_directory, glob_pattern='*class*.xlsx')
+        files = import_utils.get_excel_paths_from_folder(source_folder=source_directory, glob_pattern='*class*.xlsx')
         con = duckdb.connect(database=output_db, read_only=False)
         
         s4_classlists_import.duckdb_import(sources=files, con=con)

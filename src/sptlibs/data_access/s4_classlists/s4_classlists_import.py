@@ -25,21 +25,21 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
 # TODO - change source to list[str]
-def duckdb_import(*, sources: list[XlsxSource], con: duckdb.DuckDBPyConnection) -> None:
+def duckdb_import(*, sources: list[str], con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql')
-    for source in sources:
-        print(source.path)
-        df = _read_source(source)
+    for path in sources:
+        print(path)
+        df = _read_source(path)
         import_utils.duckdb_store_polars_dataframe(df, table_name='s4_classlists.dataframe_temp', con=con)
         runner.exec_sql_file(rel_file_path='s4_classlists_insert_into.sql')
                 
 
 # use `schema_overrides` because input source iss too sparse with long 
 # blank prefixes to columns
-def _read_source(src: XlsxSource) -> pl.DataFrame: 
-    df = pl.read_excel(source=src.path, 
-                       sheet_name=src.sheet, 
+def _read_source(path: str) -> pl.DataFrame: 
+    df = pl.read_excel(source=path, 
+                       sheet_name='Sheet1', 
                        engine='calamine', 
                        columns=['Class', 'Characteristic', 'Value', 
                                 'Char.Value', 'Data Type', 'No. Chars', 
@@ -50,8 +50,7 @@ def _read_source(src: XlsxSource) -> pl.DataFrame:
                                          'Char.Value': pl.String,
                                          'Data Type': pl.String,
                                          'No. Chars': pl.Int32, 
-                                         'Dec.places': pl.Int32},
-                       drop_empty_rows=True)
+                                         'Dec.places': pl.Int32})
     df = import_utils.normalize_df_column_names(df) 
     df = df.with_columns(pl.col(pl.String).replace("", None))
     df = df.filter(pl.any_horizontal(pl.col("*").is_not_null())).with_row_index(name="row_idx")

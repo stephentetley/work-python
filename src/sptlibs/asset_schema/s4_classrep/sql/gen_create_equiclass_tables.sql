@@ -23,6 +23,7 @@ WITH cte AS (
         array_agg(format(E'    {} {},', lower(ech.char_name), ech.ddl_data_type)) AS field_elements,
     FROM s4_classlists.vw_refined_equi_characteristic_defs ech
     JOIN s4_classlists.vw_equi_class_defs ecl ON ecl.class_name = ech.class_name 
+    JOIN s4_classrep.equi_classes_used t2 ON t2.class_name = ech.class_name
     WHERE ecl.is_object_class = true
     GROUP BY ech.class_name
 )
