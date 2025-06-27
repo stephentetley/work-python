@@ -4,7 +4,7 @@
 # > conda activate /home/stephen/miniconda3
 # > conda activate develop-env
 # > export PYTHONPATH="$HOME/_working/coding/work/work-python/src"
-# >         
+# > python scripts/temp_telem_asset_replace.py
 
 import duckdb
 import os

@@ -17,7 +17,6 @@ limitations under the License.
 
 import os
 import duckdb
-from jinja2 import Template
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
@@ -40,6 +39,10 @@ def duckdb_import_landing_files(*, sources: list[str], con: duckdb.DuckDBPyConne
             """
         con.execute(query)
     _import_landing_tables(con=con)
+    _setup_floc_master_data(con=con)
+    _setup_floc_eav_data(con=con)
+    _setup_equi_master_data(con=con)
+    _setup_equi_eav_data(con=con)
 
 def _import_landing_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
     query = "SELECT * FROM ai2_export_landing.landing_files;"
@@ -51,58 +54,52 @@ def _import_landing_tables(*, con: duckdb.DuckDBPyConnection) -> None:
                                          table_name=qualified_table_name,
                                          sheet_name='Sheet1',
                                          con=con)
-        
 
-def duckdb_import(sources: list[str], *, con: duckdb.DuckDBPyConnection) -> None:
-    for srcfile in sources:
-        src = XlsxSource(path=srcfile, sheet=None)
-        import_ai2_export(src, con=con)
+def _setup_equi_master_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+    query = "SELECT t.qualified_table_name FROM ai2_export_landing.landing_files t;"
+    df = con.execute(query).pl()
+    tables = [row['qualified_table_name'] for row in df.rows(named=True)]        
+    selects = [f"SELECT * FROM extract_ai2_equi_data_from_raw('{t}')" for t in tables]
+    body = "\nUNION BY NAME\n".join(selects)
+    query = f"""
+        INSERT INTO ai2_export.equi_master_data
+        {body};
+    """
+    con.execute(query)
 
+def _setup_floc_master_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+    query = "SELECT t.qualified_table_name FROM ai2_export_landing.landing_files t;"
+    df = con.execute(query).pl()
+    tables = [row['qualified_table_name'] for row in df.rows(named=True)]        
+    selects = [f"SELECT * FROM extract_ai2_floc_data_from_raw('{t}')" for t in tables]
+    body = "\nUNION BY NAME\n".join(selects)
+    query = f"""
+        INSERT INTO ai2_export.floc_master_data
+        {body};
+    """
+    con.execute(query)
 
+def _setup_equi_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+    query = "SELECT t.qualified_table_name FROM ai2_export_landing.landing_files t;"
+    df = con.execute(query).pl()
+    tables = [row['qualified_table_name'] for row in df.rows(named=True)]        
+    selects = [f"SELECT * FROM extract_ai2_equi_eav_data_from_raw('{t}')" for t in tables]
+    body = "\nUNION BY NAME\n".join(selects)
+    query = f"""
+    INSERT INTO ai2_export.equi_eav_data
+        {body};
+    """
+    con.execute(query)
 
+def _setup_floc_eav_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+    query = "SELECT t.qualified_table_name FROM ai2_export_landing.landing_files t;"
+    df = con.execute(query).pl()
+    tables = [row['qualified_table_name'] for row in df.rows(named=True)]        
+    selects = [f"SELECT * FROM extract_ai2_floc_eav_data_from_raw('{t}')" for t in tables]
+    body = "\nUNION BY NAME\n".join(selects)
+    query = f"""
+    INSERT INTO ai2_export.floc_eav_data
+        {body};
+    """
+    con.execute(query)
 
-def import_ai2_export(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    _import_master_data(xlsx, con=con)
-    _import_eav_data(xlsx, con=con)
-
-def _import_master_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    insert_stmt = """
-        INSERT OR REPLACE INTO ai2_export.equi_master_data BY NAME
-        SELECT 
-            df.reference AS ai2_reference,
-            df.common_name AS common_name,
-            TRY_CAST(df.installed_from AS DATE) AS installed_from,
-            df.manufacturer AS manufacturer,
-            df.model AS model,
-            df.hierarchy_key AS hierarchy_key,
-            df.assetstatus AS asset_status,
-            IF(df.asset_in_aide = 'FALSE', false, true) AS asset_in_aide,
-        FROM 
-            df_dataframe_view df
-        ;
-        """
-    import_utils.duckdb_import_sheet_into(xlsx, df_name='df_dataframe_view', insert_stmt=insert_stmt, df_trafo=None, con=con)
-
-
-def _import_eav_data(xlsx: XlsxSource, *, con: duckdb.DuckDBPyConnection) -> None:
-    df = import_utils.read_xlsx_source(xlsx, normalize_column_names=True)
-    headers = df.columns
-    headers.remove('reference')    
-    headers = map(lambda x: f'{x}::VARCHAR', headers)
-    header_str =', '.join(headers)
-    insert_stmt = Template(_pivot_insert).render(headers=header_str)
-    con.execute(insert_stmt)
-
-_pivot_insert = """
-    INSERT INTO ai2_export.equi_eav_data BY NAME
-    SELECT 
-        pvt.reference AS ai2_reference, 
-        pvt.attr_name AS attribute_name, 
-        trim(pvt.attr_value) AS attribute_value, 
-    FROM (
-        UNPIVOT df ON {{headers}} INTO NAME attr_name VALUE attr_value
-    ) pvt
-    WHERE
-        pvt.attr_name NOT IN ('assetid', 'common_name', 'installed_from', 'manufacturer', 'model', 'hierarchy_key', 'assetstatus', 'asset_in_aide')
-    ON CONFLICT DO UPDATE SET attribute_value = EXCLUDED.attribute_value;
-"""
