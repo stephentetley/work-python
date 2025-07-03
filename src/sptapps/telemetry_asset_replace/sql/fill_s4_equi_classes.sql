@@ -53,10 +53,10 @@ CROSS JOIN udfx.get_east_north(t2.loc_ref) t3
 -- ASSET_CONDITION
 INSERT INTO s4_classrep.equi_asset_condition BY NAME
 SELECT 
-	t1.fresh_number AS 'equipment_id',
-	'1 - GOOD' AS condition_grade,
-	'NEW' AS condition_grade_reason,
-	extract('year' FROM t2.installed_from) AS survey_date,
+    t1.fresh_number AS 'equipment_id',
+    '1 - GOOD' AS condition_grade,
+    'NEW' AS condition_grade_reason,
+    year(t2.installed_from) AS survey_date,
 FROM telemetry_landing.worklist t
 JOIN asset_replace.vw_dollar_numbers t1 ON t1.ai2_reference = t.ai2_item_to_derive_new_equi_from
 LEFT JOIN ai2_export_landing.export1 t2 ON t2.reference = t.ai2_item_to_derive_new_equi_from

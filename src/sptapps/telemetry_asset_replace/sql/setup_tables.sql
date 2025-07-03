@@ -16,3 +16,6 @@
 
 CREATE SCHEMA IF NOT EXISTS telemetry_landing;
 CREATE SCHEMA IF NOT EXISTS asset_replace;
+
+-- This one merits going into a library...
+CREATE SCHEMA IF NOT EXISTS s4_classrep_to_excel_uploader;

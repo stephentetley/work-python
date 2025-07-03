@@ -10,10 +10,11 @@ import duckdb
 import os
 from sptlibs.utils.xlsx_source import XlsxSource    
 import sptapps.telemetry_asset_replace.setup_db as setup_db
+import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
+import sptlibs.data_access.excel_uploader.excel_uploader_equi_create as excel_uploader_equi_create
 import sptlibs.data_access.rts_outstations.rts_outstations_import as rts_outstations_import
 import sptlibs.data_access.ih06_ih08.ih08_import as ih08_import
 import sptlibs.data_access.ai2_export.ai2_export_import as ai2_export_import
-import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
 # import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
@@ -52,11 +53,7 @@ setup_s4_classrep.duckdb_init_s4_classrep(s4_classlists_db_path=s4_classlists_db
                                           con=con)
 
 setup_db.fill_db(con=con)
-
-# setup_ai2_classrep.duckdb_init_ai2_classrep(equipment_attributes_source=ai2_equipment_attributes_source,
-#                                             attribute_sets_source=ai2_equipment_attribute_sets,
-#                                             class_tables=['EQUIPMENT: TELEMETRY OUTSTATION'],
-#                                             con=con)
+excel_uploader_equi_create.duckdb_init_equi(con=con)
 
 con.close()
 

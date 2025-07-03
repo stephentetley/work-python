@@ -25,11 +25,11 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 # need to follow.
 
 
-def duckdb_init_floc(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init_equi(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='excel_uploader_equi _create_tables.sql')
+    runner.exec_sql_file(rel_file_path='excel_uploader_equi_create_tables.sql')
     
-def write_excel_floc_upload(*,
+def write_excel_equi_upload(*,
                             upload_template_path: str, 
                             dest: str,
                             con: duckdb.DuckDBPyConnection) -> None: 
