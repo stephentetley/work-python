@@ -16,7 +16,7 @@ import sptlibs.data_access.ai2_export.ai2_export_import as ai2_export_import
 import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
-import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
+# import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 
 duckdb_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/telem_asset_replace_jun25_db.duckdb')    
 worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/asset_replacement_worklist_20250625.xlsx')
@@ -51,10 +51,12 @@ setup_s4_classrep.duckdb_init_s4_classrep(s4_classlists_db_path=s4_classlists_db
                                           floc_class_tables=[],
                                           con=con)
 
-setup_ai2_classrep.duckdb_init_ai2_classrep(equipment_attributes_source=ai2_equipment_attributes_source,
-                                            attribute_sets_source=ai2_equipment_attribute_sets,
-                                            class_tables=['EQUIPMENT: TELEMETRY OUTSTATION'],
-                                            con=con)
+setup_db.fill_db(con=con)
+
+# setup_ai2_classrep.duckdb_init_ai2_classrep(equipment_attributes_source=ai2_equipment_attributes_source,
+#                                             attribute_sets_source=ai2_equipment_attribute_sets,
+#                                             class_tables=['EQUIPMENT: TELEMETRY OUTSTATION'],
+#                                             con=con)
 
 con.close()
 

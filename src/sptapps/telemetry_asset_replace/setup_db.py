@@ -30,3 +30,10 @@ def init_db(*,
                                      con=con, 
                                      table_name='telemetry_landing.worklist', 
                                      sheet_name=sheet_name)
+    
+
+def fill_db(*,
+            con: duckdb.DuckDBPyConnection) -> None:
+    runner = SqlScriptRunner(__file__, con=con)
+    runner.exec_sql_file(rel_file_path='fill_s4_equi_masterdata.sql')
+    runner.exec_sql_file(rel_file_path='fill_s4_equi_classes.sql')
