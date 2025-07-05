@@ -37,3 +37,5 @@ def fill_db(*,
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='fill_s4_equi_masterdata.sql')
     runner.exec_sql_file(rel_file_path='fill_s4_equi_classes.sql')
+    runner.exec_sql_file(rel_file_path='equi_masterdata_to_excel_uploader.sql')
+    runner.exec_sql_file(rel_file_path='equi_classes_to_excel_uploader.sql')

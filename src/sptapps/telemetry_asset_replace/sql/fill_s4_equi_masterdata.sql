@@ -34,6 +34,14 @@ CASE
 END
 ;	
 
+CREATE OR REPLACE MACRO manuf_part_number(ai2_model) AS
+CASE 
+	WHEN ai2_model = 'MMIM' THEN 'MK5 MMIM'
+	WHEN ai2_model LIKE 'POINT %' THEN ai2_model
+	ELSE 'TO BE DETERMINED'
+END
+;	
+
 CREATE OR REPLACE MACRO metasphere_outstation_model(ai2_model) AS
 CASE 
 	WHEN ai2_model = 'MMIM' THEN 'MMIM'
@@ -45,6 +53,13 @@ CASE
 END
 ;	
 
+CREATE OR REPLACE MACRO cleanse_serial_number(serial_number) AS
+CASE 
+	WHEN serial_number IS NULL THEN 'TO BE DETERMINED'
+	WHEN serial_number = '' THEN 'TO BE DETERMINED'
+	ELSE trim(serial_number)
+END
+;	
 
 CREATE OR REPLACE MACRO norm_os_address(os_addr) AS
     (os_addr).replace(' ', '').replace(',', '_')
@@ -79,8 +94,8 @@ SELECT
 	t3.installed_from AS startup_date,
 	t3.manufacturer AS 'manufacturer',
 	metasphere_outstation_model(t3.model) AS 'model_number',
-	v1.attribute_value AS 'manufact_part_number',
-	v2.attribute_value AS 'serial_number',	
+	manuf_part_number(t3.model) AS 'manufact_part_number',
+	cleanse_serial_number(v2.attribute_value) AS 'serial_number',	
 	t2.os_name AS 'technical_ident_number',
 	10 AS display_position,
 	'NETWTL' AS catalog_profile,
