@@ -14,12 +14,11 @@ from sptlibs.utils.xlsx_source import XlsxSource
 import sptapps.telemetry_asset_replace.setup_db as setup_db
 import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
 import sptlibs.data_access.excel_uploader.excel_uploader_equi_create as excel_uploader_equi_create
+import sptlibs.data_access.excel_uploader.excel_uploader_equi_change as excel_uploader_equi_change
 import sptlibs.data_access.rts_outstations.rts_outstations_import as rts_outstations_import
 import sptlibs.data_access.ih06_ih08.ih08_import as ih08_import
 import sptlibs.data_access.ai2_export.ai2_export_import as ai2_export_import
-
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
-# import sptlibs.asset_schema.ai2_classrep.setup_ai2_classrep as setup_ai2_classrep
 
 sheet_name = 'AB'
 
@@ -61,21 +60,24 @@ setup_s4_classrep.duckdb_init_s4_classrep(s4_classlists_db_path=s4_classlists_db
                                           con=con)
 
 
-excel_uploader_equi_create.duckdb_init_equi_create(con=con)
-
 datestr = datetime.date.today().strftime('%d.%m.%y')
 
-print(datestr)
+## create
+excel_uploader_equi_create.duckdb_init(con=con)
 
-header = f"Telemetry bulk upload batch-{sheet_name.lower()} (??) {datestr}"
-notes1 = f"Telemetry bulk upload created by telem_asset_replace, batch {sheet_name.lower()}"
-notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
-setup_db.fill_db(cr_header=header,
-                 cr_notes=[notes1, notes2],
+create_header = f"Telemetry bulk upload batch-{sheet_name.lower()} (??) {datestr}"
+create_notes1 = f"Telemetry bulk upload created by telem_asset_replace, batch {sheet_name.lower()}"
+create_notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
+setup_db.fill_db(cr_header=create_header,
+                 cr_notes=[create_notes1, create_notes2],
                  con=con)
-excel_uploader_equi_create.write_excel_equi_create_upload(upload_template_path=uploader_create_template,
-                                                          dest=output_xlsx_path,
-                                                          con=con)
+excel_uploader_equi_create.write_excel_upload(upload_template_path=uploader_create_template,
+                                              dest=output_xlsx_path,
+                                              con=con)
+
+## change (i.e dispose of)
+excel_uploader_equi_change.duckdb_init(con=con)
+
 con.close()
 
 print(f"Done - added raw data to: {duckdb_path}")

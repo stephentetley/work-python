@@ -25,17 +25,17 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 # need to follow.
 
 
-def duckdb_init_equi_change(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='setup_equi_create_tables.sql')
+    runner.exec_sql_file(rel_file_path='setup_equi_change_tables.sql')
     
-def write_excel_equi_change_upload(*,
-                                   upload_template_path: str, 
-                                   dest: str,
-                                   con: duckdb.DuckDBPyConnection) -> None: 
+def write_excel_upload(*,
+                       upload_template_path: str, 
+                       dest: str,
+                       con: duckdb.DuckDBPyConnection) -> None: 
     shutil.copy(upload_template_path, dest)
     with pd.ExcelWriter(dest, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-        header_pandas = con.sql("SELECT * FROM excel_uploader_equi_create.vw_change_request_header;").df()
+        header_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_change_request_header;").df()
         header_pandas.to_excel(
             writer,
             sheet_name='Change Request Header',
@@ -44,7 +44,7 @@ def write_excel_equi_change_upload(*,
             index=False,
             header=False,
         )
-        notes_pandas = con.sql("SELECT * FROM excel_uploader_equi_create.change_request_notes;").df()
+        notes_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.change_request_notes;").df()
         notes_pandas.to_excel(
             writer,
             sheet_name='Change Request Notes',
@@ -53,7 +53,7 @@ def write_excel_equi_change_upload(*,
             index=False,
             header=False,
         )        
-        flocs_pandas = con.sql("SELECT * FROM excel_uploader_equi_create.vw_equipment_data;").df()
+        flocs_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_equipment_data;").df()
         flocs_pandas.to_excel(
             writer,
             sheet_name='EQ-Equipment Data',
@@ -62,7 +62,7 @@ def write_excel_equi_change_upload(*,
             index=False,
             header=False,
         )
-        flocs_chars_pandas = con.sql("SELECT * FROM excel_uploader_equi_create.vw_classification;").df()
+        flocs_chars_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_classification;").df()
         flocs_chars_pandas.to_excel(
             writer,
             sheet_name='EQ-Classification',

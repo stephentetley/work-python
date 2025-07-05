@@ -25,14 +25,14 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 # need to follow.
 
 
-def duckdb_init_floc_create(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='setup_floc_create_tables.sql')
 
-def write_excel_floc_create_upload(*,
-                                   upload_template_path: str, 
-                                   dest: str,
-                                   con: duckdb.DuckDBPyConnection) -> None: 
+def write_excel_upload(*,
+                       upload_template_path: str, 
+                       dest: str,
+                       con: duckdb.DuckDBPyConnection) -> None: 
     shutil.copy(upload_template_path, dest)
     with pd.ExcelWriter(dest, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
         def _write_tab(*, sel_stmt: str, sheet_name: str) -> None:

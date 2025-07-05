@@ -19,3 +19,12 @@ CREATE SCHEMA IF NOT EXISTS asset_replace;
 
 -- This one merits going into a library...
 CREATE SCHEMA IF NOT EXISTS s4_classrep_to_excel_uploader;
+
+
+CREATE OR REPLACE TABLE asset_replace.disposed_of (
+    equipment VARCHAR,
+    description VARCHAR,
+    functional_location VARCHAR,
+    user_status VARCHAR,
+); 
+

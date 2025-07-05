@@ -43,6 +43,7 @@ def fill_db(*,
     runner.exec_sql_file(rel_file_path='equi_classes_to_excel_uploader.sql')
     _add_header(cr_header, con)
     _add_notes(cr_notes, con)
+    runner.exec_sql_file(rel_file_path='fill_disposed_of.sql')
 
 def _add_header(cr_header: str, con: duckdb.DuckDBPyConnection) -> None:
     stmt = f"INSERT INTO excel_uploader_equi_create.change_request_header VALUES (null, '{cr_header}');"
