@@ -25,7 +25,7 @@ sheet_name = 'AB'
 
 duckdb_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/telem_asset_replace_jun25_db.duckdb')    
 worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/asset_replacement_worklist_20250625.xlsx')
-uploader_template_path = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/autocr_create/AIW_Equi_Creation_Template_V1.0.xlsx')
+uploader_create_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/autocr_create/AIW_Equi_Creation_Template_V1.0.xlsx')
 rts_source_path = os.path.expanduser('~/_working/work/2025/rts/rts_outstations_report_20250625.tsv')
 ih08_source = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/ih08_s4_prod_netwtl.xlsx')
 ai2_equi_source = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/ai2_equi_outstation_export.xlsx')
@@ -61,7 +61,7 @@ setup_s4_classrep.duckdb_init_s4_classrep(s4_classlists_db_path=s4_classlists_db
                                           con=con)
 
 
-excel_uploader_equi_create.duckdb_init_equi(con=con)
+excel_uploader_equi_create.duckdb_init_equi_create(con=con)
 
 datestr = datetime.date.today().strftime('%d.%m.%y')
 
@@ -73,9 +73,9 @@ notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
 setup_db.fill_db(cr_header=header,
                  cr_notes=[notes1, notes2],
                  con=con)
-excel_uploader_equi_create.write_excel_equi_upload(upload_template_path=uploader_template_path,
-                                                   dest=output_xlsx_path,
-                                                   con=con)
+excel_uploader_equi_create.write_excel_equi_create_upload(upload_template_path=uploader_create_template,
+                                                          dest=output_xlsx_path,
+                                                          con=con)
 con.close()
 
 print(f"Done - added raw data to: {duckdb_path}")

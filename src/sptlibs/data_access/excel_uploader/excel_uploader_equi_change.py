@@ -25,11 +25,11 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 # need to follow.
 
 
-def duckdb_init_equi_create(*, con: duckdb.DuckDBPyConnection) -> None: 
+def duckdb_init_equi_change(*, con: duckdb.DuckDBPyConnection) -> None: 
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='setup_equi_create_tables.sql')
     
-def write_excel_equi_create_upload(*,
+def write_excel_equi_change_upload(*,
                                    upload_template_path: str, 
                                    dest: str,
                                    con: duckdb.DuckDBPyConnection) -> None: 
