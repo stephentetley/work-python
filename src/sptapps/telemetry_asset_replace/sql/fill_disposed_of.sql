@@ -17,13 +17,14 @@
 
 -- asset replace / dispose of
 
-CREATE OR REPLACE MACRO rename_as_del(equi_description) AS
+CREATE OR REPLACE TEMPORARY MACRO rename_as_del(equi_description) AS
     CASE 
     	WHEN len(equi_description) > 34 THEN (equi_description).replace('Telemetry', 'Telem').left(34) || ' (Del)'
     	ELSE equi_description || ' (Del)'
     END   
 ;
 
+INSERT INTO asset_replace.disposed_of BY NAME
 SELECT 
 	t.s4_equipment_to_delete AS 'equipment',
 	rename_as_del(t1.description_of_technical_object) AS 'description',
@@ -33,3 +34,17 @@ FROM telemetry_landing.worklist t
 JOIN ih08_landing.export1 t1 ON t1.equipment = t.s4_equipment_to_delete
 WHERE t.s4_equipment_to_delete LIKE '10%'
 AND t1.user_status LIKE 'OPER%';
+
+
+CREATE OR REPLACE TEMPORARY MACRO translate_disp_equi_masterdata() AS TABLE
+SELECT 
+    t.equipment AS 'equi',
+    t.description AS 'equi_description',
+    9999 AS 'position',
+    'DISP' AS 'user_status',
+FROM asset_replace.disposed_of t
+;
+
+INSERT INTO excel_uploader_equi_change.equipment_data BY NAME
+SELECT * FROM translate_disp_equi_masterdata()
+ORDER BY equi;

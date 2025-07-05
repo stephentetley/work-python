@@ -25,6 +25,7 @@ sheet_name = 'AB'
 duckdb_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/telem_asset_replace_jun25_db.duckdb')    
 worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/asset_replacement_worklist_20250625.xlsx')
 uploader_create_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/autocr_create/AIW_Equi_Creation_Template_V1.0.xlsx')
+uploader_change_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/autocr_change/AIW_Equi_Change_Template V1.0.xlsx')
 rts_source_path = os.path.expanduser('~/_working/work/2025/rts/rts_outstations_report_20250625.tsv')
 ih08_source = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/ih08_s4_prod_netwtl.xlsx')
 ai2_equi_source = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/ai2_equi_outstation_export.xlsx')
@@ -32,14 +33,18 @@ ai2_floc_source = os.path.expanduser('~/_working/work/2025/great_telemetry_recon
 s4_classlists_db = os.path.expanduser('~/_working/work/2025/asset_data_facts/s4_classlists/s4_classlists_apr2025.duckdb')
 ai2_equipment_attributes_source = XlsxSource(os.path.expanduser('~/_working/work/2025/asset_data_facts/ai2_metadata/AI2AssetTypeAttributes20250123.xlsx'), 'AssetTypesAttributes')
 ai2_equipment_attribute_sets = XlsxSource(os.path.expanduser('~/_working/work/2025/asset_data_facts/ai2_metadata/equipment_attribute_sets.xlsx'), 'Sheet1')
-output_xlsx_path = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jun_25th/telemetry_uploader_{sheet_name.lower()}.xlsx')
+output_create_xlsx = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jun_25th/telemetry_uploader_create_equi_{sheet_name.lower()}.xlsx')
+output_change_xlsx = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jun_25th/telemetry_uploader_update_equi_{sheet_name.lower()}.xlsx')
 
 
 if os.path.exists(duckdb_path):
     os.remove(duckdb_path)
 
-if os.path.exists(output_xlsx_path):
-    os.remove(output_xlsx_path)
+if os.path.exists(output_create_xlsx):
+    os.remove(output_create_xlsx)
+
+if os.path.exists(output_change_xlsx):
+    os.remove(output_change_xlsx)
 
 con = duckdb.connect(database=duckdb_path, read_only=False)
 setup_sql_udfs.setup_udfx_macros(con=con)
@@ -64,24 +69,31 @@ datestr = datetime.date.today().strftime('%d.%m.%y')
 
 ## create
 excel_uploader_equi_create.duckdb_init(con=con)
+excel_uploader_equi_change.duckdb_init(con=con)
 
-create_header = f"Telemetry bulk upload batch-{sheet_name.lower()} (??) {datestr}"
-create_notes1 = f"Telemetry bulk upload created by telem_asset_replace, batch {sheet_name.lower()}"
-create_notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
-setup_db.fill_db(cr_header=create_header,
-                 cr_notes=[create_notes1, create_notes2],
+create_header = f"Telemetry bulk CREATE upload batch-{sheet_name.lower()} (??) {datestr}"
+change_header = f"Telemetry bulk CHANGE upload batch-{sheet_name.lower()} (??) {datestr}"
+notes1 = f"Telemetry bulk upload created by telem_asset_replace, batch {sheet_name.lower()}"
+notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
+setup_db.fill_db(create_header=create_header,
+                 create_notes=[notes1, notes2],
+                 change_header=change_header,
+                 change_notes=[notes1, notes2],
                  con=con)
 excel_uploader_equi_create.write_excel_upload(upload_template_path=uploader_create_template,
-                                              dest=output_xlsx_path,
+                                              dest=output_create_xlsx,
                                               con=con)
 
-## change (i.e dispose of)
-excel_uploader_equi_change.duckdb_init(con=con)
+
+excel_uploader_equi_change.write_excel_upload(upload_template_path=uploader_create_template,
+                                              dest=output_change_xlsx,
+                                              con=con)
 
 con.close()
 
 print(f"Done - added raw data to: {duckdb_path}")
-print(f"Created - {output_xlsx_path}")
+print(f"Created - {output_create_xlsx}")
+print(f"Created - {output_change_xlsx}")
 
 
 
