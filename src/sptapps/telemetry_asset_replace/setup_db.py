@@ -33,9 +33,24 @@ def init_db(*,
     
 
 def fill_db(*,
+            cr_header: str,
+            cr_notes: list[str],
             con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='fill_s4_equi_masterdata.sql')
     runner.exec_sql_file(rel_file_path='fill_s4_equi_classes.sql')
     runner.exec_sql_file(rel_file_path='equi_masterdata_to_excel_uploader.sql')
     runner.exec_sql_file(rel_file_path='equi_classes_to_excel_uploader.sql')
+    _add_header(cr_header, con)
+    _add_notes(cr_notes, con)
+
+def _add_header(cr_header: str, con: duckdb.DuckDBPyConnection) -> None:
+    stmt = f"INSERT INTO excel_uploader_equi_create.change_request_header VALUES (null, '{cr_header}');"
+    con.execute(stmt)
+
+def _add_notes(notes: list[str], con: duckdb.DuckDBPyConnection) -> None:
+    con.execute("BEGIN TRANSACTION;")
+    for note in notes:  
+        stmt = f"INSERT INTO excel_uploader_equi_create.change_request_notes VALUES ('{note}');"
+        con.execute(stmt)               
+    con.execute("COMMIT;")

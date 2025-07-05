@@ -6,8 +6,10 @@
 # > export PYTHONPATH="$HOME/_working/coding/work/work-python/src"
 # > python scripts/temp_telem_asset_replace.py
 
-import duckdb
 import os
+import datetime
+import duckdb
+
 from sptlibs.utils.xlsx_source import XlsxSource    
 import sptapps.telemetry_asset_replace.setup_db as setup_db
 import sptlibs.asset_schema.udfs.setup_sql_udfs as setup_sql_udfs
@@ -60,7 +62,17 @@ setup_s4_classrep.duckdb_init_s4_classrep(s4_classlists_db_path=s4_classlists_db
 
 
 excel_uploader_equi_create.duckdb_init_equi(con=con)
-setup_db.fill_db(con=con)
+
+datestr = datetime.date.today().strftime('%d.%m.%y')
+
+print(datestr)
+
+header = f"Telemetry bulk upload batch-{sheet_name.lower()} (??) {datestr}"
+notes1 = f"Telemetry bulk upload created by telem_asset_replace, batch {sheet_name.lower()}"
+notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
+setup_db.fill_db(cr_header=header,
+                 cr_notes=[notes1, notes2],
+                 con=con)
 excel_uploader_equi_create.write_excel_equi_upload(upload_template_path=uploader_template_path,
                                                    dest=output_xlsx_path,
                                                    con=con)
