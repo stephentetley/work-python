@@ -35,6 +35,7 @@ def write_excel_upload(*,
                        con: duckdb.DuckDBPyConnection) -> None: 
     shutil.copy(upload_template_path, dest)
     with pd.ExcelWriter(dest, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+        # TODO - dont bother with _write_tab
         def _write_tab(*, sel_stmt: str, sheet_name: str) -> None:
             pandas_df = con.sql(sel_stmt).df()
             pandas_df.to_excel(
