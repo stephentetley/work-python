@@ -37,6 +37,9 @@ output_xlsx_path = os.path.expanduser(f'~/_working/work/2025/great_telemetry_rec
 if os.path.exists(duckdb_path):
     os.remove(duckdb_path)
 
+if os.path.exists(output_xlsx_path):
+    os.remove(output_xlsx_path)
+
 con = duckdb.connect(database=duckdb_path, read_only=False)
 setup_sql_udfs.setup_udfx_macros(con=con)
 setup_db.init_db(worklist_path=worklist_path,

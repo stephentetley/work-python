@@ -57,6 +57,8 @@ CREATE OR REPLACE MACRO cleanse_serial_number(serial_number) AS
 CASE 
 	WHEN serial_number IS NULL THEN 'TO BE DETERMINED'
 	WHEN serial_number = '' THEN 'TO BE DETERMINED'
+	WHEN regexp_full_match(serial_number, '[\d]{7}') THEN format('00{:s}', serial_number)
+	WHEN regexp_full_match(serial_number, '[\d]{8}') THEN format('0{:s}', serial_number)
 	ELSE trim(serial_number)
 END
 ;	
@@ -77,7 +79,7 @@ SELECT
 	t.s4_floc AS written_floc,
 	if(replaced_equi_floc IS NULL, written_floc, replaced_equi_floc) AS destination_floc,
 FROM telemetry_landing.worklist t
-JOIN ih08_landing.export1 t1 ON t1.equipment = t.s4_equipment_to_delete 
+LEFT JOIN ih08_landing.export1 t1 ON t1.equipment = t.s4_equipment_to_delete 
 ;
 
 DELETE FROM s4_classrep.equi_masterdata;
