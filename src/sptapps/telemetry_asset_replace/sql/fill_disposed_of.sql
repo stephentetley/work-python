@@ -41,7 +41,7 @@ SELECT
     t.equipment AS 'equi',
     t.description AS 'equi_description',
     9999 AS 'position',
-    'DISP' AS 'user_status',
+    'DISP' AS 'status_of_an_object',
 FROM asset_replace.disposed_of t
 ;
 

@@ -42,8 +42,8 @@ def write_excel_upload(*,
             startcol=0,
             startrow=5,
             index=False,
-            header=False,
-        )
+            header=False)
+        
         notes_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.change_request_notes;").df()
         notes_pandas.to_excel(
             writer,
@@ -51,24 +51,21 @@ def write_excel_upload(*,
             startcol=0,
             startrow=4,
             index=False,
-            header=False,
-        )        
-        flocs_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_equipment_data;").df()
-        flocs_pandas.to_excel(
-            writer,
-            sheet_name='EQ-Equipment Data',
-            startcol=0,
-            startrow=5,
-            index=False,
-            header=False,
-        )
-        flocs_chars_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_classification;").df()
-        flocs_chars_pandas.to_excel(
-            writer,
-            sheet_name='EQ-Classification',
-            startcol=0,
-            startrow=5,
-            index=False,
-            header=False,
-        )
+            header=False)
+        
+        equi_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_equipment_data;").df()
+        equi_pandas.to_excel(writer,
+                             sheet_name='EQ-Equipment Data',
+                             startcol=0,
+                             startrow=5,
+                             index=False,
+                             header=False)
+        
+        equi_chars_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_classification;").df()
+        equi_chars_pandas.to_excel(writer,
+                                   sheet_name='EQ-Classification',
+                                   startcol=0,
+                                   startrow=5,
+                                   index=False,
+                                   header=False)
 

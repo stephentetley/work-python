@@ -64,7 +64,8 @@ CREATE OR REPLACE TABLE excel_uploader_equi_create.equipment_data (
     position INTEGER,
     tech_ident_no VARCHAR,
     status_profile VARCHAR,
-    user_status VARCHAR,
+    status_of_an_object VARCHAR,
+    status_without_stsno VARCHAR,
     PRIMARY KEY (equi)
 );
 
@@ -120,8 +121,8 @@ SELECT
     null AS "Material Serial Numb",
     null AS "Config.material",
     t.status_profile AS "Status Profile",
-    t.user_status AS "Status of an object",
-    t.user_status AS "Status without stsno",
+    t.status_of_an_object AS "Status of an object",
+    t.status_without_stsno AS "Status without stsno",
     null AS "Sales Org",
     null AS "Distr. Channel",
     null AS "Division",

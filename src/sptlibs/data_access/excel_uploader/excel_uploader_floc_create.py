@@ -46,11 +46,35 @@ def write_excel_upload(*,
                     index=False,
                     header=False,
                 )  
-        _write_tab(sel_stmt="SELECT * FROM excel_uploader_floc_create.vw_change_request_header;",
-                   sheet_name='Change Request Header')
-        _write_tab(sel_stmt="SELECT * FROM excel_uploader_floc_create.change_request_notes;",
-                   sheet_name='Change Request Notes')
-        _write_tab(sel_stmt="SELECT * FROM excel_uploader_floc_create.vw_functional_location;",
-                   sheet_name='FLOC-Functional Location')
-        _write_tab(sel_stmt="SELECT * FROM excel_uploader_floc_create.vw_classification;",
-                   sheet_name='FLOC-Classification')
+        header_pandas = con.sql("SELECT * FROM excel_uploader_floc_create.vw_change_request_header;").df()
+        header_pandas.to_excel(writer,
+                               sheet_name='Change Request Header',
+                               startcol=0,
+                               startrow=5,
+                               index=False,
+                               header=False) 
+        
+        notes_pandas = con.sql("SELECT * FROM excel_uploader_floc_create.change_request_notes;").df()
+        notes_pandas.to_excel(writer,
+                              sheet_name='Change Request Notes',
+                              startcol=0,
+                              startrow=4,
+                              index=False,
+                              header=False) 
+        
+        floc_pandas = con.sql("SELECT * FROM excel_uploader_floc_create.vw_functional_location;").df()
+        floc_pandas.to_excel(writer,
+                             sheet_name='FLOC-Functional Location',
+                             startcol=0,
+                             startrow=5,
+                             index=False,
+                             header=False) 
+        
+        floc_chars_pandas = con.sql("SELECT * FROM excel_uploader_floc_create.vw_classification;").df()
+        floc_chars_pandas.to_excel(writer,
+                                   sheet_name='FLOC-Classification',
+                                   startcol=0,
+                                   startrow=5,
+                                   index=False,
+                                   header=False) 
+

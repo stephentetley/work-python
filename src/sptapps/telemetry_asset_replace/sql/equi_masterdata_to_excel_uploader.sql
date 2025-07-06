@@ -30,7 +30,8 @@ SELECT
     t.display_position AS 'position',
     t.technical_ident_number AS 'tech_ident_no',
     'ZEQUIPST' AS 'status_profile',
-    t.status_of_an_object AS 'user_status',
+    t.status_of_an_object AS 'status_of_an_object',
+    t.status_of_an_object AS 'status_without_stsno',
 FROM s4_classrep.equi_masterdata t
 ;
 
