@@ -21,6 +21,7 @@ import re
 import glob
 from typing import Callable
 import polars as pl
+from polars.type_aliases import SchemaDict
 import duckdb
 from jinja2 import Template
 from sptlibs.utils.xlsx_source import XlsxSource
@@ -164,12 +165,13 @@ def duckdb_import_cvs_into(csv_path: str, *, separator: str, df_name: str, inser
 def duckdb_import_sheet(source: XlsxSource, *, 
                         qualified_table_name: str, 
                         con: duckdb.DuckDBPyConnection, 
+                        schema_overrides: SchemaDict | None = None,
                         df_trafo: Callable[[pl.DataFrame], pl.DataFrame] | None = None) -> None:
     '''Note drops the table `table_name` before filling it'''
     if source.sheet:
-        df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine')
+        df_raw = pl.read_excel(source=source.path, sheet_name=source.sheet, engine='calamine', schema_overrides=schema_overrides)
     else:
-        df_raw = pl.read_excel(source=source.path, sheet_id=1, engine='calamine')
+        df_raw = pl.read_excel(source=source.path, sheet_id=1, engine='calamine', schema_overrides=schema_overrides)
     if df_trafo is not None:
         df_clean = df_trafo(df_raw)
     else:

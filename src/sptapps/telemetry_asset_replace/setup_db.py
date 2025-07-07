@@ -17,6 +17,7 @@ limitations under the License.
 
 
 import duckdb
+import polars as pl
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 
@@ -29,6 +30,7 @@ def init_db(*,
     excel_table_import.duckdb_import(xls_path=worklist_path, 
                                      con=con, 
                                      table_name='telemetry_landing.worklist', 
+                                     schema_overrides={"S4 Floc": pl.String, "Comment": pl.String},
                                      sheet_name=sheet_name)
     
 

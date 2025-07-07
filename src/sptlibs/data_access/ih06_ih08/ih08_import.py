@@ -17,6 +17,7 @@ limitations under the License.
 
 import os
 import duckdb
+import polars as pl
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.data_access.excel_table.excel_table_import as excel_table_import
 

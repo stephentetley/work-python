@@ -20,12 +20,12 @@ import sptlibs.data_access.ih06_ih08.ih08_import as ih08_import
 import sptlibs.data_access.ai2_export.ai2_export_import as ai2_export_import
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
 
-sheet_name = 'AB'
+sheet_name = 'A1'
 
 duckdb_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/telem_asset_replace_jun25_db.duckdb')    
-worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/asset_replacement_worklist_20250625.xlsx')
-uploader_create_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/autocr_create/AIW_Equi_Creation_Template_V1.0.xlsx')
-uploader_change_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/autocr_change/AIW_Equi_Change_Template V1.0.xlsx')
+worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jul_07th/asset_replacement_worklist_20250707.xlsx')
+uploader_create_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/AIW_Equi_Creation_Template_V1.0.xlsx')
+uploader_change_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/AIW_Equi_Change_Template V1.0.xlsx')
 rts_source_path = os.path.expanduser('~/_working/work/2025/rts/rts_outstations_report_20250625.tsv')
 ih08_source = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/ih08_s4_prod_netwtl.xlsx')
 ai2_equi_source = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/ai2_equi_outstation_export.xlsx')
@@ -33,8 +33,8 @@ ai2_floc_source = os.path.expanduser('~/_working/work/2025/great_telemetry_recon
 s4_classlists_db = os.path.expanduser('~/_working/work/2025/asset_data_facts/s4_classlists/s4_classlists_apr2025.duckdb')
 ai2_equipment_attributes_source = XlsxSource(os.path.expanduser('~/_working/work/2025/asset_data_facts/ai2_metadata/AI2AssetTypeAttributes20250123.xlsx'), 'AssetTypesAttributes')
 ai2_equipment_attribute_sets = XlsxSource(os.path.expanduser('~/_working/work/2025/asset_data_facts/ai2_metadata/equipment_attribute_sets.xlsx'), 'Sheet1')
-output_create_xlsx = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jun_25th/telemetry_uploader_create_equi_{sheet_name.lower()}.xlsx')
-output_change_xlsx = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jun_25th/telemetry_uploader_update_equi_{sheet_name.lower()}.xlsx')
+output_create_xlsx = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jul_07th/{sheet_name}_create_equi.xlsx')
+output_change_xlsx = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jul_07th/{sheet_name}_update_equi.xlsx')
 
 
 if os.path.exists(duckdb_path):

@@ -74,10 +74,10 @@ CREATE OR REPLACE MACRO generate_outstation_name(rtu_id, prefix, ai2_model) AS
 
 CREATE OR REPLACE VIEW asset_replace.vw_s4_destination_floc AS 
 SELECT 
-	t.ai2_item_to_derive_new_equi_from AS ai2_reference,
-	t1.functional_location AS replaced_equi_floc,
-	t.s4_floc AS written_floc,
-	if(replaced_equi_floc IS NULL, written_floc, replaced_equi_floc) AS destination_floc,
+    t.ai2_item_to_derive_new_equi_from AS ai2_reference,
+    t1.functional_location AS replaced_equi_floc,
+    t.s4_floc AS written_floc,
+    if(replaced_equi_floc IS NULL, written_floc, replaced_equi_floc) AS destination_floc,
 FROM telemetry_landing.worklist t
 LEFT JOIN ih08_landing.export1 t1 ON t1.equipment = t.s4_equipment_to_delete 
 ;
