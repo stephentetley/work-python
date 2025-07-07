@@ -64,8 +64,8 @@ END
 ;	
 
 CREATE OR REPLACE MACRO norm_os_address(os_addr) AS
-    (os_addr).replace(' ', '').replace(',', '_')
-;	
+    (os_addr).regexp_replace('\s+', '').replace(',', '_')
+;
 
 CREATE OR REPLACE MACRO generate_outstation_name(rtu_id, prefix, ai2_model) AS
     concat_ws(' ', rtu_id, prefix, simple_outstation_model(ai2_model), 'Outstation') 

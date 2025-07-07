@@ -20,9 +20,9 @@ import sptlibs.data_access.ih06_ih08.ih08_import as ih08_import
 import sptlibs.data_access.ai2_export.ai2_export_import as ai2_export_import
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_s4_classrep
 
-sheet_name = 'A1'
+sheet_name = 'C1'
 
-duckdb_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jun_25th/telem_asset_replace_jun25_db.duckdb')    
+duckdb_path = os.path.expanduser(f'~/_working/work/2025/great_telemetry_reconcile/jul_07th/telem_asset_replace_{sheet_name}_db.duckdb')    
 worklist_path = os.path.expanduser('~/_working/work/2025/great_telemetry_reconcile/jul_07th/asset_replacement_worklist_20250707.xlsx')
 uploader_create_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/AIW_Equi_Creation_Template_V1.0.xlsx')
 uploader_change_template = os.path.expanduser('~/_working/work/2025/excel_uploader/templates/AIW_Equi_Change_Template V1.0.xlsx')
