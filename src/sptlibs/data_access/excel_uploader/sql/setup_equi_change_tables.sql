@@ -47,7 +47,6 @@ CREATE OR REPLACE TABLE excel_uploader_equi_change.change_request_notes (
 -- equipment is just the fields client code needs to fill out...
 CREATE OR REPLACE TABLE excel_uploader_equi_change.equipment_data (
     equi VARCHAR NOT NULL,
-    category VARCHAR,
     equi_description VARCHAR NOT NULL,
     object_type VARCHAR,
     gross_weight DECIMAL,
@@ -72,9 +71,7 @@ CREATE OR REPLACE TABLE excel_uploader_equi_change.equipment_data (
 CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_equipment_data AS
 SELECT 
     t.equi AS "Equipment",
-    t.category AS "EquipCategory",
     t.equi_description AS "Description (medium)",
-    null AS "Valid From",
     null AS "Inactive",
     t.object_type AS "Object type",
     null AS "AuthorizGroup",
@@ -138,7 +135,7 @@ SELECT
     null AS "Warranty end(V)",
     null AS "Master Warranty(V)",
     null AS "InheritWarranty(V)",
-    null AS "Pass on warranty(V)",
+    null AS "Pass on warr(V)",
 	null AS "Vendor",
 	null AS "Customer",
 	null AS "End customer", 

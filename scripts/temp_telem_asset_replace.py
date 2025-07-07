@@ -71,8 +71,8 @@ datestr = datetime.date.today().strftime('%d.%m.%y')
 excel_uploader_equi_create.duckdb_init(con=con)
 excel_uploader_equi_change.duckdb_init(con=con)
 
-create_header = f"Telemetry bulk CREATE upload batch-{sheet_name.lower()} (??) {datestr}"
-change_header = f"Telemetry bulk CHANGE upload batch-{sheet_name.lower()} (??) {datestr}"
+create_header = f"Telemetry bulk CREATE upload {sheet_name} (??) {datestr}"
+change_header = f"Telemetry bulk CHANGE upload {sheet_name} (??) {datestr}"
 notes1 = f"Telemetry bulk upload created by telem_asset_replace, batch {sheet_name.lower()}"
 notes2 = f"Update file created on {datetime.date.today().strftime('%d.%m.%Y')}"
 setup_db.fill_db(create_header=create_header,
@@ -85,7 +85,7 @@ excel_uploader_equi_create.write_excel_upload(upload_template_path=uploader_crea
                                               con=con)
 
 
-excel_uploader_equi_change.write_excel_upload(upload_template_path=uploader_create_template,
+excel_uploader_equi_change.write_excel_upload(upload_template_path=uploader_change_template,
                                               dest=output_change_xlsx,
                                               con=con)
 
