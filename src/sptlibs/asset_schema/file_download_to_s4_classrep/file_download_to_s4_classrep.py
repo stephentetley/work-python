@@ -19,8 +19,13 @@ import duckdb
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 import sptlibs.asset_schema.s4_classrep.setup_s4_classrep as setup_classrep
 
-def translate_file_download_to_s4_classrep(*, con: duckdb.DuckDBPyConnection) -> None: 
-    setup_classrep.duckdb_init(gen_flocclasses=True, con=con)
+def translate_file_download_to_s4_classrep(*, 
+                                           s4_classlists_db_path: str, 
+                                           con: duckdb.DuckDBPyConnection) -> None: 
+    setup_classrep.duckdb_init_s4_classrep(s4_classlists_db_path=s4_classlists_db_path, 
+                                           equi_class_tables=None,
+                                           floc_class_tables=None,
+                                           con=con)
     runner = SqlScriptRunner(__file__, con=con)    
     # insert data...
     runner.exec_sql_file(rel_file_path='s4_classrep_insert_into.sql')

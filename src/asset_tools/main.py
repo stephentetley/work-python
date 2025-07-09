@@ -22,9 +22,11 @@ limitations under the License.
 # (base) > flask --app .\src\asset_tools\main.py run
 #
 # linux:
-# (base) > conda activate develop-env
-# (develop-env) > export PYTHONPATH='/home/_working/coding/work/work-python'
-# (develop-env) > flask --app ./src/asset_tools/main.py run
+# > cd ~/_working/coding/work/work-python/
+# > conda activate /home/stephen/miniconda3
+# > conda activate develop-env
+# > export PYTHONPATH='/home/_working/coding/work/work-python'
+# > flask --app ./src/asset_tools/main.py run
 
 
 # Point browser to:
