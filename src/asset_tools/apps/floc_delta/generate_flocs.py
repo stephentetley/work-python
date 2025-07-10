@@ -43,7 +43,7 @@ def duckdb_init(*,
                                       table_name_root='floc_delta_landing.floc_export', 
                                       union=True,
                                       con=con)
-    excel_uploader_floc_create.duckdb_init_floc(con=con)
+    excel_uploader_floc_create.duckdb_init(con=con)
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='floc_delta_create_tables.sql')
     runner.exec_sql_file(rel_file_path='floc_delta_insert_into.sql')
@@ -53,7 +53,7 @@ def gen_xls_upload(*,
                    uploader_template: str, 
                    uploader_outfile: str,
                    con: duckdb.DuckDBPyConnection) -> None:
-    excel_uploader_floc_create.write_excel_floc_upload(upload_template_path=uploader_template,
+    excel_uploader_floc_create.write_excel_upload(upload_template_path=uploader_template,
                                                   dest=uploader_outfile,
                                                   con=con)
 

@@ -26,7 +26,8 @@ SELECT
     t.plant_section AS plant_section,
     10 AS position,
     'ZFLOCST' AS status_profile,
-    t.user_status AS user_status,
+    t.user_status AS status_of_an_object,
+    t.user_status AS status_without_stsno,
 FROM floc_delta.vw_new_flocs t;
 
     
