@@ -104,9 +104,9 @@ SELECT
 FROM telemetry_landing.worklist t
 JOIN asset_replace.vw_dollar_numbers t1 ON t1.ai2_reference = t.ai2_item_to_derive_new_equi_from
 JOIN rts_outstations.outstations t2 ON norm_os_address(t2.os_address) = t.rtu_id
-JOIN ai2_export.equi_master_data t3 ON t3.ai2_reference = t.ai2_item_to_derive_new_equi_from
+JOIN ai2_export.equi_masterdata t3 ON t3.ai2_reference = t.ai2_item_to_derive_new_equi_from
 JOIN asset_replace.vw_s4_destination_floc t4 ON t4.ai2_reference = t.ai2_item_to_derive_new_equi_from 
-LEFT JOIN ai2_export.equi_eav_data v1 ON v1.ai2_reference = t.ai2_item_to_derive_new_equi_from AND v1.attribute_name = 'specific_model_frame'
-LEFT JOIN ai2_export.equi_eav_data v2 ON v2.ai2_reference = t.ai2_item_to_derive_new_equi_from AND v2.attribute_name = 'serial_no'
+LEFT JOIN ai2_export.equi_eavdata v1 ON v1.ai2_reference = t.ai2_item_to_derive_new_equi_from AND v1.attribute_name = 'specific_model_frame'
+LEFT JOIN ai2_export.equi_eavdata v2 ON v2.ai2_reference = t.ai2_item_to_derive_new_equi_from AND v2.attribute_name = 'serial_no'
 ;
 

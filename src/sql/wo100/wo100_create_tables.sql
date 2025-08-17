@@ -75,7 +75,7 @@ WITH cte1 AS (
         any_value(CASE WHEN eav.attribute_name = 'memo_line_3' THEN eav.attribute_value ELSE NULL END) AS memo_line_3,
         any_value(CASE WHEN eav.attribute_name = 'memo_line_4' THEN eav.attribute_value ELSE NULL END) AS memo_line_4,
         any_value(CASE WHEN eav.attribute_name = 'memo_line_5' THEN eav.attribute_value ELSE NULL END) AS memo_line_5,
-    FROM ai2_export.equi_master_data emd
+    FROM ai2_export.equi_masterdata emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     WHERE emd.common_name LIKE '%EQUIPMENT:%'
     GROUP BY emd.ai2_reference, emd.installed_from, emd.asset_status, emd.manufacturer, emd.model)
@@ -124,7 +124,7 @@ WITH cte1 AS (
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         any_value(CASE WHEN eav.attribute_name = 'ip_address' THEN eav.attribute_value ELSE NULL END) AS ip_address,    
         any_value(CASE WHEN eav.attribute_name = 'telephone' THEN eav.attribute_value ELSE NULL END) AS telephone,
-    FROM ai2_export.equi_master_data emd
+    FROM ai2_export.equi_masterdata emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     WHERE emd.common_name LIKE '%EQUIPMENT:%'
     GROUP BY emd.ai2_reference, emd.asset_status)
@@ -160,7 +160,7 @@ WITH cte1 AS (
         any_value(CASE WHEN eav.attribute_name = 'controller_serial_number' THEN eav.attribute_value ELSE NULL END) AS serial_no,
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
         '' AS memo_line_1,
-    FROM ai2_export.equi_master_data emd
+    FROM ai2_export.equi_masterdata emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     WHERE emd.common_name LIKE '%EQUIPMENT:%'
     GROUP BY emd.ai2_reference, emd.asset_status)
@@ -202,7 +202,7 @@ WITH cte1 AS (
         any_value(CASE WHEN eav.attribute_name = 'psu_model' THEN psu_specific_model(eav.attribute_value) ELSE NULL END) AS specific_model_frame,
         any_value(CASE WHEN eav.attribute_name = 'psu_serial_number' THEN eav.attribute_value ELSE NULL END) AS serial_no,
         any_value(CASE WHEN eav.attribute_name = 'location_on_site' THEN eav.attribute_value ELSE NULL END) AS location_on_site,
-    FROM ai2_export.equi_master_data emd
+    FROM ai2_export.equi_masterdata emd
     JOIN ai2_export.equi_eav_data eav ON eav.ai2_reference = emd.ai2_reference 
     WHERE emd.common_name LIKE '%EQUIPMENT:%'
     GROUP BY emd.ai2_reference, emd.asset_status)

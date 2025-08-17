@@ -29,7 +29,6 @@ CREATE OR REPLACE TABLE ai2_eav.equipment_masterdata(
     PRIMARY KEY (ai2_reference)
 );
 
--- TODO - ideally have datatype and attr_value_int, attr_value_text, ... columns
 CREATE OR REPLACE TABLE ai2_eav.equipment_eav(
     ai2_reference VARCHAR,
     attr_name VARCHAR,

@@ -26,4 +26,4 @@ SELECT
     emd.serial_number AS serial_number,
     ec.* EXCLUDE (equipment_key),
 FROM pdt_class_rep.equiclass_{{class_name}} ec
-JOIN pdt_class_rep.equi_master_data emd ON emd.equipment_key = ec.equipment_key;
+JOIN pdt_class_rep.equi_masterdata emd ON emd.equipment_key = ec.equipment_key;

@@ -23,7 +23,8 @@ from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 def duckdb_import(rts_report_csv: str, *, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
-    runner.exec_sql_file(rel_file_path='rts_outstations_create_tables.sql')
-    runner.exec_sql_file(rel_file_path='rts_outstations_insert_into.sql', parameters={'csv_file_path' : rts_report_csv})
+    runner.exec_sql_file(rel_file_path='rts_outstations_import.sql')
+    cmd = f"EXECUTE load_outstations('{rts_report_csv}');"
+    con.execute(cmd)
 
 

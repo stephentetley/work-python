@@ -39,9 +39,9 @@ def duckdb_import_landing_files(*, sources: list[str], con: duckdb.DuckDBPyConne
             """
         con.execute(query)
     _import_landing_tables(con=con)
-    _setup_floc_master_data(con=con)
+    _setup_floc_masterdata(con=con)
     _setup_floc_eav_data(con=con)
-    _setup_equi_master_data(con=con)
+    _setup_equi_masterdata(con=con)
     _setup_equi_eav_data(con=con)
 
 def _import_landing_tables(*, con: duckdb.DuckDBPyConnection) -> None: 
@@ -55,26 +55,26 @@ def _import_landing_tables(*, con: duckdb.DuckDBPyConnection) -> None:
                                          sheet_name='Sheet1',
                                          con=con)
 
-def _setup_equi_master_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+def _setup_equi_masterdata(*, con: duckdb.DuckDBPyConnection) -> None: 
     query = "SELECT t.qualified_table_name FROM ai2_export_landing.landing_files t;"
     df = con.execute(query).pl()
     tables = [row['qualified_table_name'] for row in df.rows(named=True)]        
     selects = [f"SELECT * FROM extract_ai2_equi_data_from_raw('{t}')" for t in tables]
     body = "\nUNION BY NAME\n".join(selects)
     query = f"""
-        INSERT INTO ai2_export.equi_master_data
+        INSERT INTO ai2_export.equi_masterdata
         {body};
     """
     con.execute(query)
 
-def _setup_floc_master_data(*, con: duckdb.DuckDBPyConnection) -> None: 
+def _setup_floc_masterdata(*, con: duckdb.DuckDBPyConnection) -> None: 
     query = "SELECT t.qualified_table_name FROM ai2_export_landing.landing_files t;"
     df = con.execute(query).pl()
     tables = [row['qualified_table_name'] for row in df.rows(named=True)]        
     selects = [f"SELECT * FROM extract_ai2_floc_data_from_raw('{t}')" for t in tables]
     body = "\nUNION BY NAME\n".join(selects)
     query = f"""
-        INSERT INTO ai2_export.floc_master_data
+        INSERT INTO ai2_export.floc_masterdata
         {body};
     """
     con.execute(query)

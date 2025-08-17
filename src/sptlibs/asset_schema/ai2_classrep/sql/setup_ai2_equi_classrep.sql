@@ -69,4 +69,3 @@ CREATE OR REPLACE TABLE ai2_classrep.equi_memo_line (
 );
 
 
-
