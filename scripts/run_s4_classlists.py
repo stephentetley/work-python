@@ -19,22 +19,27 @@ import os
 from argparse import ArgumentParser
 import duckdb
 import sptlibs.data_access.s4_classlists.s4_classlists_import as s4_classlists_import
-import sptlibs.data_access.import_utils as import_utils
+
 
 
 def main(): 
     parser = ArgumentParser(description='Generate classlist info DuckDB tables')
-    parser.add_argument("--source_dir", dest='source_dir', required=True, help="Source directory containing classlist exports")
+    parser.add_argument("--equi_source_xlsx", dest='equi_source_xlsx', required=True, help="Equi classlist Excel export")
+    parser.add_argument("--floc_source_xlsx", dest='floc_source_xlsx', required=True, help="Floc classlist Excel export")
     parser.add_argument("--output_db", dest='output_db', required=True, help="DuckDB file to add table to")
     args = parser.parse_args()
-    source_directory    = args.source_dir
+    equi_source = args.equi_source_xlsx
+    floc_source = args.floc_source_xlsx
     output_db = args.output_db
     
-    if source_directory and os.path.exists(source_directory):
-        files = import_utils.get_excel_paths_from_folder(source_folder=source_directory, glob_pattern='*class*.xlsx')
-        con = duckdb.connect(database=output_db, read_only=False)
+    if equi_source and os.path.exists(equi_source) and floc_source and os.path.exists(floc_source):
+        if os.path.exists(output_db):
+            os.remove(output_db)
         
-        s4_classlists_import.duckdb_import(sources=files, con=con)
+        con = duckdb.connect(database=output_db, read_only=False)
+        s4_classlists_import.duckdb_import(equi_source_xlsx=equi_source, 
+                                           floc_source_xlsx=floc_source, 
+                                           con=con)
         con.close()
         print(f"Done - created: {output_db}")
 

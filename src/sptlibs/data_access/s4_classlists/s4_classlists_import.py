@@ -18,44 +18,30 @@ limitations under the License.
 import os
 import glob
 import duckdb
-import polars as pl
 import sptlibs.data_access.import_utils as import_utils
 from sptlibs.utils.xlsx_source import XlsxSource
 from sptlibs.utils.sql_script_runner import SqlScriptRunner
 
 
-# TODO - change source to list[str]
-def duckdb_import(*, sources: list[str], con: duckdb.DuckDBPyConnection) -> None:
+# Just decode equi and floc files...
+def duckdb_import(*, 
+                  equi_source_xlsx: str, 
+                  floc_source_xlsx: str, 
+                  con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='s4_classlists_create_tables.sql')
-    for path in sources:
-        print(path)
-        df = _read_source(path)
-        import_utils.duckdb_store_polars_dataframe(df, table_name='s4_classlists.dataframe_temp', con=con)
-        runner.exec_sql_file(rel_file_path='s4_classlists_insert_into.sql')
-                
-
-# use `schema_overrides` because input source iss too sparse with long 
-# blank prefixes to columns
-def _read_source(path: str) -> pl.DataFrame: 
-    df = pl.read_excel(source=path, 
-                       sheet_name='Sheet1', 
-                       engine='calamine', 
-                       columns=['Class', 'Characteristic', 'Value', 
-                                'Char.Value', 'Data Type', 'No. Chars', 
-                                'Dec.places'],
-                       schema_overrides={"Class": pl.String,
-                                         'Characteristic': pl.String,
-                                         'Value': pl.String,
-                                         'Char.Value': pl.String,
-                                         'Data Type': pl.String,
-                                         'No. Chars': pl.Int32, 
-                                         'Dec.places': pl.Int32})
-    df = import_utils.normalize_df_column_names(df) 
-    df = df.with_columns(pl.col(pl.String).replace("", None))
-    df = df.filter(pl.any_horizontal(pl.col("*").is_not_null())).with_row_index(name="row_idx")
-    return df
-
+    runner.exec_sql_file(rel_file_path='s4_classlists_import.sql')
+    con.execute(f"EXECUTE load_classlist('{equi_source_xlsx}');")
+    con.execute(f"EXECUTE norm_classlist(1);")
+    con.execute(f"EXECUTE fill_equi_characteristics(1);")
+    con.execute(f"EXECUTE fill_equi_enums(1);")
+    con.execute(f"EXECUTE delete_classlist_landing;")
+    con.execute(f"EXECUTE delete_classlist_normed;")
+    con.execute(f"EXECUTE load_classlist('{floc_source_xlsx}');")
+    con.execute(f"EXECUTE norm_classlist(1);")
+    con.execute(f"EXECUTE fill_floc_characteristics(1);")
+    con.execute(f"EXECUTE fill_floc_enums(1);")
+    
 
 def copy_classlists_tables(*, source_db_path: str, dest_con: duckdb.DuckDBPyConnection) -> None:
     """`dest_con` is the desination database."""

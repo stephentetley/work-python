@@ -89,7 +89,7 @@ SELECT * FROM renamed3;
 
 
 PREPARE load_outstations AS 
-    INSERT INTO rts_outstations.outstations
+    INSERT INTO rts_outstations.outstations BY NAME
     FROM read_outstations_report($1);
 
 -- To use at a SQL prompt:
