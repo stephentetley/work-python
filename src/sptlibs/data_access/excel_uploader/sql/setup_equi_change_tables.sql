@@ -164,4 +164,11 @@ FROM excel_uploader_equi_change.classification t
 ORDER BY t.equi, t.class_name, t.characteristics;
 
 
+CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_batch_worklist AS 
+SELECT 
+    row_number() OVER () AS idx,
+    ((idx - 1) // 75) + 1 AS batch_number,
+    t.equi AS equi, 
+FROM excel_uploader_equi_create.equipment_data t
+ORDER BY equi;
 
