@@ -68,8 +68,28 @@ CREATE OR REPLACE TABLE excel_uploader_equi_change.equipment_data (
     PRIMARY KEY (equi)
 );
 
+
+-- No Primary Key - multiples allowed
+CREATE OR REPLACE TABLE excel_uploader_equi_change.classification (
+    equi VARCHAR NOT NULL,
+    class_name VARCHAR NOT NULL,
+    characteristics VARCHAR NOT NULL,
+    char_value VARCHAR,
+);
+
+-- Views
+
+CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_batch_worklist AS 
+SELECT 
+    row_number() OVER () AS idx,
+    ((idx - 1) // 75) + 1 AS batch_number,
+    t.equi AS equi, 
+FROM excel_uploader_equi_create.equipment_data t
+ORDER BY equi;
+
 CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_equipment_data AS
 SELECT 
+    t1.batch_number AS batch_number,
     t.equi AS "Equipment",
     t.equi_description AS "Description (medium)",
     null AS "Inactive",
@@ -112,8 +132,8 @@ SELECT
     t.functional_loc AS "Functional loc.",
     t.superord_equip AS "Superord.Equip.",
     printf('%04d', t.position) AS "Position",
-	t.tech_ident_no AS "TechIdentNo.",
-	null AS "Construction type Ma",
+    t.tech_ident_no AS "TechIdentNo.",
+    null AS "Construction type Ma",
     null AS "Material",
     null AS "Material Serial Numb",
     null AS "Config.material",
@@ -125,7 +145,7 @@ SELECT
     null AS "Division",
     null AS "Sales Office",
     null AS "Sales Group",
-	null AS "License no.",
+    null AS "License no.",
     null AS "Begin guarantee(C)",
     null AS "Warranty end(C)",
     null AS "Master Warranty(C)",
@@ -136,39 +156,25 @@ SELECT
     null AS "Master Warranty(V)",
     null AS "InheritWarranty(V)",
     null AS "Pass on warr(V)",
-	null AS "Vendor",
-	null AS "Customer",
-	null AS "End customer", 
-	null AS "CurCustomer", 
-	null AS "Operator", 
-	null AS "Delivery date",
+    null AS "Vendor",
+    null AS "Customer",
+    null AS "End customer", 
+    null AS "CurCustomer", 
+    null AS "Operator", 
+    null AS "Delivery date",
 FROM excel_uploader_equi_change.equipment_data t
+JOIN excel_uploader_equi_change.vw_batch_worklist t1 ON t1.equi = t.equi
 ORDER BY t.equi;
 
 
--- No Primary Key - multiples allowed
-CREATE OR REPLACE TABLE excel_uploader_equi_change.classification (
-    equi VARCHAR NOT NULL,
-    class_name VARCHAR NOT NULL,
-    characteristics VARCHAR NOT NULL,
-    char_value VARCHAR,
-);
-
 CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_classification AS
 SELECT 
+    t1.batch_number AS batch_number,
     t.equi AS "Functional Location",
     t.class_name AS "Class",
     t.characteristics AS "Characteristics",
     t.char_value AS "Char Value",
 FROM excel_uploader_equi_change.classification t
+JOIN excel_uploader_equi_change.vw_batch_worklist t1 ON t1.equi = t.equi
 ORDER BY t.equi, t.class_name, t.characteristics;
-
-
-CREATE OR REPLACE VIEW excel_uploader_equi_change.vw_batch_worklist AS 
-SELECT 
-    row_number() OVER () AS idx,
-    ((idx - 1) // 75) + 1 AS batch_number,
-    t.equi AS equi, 
-FROM excel_uploader_equi_create.equipment_data t
-ORDER BY equi;
 

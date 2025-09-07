@@ -29,10 +29,23 @@ def duckdb_init(*, con: duckdb.DuckDBPyConnection) -> None:
     runner = SqlScriptRunner(__file__, con=con)
     runner.exec_sql_file(rel_file_path='setup_equi_change_tables.sql')
     
-def write_excel_upload(*,
+def write_excel_uploads(*,
+                        upload_template_path: str, 
+                        dest: str,
+                        con: duckdb.DuckDBPyConnection) -> None: 
+    rs = con.execute("SELECT max(batch_number) FROM excel_uploader_equi_change.vw_batch_worklist;").fetchone();
+    for batch_number in range(1, rs[0], 1):
+        _gen_excel_upload1(upload_template_path=upload_template_path, 
+                        dest=dest,
+                        batch_number=batch_number,
+                        con=con)
+
+def _gen_excel_upload1(*,
                        upload_template_path: str, 
                        dest: str,
+                       batch_number: int,
                        con: duckdb.DuckDBPyConnection) -> None: 
+    dest = dest.replace(".xlsx", f"_batch{batch_number}.xlsx")    
     shutil.copy(upload_template_path, dest)
     with pd.ExcelWriter(dest, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
         header_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_change_request_header;").df()
@@ -44,7 +57,14 @@ def write_excel_upload(*,
             index=False,
             header=False)
         
-        notes_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.change_request_notes;").df()
+        notes_query = f"""
+            SELECT * FROM excel_uploader_equi_change.change_request_notes
+            UNION 
+            SELECT 'Batch number {batch_number}' AS usmd_note
+            UNION
+            SELECT 'Upload file created on ' || strftime(current_date, '%d.%m.%Y') AS usmd_note;
+        """
+        notes_pandas = con.sql(notes_query).df()
         notes_pandas.to_excel(
             writer,
             sheet_name='Change Request Notes',
@@ -53,7 +73,12 @@ def write_excel_upload(*,
             index=False,
             header=False)
         
-        equi_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_equipment_data;").df()
+        equi_query = f"""
+            SELECT * EXCLUDE(batch_number)
+            FROM excel_uploader_equi_change.vw_equipment_data
+            WHERE batch_number = {batch_number};            
+        """
+        equi_pandas = con.sql(equi_query).df()
         equi_pandas.to_excel(writer,
                              sheet_name='EQ-Equipment Data',
                              startcol=0,
@@ -61,7 +86,12 @@ def write_excel_upload(*,
                              index=False,
                              header=False)
         
-        equi_chars_pandas = con.sql("SELECT * FROM excel_uploader_equi_change.vw_classification;").df()
+        equi_char_query = f"""
+            SELECT * EXCLUDE (batch_number) 
+            FROM excel_uploader_equi_change.vw_classification
+            WHERE batch_number = {batch_number};
+        """        
+        equi_chars_pandas = con.sql(equi_char_query).df()
         equi_chars_pandas.to_excel(writer,
                                    sheet_name='EQ-Classification',
                                    startcol=0,
