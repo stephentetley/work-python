@@ -34,7 +34,7 @@ def write_excel_uploads(*,
                         dest: str,
                         con: duckdb.DuckDBPyConnection) -> None: 
     rs = con.execute("SELECT max(batch_number) FROM excel_uploader_equi_change.vw_batch_worklist;").fetchone();
-    for batch_number in range(1, rs[0], 1):
+    for batch_number in range(1, rs[0] + 1, 1):
         _gen_excel_upload1(upload_template_path=upload_template_path, 
                         dest=dest,
                         batch_number=batch_number,
